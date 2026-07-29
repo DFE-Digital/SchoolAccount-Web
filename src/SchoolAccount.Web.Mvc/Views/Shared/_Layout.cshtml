@@ -1,15 +1,18 @@
 ﻿@{ Layout = "_GovUkPageTemplate"; }
 
-@section Head { <link rel="stylesheet" asp-href-include="~/app.css"> }
+@section Head {
+    <link rel="stylesheet" href="~/app.css" asp-append-version="true"/>
+}
 
 @section GovUkHeader {
     <header class="govuk-header" data-module="govuk-header">
         <div class="govuk-header__container govuk-width-container">
             <div class="govuk-header__logo"><a href="#" class="govuk-header__link govuk-header__link--homepage"> <img
-                        src="~/images/department-for-education_white.png" alt="Department for Education"
+                        src="~/assets/images/department-for-education_white.png" alt="Department for Education"
                         class="govuk-header__logotype"> </a></div>
         </div>
-    </header>}
+    </header>
+}
 
 @section GovUkServiceNavigation {
     <govuk-service-navigation service-name="School Account Alpha" service-url="/">
@@ -25,7 +28,8 @@
                 </govuk-service-navigation-nav-item>
             }
         </govuk-service-navigation-nav>
-    </govuk-service-navigation>}
+    </govuk-service-navigation>
+}
 
 @RenderBody()
 
