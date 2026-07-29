@@ -5,6 +5,11 @@ builder.Services.AddControllersWithViews();
 
 WebApplication app = builder.Build();
 
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddSassCompiler();
+}
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {

@@ -1,0 +1,15 @@
+.progress-bar {
+  background-color: govuk-colour("blue");
+  width: 100%;
+  padding: govuk-spacing(2);
+}
+
+.progress-bar__green {
+  color: #083d29;
+  background-color: #cfe4dc;
+}
+
+.progress-bar__yellow {
+  color: #7a3c1c;
+  background-color: #ffee80;
+}
