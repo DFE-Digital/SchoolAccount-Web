@@ -1,7 +1,15 @@
+using GovUk.Frontend.AspNetCore;
+
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddGovUkFrontend();
+
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddSassCompiler();
+}
 
 WebApplication app = builder.Build();
 
@@ -15,7 +23,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
-
+app.UseGovUkFrontend();
 app.UseAuthorization();
 
 app.MapStaticAssets();

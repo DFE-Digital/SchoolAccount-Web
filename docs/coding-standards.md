@@ -77,3 +77,7 @@ definitions.
 Coding standards cover how individual files are written. For how projects relate to each other,
 see [Clean Architecture](clean-architecture.md). For how tests are written, see
 [Testing Standards](testing-standards.md) and [Integration Testing](integration-testing.md).
+
+## Style sheets
+
+Each component should have a dedicated scss style sheet within the `./Style/components/` directory.

@@ -5,10 +5,23 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <EnableGovUkFrontendSupport>true</EnableGovUkFrontendSupport>
+        <RestoreGovUkFrontendStylesheet>false</RestoreGovUkFrontendStylesheet>
+        <RestoreGovUkFrontendNpmPackage>true</RestoreGovUkFrontendNpmPackage>
+        <RestoreGovUkFrontendSupportPackage>true</RestoreGovUkFrontendSupportPackage>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('Windows'))">
+        <GovUkFrontendAssetsDirectory>/wwwroot</GovUkFrontendAssetsDirectory>
     </PropertyGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\SchoolAccount.Infrastructure\SchoolAccount.Infrastructure.csproj" />
+    </ItemGroup>
+    
+    <ItemGroup>
+        <PackageReference Include="AspNetCore.SassCompiler" />
+        <PackageReference Include="GovUk.Frontend.AspNetCore" />
     </ItemGroup>
 
 </Project>

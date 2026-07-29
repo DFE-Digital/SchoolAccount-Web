@@ -1,50 +1,51 @@
-﻿<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>@ViewData["Title"] - SchoolAccount.Web.Mvc</title>
-    <script type="importmap"></script>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
-    <link rel="stylesheet" href="~/SchoolAccount.Web.Mvc.styles.css" asp-append-version="true"/>
-</head>
-<body>
-<header>
-    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-        <div class="container-fluid">
-            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">SchoolAccount.Web.Mvc</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                    aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                <ul class="navbar-nav flex-grow-1">
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-</header>
-<div class="container">
-    <main role="main" class="pb-3">
-        @RenderBody()
-    </main>
-</div>
+﻿@* ReSharper disable Razor.LayoutNotResolved *@
+@* ReSharper disable Razor.SectionNotResolved *@
 
-<footer class="border-top footer text-muted">
-    <div class="container">
-        &copy; 2026 - SchoolAccount.Web.Mvc - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-    </div>
-</footer>
-<script src="~/lib/jquery/dist/jquery.min.js"></script>
-<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-<script src="~/js/site.js" asp-append-version="true"></script>
-@await RenderSectionAsync("Scripts", required: false)
-</body>
-</html>
+@{
+    Layout = "_GovUkPageTemplate";
+}
+
+@section Head {
+    <link rel="stylesheet" href="~/app.css" asp-append-version="true"/>
+}
+
+@section GovUkHeader {
+    <header class="govuk-header" data-module="govuk-header">
+        <div class="govuk-header__container govuk-width-container">
+            <div class="govuk-header__logo"><a href="#" class="govuk-header__link govuk-header__link--homepage"> <img
+                        src="~/assets/images/department-for-education_white.png" alt="Department for Education"
+                        class="govuk-header__logotype"> </a></div>
+        </div>
+    </header>
+}
+
+@section GovUkServiceNavigation {
+    <govuk-service-navigation service-name="School Account Alpha" service-url="/">
+        <govuk-service-navigation-nav> @if (User.Identity?.IsAuthenticated == true)
+            {
+                <govuk-service-navigation-nav-item asp-controller="Home" asp-action="Organisations">Organisations
+                </govuk-service-navigation-nav-item>
+                <govuk-service-navigation-nav-item asp-controller="Content" asp-action="Latest">Latest Guidance
+                </govuk-service-navigation-nav-item>
+                <govuk-service-navigation-nav-item asp-controller="Content" asp-action="Search">Search Guidance
+                </govuk-service-navigation-nav-item>
+                <govuk-service-navigation-nav-item asp-controller="Home" asp-action="Logout">Logout
+                </govuk-service-navigation-nav-item>
+            }
+        </govuk-service-navigation-nav>
+    </govuk-service-navigation>
+}
+
+@RenderBody()
+
+@section GovUkFooter {
+    <govuk-footer>
+        <govuk-footer-meta>
+            <govuk-footer-meta-items>
+                <govuk-footer-meta-item href="#">Cookie Policy</govuk-footer-meta-item>
+            </govuk-footer-meta-items>
+        </govuk-footer-meta>
+        <govuk-footer-content-licence/>
+        <govuk-footer-copyright/>
+    </govuk-footer>
+}
