@@ -23,7 +23,9 @@ public class HomeController : Controller
             new GetTimeSpecifyHellosQuery(),
             cancellationToken
         );
-        return model.IsSuccess ? View(model.Value) : Problem(model.Error.Description);
+        return model.IsSuccess
+            ? View(new HomeViewModel { GreetingMessage = model.Value.Message })
+            : Problem(model.Error.Description);
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
