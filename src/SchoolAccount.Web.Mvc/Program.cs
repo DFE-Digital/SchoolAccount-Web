@@ -1,6 +1,11 @@
 using GovUk.Frontend.AspNetCore;
+using SchoolAccount.Application;
+using SchoolAccount.Infrastructure;
+using SchoolAccount.Web.Mvc;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddApplication().AddPresentation().AddInfrastructure();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -28,10 +33,7 @@ app.UseAuthorization();
 
 app.MapStaticAssets();
 
-app.MapControllerRoute(
-        name: "default",
-        pattern: "{controller=Home}/{action=Index}/{id?}")
+app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
-
 
 await app.RunAsync();
