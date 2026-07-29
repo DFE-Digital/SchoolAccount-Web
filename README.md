@@ -1,17 +1,15 @@
 # Introduction
 
-SchoolAccount-ApiTemplate is a template for building ASP.NET Core Web APIs for the DfE School Account service. It
-provides a minimal clean architecture solution, with CQRS abstractions, structured logging, error handling, and
-architecture tests already wired up, so new backend services can start from a consistent, proven baseline rather than
-from scratch.
+SchoolAccount-Web is an MVC presentation application for the DfE School Account service built on .NET 10. It
+uses a minimal clean architecture solution, with CQRS abstractions, structured logging, error handling, and
+architecture tests.
 
 ## Documentation
 
 - [Clean Architecture](docs/clean-architecture.md) - layers, dependency rules, and code organisation
 - [Coding Standards](docs/coding-standards.md) - formatting, code analysis, naming, and style conventions
 - [Testing Standards](docs/testing-standards.md) - conventions and practices for writing tests
-- [Integration Testing](docs/integration-testing.md) - guidance on integration testing of the API endpoints
-- [Open API Documentation](docs/open-api-documentation.md) - guidance on adding Open API documentation to endpoints
+- [Integration Testing](docs/integration-testing.md) - guidance on integration testing of the controller endpoints
 
 Architecture decisions are recorded as ADRs in the [decisions](decisions) folder:
 
@@ -26,7 +24,7 @@ New decisions should follow the [ADR template](decisions/0000-adr-template.md).
 
 # Getting Started
 
-Follow these steps to start the API locally.
+Follow these steps to start the MVC locally.
 
 1. Install prerequisites:
     - [.NET 10 SDK](https://dotnet.microsoft.com/download)
@@ -39,25 +37,20 @@ Follow these steps to start the API locally.
    ./init.sh
    ```
 
-3. Run the API using one of the following:
+3. Run the MVC using one of the following:
 
-   | Method         | Command                              | Outcome                                                              |
-   |----------------|--------------------------------------|----------------------------------------------------------------------|
-   | Docker Compose | `docker compose up --build`          | Starts the API and its dependencies (Seq) in containers              |
-   | .NET CLI       | `dotnet run --project src/Web.Api`   | Runs the API directly using the `http` launch profile, no containers |
+   | Method         | Command                                          | Outcome                                                              |
+   |----------------|--------------------------------------------------|----------------------------------------------------------------------|
+   | Docker Compose | `docker compose up --build`                      | Starts the MVC and its dependencies (Seq) in containers              |
+   | .NET CLI       | `dotnet run --project src/SchoolAccount.Web.Mvc` | Runs the MVC directly using the `http` launch profile, no containers |
 
    In Rider or Visual Studio you can use the equivalent `docker-compose` or `http` run configurations from the toolbar.
 
-4. Once running, the API is available at `http://localhost:5100`:
-    - Interactive API reference (Scalar) at `http://localhost:5100/scalar/v1`
-    - Health checks at `http://localhost:5100/health`
+4. Once running, the presentation is available at `http://localhost:5016`:
     - Logs (if started with compose) at `http://localhost:8081`
-
-   > The Scalar API reference is only mapped in the `Development` environment.
 
 5. Debugging guidance:
     - Set breakpoints in your C# files under `src/` and start either run configuration with debugging enabled.
-    - `.http` files alongside the endpoints in `src/Web.Api/Endpoints` can be used to exercise the API from your IDE.
 
 # Build and Test
 
@@ -75,7 +68,7 @@ Use the .NET CLI to build or test the solution.
   dotnet test
   ```
 
-Architecture tests under `tests/ArchitectureTests` enforce the clean architecture dependency rules between layers.
+Architecture tests under `tests/SchoolAccount.ArchitectureTests` enforce the clean architecture dependency rules between layers.
 
 ### Formatting
 
@@ -130,16 +123,13 @@ finishes:
 
 The solution follows a clean architecture pattern with vertical slice features:
 
-| Project          | Purpose                                                      |
-|------------------|--------------------------------------------------------------|
-| `Web.Api`        | ASP.NET Core Web API - endpoints, middleware, error handling |
-| `Application`    | CQRS handlers and feature logic, organised by feature folder |
-| `Domain`         | Domain entities and business rules                           |
-| `Infrastructure` | External concerns - time, data access, integrations          |
-| `SharedKernel`   | Shared primitives - `Result<T>`, `Error`, `ValidationError`  |
-
-Each endpoint implements `IEndpoint` and is discovered and mapped automatically at startup. See
-[Structure the solution using clean architecture](decisions/0002-use-clean-architecture.md) for the dependency rules.
+| Project                        | Purpose                                                        |
+|--------------------------------|----------------------------------------------------------------|
+| `SchoolAccount.Web.Mvc`        | ASP.NET Core Web MVC - controllers, middleware, error handling |
+| `SchoolAccount.Application`    | CQRS handlers and feature logic, organised by feature folder   |
+| `SchoolAccount.Domain`         | Domain entities and business rules                             |
+| `SchoolAccount.Infrastructure` | External concerns - time, data access, integrations            |
+| `SchoolAccount.SharedKernel`   | Shared primitives - `Result<T>`, `Error`, `ValidationError`    |
 
 ## Logging
 
@@ -149,5 +139,5 @@ is available at http://localhost:8081.
 ## Contributing
 
 1. Branch from `main` using the convention `task/<short-description>` or `feature/<short-description>`.
-2. Open a [pull request](https://github.com/DFE-Digital/SchoolAccount-ApiTemplate/pulls) against `main`.
+2. Open a [pull request](https://github.com/DFE-Digital/SchoolAccount-Web/pulls) against `main`.
 3. The [build workflow](.github/workflows/build.yml) must pass before merging.

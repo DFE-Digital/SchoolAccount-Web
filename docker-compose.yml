@@ -1,10 +1,10 @@
 services:
-  web-api:
-    image: ${DOCKER_REGISTRY-}webapi
-    container_name: web-api
+  presentation:
+    image: ${DOCKER_REGISTRY-}presentation
+    container_name: presentation
     build:
       context: .
-      dockerfile: src/Web.Api/Dockerfile
+      dockerfile: src/SchoolAccount.Web.Mvc/Dockerfile
     ports:
       - "5100:8080"
 

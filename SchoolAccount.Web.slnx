@@ -1,0 +1,35 @@
+<Solution>
+  <Folder Name="/decisions/">
+    <File Path="decisions\0000-adr-template.md" />
+    <File Path="decisions\0001-record-architecture-decisions.md" />
+    <File Path="decisions\0002-use-clean-architecture.md" />
+    <File Path="decisions\0003-strip-imported-template-to-minimal-core.md" />
+    <File Path="decisions\0004-microsoft-testing-platform-and-ci-reporting.md" />
+    <File Path="decisions\0005-format-code-with-csharpier.md" />
+  </Folder>
+  <Folder Name="/docs/">
+    <File Path="docs\clean-architecture.md" />
+    <File Path="docs\integration-testing.md" />
+    <File Path="docs\testing-standards.md" />
+  </Folder>
+  <Folder Name="/solution/">
+    <File Path=".editorconfig" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+    <File Path="docker-compose.override.yml" />
+    <File Path="docker-compose.yml" />
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/SchoolAccount.Web.Mvc/SchoolAccount.Web.Mvc.csproj" />
+    <Project Path="src\SchoolAccount.Application\SchoolAccount.Application.csproj" />
+    <Project Path="src\SchoolAccount.Domain\SchoolAccount.Domain.csproj" />
+    <Project Path="src\SchoolAccount.Infrastructure\SchoolAccount.Infrastructure.csproj" />
+    <Project Path="src\SchoolAccount.SharedKernel\SchoolAccount.SharedKernel.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests\SchoolAccount.ApplicationTests\SchoolAccount.ApplicationTests.csproj" />
+    <Project Path="tests\SchoolAccount.ArchitectureTests\SchoolAccount.ArchitectureTests.csproj" />
+    <Project Path="tests\SchoolAccount.IntegrationTests\SchoolAccount.IntegrationTests.csproj" />
+  </Folder>
+</Solution>

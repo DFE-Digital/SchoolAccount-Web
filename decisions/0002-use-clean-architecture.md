@@ -8,7 +8,7 @@ decision-makers: Paul Custance
 
 ## Context and Problem Statement
 
-APIs built from this template will grow domain logic that outlives their
+Projects built from this template will grow domain logic that outlives their
 initial CRUD endpoints, and that logic must stay testable and independent of
 frameworks and infrastructure. How should the solution be structured so that
 business rules do not become entangled with HTTP, persistence, and other
@@ -29,7 +29,7 @@ concerns that change for different reasons?
 * Clean architecture with one project per layer
 * Traditional N-tier layering (UI -> business logic -> data access)
 * Vertical slice architecture in a single project
-* Single-project minimal API with no enforced layering
+* Single-project minimal MVC with no enforced layering
 
 ## Decision Outcome
 
@@ -48,7 +48,7 @@ inward:
 * `Infrastructure` - EF Core/PostgreSQL persistence, authentication, time -
   implementations of abstractions the inner layers define; depends on
   `Application`.
-* `Web.Api` - minimal API endpoints and composition root; references
+* `Web.Mvc` - minimal controllers and composition root; references
   `Infrastructure` only to wire dependency injection.
 
 ### Consequences
@@ -61,11 +61,11 @@ inward:
   endpoint class, a query/command, a handler, and a response type across two
   projects.
 * Bad, because five projects is a heavier starting point than a single-project
-  API for genuinely small services.
+  MVC for genuinely small services.
 
 ### Confirmation
 
-`tests/ArchitectureTests` encodes the dependency rules with NetArchTest (e.g.
+`tests/SchoolAccount.ArchitectureTests` encodes the dependency rules with NetArchTest (e.g.
 `Domain` must not depend on `Application`, `Application` must not depend on
 `Infrastructure`). These tests run in the `Build` workflow on every pull
 request, so a violating change cannot merge cleanly.
