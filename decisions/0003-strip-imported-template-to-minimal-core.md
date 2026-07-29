@@ -6,6 +6,8 @@ decision-makers: Paul Custance and Mark Harrop
 
 # Strip the imported template to a minimal core
 
+This project has been built using the [SchoolAccount.ApiTemplate](https://github.com/DFE-Digital/SchoolAccount-ApiTemplate).
+
 ## Context and Problem Statement
 
 This template began as an import of Milan Jovanovic's clean architecture

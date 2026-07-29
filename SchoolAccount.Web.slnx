@@ -10,7 +10,6 @@
   <Folder Name="/docs/">
     <File Path="docs\clean-architecture.md" />
     <File Path="docs\integration-testing.md" />
-    <File Path="docs\open-api-documentation.md" />
     <File Path="docs\testing-standards.md" />
   </Folder>
   <Folder Name="/solution/">
