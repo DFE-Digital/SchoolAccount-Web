@@ -22,15 +22,15 @@
     <File Path="README.md" />
   </Folder>
   <Folder Name="/src/">
-    <Project Path="src/Application/Application.csproj" />
-    <Project Path="src/Domain/Domain.csproj" />
-    <Project Path="src/Infrastructure/Infrastructure.csproj" />
-    <Project Path="src/SharedKernel/SharedKernel.csproj" />
-    <Project Path="src/Web.Api/Web.Api.csproj" />
+    <Project Path="src\SchoolAccount.Application\SchoolAccount.Application.csproj" />
+    <Project Path="src\SchoolAccount.Domain\SchoolAccount.Domain.csproj" />
+    <Project Path="src\SchoolAccount.Infrastructure\SchoolAccount.Infrastructure.csproj" />
+    <Project Path="src\SchoolAccount.SharedKernel\SchoolAccount.SharedKernel.csproj" />
+    <Project Path="src\SchoolAccount.Web.Api\SchoolAccount.Web.Api.csproj" />
   </Folder>
   <Folder Name="/tests/">
-    <Project Path="tests/ApplicationTests/ApplicationTests.csproj" />
-    <Project Path="tests/ArchitectureTests/ArchitectureTests.csproj" />
-    <Project Path="tests/IntegrationTests/IntegrationTests.csproj" />
+    <Project Path="tests\SchoolAccount.ApplicationTests\SchoolAccount.ApplicationTests.csproj" />
+    <Project Path="tests\SchoolAccount.ArchitectureTests\SchoolAccount.ArchitectureTests.csproj" />
+    <Project Path="tests\SchoolAccount.IntegrationTests\SchoolAccount.IntegrationTests.csproj" />
   </Folder>
 </Solution>
