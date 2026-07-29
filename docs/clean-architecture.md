@@ -90,6 +90,7 @@ Contains:
 - **Middleware** - request pipeline concerns
 - **Error handling** - exception handling and mapping `Result` failures to HTTP problem details
 - **Authentication configuration**
+- **Style** - a dedicated scss file for and named after each component
 
 The Presentation layer depends on Application (to send commands/queries) but should not reference Infrastructure directly.
 

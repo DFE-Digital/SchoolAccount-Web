@@ -524,3 +524,10 @@ FodyWeavers.xsd
 # Additional files built by Visual Studio
 
 # End of https://www.toptal.com/developers/gitignore/api/rider,visualstudio,visualstudiocode,osx
+
+# Custom exclusions
+package_cache/
+src/SchoolAccount.Web.Mvc/wwwroot/app.css*
+src/SchoolAccount.Web.Mvc/wwwroot/assets
+src/SchoolAccount.Web.Mvc/wwwroot/govuk-frontend.min.js
+src/SchoolAccount.Web.Mvc/lib/govuk-frontend*
