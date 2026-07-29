@@ -6,10 +6,13 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
         <EnableGovUkFrontendSupport>true</EnableGovUkFrontendSupport>
-        <GovUkFrontendAssetsDirectory>/wwwroot</GovUkFrontendAssetsDirectory>
         <RestoreGovUkFrontendStylesheet>false</RestoreGovUkFrontendStylesheet>
         <RestoreGovUkFrontendNpmPackage>true</RestoreGovUkFrontendNpmPackage>
         <RestoreGovUkFrontendSupportPackage>true</RestoreGovUkFrontendSupportPackage>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('Windows'))">
+        <GovUkFrontendAssetsDirectory>/wwwroot</GovUkFrontendAssetsDirectory>
     </PropertyGroup>
 
     <ItemGroup>
