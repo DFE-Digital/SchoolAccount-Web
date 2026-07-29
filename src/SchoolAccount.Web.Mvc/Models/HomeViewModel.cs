@@ -1,6 +1,6 @@
 namespace SchoolAccount.Web.Mvc.Models;
 
-public class HomeViewModel
+public class HomeViewModel(string greetingMessage)
 {
-    public string GreetingMessage { get; init; } = null!;
+    public string GreetingMessage { get; init; } = greetingMessage;
 }

@@ -24,7 +24,7 @@ public class HomeController : Controller
             cancellationToken
         );
         return model.IsSuccess
-            ? View(new HomeViewModel { GreetingMessage = model.Value.Message })
+            ? View(new HomeViewModel(model.Value.Message))
             : Problem(model.Error.Description);
     }
 
