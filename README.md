@@ -1,9 +1,8 @@
 # Introduction
 
-SchoolAccount-ApiTemplate is a template for building ASP.NET Core Web APIs for the DfE School Account service. It
-provides a minimal clean architecture solution, with CQRS abstractions, structured logging, error handling, and
-architecture tests already wired up, so new backend services can start from a consistent, proven baseline rather than
-from scratch.
+SchoolAccount-Web is an MVC presentation application for the DfE School Account service built on .NET 10. It
+uses a minimal clean architecture solution, with CQRS abstractions, structured logging, error handling, and
+architecture tests.
 
 ## Documentation
 
@@ -149,5 +148,5 @@ is available at http://localhost:8081.
 ## Contributing
 
 1. Branch from `main` using the convention `task/<short-description>` or `feature/<short-description>`.
-2. Open a [pull request](https://github.com/DFE-Digital/SchoolAccount-ApiTemplate/pulls) against `main`.
+2. Open a [pull request](https://github.com/DFE-Digital/SchoolAccount-Web/pulls) against `main`.
 3. The [build workflow](.github/workflows/build.yml) must pass before merging.

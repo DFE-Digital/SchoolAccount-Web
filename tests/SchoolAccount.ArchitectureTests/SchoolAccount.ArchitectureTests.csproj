@@ -15,6 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\SchoolAccount.Web.Api\SchoolAccount.Web.Api.csproj" />
+    <ProjectReference Include="..\..\src\SchoolAccount.Web.Mvc\SchoolAccount.Web.Mvc.csproj" />
   </ItemGroup>
 </Project>
