@@ -1,10 +1,10 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Logging;
 using SchoolAccount.Application.Abstractions.Messaging;
-using Serilog.Context;
 using SchoolAccount.SharedKernel;
+using Serilog.Context;
 
-namespace SchoolAccount.Application.Abstractions.Behaviors;
+namespace SchoolAccount.Application.Abstractions.Behaviours;
 
 internal static partial class LoggingDecorator
 {

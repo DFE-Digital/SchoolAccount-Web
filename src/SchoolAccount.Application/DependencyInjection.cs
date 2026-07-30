@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using SchoolAccount.Application.Abstractions.Behaviors;
+using SchoolAccount.Application.Abstractions.Behaviours;
 using SchoolAccount.Application.Abstractions.Messaging;
 
 namespace SchoolAccount.Application;
