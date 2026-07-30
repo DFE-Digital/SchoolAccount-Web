@@ -7,17 +7,80 @@ namespace SchoolAccount.ApplicationTests.Trueman;
 
 public class GetTimeSpecifyHellosHandlerTests
 {
-    [Theory]
-    [InlineData(5, "Good morning")]
-    [InlineData(12, "Good afternoon")]
-    [InlineData(18, "Good evening")]
-    [InlineData(23, "Good night (go to bed)")]
-    public async Task Handler_provides_correct_hello_message_depending_on_time(
-        int hour,
-        string expectedMessage
-    )
+    [Fact]
+    public async Task Handler_provides_correct_hello_message_after_5am_before_12pm()
     {
         // Arrange
+        IDateTimeProvider dateTimeProvider = EmulateDateTimeProvider(5);
+        var handler = new GetTimeSpecifyHellosHandler(dateTimeProvider);
+
+        // Act
+        Result<GetTimeSpecifyHellosResponse> result = await handler.Handle(
+            new GetTimeSpecifyHellosQuery(),
+            CancellationToken.None
+        );
+
+        // Arrange
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.Message.ShouldBe(GetTimeSpecifyHellosHandler.Messages.Morning);
+    }
+
+    [Fact]
+    public async Task Handler_provides_correct_hello_message_after_12pm_before_5pm()
+    {
+        // Arrange
+        IDateTimeProvider dateTimeProvider = EmulateDateTimeProvider(12);
+        var handler = new GetTimeSpecifyHellosHandler(dateTimeProvider);
+
+        // Act
+        Result<GetTimeSpecifyHellosResponse> result = await handler.Handle(
+            new GetTimeSpecifyHellosQuery(),
+            CancellationToken.None
+        );
+
+        // Arrange
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.Message.ShouldBe(GetTimeSpecifyHellosHandler.Messages.Afternoon);
+    }
+
+    [Fact]
+    public async Task Handler_provides_correct_hello_message_after_5pm_before_10pm()
+    {
+        // Arrange
+        IDateTimeProvider dateTimeProvider = EmulateDateTimeProvider(18);
+        var handler = new GetTimeSpecifyHellosHandler(dateTimeProvider);
+
+        // Act
+        Result<GetTimeSpecifyHellosResponse> result = await handler.Handle(
+            new GetTimeSpecifyHellosQuery(),
+            CancellationToken.None
+        );
+
+        // Arrange
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.Message.ShouldBe(GetTimeSpecifyHellosHandler.Messages.Evening);
+    }
+
+    [Fact]
+    public async Task Handler_provides_correct_hello_message_after_10pm_before_5am()
+    {
+        // Arrange
+        IDateTimeProvider dateTimeProvider = EmulateDateTimeProvider(23);
+        var handler = new GetTimeSpecifyHellosHandler(dateTimeProvider);
+
+        // Act
+        Result<GetTimeSpecifyHellosResponse> result = await handler.Handle(
+            new GetTimeSpecifyHellosQuery(),
+            CancellationToken.None
+        );
+
+        // Arrange
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.Message.ShouldBe(GetTimeSpecifyHellosHandler.Messages.Night);
+    }
+
+    private static IDateTimeProvider EmulateDateTimeProvider(int hour)
+    {
         var date = new DateTime(
             DateTime.UtcNow.Year,
             DateTime.UtcNow.Month,
@@ -31,16 +94,6 @@ public class GetTimeSpecifyHellosHandlerTests
         IDateTimeProvider dateTimeProvider = Substitute.For<IDateTimeProvider>();
         dateTimeProvider.UtcNow.Returns(date);
 
-        var handler = new GetTimeSpecifyHellosHandler(dateTimeProvider);
-
-        // Act
-        Result<GetTimeSpecifyHellosResponse> result = await handler.Handle(
-            new GetTimeSpecifyHellosQuery(),
-            CancellationToken.None
-        );
-
-        // Assert
-        result.IsSuccess.ShouldBeTrue();
-        result.Value.Message.ShouldBe(expectedMessage);
+        return dateTimeProvider;
     }
 }
