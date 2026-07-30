@@ -94,7 +94,7 @@ public class HomeControllerTests : IClassFixture<WebApplicationFactory<Program>>
     }
 
     [Fact]
-    public async Task Ensure_that_the_home_controller_returns_a_500_result()
+    public async Task Ensure_that_when_the_home_controller_fails_it_returns_a_500_result()
     {
         // Arrange
         _getTimeSpecificHelloHandler
