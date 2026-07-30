@@ -3,7 +3,7 @@ using SchoolAccount.SharedKernel;
 
 namespace SchoolAccount.Application.Trueman.GetTimeSpecifyHellos;
 
-public class GetTimeSpecifyHellosQueryHandler(IDateTimeProvider dateTimeProvider)
+public class GetTimeSpecifyHellosHandler(IDateTimeProvider dateTimeProvider)
     : IQueryHandler<GetTimeSpecifyHellosQuery, GetTimeSpecifyHellosResponse>
 {
     public async Task<Result<GetTimeSpecifyHellosResponse>> Handle(

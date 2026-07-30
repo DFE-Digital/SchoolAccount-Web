@@ -31,7 +31,7 @@ public class GetTimeSpecifyHellosHandlerTests
         IDateTimeProvider dateTimeProvider = Substitute.For<IDateTimeProvider>();
         dateTimeProvider.UtcNow.Returns(date);
 
-        var handler = new GetTimeSpecifyHellosQueryHandler(dateTimeProvider);
+        var handler = new GetTimeSpecifyHellosHandler(dateTimeProvider);
 
         // Act
         Result<GetTimeSpecifyHellosResponse> result = await handler.Handle(
