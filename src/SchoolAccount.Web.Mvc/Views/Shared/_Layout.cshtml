@@ -20,18 +20,8 @@
 }
 
 @section GovUkServiceNavigation {
-    <govuk-service-navigation service-name="School Account Alpha" service-url="/">
-        <govuk-service-navigation-nav> @if (User.Identity?.IsAuthenticated == true)
-            {
-                <govuk-service-navigation-nav-item asp-controller="Home" asp-action="Organisations">Organisations
-                </govuk-service-navigation-nav-item>
-                <govuk-service-navigation-nav-item asp-controller="Content" asp-action="Latest">Latest Guidance
-                </govuk-service-navigation-nav-item>
-                <govuk-service-navigation-nav-item asp-controller="Content" asp-action="Search">Search Guidance
-                </govuk-service-navigation-nav-item>
-                <govuk-service-navigation-nav-item asp-controller="Home" asp-action="Logout">Logout
-                </govuk-service-navigation-nav-item>
-            }
+    <govuk-service-navigation service-name="School Account" service-url="/">
+        <govuk-service-navigation-nav> 
         </govuk-service-navigation-nav>
     </govuk-service-navigation>
 }
