@@ -13,14 +13,14 @@ public class HomeController : Controller
         [FromServices] IDateTimeProvider dateTimeProvider,
         [FromServices]
             IQueryHandler<
-            GetTimeSpecifyHellosQuery,
-            GetTimeSpecifyHellosResponse
+            GetTimeSpecificHelloQuery,
+            GetTimeSpecificHelloResponse
         > getTimeSpecifyHellosQueryHandler,
         CancellationToken cancellationToken
     )
     {
-        Result<GetTimeSpecifyHellosResponse> model = await getTimeSpecifyHellosQueryHandler.Handle(
-            new GetTimeSpecifyHellosQuery(),
+        Result<GetTimeSpecificHelloResponse> model = await getTimeSpecifyHellosQueryHandler.Handle(
+            new GetTimeSpecificHelloQuery(),
             cancellationToken
         );
         return model.IsSuccess

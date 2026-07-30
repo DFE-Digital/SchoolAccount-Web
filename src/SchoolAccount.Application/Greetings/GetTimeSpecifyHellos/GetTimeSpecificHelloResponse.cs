@@ -1,8 +1,8 @@
 namespace SchoolAccount.Application.Greetings.GetTimeSpecifyHellos;
 
-public record GetTimeSpecifyHellosResponse
+public record GetTimeSpecificHelloResponse
 {
-    public GetTimeSpecifyHellosResponse(int Hour, string Message)
+    public GetTimeSpecificHelloResponse(int Hour, string Message)
     {
         ArgumentOutOfRangeException.ThrowIfGreaterThan(Hour, 24);
         ArgumentNullException.ThrowIfNull(Message);

@@ -5,24 +5,24 @@ using Shouldly;
 
 namespace SchoolAccount.ApplicationTests.Trueman;
 
-public class GetTimeSpecifyHellosHandlerTests
+public class GetTimeSpecificHelloHandlerTests
 {
     [Fact]
     public async Task Handler_provides_correct_hello_message_after_5am_before_12pm()
     {
         // Arrange
         IDateTimeProvider dateTimeProvider = EmulateDateTimeProvider(5);
-        var handler = new GetTimeSpecifyHellosHandler(dateTimeProvider);
+        var handler = new GetTimeSpecificHelloHandler(dateTimeProvider);
 
         // Act
-        Result<GetTimeSpecifyHellosResponse> result = await handler.Handle(
-            new GetTimeSpecifyHellosQuery(),
+        Result<GetTimeSpecificHelloResponse> result = await handler.Handle(
+            new GetTimeSpecificHelloQuery(),
             CancellationToken.None
         );
 
         // Arrange
         result.IsSuccess.ShouldBeTrue();
-        result.Value.Message.ShouldBe(GetTimeSpecifyHellosHandler.Messages.Morning);
+        result.Value.Message.ShouldBe(GetTimeSpecificHelloHandler.Messages.Morning);
     }
 
     [Fact]
@@ -30,17 +30,17 @@ public class GetTimeSpecifyHellosHandlerTests
     {
         // Arrange
         IDateTimeProvider dateTimeProvider = EmulateDateTimeProvider(12);
-        var handler = new GetTimeSpecifyHellosHandler(dateTimeProvider);
+        var handler = new GetTimeSpecificHelloHandler(dateTimeProvider);
 
         // Act
-        Result<GetTimeSpecifyHellosResponse> result = await handler.Handle(
-            new GetTimeSpecifyHellosQuery(),
+        Result<GetTimeSpecificHelloResponse> result = await handler.Handle(
+            new GetTimeSpecificHelloQuery(),
             CancellationToken.None
         );
 
         // Arrange
         result.IsSuccess.ShouldBeTrue();
-        result.Value.Message.ShouldBe(GetTimeSpecifyHellosHandler.Messages.Afternoon);
+        result.Value.Message.ShouldBe(GetTimeSpecificHelloHandler.Messages.Afternoon);
     }
 
     [Fact]
@@ -48,17 +48,17 @@ public class GetTimeSpecifyHellosHandlerTests
     {
         // Arrange
         IDateTimeProvider dateTimeProvider = EmulateDateTimeProvider(18);
-        var handler = new GetTimeSpecifyHellosHandler(dateTimeProvider);
+        var handler = new GetTimeSpecificHelloHandler(dateTimeProvider);
 
         // Act
-        Result<GetTimeSpecifyHellosResponse> result = await handler.Handle(
-            new GetTimeSpecifyHellosQuery(),
+        Result<GetTimeSpecificHelloResponse> result = await handler.Handle(
+            new GetTimeSpecificHelloQuery(),
             CancellationToken.None
         );
 
         // Arrange
         result.IsSuccess.ShouldBeTrue();
-        result.Value.Message.ShouldBe(GetTimeSpecifyHellosHandler.Messages.Evening);
+        result.Value.Message.ShouldBe(GetTimeSpecificHelloHandler.Messages.Evening);
     }
 
     [Fact]
@@ -66,17 +66,17 @@ public class GetTimeSpecifyHellosHandlerTests
     {
         // Arrange
         IDateTimeProvider dateTimeProvider = EmulateDateTimeProvider(23);
-        var handler = new GetTimeSpecifyHellosHandler(dateTimeProvider);
+        var handler = new GetTimeSpecificHelloHandler(dateTimeProvider);
 
         // Act
-        Result<GetTimeSpecifyHellosResponse> result = await handler.Handle(
-            new GetTimeSpecifyHellosQuery(),
+        Result<GetTimeSpecificHelloResponse> result = await handler.Handle(
+            new GetTimeSpecificHelloQuery(),
             CancellationToken.None
         );
 
         // Arrange
         result.IsSuccess.ShouldBeTrue();
-        result.Value.Message.ShouldBe(GetTimeSpecifyHellosHandler.Messages.Night);
+        result.Value.Message.ShouldBe(GetTimeSpecificHelloHandler.Messages.Night);
     }
 
     private static IDateTimeProvider EmulateDateTimeProvider(int hour)

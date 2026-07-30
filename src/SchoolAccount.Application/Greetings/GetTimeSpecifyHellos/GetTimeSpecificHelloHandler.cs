@@ -3,8 +3,8 @@ using SchoolAccount.SharedKernel;
 
 namespace SchoolAccount.Application.Greetings.GetTimeSpecifyHellos;
 
-public class GetTimeSpecifyHellosHandler(IDateTimeProvider dateTimeProvider)
-    : IQueryHandler<GetTimeSpecifyHellosQuery, GetTimeSpecifyHellosResponse>
+public class GetTimeSpecificHelloHandler(IDateTimeProvider dateTimeProvider)
+    : IQueryHandler<GetTimeSpecificHelloQuery, GetTimeSpecificHelloResponse>
 {
     public static class Messages
     {
@@ -14,8 +14,8 @@ public class GetTimeSpecifyHellosHandler(IDateTimeProvider dateTimeProvider)
         public const string Night = "Good night (go to bed)";
     }
 
-    public async Task<Result<GetTimeSpecifyHellosResponse>> Handle(
-        GetTimeSpecifyHellosQuery query,
+    public async Task<Result<GetTimeSpecificHelloResponse>> Handle(
+        GetTimeSpecificHelloQuery query,
         CancellationToken cancellationToken
     )
     {
@@ -27,6 +27,6 @@ public class GetTimeSpecifyHellosHandler(IDateTimeProvider dateTimeProvider)
             _ => Messages.Night,
         };
 
-        return new GetTimeSpecifyHellosResponse(dateTimeProvider.UtcNow.Hour, message);
+        return new GetTimeSpecificHelloResponse(dateTimeProvider.UtcNow.Hour, message);
     }
 }
