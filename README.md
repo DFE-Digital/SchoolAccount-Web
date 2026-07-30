@@ -123,8 +123,6 @@ finishes:
 ./coverage.sh --open
 ```
 
-**Note:** Windows users can use the `git bash` command prompt to run scripts.
-
 ## Architecture
 
 The solution follows a clean architecture pattern with vertical slice features:
