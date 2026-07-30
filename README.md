@@ -27,6 +27,8 @@ New decisions should follow the [ADR template](decisions/0000-adr-template.md).
 
 Follow these steps to start the MVC locally.
 
+**Note:** Windows users can use the `git bash` command prompt to run the project's `.sh` bash scripts.
+
 1. Install prerequisites:
     - [.NET 10 SDK](https://dotnet.microsoft.com/download)
     - [Docker Desktop](https://www.docker.com/products/docker-desktop/)
@@ -111,6 +113,7 @@ To generate the same report locally, run [coverage.sh](coverage.sh) from the rep
 ```bash
 ./coverage.sh
 ```
+
 
 The script runs all tests with coverage enabled, merges the per-project results with ReportGenerator, and writes an
 HTML report to `TestResults/CoverageReport/index.html`. Pass `--open` to open the report in your browser when it
