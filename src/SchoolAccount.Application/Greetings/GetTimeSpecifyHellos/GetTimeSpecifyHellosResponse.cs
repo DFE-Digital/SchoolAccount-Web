@@ -1,4 +1,4 @@
-namespace SchoolAccount.Application.Trueman.GetTimeSpecifyHellos;
+namespace SchoolAccount.Application.Greetings.GetTimeSpecifyHellos;
 
 public record GetTimeSpecifyHellosResponse
 {

@@ -1,5 +1,5 @@
 using NSubstitute;
-using SchoolAccount.Application.Trueman.GetTimeSpecifyHellos;
+using SchoolAccount.Application.Greetings.GetTimeSpecifyHellos;
 using SchoolAccount.SharedKernel;
 using Shouldly;
 

@@ -1,6 +1,5 @@
 using SchoolAccount.Application.Abstractions.Messaging;
-using SchoolAccount.SharedKernel;
 
-namespace SchoolAccount.Application.Trueman.GetTimeSpecifyHellos;
+namespace SchoolAccount.Application.Greetings.GetTimeSpecifyHellos;
 
 public record GetTimeSpecifyHellosQuery() : IQuery<GetTimeSpecifyHellosResponse>;
