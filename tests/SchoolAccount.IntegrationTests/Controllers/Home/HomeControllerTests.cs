@@ -1,4 +1,5 @@
 using System.Net;
+using AngleSharp;
 using AngleSharp.Dom;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -6,7 +7,6 @@ using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using SchoolAccount.Application.Abstractions.Messaging;
 using SchoolAccount.Application.Greetings.GetTimeSpecificHello;
-using SchoolAccount.IntegrationTests.Extensions;
 using SchoolAccount.SharedKernel;
 using Shouldly;
 
@@ -55,7 +55,15 @@ public class HomeControllerTests : IClassFixture<WebApplicationFactory<Program>>
         // Assert
         response.IsSuccessStatusCode.ShouldBeTrue();
 
-        IDocument? page = await response.GetPage(TestContext.Current.CancellationToken);
+        string html = await response.Content.ReadAsStringAsync(
+            TestContext.Current.CancellationToken
+        );
+        IBrowsingContext context = BrowsingContext.New(Configuration.Default);
+        IDocument page = await context.OpenAsync(
+            req => req.Content(html),
+            TestContext.Current.CancellationToken
+        );
+
         page.ShouldNotBeNull();
 
         IElement? pageTitle = page.QuerySelector("title");
