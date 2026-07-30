@@ -5,6 +5,7 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- Static code analysis -->
+    <PackageVersion Include="AngleSharp" Version="1.6.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.10" />
     <PackageVersion Include="NSubstitute" Version="6.0.0" />
     <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.30.0.144632" />
