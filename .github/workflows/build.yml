@@ -40,9 +40,9 @@ jobs:
       - name: Build
         run: dotnet build SchoolAccount.Web.slnx --configuration Release --no-restore
 
-#      - name: Test
-#        run: dotnet test SchoolAccount.Web.slnx --configuration Release --no-restore --no-build -- --report-trx --coverage --coverage-output-format cobertura --coverage-settings ${{ github.workspace }}/coverage.config
-#
+      - name: Test
+        run: dotnet test SchoolAccount.Web.slnx --configuration Release --no-restore --no-build -- --report-trx --coverage --coverage-output-format cobertura --coverage-settings ${{ github.workspace }}/coverage.config
+
 #      - name: Test report
 #        uses: EnricoMi/publish-unit-test-result-action@v2
 #        if: ${{ !cancelled() }}
