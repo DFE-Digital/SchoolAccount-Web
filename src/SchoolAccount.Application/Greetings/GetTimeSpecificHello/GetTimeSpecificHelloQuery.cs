@@ -1,5 +1,5 @@
 using SchoolAccount.Application.Abstractions.Messaging;
 
-namespace SchoolAccount.Application.Greetings.GetTimeSpecifyHellos;
+namespace SchoolAccount.Application.Greetings.GetTimeSpecificHello;
 
 public record GetTimeSpecificHelloQuery() : IQuery<GetTimeSpecificHelloResponse>;

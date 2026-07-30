@@ -1,7 +1,7 @@
 using SchoolAccount.Application.Abstractions.Messaging;
 using SchoolAccount.SharedKernel;
 
-namespace SchoolAccount.Application.Greetings.GetTimeSpecifyHellos;
+namespace SchoolAccount.Application.Greetings.GetTimeSpecificHello;
 
 public class GetTimeSpecificHelloHandler(IDateTimeProvider dateTimeProvider)
     : IQueryHandler<GetTimeSpecificHelloQuery, GetTimeSpecificHelloResponse>
@@ -26,7 +26,9 @@ public class GetTimeSpecificHelloHandler(IDateTimeProvider dateTimeProvider)
             >= 17 and < 22 => Messages.Evening,
             _ => Messages.Night,
         };
+        
+        var response = new GetTimeSpecificHelloResponse(message);
 
-        return new GetTimeSpecificHelloResponse(dateTimeProvider.UtcNow.Hour, message);
+        return await Task.FromResult(response);
     }
 }

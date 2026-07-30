@@ -1,14 +1,15 @@
 using NSubstitute;
-using SchoolAccount.Application.Greetings.GetTimeSpecifyHellos;
+using SchoolAccount.Application.Greetings.GetTimeSpecificHello;
 using SchoolAccount.SharedKernel;
 using Shouldly;
+using static SchoolAccount.Application.Greetings.GetTimeSpecificHello.GetTimeSpecificHelloHandler.Messages;
 
 namespace SchoolAccount.ApplicationTests.Greetings;
 
 public class GetTimeSpecificHelloHandlerTests
 {
     [Fact]
-    public async Task Handler_provides_correct_hello_message_after_5am_before_12pm_with_morning_response()
+    public async Task Good_morning_message_after_5am_before_12pm()
     {
         // Arrange
         IDateTimeProvider dateTimeProvider = SubstituteDateTimeProvider(5);
@@ -22,11 +23,11 @@ public class GetTimeSpecificHelloHandlerTests
 
         // Arrange
         result.IsSuccess.ShouldBeTrue();
-        result.Value.Message.ShouldBe(GetTimeSpecificHelloHandler.Messages.Morning);
+        result.Value.Message.ShouldBe(Morning);
     }
 
     [Fact]
-    public async Task Handler_provides_correct_hello_message_after_12pm_before_5pm_with_afternoon_response()
+    public async Task Good_afternoon_message_after_12pm_before_5pm()
     {
         // Arrange
         IDateTimeProvider dateTimeProvider = SubstituteDateTimeProvider(12);
@@ -40,11 +41,11 @@ public class GetTimeSpecificHelloHandlerTests
 
         // Arrange
         result.IsSuccess.ShouldBeTrue();
-        result.Value.Message.ShouldBe(GetTimeSpecificHelloHandler.Messages.Afternoon);
+        result.Value.Message.ShouldBe(Afternoon);
     }
 
     [Fact]
-    public async Task Handler_provides_correct_hello_message_after_5pm_before_10pm_with_evening_response()
+    public async Task Good_evening_message_after_5pm_before_10pm()
     {
         // Arrange
         IDateTimeProvider dateTimeProvider = SubstituteDateTimeProvider(18);
@@ -58,11 +59,11 @@ public class GetTimeSpecificHelloHandlerTests
 
         // Arrange
         result.IsSuccess.ShouldBeTrue();
-        result.Value.Message.ShouldBe(GetTimeSpecificHelloHandler.Messages.Evening);
+        result.Value.Message.ShouldBe(Evening);
     }
 
     [Fact]
-    public async Task Handler_provides_correct_hello_message_after_10pm_before_5am_with_night_response()
+    public async Task Good_night_message_after_10pm_before_5am()
     {
         // Arrange
         IDateTimeProvider dateTimeProvider = SubstituteDateTimeProvider(23);
@@ -76,7 +77,7 @@ public class GetTimeSpecificHelloHandlerTests
 
         // Arrange
         result.IsSuccess.ShouldBeTrue();
-        result.Value.Message.ShouldBe(GetTimeSpecificHelloHandler.Messages.Night);
+        result.Value.Message.ShouldBe(Night);
     }
 
     private static IDateTimeProvider SubstituteDateTimeProvider(int hour)

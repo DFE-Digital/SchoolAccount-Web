@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using SchoolAccount.Application.Abstractions.Messaging;
-using SchoolAccount.Application.Greetings.GetTimeSpecifyHellos;
+using SchoolAccount.Application.Greetings.GetTimeSpecificHello;
 using SchoolAccount.SharedKernel;
 using SchoolAccount.Web.Mvc.Models;
 
