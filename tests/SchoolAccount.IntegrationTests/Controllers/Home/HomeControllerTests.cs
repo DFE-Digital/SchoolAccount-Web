@@ -59,25 +59,22 @@ public class HomeControllerTests : IClassFixture<WebApplicationFactory<Program>>
         string html = await response.Content.ReadAsStringAsync(
             TestContext.Current.CancellationToken
         );
-        IBrowsingContext context = BrowsingContext.New(Configuration.Default);
-        IDocument page = await context.OpenAsync(
-            req => req.Content(html),
-            TestContext.Current.CancellationToken
-        );
+        var page = new AngleSharpPage();
+        await page.Parse(html);
 
         page.ShouldNotBeNull();
 
-        IElement? pageTitle = page.QuerySelector("title");
+        string? pageTitle = page.GetTitle();
         pageTitle.ShouldNotBeNull();
-        pageTitle.TextContent.ShouldBeEquivalentTo("Home Page");
+        pageTitle.ShouldBeEquivalentTo("Home Page");
 
-        IElement? headingElement = page.QuerySelector("h1.govuk-heading-l");
+        string? headingElement = page.GetFirstHeading();
         headingElement.ShouldNotBeNull();
-        headingElement.TextContent.ShouldBeEquivalentTo(stubbedGetSpecificHelloResponse.Message);
+        headingElement.ShouldBeEquivalentTo(stubbedGetSpecificHelloResponse.Message);
 
-        IElement? bodyElement = page.QuerySelector("p.govuk-body");
+        string? bodyElement = page.GetFirstBody();
         bodyElement.ShouldNotBeNull();
-        bodyElement.TextContent.ShouldContainWithoutWhitespace("In case I don't see ya");
+        bodyElement.ShouldContainWithoutWhitespace("In case I don't see ya");
     }
 
     [Fact]
@@ -92,22 +89,19 @@ public class HomeControllerTests : IClassFixture<WebApplicationFactory<Program>>
         string html = await response.Content.ReadAsStringAsync(
             TestContext.Current.CancellationToken
         );
-        IBrowsingContext context = BrowsingContext.New(Configuration.Default);
-        IDocument page = await context.OpenAsync(
-            req => req.Content(html),
-            TestContext.Current.CancellationToken
-        );
+        var page = new AngleSharpPage();
+        await page.Parse(html);
 
         // Assert
         page.ShouldNotBeNull();
 
-        IElement? pageTitle = page.QuerySelector("title");
+        string? pageTitle = page.GetTitle();
         pageTitle.ShouldNotBeNull();
-        pageTitle.TextContent.ShouldBeEquivalentTo(ErrorViewModel.NotFoundTitle);
+        pageTitle.ShouldBeEquivalentTo(ErrorViewModel.NotFoundTitle);
 
-        IElement? headingElement = page.QuerySelector("h1.govuk-heading-l");
+        string? headingElement = page.GetFirstHeading();
         headingElement.ShouldNotBeNull();
-        headingElement.TextContent.ShouldBeEquivalentTo("Page not found");
+        headingElement.ShouldBeEquivalentTo("Page not found");
 
         response.IsSuccessStatusCode.ShouldBeFalse();
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
@@ -130,18 +124,15 @@ public class HomeControllerTests : IClassFixture<WebApplicationFactory<Program>>
         string html = await response.Content.ReadAsStringAsync(
             TestContext.Current.CancellationToken
         );
-        IBrowsingContext context = BrowsingContext.New(Configuration.Default);
-        IDocument page = await context.OpenAsync(
-            req => req.Content(html),
-            TestContext.Current.CancellationToken
-        );
+        var page = new AngleSharpPage();
+        await page.Parse(html);
 
         // Assert
         page.ShouldNotBeNull();
 
-        IElement? pageTitle = page.QuerySelector("title");
+        string? pageTitle = page.GetTitle();
         pageTitle.ShouldNotBeNull();
-        pageTitle.TextContent.ShouldBeEquivalentTo(ErrorViewModel.ErrorTitle);
+        pageTitle.ShouldBeEquivalentTo(ErrorViewModel.ErrorTitle);
 
         response.IsSuccessStatusCode.ShouldBeFalse();
         response.StatusCode.ShouldBe(HttpStatusCode.InternalServerError);
