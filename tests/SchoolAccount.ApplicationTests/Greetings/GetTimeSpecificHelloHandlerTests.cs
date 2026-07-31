@@ -62,23 +62,23 @@ public class GetTimeSpecificHelloHandlerTests
         result.Value.Message.ShouldBe(Evening);
     }
 
-    // [Fact]
-    // public async Task Good_night_message_after_10pm_before_5am()
-    // {
-    //     // Arrange
-    //     IDateTimeProvider dateTimeProvider = SubstituteDateTimeProvider(23);
-    //     var handler = new GetTimeSpecificHelloHandler(dateTimeProvider);
-    //
-    //     // Act
-    //     Result<GetTimeSpecificHelloResponse> result = await handler.Handle(
-    //         new GetTimeSpecificHelloQuery(),
-    //         CancellationToken.None
-    //     );
-    //
-    //     // Arrange
-    //     result.IsSuccess.ShouldBeTrue();
-    //     result.Value.Message.ShouldBe(Night);
-    // }
+    [Fact]
+    public async Task Good_night_message_after_10pm_before_5am()
+    {
+        // Arrange
+        IDateTimeProvider dateTimeProvider = SubstituteDateTimeProvider(23);
+        var handler = new GetTimeSpecificHelloHandler(dateTimeProvider);
+
+        // Act
+        Result<GetTimeSpecificHelloResponse> result = await handler.Handle(
+            new GetTimeSpecificHelloQuery(),
+            CancellationToken.None
+        );
+
+        // Arrange
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.Message.ShouldBe(Night);
+    }
 
     private static IDateTimeProvider SubstituteDateTimeProvider(int hour)
     {
