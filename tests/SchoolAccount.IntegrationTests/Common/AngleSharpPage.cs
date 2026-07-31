@@ -1,19 +1,19 @@
 ﻿using AngleSharp;
 using AngleSharp.Dom;
 
-namespace SchoolAccount.IntegrationTests.Controllers.Home;
+namespace SchoolAccount.IntegrationTests.Common;
 
 public class AngleSharpPage
 {
-    private IDocument _page;
+    private readonly IDocument _page;
 
-    public async Task Parse(string pageContent)
+    public AngleSharpPage(string pageContent)
     {
         IBrowsingContext context = BrowsingContext.New(Configuration.Default);
-        _page = await context.OpenAsync(
+        _page = context.OpenAsync(
             req => req.Content(pageContent),
             TestContext.Current.CancellationToken
-        );
+        ).Result;
     }
 
     public string? GetTitle()
