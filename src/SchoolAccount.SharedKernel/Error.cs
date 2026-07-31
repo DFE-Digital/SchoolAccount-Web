@@ -12,7 +12,6 @@ public record Error
     public Error(string code, string description, ErrorType type)
     {
         Code = code;
-
         Description = description;
         Type = type;
     }
