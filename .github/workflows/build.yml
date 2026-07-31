@@ -32,10 +32,10 @@ jobs:
       - name: Restore
         run: dotnet restore SchoolAccount.Web.slnx
 
-#      - name: Check formatting
-#        run: |
-#          dotnet tool restore
-#          dotnet csharpier check .
+      - name: Check formatting
+        run: |
+          dotnet tool restore
+          dotnet csharpier check .
 
       - name: Build
         run: dotnet build SchoolAccount.Web.slnx --configuration Release --no-restore
