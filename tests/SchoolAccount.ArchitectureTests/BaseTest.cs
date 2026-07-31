@@ -10,5 +10,5 @@ public abstract class BaseTest
     protected static readonly Assembly InfrastructureAssembly =
         typeof(Infrastructure.DependencyInjection).Assembly;
     protected static readonly Assembly PresentationAssembly =
-        typeof(SchoolAccount.Web.Mvc.DependencyInjection).Assembly;
+        typeof(Web.Mvc.DependencyInjection).Assembly;
 }

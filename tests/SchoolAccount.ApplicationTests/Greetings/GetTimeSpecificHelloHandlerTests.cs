@@ -12,14 +12,11 @@ public class GetTimeSpecificHelloHandlerTests
     public async Task Good_morning_message_after_5am_before_12pm()
     {
         // Arrange
-        IDateTimeProvider dateTimeProvider = SubstituteDateTimeProvider(5);
+        var dateTimeProvider = SubstituteDateTimeProvider(5);
         var handler = new GetTimeSpecificHelloHandler(dateTimeProvider);
 
         // Act
-        Result<GetTimeSpecificHelloResponse> result = await handler.Handle(
-            new GetTimeSpecificHelloQuery(),
-            CancellationToken.None
-        );
+        var result = await handler.Handle(new GetTimeSpecificHelloQuery(), CancellationToken.None);
 
         // Arrange
         result.IsSuccess.ShouldBeTrue();
@@ -30,14 +27,11 @@ public class GetTimeSpecificHelloHandlerTests
     public async Task Good_afternoon_message_after_12pm_before_5pm()
     {
         // Arrange
-        IDateTimeProvider dateTimeProvider = SubstituteDateTimeProvider(12);
+        var dateTimeProvider = SubstituteDateTimeProvider(12);
         var handler = new GetTimeSpecificHelloHandler(dateTimeProvider);
 
         // Act
-        Result<GetTimeSpecificHelloResponse> result = await handler.Handle(
-            new GetTimeSpecificHelloQuery(),
-            CancellationToken.None
-        );
+        var result = await handler.Handle(new GetTimeSpecificHelloQuery(), CancellationToken.None);
 
         // Arrange
         result.IsSuccess.ShouldBeTrue();
@@ -48,14 +42,11 @@ public class GetTimeSpecificHelloHandlerTests
     public async Task Good_evening_message_after_5pm_before_10pm()
     {
         // Arrange
-        IDateTimeProvider dateTimeProvider = SubstituteDateTimeProvider(18);
+        var dateTimeProvider = SubstituteDateTimeProvider(18);
         var handler = new GetTimeSpecificHelloHandler(dateTimeProvider);
 
         // Act
-        Result<GetTimeSpecificHelloResponse> result = await handler.Handle(
-            new GetTimeSpecificHelloQuery(),
-            CancellationToken.None
-        );
+        var result = await handler.Handle(new GetTimeSpecificHelloQuery(), CancellationToken.None);
 
         // Arrange
         result.IsSuccess.ShouldBeTrue();
@@ -66,14 +57,11 @@ public class GetTimeSpecificHelloHandlerTests
     public async Task Good_night_message_after_10pm_before_5am()
     {
         // Arrange
-        IDateTimeProvider dateTimeProvider = SubstituteDateTimeProvider(23);
+        var dateTimeProvider = SubstituteDateTimeProvider(23);
         var handler = new GetTimeSpecificHelloHandler(dateTimeProvider);
 
         // Act
-        Result<GetTimeSpecificHelloResponse> result = await handler.Handle(
-            new GetTimeSpecificHelloQuery(),
-            CancellationToken.None
-        );
+        var result = await handler.Handle(new GetTimeSpecificHelloQuery(), CancellationToken.None);
 
         // Arrange
         result.IsSuccess.ShouldBeTrue();
@@ -92,7 +80,7 @@ public class GetTimeSpecificHelloHandlerTests
             DateTimeKind.Utc
         );
 
-        IDateTimeProvider dateTimeProvider = Substitute.For<IDateTimeProvider>();
+        var dateTimeProvider = Substitute.For<IDateTimeProvider>();
         dateTimeProvider.UtcNow.Returns(date);
 
         return dateTimeProvider;
