@@ -26,7 +26,7 @@ public class GetTimeSpecificHelloHandler(IDateTimeProvider dateTimeProvider)
             >= 17 and < 22 => Messages.Evening,
             _ => Messages.Night,
         };
-        
+
         var response = new GetTimeSpecificHelloResponse(message);
 
         return await Task.FromResult(response);
