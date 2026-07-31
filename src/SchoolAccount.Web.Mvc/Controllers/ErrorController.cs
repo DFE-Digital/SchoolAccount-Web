@@ -7,7 +7,7 @@ namespace SchoolAccount.Web.Mvc.Controllers;
 [Route("Error")]
 public class ErrorController(ILogger<ErrorController> logger) : Controller
 {
-    [Route("{statusCode:int}")]
+    [Route("{statusCode}")]
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult ErrorStatusCode(HttpStatusCode statusCode)
     {
