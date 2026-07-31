@@ -21,13 +21,14 @@
     <File Path="README.md" />
   </Folder>
   <Folder Name="/src/">
-    <Project Path="src/SchoolAccount.Web.Mvc/SchoolAccount.Web.Mvc.csproj" />
+    <Project Path="src\SchoolAccount.Web.Mvc\SchoolAccount.Web.Mvc.csproj" />
     <Project Path="src\SchoolAccount.Application\SchoolAccount.Application.csproj" />
     <Project Path="src\SchoolAccount.Domain\SchoolAccount.Domain.csproj" />
     <Project Path="src\SchoolAccount.Infrastructure\SchoolAccount.Infrastructure.csproj" />
     <Project Path="src\SchoolAccount.SharedKernel\SchoolAccount.SharedKernel.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests\SchoolAccount.Web.Mvc.UnitTests\SchoolAccount.Web.Mvc.UnitTests.csproj" />
     <Project Path="tests\SchoolAccount.ApplicationTests\SchoolAccount.ApplicationTests.csproj" />
     <Project Path="tests\SchoolAccount.ArchitectureTests\SchoolAccount.ArchitectureTests.csproj" />
     <Project Path="tests\SchoolAccount.IntegrationTests\SchoolAccount.IntegrationTests.csproj" />
