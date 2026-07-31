@@ -21,6 +21,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\SchoolAccount.Application\SchoolAccount.Application.csproj" />
+      <ProjectReference Include="..\..\src\SchoolAccount.Web.Mvc\SchoolAccount.Web.Mvc.csproj" />
     </ItemGroup>
+    
 </Project>

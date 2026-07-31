@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using SchoolAccount.Web.Mvc.Models;
 
 namespace SchoolAccount.Web.Mvc.Controllers;
 
@@ -12,6 +13,8 @@ public class ErrorController(ILogger<ErrorController> logger) : Controller
         logger.LogWarning("HTTP {StatusCode} error occurred at {Path}",
             statusCode, HttpContext.Request.Path);
 
-        return View("StatusCode", statusCode);
+        var errorViewModel = new ErrorViewModel(statusCode);
+
+        return View("StatusCode", errorViewModel);
     }
 }
