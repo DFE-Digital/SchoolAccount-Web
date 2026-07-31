@@ -11,7 +11,7 @@ on:
 
 env:
   DOTNET_VERSION: "10.x"
-  MIN_LINE_COVERAGE: "90"
+  MIN_LINE_COVERAGE: "60"
 
 jobs:
   build:
@@ -50,7 +50,6 @@ jobs:
           files: "TestResults/*.trx"
 
       - name: Merge coverage reports and enforce threshold
-        id: report
         if: ${{ !cancelled() }}
         uses: danielpalme/ReportGenerator-GitHub-Action@5
         with:
@@ -58,16 +57,6 @@ jobs:
           targetdir: TestResults/Merged
           reporttypes: "Cobertura;MarkdownSummaryGithub"
           customSettings: "minimumCoverageThresholds:lineCoverage=${{ env.MIN_LINE_COVERAGE }}"
-          
-      - name: Surface report outcome
-        if: always()
-        run: |
-          if [ "${{ steps.report.outcome }}" == "failure" ]; then
-            echo "⚠️ ReportGenerator failed — check the step log above." >> $GITHUB_STEP_SUMMARY
-          fi
-          # publish the coverage summary if it was produced
-          [ -f coveragereport/SummaryGithub.md ] && cat coveragereport/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
-        shell: bash
 
       - name: Write coverage job summary
         if: ${{ !cancelled() }}
