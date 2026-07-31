@@ -8,6 +8,7 @@ using NSubstitute.ExceptionExtensions;
 using SchoolAccount.Application.Abstractions.Messaging;
 using SchoolAccount.Application.Greetings.GetTimeSpecificHello;
 using SchoolAccount.SharedKernel;
+using SchoolAccount.Web.Mvc.Models;
 using Shouldly;
 
 namespace SchoolAccount.IntegrationTests.Controllers.Home;
@@ -88,7 +89,26 @@ public class HomeControllerTests : IClassFixture<WebApplicationFactory<Program>>
             TestContext.Current.CancellationToken
         );
 
+        string html = await response.Content.ReadAsStringAsync(
+            TestContext.Current.CancellationToken
+        );
+        IBrowsingContext context = BrowsingContext.New(Configuration.Default);
+        IDocument page = await context.OpenAsync(
+            req => req.Content(html),
+            TestContext.Current.CancellationToken
+        );
+
         // Assert
+        page.ShouldNotBeNull();
+
+        IElement? pageTitle = page.QuerySelector("title");
+        pageTitle.ShouldNotBeNull();
+        pageTitle.TextContent.ShouldBeEquivalentTo(ErrorViewModel.NotFoundTitle);
+
+        IElement? headingElement = page.QuerySelector("h1.govuk-heading-l");
+        headingElement.ShouldNotBeNull();
+        headingElement.TextContent.ShouldBeEquivalentTo("Page not found");
+
         response.IsSuccessStatusCode.ShouldBeFalse();
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
@@ -107,7 +127,22 @@ public class HomeControllerTests : IClassFixture<WebApplicationFactory<Program>>
             TestContext.Current.CancellationToken
         );
 
+        string html = await response.Content.ReadAsStringAsync(
+            TestContext.Current.CancellationToken
+        );
+        IBrowsingContext context = BrowsingContext.New(Configuration.Default);
+        IDocument page = await context.OpenAsync(
+            req => req.Content(html),
+            TestContext.Current.CancellationToken
+        );
+
         // Assert
+        page.ShouldNotBeNull();
+
+        IElement? pageTitle = page.QuerySelector("title");
+        pageTitle.ShouldNotBeNull();
+        pageTitle.TextContent.ShouldBeEquivalentTo(ErrorViewModel.ErrorTitle);
+
         response.IsSuccessStatusCode.ShouldBeFalse();
         response.StatusCode.ShouldBe(HttpStatusCode.InternalServerError);
     }
