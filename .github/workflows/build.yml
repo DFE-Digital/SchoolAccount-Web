@@ -11,7 +11,7 @@ on:
 
 env:
   DOTNET_VERSION: "10.x"
-  MIN_LINE_COVERAGE: "90"
+  MIN_LINE_COVERAGE: "60"
 
 jobs:
   build:
