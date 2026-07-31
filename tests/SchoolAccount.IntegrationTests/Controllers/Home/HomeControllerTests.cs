@@ -45,30 +45,25 @@ public class HomeControllerTests : IClassFixture<WebApplicationFactory<Program>>
             .Returns(Result.Success(stubbedGetSpecificHelloResponse));
 
         // Act
-        HttpResponseMessage response = await _client.GetAsync(
-            "/",
-            TestContext.Current.CancellationToken
-        );
+        var response = await _client.GetAsync("/", TestContext.Current.CancellationToken);
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeTrue();
 
-        string html = await response.Content.ReadAsStringAsync(
-            TestContext.Current.CancellationToken
-        );
+        var html = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         var page = new AngleSharpPage(html);
 
         page.ShouldNotBeNull();
 
-        string? pageTitle = page.GetTitle();
+        var pageTitle = page.GetTitle();
         pageTitle.ShouldNotBeNull();
         pageTitle.ShouldBeEquivalentTo("Home Page");
 
-        string? headingElement = page.GetFirstHeading();
+        var headingElement = page.GetFirstHeading();
         headingElement.ShouldNotBeNull();
         headingElement.ShouldBeEquivalentTo(stubbedGetSpecificHelloResponse.Message);
 
-        string? bodyElement = page.GetFirstBody();
+        var bodyElement = page.GetFirstBody();
         bodyElement.ShouldNotBeNull();
         bodyElement.ShouldContainWithoutWhitespace("In case I don't see ya");
     }
