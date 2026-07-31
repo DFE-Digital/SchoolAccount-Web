@@ -1,6 +1,6 @@
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
-using SchoolAccount.Web.Mvc.Models;
+using SchoolAccount.Web.Mvc.Features.Error;
 
 namespace SchoolAccount.Web.Mvc.Controllers;
 
