@@ -1,3 +1,4 @@
+using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using SchoolAccount.Web.Mvc.Models;
 
@@ -8,10 +9,13 @@ public class ErrorController(ILogger<ErrorController> logger) : Controller
 {
     [Route("{statusCode:int}")]
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult ErrorStatusCode(int statusCode)
+    public IActionResult ErrorStatusCode(HttpStatusCode statusCode)
     {
-        logger.LogWarning("HTTP {StatusCode} error occurred at {Path}",
-            statusCode, HttpContext.Request.Path);
+        logger.LogWarning(
+            "HTTP {StatusCode} error occurred at {Path}",
+            statusCode,
+            HttpContext.Request.Path
+        );
 
         var errorViewModel = new ErrorViewModel(statusCode);
 

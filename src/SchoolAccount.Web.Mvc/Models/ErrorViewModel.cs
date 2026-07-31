@@ -1,14 +1,33 @@
+using System.Net;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 
 namespace SchoolAccount.Web.Mvc.Models;
 
-public class ErrorViewModel(int statusCode)
+public class ErrorViewModel(HttpStatusCode statusCode)
 {
-    public int StatusCode { get; } =  statusCode;
+    public const string NotFoundTitle = "Not Found";
+    public const string ForbiddenTitle = "Forbidden";
+    public const string ErrorTitle = "Error";
 
-    public string Title { get; } = string.Empty;
+    public HttpStatusCode StatusCode { get; } = statusCode;
 
-    public bool IsNotFound => StatusCode == Status404NotFound; 
+    public string Title => CalculateTitle();
 
-    public bool IsForbidden => StatusCode == Status403Forbidden;
+    public bool IsNotFound => StatusCode == HttpStatusCode.NotFound;
+
+    public bool IsForbidden => StatusCode == HttpStatusCode.Forbidden;
+
+    private string CalculateTitle()
+    {
+        if (IsNotFound)
+        {
+            return NotFoundTitle;
+        }
+        if (IsForbidden)
+        {
+            return ForbiddenTitle;
+        }
+
+        return ErrorTitle;
+    }
 }
