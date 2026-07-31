@@ -10,10 +10,9 @@ public class AngleSharpPage
     public AngleSharpPage(string pageContent)
     {
         IBrowsingContext context = BrowsingContext.New(Configuration.Default);
-        _page = context.OpenAsync(
-            req => req.Content(pageContent),
-            TestContext.Current.CancellationToken
-        ).Result;
+        _page = context
+            .OpenAsync(req => req.Content(pageContent), TestContext.Current.CancellationToken)
+            .Result;
     }
 
     public string? GetTitle()
