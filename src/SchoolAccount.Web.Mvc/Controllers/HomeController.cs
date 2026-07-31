@@ -27,12 +27,4 @@ public class HomeController : Controller
             ? View(new HomeViewModel(model.Value.Message))
             : Problem(model.Error.Description);
     }
-
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
-    {
-        return View(
-            new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier }
-        );
-    }
 }
