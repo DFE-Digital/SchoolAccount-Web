@@ -1,0 +1,30 @@
+@model int
+@{
+    var statusCode = Model;
+    ViewData["Title"] = "Error";
+}
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        @if (statusCode == 404)
+        {
+            <h1 class="govuk-heading-l">Page not found</h1>
+            <p class="govuk-body">If you typed the web address, check it is correct.</p>
+            <p class="govuk-body">If you pasted the web address, check you copied the entire address.</p>
+        }
+        else if (statusCode == 403)
+        {
+            <h1 class="govuk-heading-l">Access denied</h1>
+            <p class="govuk-body">You do not have permission to view this page.</p>
+        }
+        else
+        {
+            <h1 class="govuk-heading-l">Sorry, there is a problem with the service</h1>
+            <p class="govuk-body">Try again later.</p>
+        }
+
+        <p class="govuk-body">
+            <a href="@Url.Action("Index", "Home")" class="govuk-link">Go to the homepage</a>
+        </p>
+    </div>
+</div>
