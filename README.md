@@ -21,6 +21,7 @@ Architecture decisions are recorded as ADRs in the [decisions](decisions) folder
 - [Enforce code quality with Roslyn analysers](decisions/0006-enforce-code-quality-with-roslyn-analysers.md) - why SonarAnalyzer.CSharp and strict analysis are enforced in the build
 - [Supporting SASS within GDS Styles](decisions/0007-supporting-sass-within-gds-styles.md) - why SASS support has been enabled
 - [Use feature structure](decisions/0008-use-feature-structure.md) - why the feature structure has been adopted
+- [Authentication using DSI](decisions/0009-authenticate-using-dsi.md) - why we authenticate with DfE Sign-In
 
 New decisions should follow the [ADR template](decisions/0000-adr-template.md).
 
@@ -55,6 +56,18 @@ Follow these steps to start the MVC locally.
 
 5. Debugging guidance:
     - Set breakpoints in your C# files under `src/` and start either run configuration with debugging enabled.
+
+## Configuration
+
+The project requires the following app configuration values to be overridden, ideally using [User Secrets](https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-6.0&tabs=windows):
+```json
+{
+  "OpenIDConnectSettings": {
+    "Authority": "<URL-OF-DSI-OIDC-SERVER>",
+    "ClientId": "<DSI-CLIENT-ID>"
+  }
+}
+```
 
 # Build and Test
 
