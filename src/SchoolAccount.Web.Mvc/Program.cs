@@ -5,16 +5,7 @@ using SchoolAccount.Web.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddApplication().AddPresentation().AddInfrastructure();
-
-// Add services to the container.
-builder.Services.AddControllersWithViews();
-builder.Services.AddGovUkFrontend();
-
-if (builder.Environment.IsDevelopment())
-{
-    builder.Services.AddSassCompiler();
-}
+builder.Services.AddApplication().AddPresentation(builder.Environment).AddInfrastructure();
 
 var app = builder.Build();
 

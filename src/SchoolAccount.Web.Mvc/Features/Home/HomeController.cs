@@ -7,9 +7,11 @@ namespace SchoolAccount.Web.Mvc.Features.Home;
 
 public class HomeController : Controller
 {
-    public async Task<IActionResult> IndexAsync(
+    [HttpGet("")]
+    public async Task<IActionResult> Home(
         [FromServices] IDateTimeProvider dateTimeProvider,
-        [FromServices] IQueryHandler<
+        [FromServices]
+            IQueryHandler<
             GetTimeSpecificHelloQuery,
             GetTimeSpecificHelloResponse
         > getTimeSpecifyHellosQueryHandler,
@@ -20,7 +22,7 @@ public class HomeController : Controller
             new GetTimeSpecificHelloQuery(),
             cancellationToken
         );
-        
+
         return model.IsSuccess
             ? View(new HomeViewModel(model.Value.Message))
             : Problem(model.Error.Description);
