@@ -20,6 +20,7 @@ Architecture decisions are recorded as ADRs in the [decisions](decisions) folder
 - [Format code with CSharpier](decisions/0005-format-code-with-csharpier.md) - why formatting is automated and enforced in the build
 - [Enforce code quality with Roslyn analysers](decisions/0006-enforce-code-quality-with-roslyn-analysers.md) - why SonarAnalyzer.CSharp and strict analysis are enforced in the build
 - [Supporting SASS within GDS Styles](decisions/0007-supporting-sass-within-gds-styles.md) - why SASS support has been enabled
+- [Use feature structure](decisions/0008-use-feature-structure.md) - why the feature structure has been adopted
 
 New decisions should follow the [ADR template](decisions/0000-adr-template.md).
 
