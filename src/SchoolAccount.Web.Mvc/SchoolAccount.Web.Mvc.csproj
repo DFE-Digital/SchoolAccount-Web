@@ -21,6 +21,5 @@
   <ItemGroup>
     <PackageReference Include="AspNetCore.SassCompiler" />
     <PackageReference Include="GovUk.Frontend.AspNetCore" />
-    <PackageReference Include="Microsoft.FeatureManagement" />
   </ItemGroup>
 </Project>
