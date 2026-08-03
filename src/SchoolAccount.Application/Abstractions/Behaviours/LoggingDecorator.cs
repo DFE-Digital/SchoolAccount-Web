@@ -20,11 +20,11 @@ internal static partial class LoggingDecorator
             CancellationToken cancellationToken
         )
         {
-            string commandName = typeof(TCommand).Name;
+            var commandName = typeof(TCommand).Name;
 
             LogProcessingCommand(logger, commandName);
 
-            Result<TResponse> result = await innerHandler.Handle(command, cancellationToken);
+            var result = await innerHandler.Handle(command, cancellationToken);
 
             if (result.IsSuccess)
             {
@@ -51,11 +51,11 @@ internal static partial class LoggingDecorator
     {
         public async Task<Result> Handle(TCommand command, CancellationToken cancellationToken)
         {
-            string commandName = typeof(TCommand).Name;
+            var commandName = typeof(TCommand).Name;
 
             LogProcessingCommand(logger, commandName);
 
-            Result result = await innerHandler.Handle(command, cancellationToken);
+            var result = await innerHandler.Handle(command, cancellationToken);
 
             if (result.IsSuccess)
             {
@@ -84,11 +84,11 @@ internal static partial class LoggingDecorator
             CancellationToken cancellationToken
         )
         {
-            string queryName = typeof(TQuery).Name;
+            var queryName = typeof(TQuery).Name;
 
             LogProcessingQuery(logger, queryName);
 
-            Result<TResponse> result = await innerHandler.Handle(query, cancellationToken);
+            var result = await innerHandler.Handle(query, cancellationToken);
 
             if (result.IsSuccess)
             {

@@ -6,9 +6,13 @@
     <File Path="decisions\0003-strip-imported-template-to-minimal-core.md" />
     <File Path="decisions\0004-microsoft-testing-platform-and-ci-reporting.md" />
     <File Path="decisions\0005-format-code-with-csharpier.md" />
+    <File Path="decisions\0006-enforce-code-quality-with-roslyn-analysers.md" />
+    <File Path="decisions\0007-supporting-sass-within-gds-styles.md" />
+    <File Path="decisions\0008-use-feature-structure.md" />
   </Folder>
   <Folder Name="/docs/">
     <File Path="docs\clean-architecture.md" />
+    <File Path="docs\coding-standards.md" />
     <File Path="docs\integration-testing.md" />
     <File Path="docs\testing-standards.md" />
   </Folder>

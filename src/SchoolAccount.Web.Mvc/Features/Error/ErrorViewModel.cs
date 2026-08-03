@@ -1,7 +1,6 @@
 using System.Net;
-using static Microsoft.AspNetCore.Http.StatusCodes;
 
-namespace SchoolAccount.Web.Mvc.Models;
+namespace SchoolAccount.Web.Mvc.Features.Error;
 
 public class ErrorViewModel(HttpStatusCode statusCode)
 {
