@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace SchoolAccount.Web.Mvc.Features.Login;
+namespace SchoolAccount.Web.Mvc.Features.Authentication;
 
 [Route("/")]
 public class LoginController : Controller
