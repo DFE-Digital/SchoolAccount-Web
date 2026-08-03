@@ -77,8 +77,6 @@ pre-commit hook, configured in
 [init.sh](../init.sh), runs `csharpier format` on staged C# files and
 re-stages them before the commit completes.
 
-## Pros and Cons of the Options
-
 ### CSharpier
 
 An opinionated formatter for C#, in the mould of Prettier.

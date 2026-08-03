@@ -1,73 +1,35 @@
 
 ---
-# These are optional metadata elements. Feel free to remove any of them.
-date: { "2026-08-03" }
-decision-makers: { Mark Harrop & Paul Custance }
+date: "2026-08-03"
+decision-makers: Mark Harrop & Paul Custance
 ---
 
 # Use feature structure within the MVC application
 
 ## Context and Problem Statement
 
-{Describe the context and the problem in two to three sentences, optionally phrased as a question. Make the scope of the decision explicit.}
-
 MVC applications expect the code to be organised within Views, Models, Controllers etc. in different folders. Following the [Clean Architecture](../docs/clean-architecture.md) application folder structure each features items should be held within a Features folder structure to keep related items together. To get the MVC application to be able to work with this approach we need to be more explicit to the program where each item is within the file structure.
 
-<!-- This is an optional element. Feel free to remove. -->
 ## Decision Drivers
 
-* {decision driver 1, for instance, a desired software quality, faced concern, constraint or force}
-* {decision driver 2}
-* … <!-- numbers of drivers can vary -->
+* Controller and view routing by convention - minimal annotation and view specifying when creating a new feature
+* Co-location of controller, views, and view models by page
 
 ## Considered Options
 
-* {title of option 1}
-* {title of option 2}
-* {title of option 3}
-* … <!-- numbers of options can vary -->
+* Standard MVC routing - separate controllers, views, and models
+* Bespoke 'feature' structure -controllers, views and models arranged by feature using
 
 ## Decision Outcome
 
-Chosen option: "{title of option 1}", because {justification. e.g., only option, which meets k.o. criterion decision driver | which resolves force {force} | … | comes out best (see below)}.
+Chosen option: "Bespoke feature strucure", because is the only option that aligns with the Clean Architecture approach of arranging code by features, maintaining a consistent approach for both front end and API projects.
 
-<!-- This is an optional element. Feel free to remove. -->
 ### Consequences
 
-* Good, because {positive consequence, e.g., improvement of one or more desired qualities, …}
-* Bad, because {negative consequence, e.g., compromising one or more desired qualities, …}
-* … <!-- numbers of consequences can vary -->
+* Good, because allows for co-location of related items, making it easier to find and maintain code for a given feature.
+* Good because it is consistent with API project structure
+* Bad, because it introduces complexity in the project routing
 
-<!-- This is an optional element. Feel free to remove. -->
 ### Confirmation
 
-{Describe how the implementation / compliance of the ADR can/will be confirmed. Is there any automated or manual fitness function? If so, list it and explain how it is applied. Is the chosen design and its implementation in line with the decision? E.g., a design/code review or a test with a library such as ArchUnit can help validate this. Note that although we classify this element as optional, it is included in many ADRs.}
-
-<!-- This is an optional element. Feel free to remove. -->
-## Pros and Cons of the Options
-
-### {title of option 1}
-
-<!-- This is an optional element. Feel free to remove. -->
-{example | description | pointer to more information | …}
-
-* Good, because {argument a}
-* Good, because {argument b}
-<!-- use "neutral" if the given argument weights neither for good nor bad -->
-* Neutral, because {argument c}
-* Bad, because {argument d}
-* … <!-- numbers of pros and cons can vary -->
-
-### {title of other option}
-
-{example | description | pointer to more information | …}
-
-* Good, because {argument a}
-* Neutral, because {argument b}
-* Bad, because {argument c}
-* …
-
-<!-- This is an optional element. Feel free to remove. -->
-## More Information
-
-{You might want to provide additional evidence/confidence for the decision outcome here and/or document the team agreement on the decision and/or define when/how this decision the decision should be realized and if/when it should be re-visited. Links to other decisions and resources might appear here as well.}
+All integrations tests continue to pass without any changes, demonstrating the project URLs remain the samw
