@@ -1,6 +1,8 @@
+using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using SchoolAccount.SharedKernel;
 using SchoolAccount.Web.Mvc.Authentication.Models;
 
 namespace SchoolAccount.Web.Mvc.Authentication.Extensions;
@@ -17,7 +19,9 @@ public static class ServiceCollectionExtensions
                 .GetRequiredSection(AuthenticationSettings.SectionName)
                 .Get<AuthenticationSettings>()
             ?? throw new ArgumentException("Authentication settings not found in configuration.");
-
+        
+        services.AddHttpContextAccessor();
+        
         services
             .AddAuthentication(options =>
             {
@@ -32,12 +36,15 @@ public static class ServiceCollectionExtensions
 
                 options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.ResponseType = OpenIdConnectResponseType.IdToken;
-
+                
                 options.Scope.Add("organisation");
+                options.Scope.Add("email");
                 options.SaveTokens = true;
                 options.GetClaimsFromUserInfoEndpoint = true;
-
+                
                 options.MapInboundClaims = false;
             });
+
+        services.AddScoped<IUserContext, UserContext>();
     }
 }
