@@ -6,15 +6,17 @@ namespace SchoolAccount.Web.Mvc.UnitTests.Authentication;
 
 public class UserContextTests
 {
-    [Fact]
-    public async Task Ensure_that_a_authenticated_user_can_be_retrieved_from_the_context_of_user_john()
+    [Theory]
+    [InlineData(true, "John", "Jones", "john.jones@testing.world")]
+    [InlineData(true, "Lisa", "Simpson", "lisa.simpson@testing.world")]
+    public void Ensure_that_an_authenticated_user_can_be_retrieved_from_the_user_context(bool isAuthenticated, string givenName, string familyName, string email)
     {
         // Arrange
         var accessor = HttpContextAccessorHelpers.CreateHttpContextAccessor(
-            true,
-            "John",
-            "Jones",
-            "john.jones@testing.world"
+            isAuthenticated,
+            givenName,
+            familyName,
+            email
         );
 
         // Act
@@ -23,43 +25,17 @@ public class UserContextTests
         // Assert
         context.IsAuthenticated.ShouldBeTrue();
         context.GivenName.ShouldNotBeNullOrEmpty();
-        context.GivenName.ShouldContainWithoutWhitespace("John");
+        context.GivenName.ShouldContainWithoutWhitespace(givenName);
         context.Surname.ShouldNotBeNullOrEmpty();
-        context.Surname.ShouldContainWithoutWhitespace("Jones");
+        context.Surname.ShouldContainWithoutWhitespace(familyName);
         context.EmailAddress.ShouldNotBeNullOrEmpty();
-        context.EmailAddress.ShouldContainWithoutWhitespace("john.jones@testing.world");
+        context.EmailAddress.ShouldContainWithoutWhitespace(email);
         context.Name.ShouldNotBeNullOrWhiteSpace();
-        context.Name.ShouldContainWithoutWhitespace("John Jones");
+        context.Name.ShouldContainWithoutWhitespace(givenName + " " + familyName);
     }
 
     [Fact]
-    public async Task Ensure_that_a_authenticated_user_can_be_retrieved_from_the_context_of_user_lisa()
-    {
-        // Arrange
-        var accessor = HttpContextAccessorHelpers.CreateHttpContextAccessor(
-            true,
-            "Lisa",
-            "Simpson",
-            "lisa.simpson@testing.world"
-        );
-
-        // Act
-        var context = new UserContext(accessor);
-
-        // Assert
-        context.IsAuthenticated.ShouldBeTrue();
-        context.GivenName.ShouldNotBeNullOrEmpty();
-        context.GivenName.ShouldContainWithoutWhitespace("Lisa");
-        context.Surname.ShouldNotBeNullOrEmpty();
-        context.Surname.ShouldContainWithoutWhitespace("Simpson");
-        context.EmailAddress.ShouldNotBeNullOrEmpty();
-        context.EmailAddress.ShouldContainWithoutWhitespace("lisa.simpson@testing.world");
-        context.Name.ShouldNotBeNullOrWhiteSpace();
-        context.Name.ShouldContainWithoutWhitespace("Lisa Simpson");
-    }
-
-    [Fact]
-    public async Task When_a_unathorised_request_happens_user_context_is_flagged_as_unauthenticated()
+    public void Ensure_that_an_unauthorised_request_occurs_when_user_context_is_flagged_as_unauthenticated()
     {
         // Arrange
         var accessor = HttpContextAccessorHelpers.CreateHttpContextAccessor(false);
