@@ -9,7 +9,12 @@ public class UserContextTests
     [Theory]
     [InlineData(true, "John", "Jones", "john.jones@testing.world")]
     [InlineData(true, "Lisa", "Simpson", "lisa.simpson@testing.world")]
-    public void Ensure_that_an_authenticated_user_can_be_retrieved_from_the_user_context(bool isAuthenticated, string givenName, string familyName, string email)
+    public void Ensure_that_an_authenticated_user_can_be_retrieved_from_the_user_context(
+        bool isAuthenticated,
+        string givenName,
+        string familyName,
+        string email
+    )
     {
         // Arrange
         var accessor = HttpContextAccessorHelpers.CreateHttpContextAccessor(
