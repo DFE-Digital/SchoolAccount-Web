@@ -7,7 +7,7 @@ using SchoolAccount.IntegrationTests.Common;
 using SchoolAccount.SharedKernel;
 using Shouldly;
 
-namespace SchoolAccount.IntegrationTests.Controllers.Home;
+namespace SchoolAccount.IntegrationTests.Features.Home;
 
 public class HomeControllerTests : IClassFixture<WebApplicationFactory<Program>>
 {

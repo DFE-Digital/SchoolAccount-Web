@@ -4,15 +4,12 @@ using Microsoft.Extensions.Options;
 
 namespace SchoolAccount.IntegrationTests.Common;
 
-public class MockOidcHandler : AuthenticationHandler<AuthenticationSchemeOptions>
+public class MockOidcHandler(
+    IOptionsMonitor<AuthenticationSchemeOptions> options,
+    ILoggerFactory logger,
+    UrlEncoder encoder
+) : AuthenticationHandler<AuthenticationSchemeOptions>(options, logger, encoder)
 {
-    public MockOidcHandler(
-        IOptionsMonitor<AuthenticationSchemeOptions> options,
-        ILoggerFactory logger,
-        UrlEncoder encoder
-    )
-        : base(options, logger, encoder) { }
-
     protected override Task<AuthenticateResult> HandleAuthenticateAsync() =>
         Task.FromResult(AuthenticateResult.NoResult());
 

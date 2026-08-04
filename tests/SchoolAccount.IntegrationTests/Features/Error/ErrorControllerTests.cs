@@ -9,7 +9,7 @@ using SchoolAccount.IntegrationTests.Common;
 using SchoolAccount.Web.Mvc.Features.Error;
 using Shouldly;
 
-namespace SchoolAccount.IntegrationTests.Controllers.Home;
+namespace SchoolAccount.IntegrationTests.Features.Error;
 
 public class ErrorControllerTests : IClassFixture<WebApplicationFactory<Program>>
 {
