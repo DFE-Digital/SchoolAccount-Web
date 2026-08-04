@@ -4,7 +4,7 @@ using SchoolAccount.SharedKernel;
 
 namespace SchoolAccount.Web.Mvc.Authentication;
 
-internal sealed class UserContext : IUserContext, IIdentity
+public sealed class UserContext : IUserContext, IIdentity
 {
     public UserContext(IHttpContextAccessor contextAccessor)
     {
