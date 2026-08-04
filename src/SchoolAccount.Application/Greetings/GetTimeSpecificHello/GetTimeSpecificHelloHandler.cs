@@ -19,7 +19,7 @@ public class GetTimeSpecificHelloHandler(IDateTimeProvider dateTimeProvider)
         CancellationToken cancellationToken
     )
     {
-        string message = dateTimeProvider.UtcNow.Hour switch
+        var message = dateTimeProvider.UtcNow.Hour switch
         {
             >= 5 and < 12 => Messages.Morning,
             >= 12 and < 17 => Messages.Afternoon,

@@ -6,7 +6,7 @@ using NSubstitute.ExceptionExtensions;
 using SchoolAccount.Application.Abstractions.Messaging;
 using SchoolAccount.Application.Greetings.GetTimeSpecificHello;
 using SchoolAccount.IntegrationTests.Common;
-using SchoolAccount.Web.Mvc.Models;
+using SchoolAccount.Web.Mvc.Features.Error;
 using Shouldly;
 
 namespace SchoolAccount.IntegrationTests.Controllers.Home;
@@ -39,24 +39,22 @@ public class ErrorControllerTests : IClassFixture<WebApplicationFactory<Program>
     public async Task Ensure_that_the_home_controller_returns_a_404_result_on_unknown_page()
     {
         // Act
-        HttpResponseMessage response = await _client.GetAsync(
+        var response = await _client.GetAsync(
             "/orangesandapples",
             TestContext.Current.CancellationToken
         );
 
-        string html = await response.Content.ReadAsStringAsync(
-            TestContext.Current.CancellationToken
-        );
+        var html = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         var page = new AngleSharpPage(html);
 
         // Assert
         page.ShouldNotBeNull();
 
-        string? pageTitle = page.GetTitle();
+        var pageTitle = page.GetTitle();
         pageTitle.ShouldNotBeNull();
         pageTitle.ShouldBeEquivalentTo(ErrorViewModel.NotFoundTitle);
 
-        string? headingElement = page.GetFirstHeading();
+        var headingElement = page.GetFirstHeading();
         headingElement.ShouldNotBeNull();
         headingElement.ShouldBeEquivalentTo("Page not found");
 
@@ -73,20 +71,15 @@ public class ErrorControllerTests : IClassFixture<WebApplicationFactory<Program>
             .Throws(new ApplicationException("Bang!"));
 
         // Act
-        HttpResponseMessage response = await _client.GetAsync(
-            "/",
-            TestContext.Current.CancellationToken
-        );
+        var response = await _client.GetAsync("/", TestContext.Current.CancellationToken);
 
-        string html = await response.Content.ReadAsStringAsync(
-            TestContext.Current.CancellationToken
-        );
+        var html = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         var page = new AngleSharpPage(html);
 
         // Assert
         page.ShouldNotBeNull();
 
-        string? pageTitle = page.GetTitle();
+        var pageTitle = page.GetTitle();
         pageTitle.ShouldNotBeNull();
         pageTitle.ShouldBeEquivalentTo(ErrorViewModel.ErrorTitle);
 

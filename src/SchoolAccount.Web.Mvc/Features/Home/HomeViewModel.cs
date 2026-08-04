@@ -1,4 +1,4 @@
-namespace SchoolAccount.Web.Mvc.Models;
+namespace SchoolAccount.Web.Mvc.Features.Home;
 
 public class HomeViewModel(string greetingMessage)
 {

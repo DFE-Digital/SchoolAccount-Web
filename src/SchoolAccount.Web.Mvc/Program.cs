@@ -3,20 +3,11 @@ using SchoolAccount.Application;
 using SchoolAccount.Infrastructure;
 using SchoolAccount.Web.Mvc;
 
-WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddApplication().AddPresentation().AddInfrastructure();
+builder.Services.AddApplication().AddPresentation(builder.Environment).AddInfrastructure();
 
-// Add services to the container.
-builder.Services.AddControllersWithViews();
-builder.Services.AddGovUkFrontend();
-
-if (builder.Environment.IsDevelopment())
-{
-    builder.Services.AddSassCompiler();
-}
-
-WebApplication app = builder.Build();
+var app = builder.Build();
 
 app.UseStatusCodePagesWithReExecute("/Error/{0}");
 app.UseExceptionHandler("/Error/500");

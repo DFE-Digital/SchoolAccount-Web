@@ -1,9 +1,7 @@
 ﻿using System.Net;
-using SchoolAccount.SharedKernel;
-using SchoolAccount.Web.Mvc.Models;
+using SchoolAccount.Web.Mvc.Features.Error;
 using Shouldly;
-using static Microsoft.AspNetCore.Http.StatusCodes;
-using static SchoolAccount.Web.Mvc.Models.ErrorViewModel;
+using static SchoolAccount.Web.Mvc.Features.Error.ErrorViewModel;
 
 namespace SchoolAccount.Web.Mvc.UnitTests.Models;
 
