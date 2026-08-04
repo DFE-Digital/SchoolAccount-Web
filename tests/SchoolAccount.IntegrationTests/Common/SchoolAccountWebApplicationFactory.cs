@@ -1,47 +1,52 @@
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization.Policy;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 
 namespace SchoolAccount.IntegrationTests.Common;
 
-public partial class SchoolAccountWebApplicationFactory : WebApplicationFactory<Program>
+public class SchoolAccountWebApplicationFactory<TProgram> : WebApplicationFactory<TProgram>
+    where TProgram : class
 {
-    private readonly bool _useAuthentication;
-    private readonly bool _useNonAuthenticatedUser;
-
-    public SchoolAccountWebApplicationFactory(Builder builder)
-    {
-        _useAuthentication = builder.UseAuthentication;
-        _useNonAuthenticatedUser = builder.UseNonAuthenticatedUser;
-    }
-
-    public static Builder Create()
-    {
-        return new Builder();
-    }
-
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseEnvironment("IntegrationTests");
-        builder.ConfigureTestServices(ConfigureTestServices);
     }
 
-    protected virtual void ConfigureTestServices(IServiceCollection services)
+    public HttpClient CreateAuthorisedClient()
     {
-        if (_useAuthentication)
-        {
-            services
-                .AddAuthentication(SessionAuthenticationHandler.SchemeName)
-                .AddScheme<AuthenticationSchemeOptions, SessionAuthenticationHandler>(
-                    SessionAuthenticationHandler.SchemeName,
-                    _ => { }
-                );
-        }
+        return WithWebHostBuilder(builder =>
+                builder.ConfigureTestServices(services =>
+                    services
+                        .AddAuthentication(options =>
+                        {
+                            options.DefaultAuthenticateScheme = "TestScheme";
+                            options.DefaultChallengeScheme = "TestScheme";
+                        })
+                        .AddScheme<AuthenticationSchemeOptions, MockAuthHandler>(
+                            "TestScheme",
+                            options => { }
+                        )
+                )
+            )
+            .CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
+    }
 
-        if (_useNonAuthenticatedUser)
-        {
-            services.AddTransient<IPolicyEvaluator, FakePolicyEvaluator>();
-        }
+    public HttpClient CreateUnauthorisedClient()
+    {
+        return WithWebHostBuilder(builder =>
+                builder.ConfigureTestServices(services =>
+                    services
+                        .AddAuthentication(options =>
+                        {
+                            options.DefaultAuthenticateScheme = "TestScheme";
+                            options.DefaultChallengeScheme = "TestScheme";
+                        })
+                        .AddScheme<AuthenticationSchemeOptions, MockOidcHandler>(
+                            "TestScheme",
+                            options => { }
+                        )
+                )
+            )
+            .CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
     }
 }
