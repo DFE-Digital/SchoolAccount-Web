@@ -8,31 +8,10 @@ using Shouldly;
 
 namespace SchoolAccount.IntegrationTests.Features.Dashboard;
 
-public class DashboardControllerTests : IClassFixture<WebApplicationFactory<Program>>
+public class DashboardControllerTests(SchoolAccountWebApplicationFactory<Program> factory)
+    : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
 {
-    private readonly HttpClient _client;
-
-    public DashboardControllerTests(WebApplicationFactory<Program> factory)
-    {
-        _client = factory
-            .WithWebHostBuilder(builder =>
-            {
-                builder.UseEnvironment("IntegrationTests");
-                builder.ConfigureTestServices(services =>
-                    services
-                        .AddAuthentication(options =>
-                        {
-                            options.DefaultAuthenticateScheme = "TestScheme";
-                            options.DefaultChallengeScheme = "TestScheme";
-                        })
-                        .AddScheme<AuthenticationSchemeOptions, MockAuthHandler>(
-                            "TestScheme",
-                            options => { }
-                        )
-                );
-            })
-            .CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
-    }
+    private readonly HttpClient _client = factory.CreateAuthorisedClient();
 
     [Fact]
     public async Task Ensure_that_the_dashboard_controller_returns_correct_user_name()

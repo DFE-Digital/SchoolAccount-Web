@@ -9,7 +9,7 @@ using Shouldly;
 
 namespace SchoolAccount.IntegrationTests.Features.Home;
 
-public class HomeControllerTests : IClassFixture<WebApplicationFactory<Program>>
+public class HomeControllerTests : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
 {
     private readonly HttpClient _client;
 
@@ -20,19 +20,13 @@ public class HomeControllerTests : IClassFixture<WebApplicationFactory<Program>>
         IQueryHandler<GetTimeSpecificHelloQuery, GetTimeSpecificHelloResponse>
     >();
 
-    public HomeControllerTests(WebApplicationFactory<Program> factory)
+    public HomeControllerTests(SchoolAccountWebApplicationFactory<Program> factory)
     {
-        _client = factory
-            .WithWebHostBuilder(builder =>
-            {
-                builder.UseEnvironment("IntegrationTests");
-                builder.ConfigureTestServices(services =>
-                    services.AddScoped<
-                        IQueryHandler<GetTimeSpecificHelloQuery, GetTimeSpecificHelloResponse>
-                    >(_ => _getTimeSpecificHelloHandler)
-                );
-            })
-            .CreateClient();
+        _client = factory.CreateUnauthorisedClient(services =>
+            services.AddScoped<
+                IQueryHandler<GetTimeSpecificHelloQuery, GetTimeSpecificHelloResponse>
+            >(_ => _getTimeSpecificHelloHandler)
+        );
     }
 
     [Fact]

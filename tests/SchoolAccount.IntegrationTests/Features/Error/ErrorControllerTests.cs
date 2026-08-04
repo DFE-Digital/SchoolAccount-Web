@@ -11,7 +11,7 @@ using Shouldly;
 
 namespace SchoolAccount.IntegrationTests.Features.Error;
 
-public class ErrorControllerTests : IClassFixture<WebApplicationFactory<Program>>
+public class ErrorControllerTests : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
 {
     private readonly HttpClient _client;
 
@@ -22,19 +22,13 @@ public class ErrorControllerTests : IClassFixture<WebApplicationFactory<Program>
         IQueryHandler<GetTimeSpecificHelloQuery, GetTimeSpecificHelloResponse>
     >();
 
-    public ErrorControllerTests(WebApplicationFactory<Program> factory)
+    public ErrorControllerTests(SchoolAccountWebApplicationFactory<Program> factory)
     {
-        _client = factory
-            .WithWebHostBuilder(builder =>
-            {
-                builder.UseEnvironment("IntegrationTests");
-                builder.ConfigureTestServices(services =>
-                    services.AddScoped<
-                        IQueryHandler<GetTimeSpecificHelloQuery, GetTimeSpecificHelloResponse>
-                    >(_ => _getTimeSpecificHelloHandler)
-                );
-            })
-            .CreateClient();
+        _client = factory.CreateUnauthorisedClient(services =>
+            services.AddScoped<
+                IQueryHandler<GetTimeSpecificHelloQuery, GetTimeSpecificHelloResponse>
+            >(_ => _getTimeSpecificHelloHandler)
+        );
     }
 
     [Fact]

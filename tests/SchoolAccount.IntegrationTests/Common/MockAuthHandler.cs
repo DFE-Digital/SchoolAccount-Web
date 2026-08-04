@@ -11,6 +11,8 @@ public class MockAuthHandler(
     UrlEncoder encoder
 ) : AuthenticationHandler<AuthenticationSchemeOptions>(options, logger, encoder)
 {
+    public const string SchemeName = "AuthScheme";
+
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
         var claims = new[]

@@ -12,40 +12,50 @@ public class SchoolAccountWebApplicationFactory<TProgram> : WebApplicationFactor
         builder.UseEnvironment("IntegrationTests");
     }
 
-    public HttpClient CreateAuthorisedClient()
+    public HttpClient CreateAuthorisedClient(
+        Action<IServiceCollection>? additionalConfigurableServices = null
+    )
     {
         return WithWebHostBuilder(builder =>
                 builder.ConfigureTestServices(services =>
+                {
                     services
                         .AddAuthentication(options =>
                         {
-                            options.DefaultAuthenticateScheme = "TestScheme";
-                            options.DefaultChallengeScheme = "TestScheme";
+                            options.DefaultAuthenticateScheme = MockAuthHandler.SchemeName;
+                            options.DefaultChallengeScheme = MockAuthHandler.SchemeName;
                         })
                         .AddScheme<AuthenticationSchemeOptions, MockAuthHandler>(
-                            "TestScheme",
+                            MockAuthHandler.SchemeName,
                             options => { }
-                        )
-                )
+                        );
+
+                    additionalConfigurableServices?.Invoke(services);
+                })
             )
             .CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
     }
 
-    public HttpClient CreateUnauthorisedClient()
+    public HttpClient CreateUnauthorisedClient(
+        Action<IServiceCollection>? additionalConfigurableServices = null
+    )
     {
         return WithWebHostBuilder(builder =>
                 builder.ConfigureTestServices(services =>
+                {
                     services
                         .AddAuthentication(options =>
                         {
-                            options.DefaultAuthenticateScheme = "TestScheme";
-                            options.DefaultChallengeScheme = "TestScheme";
+                            options.DefaultAuthenticateScheme = MockOidcHandler.SchemeName;
+                            options.DefaultChallengeScheme = MockOidcHandler.SchemeName;
                         })
                         .AddScheme<AuthenticationSchemeOptions, MockOidcHandler>(
-                            "TestScheme",
+                            MockOidcHandler.SchemeName,
                             options => { }
-                        )
-                )
+                        );
+
+                    additionalConfigurableServices?.Invoke(services);
+                })
             )
             .CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
     }

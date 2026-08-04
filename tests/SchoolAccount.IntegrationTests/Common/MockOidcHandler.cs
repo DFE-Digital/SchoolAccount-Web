@@ -10,6 +10,8 @@ public class MockOidcHandler(
     UrlEncoder encoder
 ) : AuthenticationHandler<AuthenticationSchemeOptions>(options, logger, encoder)
 {
+    public const string SchemeName = "NoAuthScheme";
+
     protected override Task<AuthenticateResult> HandleAuthenticateAsync() =>
         Task.FromResult(AuthenticateResult.NoResult());
 
