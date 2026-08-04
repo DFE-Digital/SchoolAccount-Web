@@ -24,12 +24,14 @@ public class HomeControllerTests : IClassFixture<WebApplicationFactory<Program>>
     {
         _client = factory
             .WithWebHostBuilder(builder =>
+            {
+                builder.UseEnvironment("IntegrationTests");
                 builder.ConfigureTestServices(services =>
                     services.AddScoped<
                         IQueryHandler<GetTimeSpecificHelloQuery, GetTimeSpecificHelloResponse>
                     >(_ => _getTimeSpecificHelloHandler)
-                )
-            )
+                );
+            })
             .CreateClient();
     }
 

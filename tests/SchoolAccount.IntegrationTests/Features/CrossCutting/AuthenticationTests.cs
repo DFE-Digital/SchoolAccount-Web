@@ -10,22 +10,35 @@ namespace SchoolAccount.IntegrationTests.Features.CrossCutting;
 public class AuthenticationTests : IClassFixture<WebApplicationFactory<Program>>
 {
     private readonly HttpClient _client;
-    
+
     public AuthenticationTests(WebApplicationFactory<Program> factory)
     {
         _client = factory
-            .CreateClient(new WebApplicationFactoryClientOptions
+            .WithWebHostBuilder(builder =>
             {
-                AllowAutoRedirect = false
-            });
+                builder.UseEnvironment("IntegrationTests");
+                builder.ConfigureTestServices(services =>
+                    services
+                        .AddAuthentication(options =>
+                        {
+                            options.DefaultAuthenticateScheme = "TestScheme";
+                            options.DefaultChallengeScheme = "TestScheme";
+                        })
+                        .AddScheme<AuthenticationSchemeOptions, MockOidcHandler>(
+                            "TestScheme",
+                            options => { }
+                        )
+                );
+            })
+            .CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
     }
-    
+
     [Fact]
     public async Task Ensure_that_the_controller_redirects_for_unauthorised_users()
     {
         // Act
         var response = await _client.GetAsync("/dashboard", TestContext.Current.CancellationToken);
-        
+
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
         response.Headers.Location?.OriginalString.ShouldStartWith("https://test-oidc.signin");
