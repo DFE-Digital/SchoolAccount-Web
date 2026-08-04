@@ -8,5 +8,3 @@ public interface IUserContext
     string? EmailAddress { get; }
     string? Name { get; }
 }
-
-

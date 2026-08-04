@@ -19,9 +19,9 @@ public static class ServiceCollectionExtensions
                 .GetRequiredSection(AuthenticationSettings.SectionName)
                 .Get<AuthenticationSettings>()
             ?? throw new ArgumentException("Authentication settings not found in configuration.");
-        
+
         services.AddHttpContextAccessor();
-        
+
         services
             .AddAuthentication(options =>
             {
@@ -36,12 +36,12 @@ public static class ServiceCollectionExtensions
 
                 options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.ResponseType = OpenIdConnectResponseType.IdToken;
-                
+
                 options.Scope.Add("organisation");
                 options.Scope.Add("email");
                 options.SaveTokens = true;
                 options.GetClaimsFromUserInfoEndpoint = true;
-                
+
                 options.MapInboundClaims = false;
             });
 
