@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 
 namespace SchoolAccount.IntegrationTests.Common;
 
@@ -19,6 +22,7 @@ public class SchoolAccountWebApplicationFactory<TProgram> : WebApplicationFactor
         return WithWebHostBuilder(builder =>
                 builder.ConfigureTestServices(services =>
                 {
+                    services.RemoveAll<IConfigureOptions<AuthenticationOptions>>();
                     services
                         .AddAuthentication(options =>
                         {
@@ -27,6 +31,10 @@ public class SchoolAccountWebApplicationFactory<TProgram> : WebApplicationFactor
                         })
                         .AddScheme<AuthenticationSchemeOptions, MockAuthHandler>(
                             MockAuthHandler.SchemeName,
+                            options => { }
+                        )
+                        .AddScheme<AuthenticationSchemeOptions, MockAuthHandler>(
+                            OpenIdConnectDefaults.AuthenticationScheme,
                             options => { }
                         );
 
@@ -43,12 +51,17 @@ public class SchoolAccountWebApplicationFactory<TProgram> : WebApplicationFactor
         return WithWebHostBuilder(builder =>
                 builder.ConfigureTestServices(services =>
                 {
+                    services.RemoveAll<IConfigureOptions<AuthenticationOptions>>();
                     services
                         .AddAuthentication(options =>
                         {
                             options.DefaultAuthenticateScheme = MockOidcHandler.SchemeName;
                             options.DefaultChallengeScheme = MockOidcHandler.SchemeName;
                         })
+                        .AddScheme<AuthenticationSchemeOptions, MockOidcHandler>(
+                            OpenIdConnectDefaults.AuthenticationScheme,
+                            options => { }
+                        )
                         .AddScheme<AuthenticationSchemeOptions, MockOidcHandler>(
                             MockOidcHandler.SchemeName,
                             options => { }

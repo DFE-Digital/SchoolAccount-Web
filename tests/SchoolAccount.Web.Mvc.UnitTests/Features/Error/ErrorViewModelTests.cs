@@ -3,7 +3,7 @@ using SchoolAccount.Web.Mvc.Features.Error;
 using Shouldly;
 using static SchoolAccount.Web.Mvc.Features.Error.ErrorViewModel;
 
-namespace SchoolAccount.Web.Mvc.UnitTests.Models;
+namespace SchoolAccount.Web.Mvc.UnitTests.Features.Error;
 
 public class ErrorViewModelTests
 {

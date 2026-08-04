@@ -28,4 +28,10 @@ public class MockAuthHandler(
 
         return Task.FromResult(result);
     }
+
+    protected override Task HandleChallengeAsync(AuthenticationProperties? properties)
+    {
+        Response.Redirect(properties?.RedirectUri ?? "/");
+        return Task.CompletedTask;
+    }
 }
