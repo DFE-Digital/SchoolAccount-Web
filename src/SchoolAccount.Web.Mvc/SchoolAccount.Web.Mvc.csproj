@@ -8,6 +8,7 @@
     <RestoreGovUkFrontendStylesheet>false</RestoreGovUkFrontendStylesheet>
     <RestoreGovUkFrontendNpmPackage>true</RestoreGovUkFrontendNpmPackage>
     <RestoreGovUkFrontendSupportPackage>true</RestoreGovUkFrontendSupportPackage>
+    <UserSecretsId>f14c3870-7ac6-404b-a007-f489e1b708d6</UserSecretsId>
   </PropertyGroup>
 
   <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('Windows'))">
@@ -21,5 +22,7 @@
   <ItemGroup>
     <PackageReference Include="AspNetCore.SassCompiler" />
     <PackageReference Include="GovUk.Frontend.AspNetCore" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" />
+    <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" />
   </ItemGroup>
 </Project>

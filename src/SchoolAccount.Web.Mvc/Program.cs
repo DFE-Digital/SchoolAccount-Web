@@ -5,7 +5,10 @@ using SchoolAccount.Web.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddApplication().AddPresentation(builder.Environment).AddInfrastructure();
+builder
+    .Services.AddApplication()
+    .AddPresentation(builder.Environment, builder.Configuration)
+    .AddInfrastructure();
 
 var app = builder.Build();
 
@@ -22,11 +25,13 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseRouting();
 app.UseGovUkFrontend();
+
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();
 
-app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}")
+app.MapControllerRoute(name: "default", pattern: "{controller=Dashboard}/{action=Dashboard}/{id?}")
     .WithStaticAssets();
 
 await app.RunAsync();

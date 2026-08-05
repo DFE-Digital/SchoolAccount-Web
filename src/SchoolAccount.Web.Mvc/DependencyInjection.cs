@@ -1,4 +1,5 @@
 ﻿using GovUk.Frontend.AspNetCore;
+using SchoolAccount.Web.Mvc.Authentication.Extensions;
 using SchoolAccount.Web.Mvc.Infrastructure;
 
 namespace SchoolAccount.Web.Mvc;
@@ -7,9 +8,11 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddPresentation(
         this IServiceCollection services,
-        IWebHostEnvironment env
+        IWebHostEnvironment env,
+        IConfigurationManager configuration
     )
     {
+        services.AddDsiAuthentication(configuration);
         services.AddControllersWithFeatureViews();
         services.AddGovUkFrontend();
 

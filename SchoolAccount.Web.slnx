@@ -1,5 +1,6 @@
 <Solution>
   <Folder Name="/decisions/">
+    <File Path="decisions/0009-authenticate-using-dsi.md" />
     <File Path="decisions\0000-adr-template.md" />
     <File Path="decisions\0001-record-architecture-decisions.md" />
     <File Path="decisions\0002-use-clean-architecture.md" />
