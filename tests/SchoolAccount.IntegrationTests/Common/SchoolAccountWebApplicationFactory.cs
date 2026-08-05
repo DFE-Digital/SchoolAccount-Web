@@ -19,34 +19,21 @@ public class SchoolAccountWebApplicationFactory<TProgram> : WebApplicationFactor
         Action<IServiceCollection>? additionalConfigurableServices = null
     )
     {
-        return WithWebHostBuilder(builder =>
-                builder.ConfigureTestServices(services =>
-                {
-                    services.RemoveAll<IConfigureOptions<AuthenticationOptions>>();
-                    services
-                        .AddAuthentication(options =>
-                        {
-                            options.DefaultAuthenticateScheme = MockAuthHandler.SchemeName;
-                            options.DefaultChallengeScheme = MockAuthHandler.SchemeName;
-                        })
-                        .AddScheme<AuthenticationSchemeOptions, MockAuthHandler>(
-                            MockAuthHandler.SchemeName,
-                            options => { }
-                        )
-                        .AddScheme<AuthenticationSchemeOptions, MockAuthHandler>(
-                            OpenIdConnectDefaults.AuthenticationScheme,
-                            options => { }
-                        );
-
-                    additionalConfigurableServices?.Invoke(services);
-                })
-            )
-            .CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
+        return CreateClient<MockAuthHandler>(MockAuthHandler.SchemeName, additionalConfigurableServices);
     }
 
     public HttpClient CreateUnauthorisedClient(
         Action<IServiceCollection>? additionalConfigurableServices = null
     )
+    {
+        return CreateClient<MockOidcHandler>(MockOidcHandler.SchemeName, additionalConfigurableServices);
+    }
+
+    private HttpClient CreateClient<THandler>(
+        string schemeName,
+        Action<IServiceCollection>? additionalConfigurableServices = null
+    )
+        where THandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
         return WithWebHostBuilder(builder =>
                 builder.ConfigureTestServices(services =>
@@ -55,15 +42,15 @@ public class SchoolAccountWebApplicationFactory<TProgram> : WebApplicationFactor
                     services
                         .AddAuthentication(options =>
                         {
-                            options.DefaultAuthenticateScheme = MockOidcHandler.SchemeName;
-                            options.DefaultChallengeScheme = MockOidcHandler.SchemeName;
+                            options.DefaultAuthenticateScheme = schemeName;
+                            options.DefaultChallengeScheme = schemeName;
                         })
-                        .AddScheme<AuthenticationSchemeOptions, MockOidcHandler>(
+                        .AddScheme<AuthenticationSchemeOptions, THandler>(
                             OpenIdConnectDefaults.AuthenticationScheme,
                             options => { }
                         )
-                        .AddScheme<AuthenticationSchemeOptions, MockOidcHandler>(
-                            MockOidcHandler.SchemeName,
+                        .AddScheme<AuthenticationSchemeOptions, THandler>(
+                            schemeName,
                             options => { }
                         );
 

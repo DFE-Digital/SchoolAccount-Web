@@ -7,28 +7,31 @@ namespace SchoolAccount.IntegrationTests.Features.Authentication.Login;
 public class LoginControllerTests(SchoolAccountWebApplicationFactory<Program> factory)
     : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
 {
-    private readonly HttpClient _authorisedClient = factory.CreateAuthorisedClient();
-    private readonly HttpClient _unauthorisedClient = factory.CreateUnauthorisedClient();
-
     [Fact]
     public async Task Unauthorised_users_are_redirected_to_DSI()
     {
+        // Assert
+        var client = factory.CreateUnauthorisedClient();
+        
         // Act
-        var response = await _unauthorisedClient.GetAsync(
+        var response = await client.GetAsync(
             "/login",
             TestContext.Current.CancellationToken
         );
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
-        response.Headers.Location?.OriginalString.ShouldStartWith("https://test-oidc.signin");
+        response.Headers.Location?.OriginalString.ShouldStartWith(MockOidcHandler.AuthoriserRedirectUrl);
     }
 
     [Fact]
     public async Task Authorised_users_are_redirected_to_the_dashboard()
     {
+        // Arrange
+        var client = factory.CreateAuthorisedClient();
+        
         // Act
-        var response = await _authorisedClient.GetAsync(
+        var response = await client.GetAsync(
             "/login",
             TestContext.Current.CancellationToken
         );

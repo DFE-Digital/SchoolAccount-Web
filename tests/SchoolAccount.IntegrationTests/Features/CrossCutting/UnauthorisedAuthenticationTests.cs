@@ -18,7 +18,7 @@ public class UnauthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
-        response.Headers.Location?.OriginalString.ShouldStartWith("https://test-oidc.signin");
+        response.Headers.Location?.OriginalString.ShouldStartWith(MockOidcHandler.AuthoriserRedirectUrl);
     }
 
     [Fact]

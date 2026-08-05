@@ -11,13 +11,14 @@ public class MockOidcHandler(
 ) : AuthenticationHandler<AuthenticationSchemeOptions>(options, logger, encoder)
 {
     public const string SchemeName = "NoAuthScheme";
+    public const string AuthoriserRedirectUrl = "https://test-oidc.signin";
 
     protected override Task<AuthenticateResult> HandleAuthenticateAsync() =>
         Task.FromResult(AuthenticateResult.NoResult());
 
     protected override Task HandleChallengeAsync(AuthenticationProperties? properties)
     {
-        Response.Redirect("https://test-oidc.signin");
+        Response.Redirect(AuthoriserRedirectUrl);
         return Task.CompletedTask;
     }
 }
