@@ -19,14 +19,20 @@ public class SchoolAccountWebApplicationFactory<TProgram> : WebApplicationFactor
         Action<IServiceCollection>? additionalConfigurableServices = null
     )
     {
-        return CreateClient<MockAuthHandler>(MockAuthHandler.SchemeName, additionalConfigurableServices);
+        return CreateClient<MockAuthHandler>(
+            MockAuthHandler.SchemeName,
+            additionalConfigurableServices
+        );
     }
 
     public HttpClient CreateUnauthorisedClient(
         Action<IServiceCollection>? additionalConfigurableServices = null
     )
     {
-        return CreateClient<MockOidcHandler>(MockOidcHandler.SchemeName, additionalConfigurableServices);
+        return CreateClient<MockOidcHandler>(
+            MockOidcHandler.SchemeName,
+            additionalConfigurableServices
+        );
     }
 
     private HttpClient CreateClient<THandler>(

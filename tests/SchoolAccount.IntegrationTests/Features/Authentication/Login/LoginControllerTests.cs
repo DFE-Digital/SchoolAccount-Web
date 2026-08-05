@@ -12,16 +12,15 @@ public class LoginControllerTests(SchoolAccountWebApplicationFactory<Program> fa
     {
         // Assert
         var client = factory.CreateUnauthorisedClient();
-        
+
         // Act
-        var response = await client.GetAsync(
-            "/login",
-            TestContext.Current.CancellationToken
-        );
+        var response = await client.GetAsync("/login", TestContext.Current.CancellationToken);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
-        response.Headers.Location?.OriginalString.ShouldStartWith(MockOidcHandler.AuthoriserRedirectUrl);
+        response.Headers.Location?.OriginalString.ShouldStartWith(
+            MockOidcHandler.AuthoriserRedirectUrl
+        );
     }
 
     [Fact]
@@ -29,12 +28,9 @@ public class LoginControllerTests(SchoolAccountWebApplicationFactory<Program> fa
     {
         // Arrange
         var client = factory.CreateAuthorisedClient();
-        
+
         // Act
-        var response = await client.GetAsync(
-            "/login",
-            TestContext.Current.CancellationToken
-        );
+        var response = await client.GetAsync("/login", TestContext.Current.CancellationToken);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
@@ -46,13 +42,13 @@ public class LoginControllerTests(SchoolAccountWebApplicationFactory<Program> fa
     {
         // Arrange
         var client = factory.CreateAuthorisedClient();
-        
+
         // Act
         var response = await client.GetAsync(
             $"/login?returnUrl={WebUtility.UrlEncode("https://www.google.com")}",
             TestContext.Current.CancellationToken
         );
-        
+
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
@@ -62,13 +58,13 @@ public class LoginControllerTests(SchoolAccountWebApplicationFactory<Program> fa
     {
         // Arrange
         var client = factory.CreateAuthorisedClient();
-        
+
         // Act
         var response = await client.GetAsync(
             $"/login?returnUrl={WebUtility.UrlEncode("/dashboard")}",
             TestContext.Current.CancellationToken
         );
-        
+
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Found);
     }
