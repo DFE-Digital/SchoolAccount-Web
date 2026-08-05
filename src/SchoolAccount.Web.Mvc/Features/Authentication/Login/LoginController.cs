@@ -15,7 +15,7 @@ public class LoginController : Controller
 
         if (!Url.IsLocalUrl(returnUrl?.ToString()))
         {
-            return Problem();
+            return ValidationProblem();
         }
 
         return Challenge(
