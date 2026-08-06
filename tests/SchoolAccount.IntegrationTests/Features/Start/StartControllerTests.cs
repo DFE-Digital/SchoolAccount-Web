@@ -1,15 +1,14 @@
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.AspNetCore.TestHost;
 using NSubstitute;
 using SchoolAccount.Application.Abstractions.Messaging;
 using SchoolAccount.Application.Greetings.GetTimeSpecificHello;
 using SchoolAccount.IntegrationTests.Common;
 using SchoolAccount.SharedKernel;
 using Shouldly;
+using static SchoolAccount.Web.Mvc.RouteConstants;
 
-namespace SchoolAccount.IntegrationTests.Features.Home;
+namespace SchoolAccount.IntegrationTests.Features.Start;
 
-public class HomeControllerTests : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
+public class StartControllerTests : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
 {
     private readonly HttpClient _client;
 
@@ -20,7 +19,7 @@ public class HomeControllerTests : IClassFixture<SchoolAccountWebApplicationFact
         IQueryHandler<GetTimeSpecificHelloQuery, GetTimeSpecificHelloResponse>
     >();
 
-    public HomeControllerTests(SchoolAccountWebApplicationFactory<Program> factory)
+    public StartControllerTests(SchoolAccountWebApplicationFactory<Program> factory)
     {
         _client = factory.CreateUnauthorisedClient(services =>
             services.AddScoped<
@@ -30,7 +29,7 @@ public class HomeControllerTests : IClassFixture<SchoolAccountWebApplicationFact
     }
 
     [Fact]
-    public async Task Ensure_that_the_home_controller_returns_a_successful_result()
+    public async Task Ensure_that_the_start_controller_returns_a_successful_result()
     {
         // Arrange
         var stubbedGetSpecificHelloResponse = new GetTimeSpecificHelloResponse(
@@ -41,7 +40,7 @@ public class HomeControllerTests : IClassFixture<SchoolAccountWebApplicationFact
             .Returns(Result.Success(stubbedGetSpecificHelloResponse));
 
         // Act
-        var response = await _client.GetAsync("/", TestContext.Current.CancellationToken);
+        var response = await _client.GetAsync(Root, TestContext.Current.CancellationToken);
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeTrue();

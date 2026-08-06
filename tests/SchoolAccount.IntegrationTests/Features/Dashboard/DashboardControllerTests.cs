@@ -1,9 +1,6 @@
 ﻿using System.Net;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.AspNetCore.TestHost;
-using SchoolAccount.Application.Abstractions.Messaging;
 using SchoolAccount.IntegrationTests.Common;
+using SchoolAccount.Web.Mvc;
 using Shouldly;
 
 namespace SchoolAccount.IntegrationTests.Features.Dashboard;
@@ -17,7 +14,10 @@ public class DashboardControllerTests(SchoolAccountWebApplicationFactory<Program
     public async Task Ensure_that_the_dashboard_controller_returns_correct_user_name()
     {
         // Act
-        var response = await _client.GetAsync("/dashboard", TestContext.Current.CancellationToken);
+        var response = await _client.GetAsync(
+            RouteConstants.Dashboard,
+            TestContext.Current.CancellationToken
+        );
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);

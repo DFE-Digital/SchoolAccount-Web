@@ -3,10 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace SchoolAccount.Web.Mvc.Features.Error;
 
-[Route("Error")]
+[Route(RouteConstants.Error.Index)]
 public class ErrorController(ILogger<ErrorController> logger) : Controller
 {
-    [Route("{statusCode}")]
+    [Route(RouteConstants.Error.StatusCode)]
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult StatusCode(HttpStatusCode statusCode)
     {

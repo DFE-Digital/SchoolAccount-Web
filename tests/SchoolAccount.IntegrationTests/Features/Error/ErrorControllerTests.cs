@@ -8,6 +8,7 @@ using SchoolAccount.Application.Greetings.GetTimeSpecificHello;
 using SchoolAccount.IntegrationTests.Common;
 using SchoolAccount.Web.Mvc.Features.Error;
 using Shouldly;
+using static SchoolAccount.Web.Mvc.RouteConstants;
 
 namespace SchoolAccount.IntegrationTests.Features.Error;
 
@@ -67,7 +68,7 @@ public class ErrorControllerTests : IClassFixture<SchoolAccountWebApplicationFac
             .Throws(new ApplicationException("Bang!"));
 
         // Act
-        var response = await _client.GetAsync("/", TestContext.Current.CancellationToken);
+        var response = await _client.GetAsync(Root, TestContext.Current.CancellationToken);
 
         var html = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         var page = new AngleSharpPage(html);

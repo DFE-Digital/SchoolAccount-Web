@@ -3,15 +3,16 @@ using Microsoft.AspNetCore.Mvc;
 using SchoolAccount.Application.Abstractions.Messaging;
 using SchoolAccount.Application.Greetings.GetTimeSpecificHello;
 using SchoolAccount.SharedKernel;
+using static SchoolAccount.Web.Mvc.RouteConstants;
 
-namespace SchoolAccount.Web.Mvc.Features.Home;
+namespace SchoolAccount.Web.Mvc.Features.Start;
 
-[Route("/")]
-public class HomeController : Controller
+[Route(Root)]
+public class StartController : Controller
 {
     [AllowAnonymous]
     [HttpGet("")]
-    public async Task<IActionResult> Home(
+    public async Task<IActionResult> Start(
         [FromServices] IDateTimeProvider dateTimeProvider,
         [FromServices]
             IQueryHandler<
@@ -32,7 +33,7 @@ public class HomeController : Controller
         );
 
         return model.IsSuccess
-            ? View(new HomeViewModel(model.Value.Message))
+            ? View(new StartViewModel(model.Value.Message))
             : Problem(model.Error.Description);
     }
 }

@@ -1,26 +1,22 @@
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using static SchoolAccount.Web.Mvc.RouteConstants;
 
 namespace SchoolAccount.Web.Mvc.Features.Authentication.Logout;
 
-[Route("/")]
+[Route(Account.Index)]
 public class LogoutController : Controller
 {
-    [HttpGet("logout"), AllowAnonymous]
+    [HttpGet(Account.Logout)]
     public IActionResult Logout(Uri? returnUrl = null)
     {
-        returnUrl ??= new Uri(Url.Action("Dashboard", "Dashboard")!, UriKind.Relative);
-
-        if (!Url.IsLocalUrl(returnUrl?.ToString()))
+        if (!(User.Identity?.IsAuthenticated ?? false))
         {
-            return ValidationProblem();
+            return RedirectToAction("Start", "Start");
         }
 
-        return Challenge(
-            new AuthenticationProperties { RedirectUri = returnUrl.ToString() },
-            OpenIdConnectDefaults.AuthenticationScheme
-        );
+        HttpContext.Session.Clear();
+
+        return base.SignOut(OpenIdConnectDefaults.AuthenticationScheme);
     }
 }
