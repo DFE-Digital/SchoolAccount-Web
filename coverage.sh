@@ -15,6 +15,6 @@ dotnet reportgenerator \
 
 echo "Report: TestResults/CoverageReport/index.html"
 if [[ "${1:-}" == "--open" ]]; then
-  openCmd=$([ $WINDIR == "C:\WINDOWS" ] && echo "start" || echo "open")
+  openCmd=$([ -n "${WINDIR:-}" ] && echo "start" || echo "open")
   $openCmd TestResults/CoverageReport/index.html
 fi
