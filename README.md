@@ -8,6 +8,7 @@ architecture tests.
 
 - [Clean Architecture](docs/clean-architecture.md) - layers, dependency rules, and code organisation
 - [Coding Standards](docs/coding-standards.md) - formatting, code analysis, naming, and style conventions
+- [Contributing](docs/contributing.md) - guidance on repository branching strategies
 - [Testing Standards](docs/testing-standards.md) - conventions and practices for writing tests
 - [Integration Testing](docs/integration-testing.md) - guidance on integration testing of the controller endpoints
 
