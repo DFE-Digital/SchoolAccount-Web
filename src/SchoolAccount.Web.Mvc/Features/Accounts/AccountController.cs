@@ -4,10 +4,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static SchoolAccount.Web.Mvc.RouteConstants;
 
-namespace SchoolAccount.Web.Mvc.Features.Authentication.Login;
+namespace SchoolAccount.Web.Mvc.Features.Accounts;
 
 [Route(Account.Index)]
-public class LoginController : Controller
+public class AccountController : Controller
 {
     [HttpGet(Account.Login), AllowAnonymous]
     public IActionResult Login(Uri? returnUrl = null)
@@ -23,5 +23,18 @@ public class LoginController : Controller
             new AuthenticationProperties { RedirectUri = returnUrl.ToString() },
             OpenIdConnectDefaults.AuthenticationScheme
         );
+    }
+    
+    [HttpPost(Account.Logout)]
+    public IActionResult Logout(Uri? returnUrl = null)
+    {
+        if (!(User.Identity?.IsAuthenticated ?? false))
+        {
+            return RedirectToAction("Start", "Start");
+        }
+
+        HttpContext.Session.Clear();
+
+        return base.SignOut(OpenIdConnectDefaults.AuthenticationScheme);
     }
 }
