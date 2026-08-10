@@ -60,6 +60,8 @@ public class StartControllerTests : IClassFixture<SchoolAccountWebApplicationFac
 
         var bodyElement = page.GetFirstBody();
         bodyElement.ShouldNotBeNull();
-        bodyElement.ShouldContainWithoutWhitespace("In case I don't see ya");
+        bodyElement.ShouldContainWithoutWhitespace(
+            "Login with a DSI Account to access your School Account."
+        );
     }
 }
