@@ -1,15 +1,13 @@
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using static SchoolAccount.Web.Mvc.RouteConstants;
 
 namespace SchoolAccount.Web.Mvc.Features.Accounts;
 
-[Route(Account.Index), AllowAnonymous]
 public class AccountController : Controller
 {
-    [HttpGet(Account.Login)]
+    [HttpGet]
     public IActionResult Login(Uri? returnUrl = null)
     {
         returnUrl ??= new Uri(Url.Action("Dashboard", "Dashboard")!, UriKind.Relative);
@@ -25,8 +23,8 @@ public class AccountController : Controller
         );
     }
 
-    [HttpPost(Account.Logout)]
-    public IActionResult Logout(Uri? returnUrl = null)
+    [HttpGet]
+    public IActionResult Logout()
     {
         if (!(User.Identity?.IsAuthenticated ?? false))
         {
@@ -35,6 +33,17 @@ public class AccountController : Controller
 
         HttpContext.Session.Clear();
 
-        return base.SignOut(OpenIdConnectDefaults.AuthenticationScheme);
+        return base.SignOut(
+            OpenIdConnectDefaults.AuthenticationScheme,
+            CookieAuthenticationDefaults.AuthenticationScheme
+        );
+    }
+
+    [HttpGet]
+    public IActionResult SignedOut()
+    {
+        HttpContext.Session.Clear();
+
+        return RedirectToAction("Start", "Start");
     }
 }

@@ -5,4 +5,8 @@ public class AuthenticationSettings
     public const string SectionName = "OpenIDConnectSettings";
     public required string Authority { get; init; }
     public required string ClientId { get; init; }
+
+    public string? CallbackPath { get; init; }
+
+    public string? SignedOutCallbackPath { get; init; }
 }

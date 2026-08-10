@@ -16,5 +16,6 @@ public static class RouteConstants
         public const string Index = Root + "account";
         public const string Login = "login";
         public const string Logout = "logout";
+        public const string FullLogoutPath = Index + "/logout";
     }
 }

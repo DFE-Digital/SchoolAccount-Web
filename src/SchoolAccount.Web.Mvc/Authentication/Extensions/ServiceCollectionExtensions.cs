@@ -33,6 +33,18 @@ public static class ServiceCollectionExtensions
                 options.Authority = settings.Authority;
                 options.ClientId = settings.ClientId;
 
+                if (settings.CallbackPath != null)
+                {
+                    options.CallbackPath = settings.CallbackPath;
+                }
+
+                if (settings.SignedOutCallbackPath != null)
+                {
+                    options.SignedOutCallbackPath = settings.SignedOutCallbackPath;
+                }
+
+                options.SignInScheme = RouteConstants.Account.FullLogoutPath;
+
                 options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.ResponseType = OpenIdConnectResponseType.IdToken;
 
