@@ -21,11 +21,6 @@ public class HomeController : Controller
         CancellationToken cancellationToken
     )
     {
-        if (User.Identity?.IsAuthenticated == true)
-        {
-            return RedirectToAction("Dashboard", "Dashboard");
-        }
-
         var model = await getTimeSpecifyHellosQueryHandler.Handle(
             new GetTimeSpecificHelloQuery(),
             cancellationToken

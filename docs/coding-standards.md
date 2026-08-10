@@ -44,7 +44,7 @@ for the reasoning and trade-offs.
 
 ## Language and style
 
-- Favour explicit typing. Only use `var` when the type is obvious from the right-hand side.
+- Use `var` with a descriptive variable name. Never use non-descriptive names like `a` or truncate words like `con` for `context`.
 - Make types `internal sealed` by default. Only widen to `public` or remove `sealed` when there
   is a reason to.
 - Use `is null` / `is not null` rather than `== null` / `!= null`.

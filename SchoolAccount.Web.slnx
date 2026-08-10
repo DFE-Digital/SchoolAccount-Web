@@ -14,6 +14,7 @@
   <Folder Name="/docs/">
     <File Path="docs\clean-architecture.md" />
     <File Path="docs\coding-standards.md" />
+    <File Path="docs\contributing.md" />
     <File Path="docs\integration-testing.md" />
     <File Path="docs\testing-standards.md" />
   </Folder>
