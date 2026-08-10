@@ -6,10 +6,10 @@ using static SchoolAccount.Web.Mvc.RouteConstants;
 
 namespace SchoolAccount.Web.Mvc.Features.Accounts;
 
-[Route(Account.Index)]
+[Route(Account.Index), AllowAnonymous]
 public class AccountController : Controller
 {
-    [HttpGet(Account.Login), AllowAnonymous]
+    [HttpGet(Account.Login)]
     public IActionResult Login(Uri? returnUrl = null)
     {
         returnUrl ??= new Uri(Url.Action("Dashboard", "Dashboard")!, UriKind.Relative);
@@ -24,7 +24,7 @@ public class AccountController : Controller
             OpenIdConnectDefaults.AuthenticationScheme
         );
     }
-    
+
     [HttpPost(Account.Logout)]
     public IActionResult Logout(Uri? returnUrl = null)
     {

@@ -13,7 +13,7 @@ public static class RouteConstants
 
     public static class Account
     {
-        public const string Index = "account";
+        public const string Index = Root + "account";
         public const string Login = "login";
         public const string Logout = "logout";
     }
