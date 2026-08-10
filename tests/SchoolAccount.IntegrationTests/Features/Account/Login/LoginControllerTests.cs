@@ -2,9 +2,8 @@ using System.Net;
 using SchoolAccount.IntegrationTests.Common;
 using SchoolAccount.Web.Mvc;
 using Shouldly;
-using static SchoolAccount.Web.Mvc.RouteConstants;
 
-namespace SchoolAccount.IntegrationTests.Features.Authentication.Login;
+namespace SchoolAccount.IntegrationTests.Features.Account.Login;
 
 public class LoginControllerTests(SchoolAccountWebApplicationFactory<Program> factory)
     : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
@@ -16,7 +15,7 @@ public class LoginControllerTests(SchoolAccountWebApplicationFactory<Program> fa
         var client = factory.CreateUnauthorisedClient();
 
         // Act
-        var response = await client.GetAsync(Account.Login, TestContext.Current.CancellationToken);
+        var response = await client.GetAsync(RouteConstants.Account.Login, TestContext.Current.CancellationToken);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
@@ -32,7 +31,7 @@ public class LoginControllerTests(SchoolAccountWebApplicationFactory<Program> fa
         var client = factory.CreateAuthorisedClient();
 
         // Act
-        var response = await client.GetAsync(Account.Login, TestContext.Current.CancellationToken);
+        var response = await client.GetAsync(RouteConstants.Account.Login, TestContext.Current.CancellationToken);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
@@ -47,7 +46,7 @@ public class LoginControllerTests(SchoolAccountWebApplicationFactory<Program> fa
 
         // Act
         var response = await client.GetAsync(
-            $"/{Account.Login}?returnUrl={WebUtility.UrlEncode("https://www.google.com")}",
+            $"/{RouteConstants.Account.Login}?returnUrl={WebUtility.UrlEncode("https://www.google.com")}",
             TestContext.Current.CancellationToken
         );
 
@@ -63,7 +62,7 @@ public class LoginControllerTests(SchoolAccountWebApplicationFactory<Program> fa
 
         // Act
         var response = await client.GetAsync(
-            $"/{Account.Login}?returnUrl={WebUtility.UrlEncode($"/{RouteConstants.Dashboard}")}",
+            $"/{RouteConstants.Account.Login}?returnUrl={WebUtility.UrlEncode($"/{RouteConstants.Dashboard}")}",
             TestContext.Current.CancellationToken
         );
 
