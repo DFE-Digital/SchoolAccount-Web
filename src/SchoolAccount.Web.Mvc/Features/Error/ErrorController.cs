@@ -7,7 +7,7 @@ namespace SchoolAccount.Web.Mvc.Features.Error;
 [Route("/{action}"), AllowAnonymous]
 public class ErrorController(ILogger<ErrorController> logger) : Controller
 {
-    [HttpGet("{statusCode}")]
+    [HttpGet("{statusCode}"), AllowAnonymous]
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error(HttpStatusCode statusCode)
     {

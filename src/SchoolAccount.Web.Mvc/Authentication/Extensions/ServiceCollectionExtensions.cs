@@ -28,13 +28,23 @@ public static class ServiceCollectionExtensions
             .AddAuthentication(options =>
             {
                 options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultSignOutScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             })
-            .AddCookie()
+            .AddCookie(options =>
+            {
+                options.LoginPath = "/";
+                options.LogoutPath = "/account/signout";
+                options.AccessDeniedPath = "/error/403";
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                options.Cookie.Name = "sa-cookie";
+            })
             .AddOpenIdConnect(options =>
             {
                 options.Authority = settings.Authority;
                 options.ClientId = settings.ClientId;
+                options.MetadataAddress = settings.MetadataAddress;
 
                 options.CallbackPath = !string.IsNullOrEmpty(settings.CallbackPath)
                     ? settings.CallbackPath
@@ -53,6 +63,7 @@ public static class ServiceCollectionExtensions
                 options.Scope.Add("email");
                 options.SaveTokens = true;
                 options.GetClaimsFromUserInfoEndpoint = true;
+                options.SkipUnrecognizedRequests = true;
 
                 options.MapInboundClaims = false;
             });

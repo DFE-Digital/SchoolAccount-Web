@@ -7,6 +7,10 @@
     Login with a DSI Account to access your School Account.
 </p>
 
-<a asp-controller="Account" asp-action="SignIn" role="button" draggable="false" class="govuk-button govuk-button--start" data-module="govuk-button">
-    Sign in
-</a>
+@using (Html.BeginForm("SignIn", "Account", FormMethod.Post))
+{
+    <input type="hidden" name="returnUrl" value="@Model.GoTo" />
+    <button type="submit" role="button" class="govuk-button">
+        Sign in
+    </button>
+}

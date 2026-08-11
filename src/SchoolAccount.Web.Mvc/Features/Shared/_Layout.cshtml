@@ -25,9 +25,12 @@
                 </a>
                 @if (isAuthenticated)
                 {
-                    <a asp-controller="Account"
-                       asp-action="SignOut"
-                       class="dfe-school-account-header__signout">Sign out</a>
+                    using (Html.BeginForm("SignOut", "Account", FormMethod.Post))
+                    {
+                        <button role="button" type="submit" class="govuk-link dfe-school-account-header__signout">
+                            Sign out
+                        </button>
+                    }
                 }
             </div>
         </div>

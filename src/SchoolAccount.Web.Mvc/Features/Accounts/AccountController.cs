@@ -1,13 +1,15 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace SchoolAccount.Web.Mvc.Features.Accounts;
 
+[AllowAnonymous]
 public class AccountController : Controller
 {
-    [HttpGet]
+    [HttpPost]
     public IActionResult SignIn(Uri? returnUrl = null)
     {
         returnUrl ??= new Uri(
@@ -27,7 +29,7 @@ public class AccountController : Controller
         );
     }
 
-    [HttpGet]
+    [HttpPost]
     public new IActionResult SignOut()
     {
         if (!(User.Identity?.IsAuthenticated ?? false))
