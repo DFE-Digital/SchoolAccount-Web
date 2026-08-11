@@ -21,7 +21,12 @@ public class LoginControllerTests(SchoolAccountWebApplicationFactory<Program> fa
         );
 
         // Act
-        var response = await client.GetAsync(requestUri, TestContext.Current.CancellationToken);
+        using var content = new StringContent(string.Empty);
+        var response = await client.PostAsync(
+            requestUri,
+            content,
+            TestContext.Current.CancellationToken
+        );
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
@@ -40,7 +45,12 @@ public class LoginControllerTests(SchoolAccountWebApplicationFactory<Program> fa
         );
 
         // Act
-        var response = await client.GetAsync(requestUri, TestContext.Current.CancellationToken);
+        using var content = new StringContent(string.Empty);
+        var response = await client.PostAsync(
+            requestUri,
+            content,
+            TestContext.Current.CancellationToken
+        );
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
@@ -60,7 +70,12 @@ public class LoginControllerTests(SchoolAccountWebApplicationFactory<Program> fa
         );
 
         // Act
-        var response = await client.GetAsync(requestUri, TestContext.Current.CancellationToken);
+        using var content = new StringContent(string.Empty);
+        var response = await client.PostAsync(
+            requestUri,
+            content,
+            TestContext.Current.CancellationToken
+        );
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
@@ -77,7 +92,12 @@ public class LoginControllerTests(SchoolAccountWebApplicationFactory<Program> fa
         );
 
         // Act
-        var response = await client.GetAsync(requestUri, TestContext.Current.CancellationToken);
+        using var content = new StringContent(string.Empty);
+        var response = await client.PostAsync(
+            requestUri,
+            content,
+            TestContext.Current.CancellationToken
+        );
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Found);
