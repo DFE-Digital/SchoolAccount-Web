@@ -8,11 +8,15 @@ namespace SchoolAccount.Web.Mvc.Features.Accounts;
 public class AccountController : Controller
 {
     [HttpGet]
-    public IActionResult Login(Uri? returnUrl = null)
+    public IActionResult SignIn(Uri? returnUrl = null)
     {
-        returnUrl ??= new Uri(Url.Action("Dashboard", "Dashboard")!, UriKind.Relative);
+        returnUrl ??= new Uri(
+            Url.Action("Dashboard", "Dashboard")
+                ?? throw new AggregateException("Return Url cannot be automatically determined"),
+            UriKind.Relative
+        );
 
-        if (!Url.IsLocalUrl(returnUrl?.ToString()))
+        if (!Url.IsLocalUrl(returnUrl.ToString()))
         {
             return ValidationProblem();
         }
@@ -24,7 +28,7 @@ public class AccountController : Controller
     }
 
     [HttpGet]
-    public IActionResult Logout()
+    public new IActionResult SignOut()
     {
         if (!(User.Identity?.IsAuthenticated ?? false))
         {

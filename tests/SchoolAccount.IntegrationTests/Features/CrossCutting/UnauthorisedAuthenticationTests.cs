@@ -15,10 +15,7 @@ public class UnauthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<
     public async Task Ensure_that_the_dashboard_controller_redirects_for_unauthorised_users()
     {
         // Act
-        var response = await _client.GetAsync(
-            RouteConstants.Dashboard,
-            TestContext.Current.CancellationToken
-        );
+        var response = await _client.GetAsync("/Dashboard", TestContext.Current.CancellationToken);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Redirect);

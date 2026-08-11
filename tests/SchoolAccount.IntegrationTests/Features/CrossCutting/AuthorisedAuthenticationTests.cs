@@ -11,7 +11,7 @@ public class AuthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<Pr
     private readonly HttpClient _client = factory.CreateAuthorisedClient();
 
     [Theory]
-    [InlineData(RouteConstants.Dashboard)]
+    [InlineData("/dashboard")]
     public async Task Ensure_that_the_controller_redirects_for_authorised_users(string endpoint)
     {
         // Act

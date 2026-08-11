@@ -10,8 +10,7 @@ namespace SchoolAccount.Web.Mvc.Features.Start;
 [Route(Root)]
 public class StartController : Controller
 {
-    [AllowAnonymous]
-    [HttpGet("")]
+    [HttpGet(""), AllowAnonymous]
     public async Task<IActionResult> Start(
         [FromServices] IDateTimeProvider dateTimeProvider,
         [FromServices]
@@ -22,6 +21,11 @@ public class StartController : Controller
         CancellationToken cancellationToken
     )
     {
+        if (User.Identity?.IsAuthenticated ?? false)
+        {
+            return RedirectToAction("Dashboard", "Dashboard");
+        }
+
         var model = await getTimeSpecifyHellosQueryHandler.Handle(
             new GetTimeSpecificHelloQuery(),
             cancellationToken

@@ -32,7 +32,7 @@ app.UseGovUkFrontend();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapStaticAssets();
+app.MapStaticAssets().AllowAnonymous();
 
 app.MapControllerRoute("default", "{controller=Dashboard}/{action=Dashboard}/{id?}")
     .WithStaticAssets();
