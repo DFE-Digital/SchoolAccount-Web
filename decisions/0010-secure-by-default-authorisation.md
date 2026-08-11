@@ -108,3 +108,7 @@ A hand-rolled global filter that inspects each request and enforces authenticati
 * Implemented alongside a CI guardrail test (`AnonymousEndpointGuardrailTests`) that fails the build if an unlisted endpoint is found with `[AllowAnonymous]`/`.AllowAnonymous()`.
 * A prior version of this policy included a `ProviderRequirement` (restricting auth to a specific identity provider); this was removed as out of scope for this decision and may be revisited separately if needed.
 * This decision should be revisited if the application introduces a large number of genuinely public routes, at which point an allowlist-based approach may become harder to maintain than an explicit-opt-in-per-route approach.
+
+
+
+

@@ -1,4 +1,5 @@
 using System.Net;
+using Microsoft.AspNetCore.Mvc.Routing;
 using SchoolAccount.IntegrationTests.Common;
 using SchoolAccount.Web.Mvc;
 using SchoolAccount.Web.Mvc.Features.Accounts;
@@ -15,9 +16,8 @@ public class LoginControllerTests(SchoolAccountWebApplicationFactory<Program> fa
     {
         // Assert
         var client = factory.CreateUnauthorisedClient();
-        var requestUri = RouteConstants.GeneratePath(
-            RouteConstants.Account.Index,
-            RouteConstants.Account.SignIn
+        var requestUri = UrlBuilder.GeneratePath<AccountController>(
+            nameof(AccountController.SignIn)
         );
 
         // Act
@@ -35,9 +35,8 @@ public class LoginControllerTests(SchoolAccountWebApplicationFactory<Program> fa
     {
         // Arrange
         var client = factory.CreateAuthorisedClient();
-        var requestUri = RouteConstants.GeneratePath(
-            RouteConstants.Account.Index,
-            RouteConstants.Account.SignIn
+        var requestUri = UrlBuilder.GeneratePath<AccountController>(
+            nameof(AccountController.SignIn)
         );
 
         // Act
@@ -46,7 +45,7 @@ public class LoginControllerTests(SchoolAccountWebApplicationFactory<Program> fa
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
         response.Headers.Location?.OriginalString.ShouldEndWith(
-            $"{RouteConstants.GeneratePath(RouteConstants.Dashboard)}"
+            $"{UrlBuilder.GeneratePath<DashboardController>(nameof(DashboardController.Dashboard))}"
         );
     }
 
@@ -55,8 +54,8 @@ public class LoginControllerTests(SchoolAccountWebApplicationFactory<Program> fa
     {
         // Arrange
         var client = factory.CreateAuthorisedClient();
-        var requestUri = RouteConstants.GeneratePath(
-            [RouteConstants.Account.Index, RouteConstants.Account.SignIn],
+        var requestUri = UrlBuilder.GeneratePath<AccountController>(
+            nameof(AccountController.SignIn),
             new { returnUrl = "https://www.google.com" }
         );
 
@@ -72,9 +71,9 @@ public class LoginControllerTests(SchoolAccountWebApplicationFactory<Program> fa
     {
         // Arrange
         var client = factory.CreateAuthorisedClient();
-        var requestUri = RouteConstants.GeneratePath(
-            [RouteConstants.Account.Index, RouteConstants.Account.SignIn],
-            new { returnUrl = RouteConstants.GeneratePath(RouteConstants.Dashboard) }
+        var requestUri = UrlBuilder.GeneratePath<AccountController>(
+            nameof(AccountController.SignIn),
+            new { returnUrl = UrlBuilder.GeneratePath(nameof(DashboardController.Dashboard)) }
         );
 
         // Act

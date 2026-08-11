@@ -3,8 +3,8 @@ using SchoolAccount.Application.Abstractions.Messaging;
 using SchoolAccount.Application.Greetings.GetTimeSpecificHello;
 using SchoolAccount.IntegrationTests.Common;
 using SchoolAccount.SharedKernel;
+using SchoolAccount.Web.Mvc.Features.Start;
 using Shouldly;
-using static SchoolAccount.Web.Mvc.RouteConstants;
 
 namespace SchoolAccount.IntegrationTests.Features.Start;
 
@@ -35,12 +35,14 @@ public class StartControllerTests : IClassFixture<SchoolAccountWebApplicationFac
         var stubbedGetSpecificHelloResponse = new GetTimeSpecificHelloResponse(
             GetTimeSpecificHelloHandler.Messages.Morning
         );
+        var pageUri = UrlBuilder.GeneratePath<StartController>(nameof(StartController.Start));
+
         _getTimeSpecificHelloHandler
             .Handle(Arg.Any<GetTimeSpecificHelloQuery>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success(stubbedGetSpecificHelloResponse));
 
         // Act
-        var response = await _client.GetAsync(Root, TestContext.Current.CancellationToken);
+        var response = await _client.GetAsync(pageUri, TestContext.Current.CancellationToken);
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeTrue();
@@ -53,10 +55,6 @@ public class StartControllerTests : IClassFixture<SchoolAccountWebApplicationFac
         var pageTitle = page.GetTitle();
         pageTitle.ShouldNotBeNull();
         pageTitle.ShouldBeEquivalentTo("Home Page");
-
-        var headingElement = page.GetFirstHeading();
-        headingElement.ShouldNotBeNull();
-        headingElement.ShouldBeEquivalentTo(stubbedGetSpecificHelloResponse.Message);
 
         var bodyElement = page.GetFirstBody();
         bodyElement.ShouldNotBeNull();

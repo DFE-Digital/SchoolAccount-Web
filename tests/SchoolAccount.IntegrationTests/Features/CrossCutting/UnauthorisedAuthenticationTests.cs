@@ -1,8 +1,6 @@
 ﻿using System.Net;
 using SchoolAccount.IntegrationTests.Common;
-using SchoolAccount.Web.Mvc;
 using Shouldly;
-using static SchoolAccount.Web.Mvc.RouteConstants;
 
 namespace SchoolAccount.IntegrationTests.Features.CrossCutting;
 
@@ -28,7 +26,7 @@ public class UnauthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<
     public async Task Ensure_that_the_home_controller_allows_unauthorised_users()
     {
         // Act
-        var response = await _client.GetAsync(Root, TestContext.Current.CancellationToken);
+        var response = await _client.GetAsync("/", TestContext.Current.CancellationToken);
 
         // Assert
         response.StatusCode.ShouldNotBe(HttpStatusCode.Redirect);

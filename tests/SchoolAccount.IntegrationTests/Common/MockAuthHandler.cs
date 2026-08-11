@@ -13,12 +13,15 @@ public class MockAuthHandler(
 {
     public const string SchemeName = "AuthScheme";
 
+    public const string FakeGivenName = "Test user";
+    public const string FakeFamilyName = "Test surname";
+
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
         var claims = new[]
         {
-            new Claim("given_name", "Test user"),
-            new Claim("family_name", "Test surname"),
+            new Claim("given_name", FakeGivenName),
+            new Claim("family_name", FakeFamilyName),
         };
         var identity = new ClaimsIdentity(claims, "Test");
         var principal = new ClaimsPrincipal(identity);

@@ -14,8 +14,8 @@ builder
 
 var app = builder.Build();
 
-app.UseStatusCodePagesWithReExecute("/Error/{0}");
-app.UseExceptionHandler("/Error/500");
+app.UseStatusCodePagesWithReExecute("/error/{0}");
+app.UseExceptionHandler("/error/500");
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -34,7 +34,6 @@ app.UseAuthorization();
 
 app.MapStaticAssets().AllowAnonymous();
 
-app.MapControllerRoute("default", "{controller=Dashboard}/{action=Dashboard}/{id?}")
-    .WithStaticAssets();
+app.MapControllerRoute("default", "/{controller}/{action}").WithStaticAssets();
 
 await app.RunAsync();

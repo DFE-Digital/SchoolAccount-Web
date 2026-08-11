@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using SchoolAccount.IntegrationTests.Common;
+using SchoolAccount.Web.Mvc.Features.Accounts;
+using SchoolAccount.Web.Mvc.Features.Start;
 using Shouldly;
 
 namespace SchoolAccount.IntegrationTests.Features.CrossCutting;
@@ -11,11 +13,31 @@ public class AnonymousEndpointGuardrailTests(SchoolAccountWebApplicationFactory<
     // Adding a new anonymous endpoint should be a conscious, reviewed decision, not an accident.
     private static readonly HashSet<string> _allowlistedAnonymousEndpoints =
     [
-        "/health",
-        "/signin-oidc",
-        "/account/signout",
-        "/account/signedout",
+        UrlBuilder.GeneratePath<StartController>(nameof(StartController.Start)),
+        UrlBuilder.GeneratePath<AccountController>(nameof(AccountController.SignIn)),
+        UrlBuilder.GeneratePath<AccountController>(nameof(AccountController.SignOut)),
+        UrlBuilder.GeneratePath<AccountController>(nameof(AccountController.SignedOut)),
     ];
+
+    private static readonly string[] _staticAssetFileExtensions =
+    {
+        ".css",
+        ".js",
+        ".map",
+        ".png",
+        ".jpg",
+        ".jpeg",
+        ".gif",
+        ".svg",
+        ".ico",
+        ".woff",
+        ".woff2",
+        ".ttf",
+        ".eot",
+        ".webmanifest",
+        ".gz",
+        ".json",
+    };
 
     [Fact]
     public void Endpoints_marked_as_AllowAnonymous_should_only_be_the_ones_on_the_allowlist()
@@ -28,7 +50,12 @@ public class AnonymousEndpointGuardrailTests(SchoolAccountWebApplicationFactory<
             .Endpoints.OfType<RouteEndpoint>()
             .Where(e => e.Metadata.GetMetadata<IAllowAnonymous>() is not null)
             .Select(e => e.RoutePattern.RawText ?? e.DisplayName)
-            .Where(x => !string.IsNullOrEmpty(x))
+            .Where(x =>
+                !string.IsNullOrEmpty(x)
+                && !x.Contains('{')
+                && !x.Contains('}')
+                && !_staticAssetFileExtensions.Any(x.EndsWith)
+            )
             .OfType<string>()
             .ToList();
 

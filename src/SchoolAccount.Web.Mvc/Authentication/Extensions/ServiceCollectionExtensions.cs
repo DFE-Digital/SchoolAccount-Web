@@ -44,10 +44,7 @@ public static class ServiceCollectionExtensions
                     settings.SignedOutCallbackPath
                 )
                     ? settings.SignedOutCallbackPath
-                    : RouteConstants.GeneratePath(
-                        RouteConstants.Account.Index,
-                        RouteConstants.Account.SignedOut
-                    );
+                    : "/account/signedout";
 
                 options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.ResponseType = OpenIdConnectResponseType.IdToken;
