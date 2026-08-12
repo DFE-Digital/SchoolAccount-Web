@@ -11,12 +11,12 @@ public class AnonymousEndpointGuardrailTests(SchoolAccountWebApplicationFactory<
 {
     // Every endpoint allowed to bypass authentication must be listed here explicitly.
     // Adding a new anonymous endpoint should be a conscious, reviewed decision, not an accident.
-    private static readonly HashSet<string> _allowlistedAnonymousEndpoints =
+    private readonly HashSet<string> _allowlistedAnonymousEndpoints =
     [
-        UrlBuilder.GeneratePath<StartController>(nameof(StartController.Start)),
-        UrlBuilder.GeneratePath<AccountController>(nameof(AccountController.Login)),
-        UrlBuilder.GeneratePath<AccountController>(nameof(AccountController.Logout)),
-        UrlBuilder.GeneratePath<AccountController>(nameof(AccountController.LoggedOut)),
+        factory.GeneratePath<StartController>(nameof(StartController.Start)),
+        factory.GeneratePath<AccountController>(nameof(AccountController.Login)),
+        factory.GeneratePath<AccountController>(nameof(AccountController.Logout)),
+        factory.GeneratePath<AccountController>(nameof(AccountController.LoggedOut)),
     ];
 
     private static readonly string[] _staticAssetFileExtensions =

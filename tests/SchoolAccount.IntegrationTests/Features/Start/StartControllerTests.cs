@@ -11,6 +11,7 @@ namespace SchoolAccount.IntegrationTests.Features.Start;
 
 public class StartControllerTests : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
 {
+    private readonly SchoolAccountWebApplicationFactory<Program> _factory;
     private readonly HttpClient _client;
 
     private readonly IQueryHandler<
@@ -22,6 +23,7 @@ public class StartControllerTests : IClassFixture<SchoolAccountWebApplicationFac
 
     public StartControllerTests(SchoolAccountWebApplicationFactory<Program> factory)
     {
+        _factory = factory;
         _client = factory.CreateUnauthorisedClient(services =>
             services.AddScoped<
                 IQueryHandler<GetTimeSpecificHelloQuery, GetTimeSpecificHelloResponse>
@@ -33,7 +35,7 @@ public class StartControllerTests : IClassFixture<SchoolAccountWebApplicationFac
     public async Task Ensure_that_the_start_controller_returns_a_successful_result()
     {
         // Arrange
-        var pageUri = UrlBuilder.GeneratePath<StartController>(string.Empty);
+        var pageUri = _factory.GeneratePath<StartController>(string.Empty);
 
         // Act
         var response = await _client.GetAsync(pageUri, TestContext.Current.CancellationToken);

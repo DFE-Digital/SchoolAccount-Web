@@ -12,6 +12,7 @@ namespace SchoolAccount.IntegrationTests.Features.Dashboard;
 
 public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
 {
+    private readonly SchoolAccountWebApplicationFactory<Program> _factory;
     private readonly HttpClient _client;
 
     private readonly IQueryHandler<
@@ -23,6 +24,7 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
 
     public DashboardControllerTests(SchoolAccountWebApplicationFactory<Program> factory)
     {
+        _factory = factory;
         _client = factory.CreateAuthorisedClient(services =>
             services.AddScoped<
                 IQueryHandler<GetTimeSpecificHelloQuery, GetTimeSpecificHelloResponse>
@@ -42,7 +44,7 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
             .Handle(Arg.Any<GetTimeSpecificHelloQuery>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success(stubbedGetSpecificHelloResponse));
 
-        var pageUri = UrlBuilder.GeneratePath<DashboardController>(
+        var pageUri = _factory.GeneratePath<DashboardController>(
             nameof(DashboardController.Dashboard)
         );
 

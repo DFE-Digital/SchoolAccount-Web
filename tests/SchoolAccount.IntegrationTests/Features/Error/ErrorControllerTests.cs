@@ -80,7 +80,7 @@ public class ErrorControllerTests : IClassFixture<SchoolAccountWebApplicationFac
     //         TestContext.Current.CancellationToken
     //     );
     //
-    //     var requestUri = UrlBuilder.GeneratePath<DashboardController>(
+    //     var requestUri = factory.GeneratePath<DashboardController>(
     //         nameof(DashboardController.Dashboard)
     //     );
     //

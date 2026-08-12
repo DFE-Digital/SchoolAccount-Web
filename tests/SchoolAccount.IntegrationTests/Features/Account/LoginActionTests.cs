@@ -14,9 +14,7 @@ public class LoginActionTests(SchoolAccountWebApplicationFactory<Program> factor
     {
         // Arrange
         var client = factory.CreateUnauthorisedClient();
-        var requestUri = UrlBuilder.GeneratePath<AccountController>(
-            nameof(AccountController.Login)
-        );
+        var requestUri = factory.GeneratePath<AccountController>(nameof(AccountController.Login));
 
         // Act
         using var content = new StringContent(string.Empty);
@@ -38,7 +36,8 @@ public class LoginActionTests(SchoolAccountWebApplicationFactory<Program> factor
     {
         // Arrange
         var client = factory.CreateAuthorisedClient();
-        var requestUri = UrlBuilder.GeneratePath<AccountController>(
+        var requestUri = factory.GeneratePath(
+            nameof(AccountController),
             nameof(AccountController.Login)
         );
 
@@ -53,7 +52,7 @@ public class LoginActionTests(SchoolAccountWebApplicationFactory<Program> factor
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
         response.Headers.Location?.OriginalString.ShouldEndWith(
-            $"{UrlBuilder.GeneratePath<DashboardController>(nameof(DashboardController.Dashboard))}"
+            $"{factory.GeneratePath<DashboardController>(nameof(DashboardController.Dashboard))}"
         );
     }
 
@@ -62,7 +61,7 @@ public class LoginActionTests(SchoolAccountWebApplicationFactory<Program> factor
     {
         // Arrange
         var client = factory.CreateAuthorisedClient();
-        var requestUri = UrlBuilder.GeneratePath<AccountController>(
+        var requestUri = factory.GeneratePath<AccountController>(
             nameof(AccountController.Login),
             new { returnUrl = "https://www.google.com" }
         );
@@ -84,9 +83,14 @@ public class LoginActionTests(SchoolAccountWebApplicationFactory<Program> factor
     {
         // Arrange
         var client = factory.CreateAuthorisedClient();
-        var requestUri = UrlBuilder.GeneratePath<AccountController>(
+        var requestUri = factory.GeneratePath<AccountController>(
             nameof(AccountController.Login),
-            new { returnUrl = UrlBuilder.GeneratePath(nameof(DashboardController.Dashboard)) }
+            new
+            {
+                returnUrl = factory.GeneratePath<DashboardController>(
+                    nameof(DashboardController.Dashboard)
+                ),
+            }
         );
 
         // Act
