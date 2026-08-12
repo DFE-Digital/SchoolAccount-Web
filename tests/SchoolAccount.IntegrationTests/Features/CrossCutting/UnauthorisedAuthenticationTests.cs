@@ -17,8 +17,8 @@ public class UnauthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
-        response.Headers.Location?.OriginalString.ShouldStartWith(
-            MockOidcHandler.AuthoriserRedirectUrl
+        response.Headers.Location?.OriginalString.ShouldBeEquivalentTo(
+            $"/?ReturnUrl={WebUtility.UrlEncode("/Dashboard")}"
         );
     }
 

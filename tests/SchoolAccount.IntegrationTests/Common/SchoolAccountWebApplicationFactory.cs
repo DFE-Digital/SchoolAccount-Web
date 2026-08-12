@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -20,11 +21,7 @@ public class SchoolAccountWebApplicationFactory<TProgram> : WebApplicationFactor
         ClientOptions? options = null
     )
     {
-        return CreateClient<MockAuthHandler>(
-            MockAuthHandler.SchemeName,
-            additionalConfigurableServices,
-            options
-        );
+        return CreateClient<MockAuthHandler>(additionalConfigurableServices, options);
     }
 
     public HttpClient CreateUnauthorisedClient(
@@ -32,26 +29,28 @@ public class SchoolAccountWebApplicationFactory<TProgram> : WebApplicationFactor
         ClientOptions? options = null
     )
     {
-        return CreateClient<MockOidcHandler>(
-            MockOidcHandler.SchemeName,
-            additionalConfigurableServices,
-            options
-        );
+        return CreateClient<MockOidcHandler>(additionalConfigurableServices, options);
     }
 
     private HttpClient CreateClient<THandler>(
-        string schemeName,
         Action<IServiceCollection>? additionalConfigurableServices = null,
         ClientOptions? options = null
     )
         where THandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
+        const string schemeName = CookieAuthenticationDefaults.AuthenticationScheme;
         options ??= new ClientOptions();
 
         return WithWebHostBuilder(builder =>
                 builder.ConfigureTestServices(services =>
                 {
                     services.RemoveAll<IConfigureOptions<AuthenticationOptions>>();
+                    services.RemoveAll<IAuthenticationSchemeProvider>();
+                    services.RemoveAll<IConfigureOptions<OpenIdConnectOptions>>();
+                    services.RemoveAll<IPostConfigureOptions<OpenIdConnectOptions>>();
+                    services.RemoveAll<IConfigureOptions<CookieAuthenticationOptions>>();
+                    services.RemoveAll<IConfigureOptions<AuthenticationOptions>>();
+
                     services
                         .AddAuthentication(authenticationOptions =>
                         {
@@ -61,10 +60,10 @@ public class SchoolAccountWebApplicationFactory<TProgram> : WebApplicationFactor
                             authenticationOptions.DefaultSignInScheme = schemeName;
                             authenticationOptions.DefaultSignOutScheme = schemeName;
                         })
-                        .AddCookie(schemeName)
+                        .AddScheme<AuthenticationSchemeOptions, THandler>(schemeName, _ => { })
                         .AddScheme<AuthenticationSchemeOptions, THandler>(
                             OpenIdConnectDefaults.AuthenticationScheme,
-                            configureOptions => { }
+                            _ => { }
                         );
 
                     additionalConfigurableServices?.Invoke(services);

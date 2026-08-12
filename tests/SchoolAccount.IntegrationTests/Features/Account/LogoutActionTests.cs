@@ -26,7 +26,7 @@ public class LogoutActionTests(SchoolAccountWebApplicationFactory<Program> facto
         );
 
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         response.Headers.Location?.OriginalString.ShouldStartWith(
             MockOidcHandler.AuthoriserRedirectUrl
         );

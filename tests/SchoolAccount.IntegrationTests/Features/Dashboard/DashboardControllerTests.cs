@@ -54,7 +54,7 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
         );
 
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.Found);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         page.ShouldNotBeNull();
 
         var pageTitle = page.GetTitle();

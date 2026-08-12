@@ -11,8 +11,6 @@ public class MockAuthHandler(
     UrlEncoder encoder
 ) : SignOutAuthenticationHandler<AuthenticationSchemeOptions>(options, logger, encoder)
 {
-    public const string SchemeName = "AuthScheme";
-
     public const string FakeGivenName = "Test user";
     public const string FakeFamilyName = "Test surname";
 
