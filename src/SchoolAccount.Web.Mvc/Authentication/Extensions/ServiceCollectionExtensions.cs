@@ -35,7 +35,7 @@ public static class ServiceCollectionExtensions
             .AddCookie(options =>
             {
                 options.LoginPath = "/";
-                options.LogoutPath = "/account/signout";
+                options.LogoutPath = "/account/logout";
                 options.AccessDeniedPath = "/error/403";
                 options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
                 options.Cookie.Name = "sa-cookie";
@@ -54,7 +54,7 @@ public static class ServiceCollectionExtensions
                     settings.SignedOutCallbackPath
                 )
                     ? settings.SignedOutCallbackPath
-                    : "/account/signedout";
+                    : "/account/loggedout";
 
                 options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.ResponseType = OpenIdConnectResponseType.IdToken;

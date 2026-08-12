@@ -9,7 +9,7 @@ public class MockAuthHandler(
     IOptionsMonitor<AuthenticationSchemeOptions> options,
     ILoggerFactory logger,
     UrlEncoder encoder
-) : AuthenticationHandler<AuthenticationSchemeOptions>(options, logger, encoder)
+) : SignOutAuthenticationHandler<AuthenticationSchemeOptions>(options, logger, encoder)
 {
     public const string SchemeName = "AuthScheme";
 
@@ -35,6 +35,11 @@ public class MockAuthHandler(
     protected override Task HandleChallengeAsync(AuthenticationProperties? properties)
     {
         Response.Redirect(properties?.RedirectUri ?? "/");
+        return Task.CompletedTask;
+    }
+
+    protected override Task HandleSignOutAsync(AuthenticationProperties? properties)
+    {
         return Task.CompletedTask;
     }
 }

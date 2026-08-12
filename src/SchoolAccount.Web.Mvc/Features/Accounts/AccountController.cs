@@ -10,7 +10,7 @@ namespace SchoolAccount.Web.Mvc.Features.Accounts;
 public class AccountController : Controller
 {
     [HttpPost]
-    public IActionResult SignIn(Uri? returnUrl = null)
+    public IActionResult Login(Uri? returnUrl = null)
     {
         returnUrl ??= new Uri(
             Url.Action("Dashboard", "Dashboard")
@@ -30,7 +30,7 @@ public class AccountController : Controller
     }
 
     [HttpPost]
-    public new IActionResult SignOut()
+    public IActionResult Logout()
     {
         if (!(User.Identity?.IsAuthenticated ?? false))
         {
@@ -46,7 +46,7 @@ public class AccountController : Controller
     }
 
     [HttpGet]
-    public IActionResult SignedOut()
+    public IActionResult LoggedOut()
     {
         HttpContext.Session.Clear();
 

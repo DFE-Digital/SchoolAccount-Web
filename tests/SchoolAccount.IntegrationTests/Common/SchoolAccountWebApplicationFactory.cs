@@ -16,53 +16,65 @@ public class SchoolAccountWebApplicationFactory<TProgram> : WebApplicationFactor
     }
 
     public HttpClient CreateAuthorisedClient(
-        Action<IServiceCollection>? additionalConfigurableServices = null
+        Action<IServiceCollection>? additionalConfigurableServices = null,
+        ClientOptions? options = null
     )
     {
         return CreateClient<MockAuthHandler>(
             MockAuthHandler.SchemeName,
-            additionalConfigurableServices
+            additionalConfigurableServices,
+            options
         );
     }
 
     public HttpClient CreateUnauthorisedClient(
-        Action<IServiceCollection>? additionalConfigurableServices = null
+        Action<IServiceCollection>? additionalConfigurableServices = null,
+        ClientOptions? options = null
     )
     {
         return CreateClient<MockOidcHandler>(
             MockOidcHandler.SchemeName,
-            additionalConfigurableServices
+            additionalConfigurableServices,
+            options
         );
     }
 
     private HttpClient CreateClient<THandler>(
         string schemeName,
-        Action<IServiceCollection>? additionalConfigurableServices = null
+        Action<IServiceCollection>? additionalConfigurableServices = null,
+        ClientOptions? options = null
     )
         where THandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
+        options ??= new ClientOptions();
+
         return WithWebHostBuilder(builder =>
                 builder.ConfigureTestServices(services =>
                 {
                     services.RemoveAll<IConfigureOptions<AuthenticationOptions>>();
                     services
-                        .AddAuthentication(options =>
+                        .AddAuthentication(authenticationOptions =>
                         {
-                            options.DefaultAuthenticateScheme = schemeName;
-                            options.DefaultChallengeScheme = schemeName;
+                            authenticationOptions.DefaultScheme = schemeName;
+                            authenticationOptions.DefaultAuthenticateScheme = schemeName;
+                            authenticationOptions.DefaultChallengeScheme = schemeName;
+                            authenticationOptions.DefaultSignInScheme = schemeName;
+                            authenticationOptions.DefaultSignOutScheme = schemeName;
                         })
+                        .AddCookie(schemeName)
                         .AddScheme<AuthenticationSchemeOptions, THandler>(
                             OpenIdConnectDefaults.AuthenticationScheme,
-                            options => { }
-                        )
-                        .AddScheme<AuthenticationSchemeOptions, THandler>(
-                            schemeName,
-                            options => { }
+                            configureOptions => { }
                         );
 
                     additionalConfigurableServices?.Invoke(services);
                 })
             )
-            .CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
+            .CreateClient(
+                new WebApplicationFactoryClientOptions
+                {
+                    AllowAutoRedirect = options.AllowAutoRedirect,
+                }
+            );
     }
 }

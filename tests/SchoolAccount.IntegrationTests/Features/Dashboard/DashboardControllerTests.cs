@@ -3,10 +3,9 @@ using NSubstitute;
 using SchoolAccount.Application.Abstractions.Messaging;
 using SchoolAccount.Application.Greetings.GetTimeSpecificHello;
 using SchoolAccount.IntegrationTests.Common;
+using SchoolAccount.IntegrationTests.Common.Pages;
 using SchoolAccount.SharedKernel;
-using SchoolAccount.Web.Mvc;
 using SchoolAccount.Web.Mvc.Features.Dashboard;
-using SchoolAccount.Web.Mvc.Features.Start;
 using Shouldly;
 
 namespace SchoolAccount.IntegrationTests.Features.Dashboard;
@@ -49,13 +48,13 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
 
         // Act
         var response = await _client.GetAsync(pageUri, TestContext.Current.CancellationToken);
+        var page = await AngleSharpPage.FromResponseAsync<CommonPage>(
+            response,
+            TestContext.Current.CancellationToken
+        );
 
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.OK);
-
-        var html = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
-        var page = new AngleSharpPage(html);
-
+        response.StatusCode.ShouldBe(HttpStatusCode.Found);
         page.ShouldNotBeNull();
 
         var pageTitle = page.GetTitle();

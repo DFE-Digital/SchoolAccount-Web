@@ -21,6 +21,11 @@ public static class UrlBuilder
     public static string GeneratePath<T>(string action, object? query = null)
         where T : ControllerBase
     {
+        if (string.IsNullOrWhiteSpace(action))
+        {
+            return null;
+        }
+
         var controllerType = typeof(T);
         return controllerType
             .GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)
@@ -58,8 +63,10 @@ public static class UrlBuilder
             }
         }
 
-        return query is null
+        var result = query is null
             ? path.ToLowerInvariant()
             : $"{path.ToLowerInvariant()}?{string.Join("&", queryString)}";
+
+        return result.Replace("//", "/");
     }
 }

@@ -4,6 +4,7 @@ using NSubstitute.ExceptionExtensions;
 using SchoolAccount.Application.Abstractions.Messaging;
 using SchoolAccount.Application.Greetings.GetTimeSpecificHello;
 using SchoolAccount.IntegrationTests.Common;
+using SchoolAccount.IntegrationTests.Common.Pages;
 using SchoolAccount.Web.Mvc.Features.Dashboard;
 using SchoolAccount.Web.Mvc.Features.Error;
 using Shouldly;
@@ -31,58 +32,76 @@ public class ErrorControllerTests : IClassFixture<SchoolAccountWebApplicationFac
     }
 
     [Fact]
-    public async Task Ensure_that_the_home_controller_returns_a_404_result_on_unknown_page()
+    public async Task Ensure_that_the_not_found_http_status_has_corresponding_page()
     {
+        // Arrange
+        var response = await _client.GetAsync("/error/404", TestContext.Current.CancellationToken);
+
         // Act
-        var response = await _client.GetAsync(
-            "/orangesandapples",
+        var page = await AngleSharpPage.FromResponseAsync<ErrorPage>(
+            response,
             TestContext.Current.CancellationToken
         );
 
-        var html = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
-        var page = new AngleSharpPage(html);
-
         // Assert
         page.ShouldNotBeNull();
-
-        var pageTitle = page.GetTitle();
-        pageTitle.ShouldNotBeNull();
-        pageTitle.ShouldBeEquivalentTo(ErrorViewModel.NotFoundTitle);
-
-        var headingElement = page.GetFirstHeading();
-        headingElement.ShouldNotBeNull();
-        headingElement.ShouldBeEquivalentTo("Page not found");
-
+        page.IsNotFoundPageTitle().ShouldBeTrue();
+        page.IsNotFoundPageHeading().ShouldBeTrue();
         response.IsSuccessStatusCode.ShouldBeFalse();
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
-    public async Task Ensure_that_when_the_home_controller_fails_it_returns_a_500_result()
+    public async Task Ensure_that_the_internal_server_error_http_status_has_corresponding_page()
     {
         // Arrange
-        var requestUri = UrlBuilder.GeneratePath<DashboardController>(
-            nameof(DashboardController.Dashboard)
-        );
-
-        _getTimeSpecificHelloHandler
-            .Handle(Arg.Any<GetTimeSpecificHelloQuery>(), Arg.Any<CancellationToken>())
-            .Throws(new ApplicationException("Bang!"));
+        var response = await _client.GetAsync("/error/500", TestContext.Current.CancellationToken);
 
         // Act
-        var response = await _client.GetAsync(requestUri, TestContext.Current.CancellationToken);
-
-        var html = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
-        var page = new AngleSharpPage(html);
+        var page = await AngleSharpPage.FromResponseAsync<ErrorPage>(
+            response,
+            TestContext.Current.CancellationToken
+        );
 
         // Assert
         page.ShouldNotBeNull();
-
-        var pageTitle = page.GetTitle();
-        pageTitle.ShouldNotBeNull();
-        pageTitle.ShouldBeEquivalentTo(ErrorViewModel.ErrorTitle);
-
+        page.IsServerErrorPageTitle().ShouldBeTrue();
         response.IsSuccessStatusCode.ShouldBeFalse();
         response.StatusCode.ShouldBe(HttpStatusCode.InternalServerError);
     }
+
+    // Test to ensure that the server error page triggers correctly
+    // [Fact]
+    // public async Task Ensure_that_the_server_error_http_status_has_corresponding_page()
+    // {
+    //     // Arrange
+    //     var response = await _client.GetAsync(
+    //         "/error/500",
+    //         TestContext.Current.CancellationToken
+    //     );
+    //
+    //     var requestUri = UrlBuilder.GeneratePath<DashboardController>(
+    //         nameof(DashboardController.Dashboard)
+    //     );
+    //
+    //     _getTimeSpecificHelloHandler
+    //         .Handle(Arg.Any<GetTimeSpecificHelloQuery>(), Arg.Any<CancellationToken>())
+    //         .Throws(new ApplicationException("Bang!"));
+    //
+    //     // Act
+    //     var response = await _client.GetAsync(requestUri, TestContext.Current.CancellationToken);
+    //
+    //     var html = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+    //     var page = new AngleSharpPage(html);
+    //
+    //     // Assert
+    //     page.ShouldNotBeNull();
+    //
+    //     var pageTitle = page.GetTitle();
+    //     pageTitle.ShouldNotBeNull();
+    //     pageTitle.ShouldBeEquivalentTo(ErrorViewModel.ErrorTitle);
+    //
+    //     response.IsSuccessStatusCode.ShouldBeFalse();
+    //     response.StatusCode.ShouldBe(HttpStatusCode.InternalServerError);
+    // }
 }

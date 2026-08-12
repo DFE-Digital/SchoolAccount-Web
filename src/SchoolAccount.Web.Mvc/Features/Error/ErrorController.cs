@@ -18,6 +18,7 @@ public class ErrorController(ILogger<ErrorController> logger) : Controller
         );
 
         var errorViewModel = new ErrorViewModel(statusCode);
+        Response.StatusCode = (int)errorViewModel.StatusCode;
 
         return View(errorViewModel);
     }

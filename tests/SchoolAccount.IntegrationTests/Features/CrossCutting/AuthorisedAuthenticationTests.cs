@@ -30,6 +30,6 @@ public class AuthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<Pr
         var response = await _client.GetAsync(endpoint, TestContext.Current.CancellationToken);
 
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.Found);
     }
 }

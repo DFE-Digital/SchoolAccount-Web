@@ -14,9 +14,9 @@ public class AnonymousEndpointGuardrailTests(SchoolAccountWebApplicationFactory<
     private static readonly HashSet<string> _allowlistedAnonymousEndpoints =
     [
         UrlBuilder.GeneratePath<StartController>(nameof(StartController.Start)),
-        UrlBuilder.GeneratePath<AccountController>(nameof(AccountController.SignIn)),
-        UrlBuilder.GeneratePath<AccountController>(nameof(AccountController.SignOut)),
-        UrlBuilder.GeneratePath<AccountController>(nameof(AccountController.SignedOut)),
+        UrlBuilder.GeneratePath<AccountController>(nameof(AccountController.Login)),
+        UrlBuilder.GeneratePath<AccountController>(nameof(AccountController.Logout)),
+        UrlBuilder.GeneratePath<AccountController>(nameof(AccountController.LoggedOut)),
     ];
 
     private static readonly string[] _staticAssetFileExtensions =

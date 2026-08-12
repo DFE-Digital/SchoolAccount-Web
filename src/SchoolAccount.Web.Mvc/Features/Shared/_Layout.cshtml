@@ -25,7 +25,7 @@
                 </a>
                 @if (isAuthenticated)
                 {
-                    using (Html.BeginForm("SignOut", "Account", FormMethod.Post))
+                    using (Html.BeginForm("Logout", "Account", FormMethod.Post))
                     {
                         <button role="button" type="submit" class="govuk-link dfe-school-account-header__signout">
                             Sign out

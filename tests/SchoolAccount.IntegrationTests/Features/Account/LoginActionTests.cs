@@ -1,23 +1,21 @@
 using System.Net;
-using Microsoft.AspNetCore.Mvc.Routing;
 using SchoolAccount.IntegrationTests.Common;
-using SchoolAccount.Web.Mvc;
 using SchoolAccount.Web.Mvc.Features.Accounts;
 using SchoolAccount.Web.Mvc.Features.Dashboard;
 using Shouldly;
 
-namespace SchoolAccount.IntegrationTests.Features.Account.Login;
+namespace SchoolAccount.IntegrationTests.Features.Account;
 
-public class LoginControllerTests(SchoolAccountWebApplicationFactory<Program> factory)
+public class LoginActionTests(SchoolAccountWebApplicationFactory<Program> factory)
     : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
 {
     [Fact]
     public async Task Unauthorised_users_are_redirected_to_DSI()
     {
-        // Assert
+        // Arrange
         var client = factory.CreateUnauthorisedClient();
         var requestUri = UrlBuilder.GeneratePath<AccountController>(
-            nameof(AccountController.SignIn)
+            nameof(AccountController.Login)
         );
 
         // Act
@@ -41,7 +39,7 @@ public class LoginControllerTests(SchoolAccountWebApplicationFactory<Program> fa
         // Arrange
         var client = factory.CreateAuthorisedClient();
         var requestUri = UrlBuilder.GeneratePath<AccountController>(
-            nameof(AccountController.SignIn)
+            nameof(AccountController.Login)
         );
 
         // Act
@@ -65,7 +63,7 @@ public class LoginControllerTests(SchoolAccountWebApplicationFactory<Program> fa
         // Arrange
         var client = factory.CreateAuthorisedClient();
         var requestUri = UrlBuilder.GeneratePath<AccountController>(
-            nameof(AccountController.SignIn),
+            nameof(AccountController.Login),
             new { returnUrl = "https://www.google.com" }
         );
 
@@ -87,7 +85,7 @@ public class LoginControllerTests(SchoolAccountWebApplicationFactory<Program> fa
         // Arrange
         var client = factory.CreateAuthorisedClient();
         var requestUri = UrlBuilder.GeneratePath<AccountController>(
-            nameof(AccountController.SignIn),
+            nameof(AccountController.Login),
             new { returnUrl = UrlBuilder.GeneratePath(nameof(DashboardController.Dashboard)) }
         );
 
