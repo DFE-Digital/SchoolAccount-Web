@@ -1,7 +1,7 @@
 ---
 status: "accepted"
 date: "2026-08-11"
-decision-makers: 
+decision-makers: Chris Kelly, Andy Cunningham
 ---
 
 # Enforce authentication by default via a global fallback authorisation policy
