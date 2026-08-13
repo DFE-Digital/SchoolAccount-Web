@@ -1,4 +1,5 @@
 using System.Reflection;
+using JetBrains.Annotations;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -34,30 +35,14 @@ public class SchoolAccountWebApplicationFactory<TProgram> : WebApplicationFactor
         return CreateClient<MockOidcHandler>(additionalConfigurableServices, options);
     }
 
-    public string GeneratePath<T>(string action, object? query = null)
-        where T : ControllerBase
-    {
-        if (string.IsNullOrWhiteSpace(action))
-        {
-            return null;
-        }
-
-        var controllerType = typeof(T);
-        return controllerType
-            .GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)
-            .Any(x => x.Name == action)
-            ? GeneratePath(GetControllerRoute(controllerType), action, query)
-            : throw new ArgumentException(
-                $"Action {action} not found on controller {controllerType.Name}"
-            );
-    }
-
-    public string GeneratePath(string controller, string action, object? query = null)
+    public string GeneratePath(
+        [AspMvcController] string controller,
+        [AspMvcAction] string action,
+        [AspMvcModelType] object? query = null
+    )
     {
         using var scope = Services.CreateScope();
-
         var generator = scope.ServiceProvider.GetRequiredService<LinkGenerator>();
-
         return generator.GetPathByAction(action, controller.Replace("Controller", ""), query);
     }
 
@@ -104,17 +89,5 @@ public class SchoolAccountWebApplicationFactory<TProgram> : WebApplicationFactor
                     AllowAutoRedirect = options.AllowAutoRedirect,
                 }
             );
-    }
-
-    private static string GetControllerRoute(Type controllerType)
-    {
-        var template = controllerType.GetCustomAttribute<RouteAttribute>()?.Template;
-
-        if (template?.Contains('{') == true && template?.Contains('}') == true)
-        {
-            template = null;
-        }
-
-        return template ?? controllerType.Name.Replace(nameof(Controller), string.Empty);
     }
 }

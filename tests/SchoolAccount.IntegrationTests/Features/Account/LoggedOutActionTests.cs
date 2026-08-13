@@ -16,9 +16,7 @@ public class LoggedOutActionTests(SchoolAccountWebApplicationFactory<Program> fa
     {
         // Arrange
         var client = factory.CreateUnauthorisedClient();
-        var requestUri = factory.GeneratePath<AccountController>(
-            nameof(AccountController.LoggedOut)
-        );
+        var requestUri = factory.GeneratePath("Account", "LoggedOut");
 
         // Act
         var response = await client.GetAsync(requestUri, TestContext.Current.CancellationToken);
@@ -26,7 +24,7 @@ public class LoggedOutActionTests(SchoolAccountWebApplicationFactory<Program> fa
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
         response.Headers.Location?.OriginalString.ShouldStartWith(
-            factory.GeneratePath<StartController>(nameof(StartController.Start))
+            factory.GeneratePath("Start", "Start")
         );
     }
 
@@ -51,9 +49,7 @@ public class LoggedOutActionTests(SchoolAccountWebApplicationFactory<Program> fa
             services.AddSingleton(mockContextAssessor);
         });
 
-        var requestUri = factory.GeneratePath<AccountController>(
-            nameof(AccountController.LoggedOut)
-        );
+        var requestUri = factory.GeneratePath("Account", "LoggedOut");
 
         // Act
         await client.GetAsync(requestUri, TestContext.Current.CancellationToken);

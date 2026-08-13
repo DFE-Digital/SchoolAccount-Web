@@ -14,7 +14,7 @@ public class LogoutActionTests(SchoolAccountWebApplicationFactory<Program> facto
     {
         // Arrange
         var client = factory.CreateAuthorisedClient(options: ClientOptions.AllowRedirects);
-        var requestUri = factory.GeneratePath<AccountController>(nameof(AccountController.Logout));
+        var requestUri = factory.GeneratePath("Account", "Logout");
 
         // Act
         using var content = new StringContent(string.Empty);
@@ -36,7 +36,7 @@ public class LogoutActionTests(SchoolAccountWebApplicationFactory<Program> facto
     {
         // Arrange
         var client = factory.CreateUnauthorisedClient(options: ClientOptions.AllowRedirects);
-        var requestUri = factory.GeneratePath<AccountController>(nameof(AccountController.Logout));
+        var requestUri = factory.GeneratePath("Account", "Logout");
 
         // Act
         using var content = new StringContent(string.Empty);
@@ -49,7 +49,7 @@ public class LogoutActionTests(SchoolAccountWebApplicationFactory<Program> facto
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
         response.Headers.Location?.OriginalString.ShouldEndWith(
-            factory.GeneratePath<StartController>(nameof(StartController.Start))
+            factory.GeneratePath("Start", "Start")
         );
     }
 }

@@ -44,9 +44,7 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
             .Handle(Arg.Any<GetTimeSpecificHelloQuery>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success(stubbedGetSpecificHelloResponse));
 
-        var pageUri = _factory.GeneratePath<DashboardController>(
-            nameof(DashboardController.Dashboard)
-        );
+        var pageUri = _factory.GeneratePath("Dashboard", "Dashboard");
 
         // Act
         var response = await _client.GetAsync(pageUri, TestContext.Current.CancellationToken);

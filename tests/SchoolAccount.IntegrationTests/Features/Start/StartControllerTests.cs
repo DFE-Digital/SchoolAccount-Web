@@ -35,7 +35,7 @@ public class StartControllerTests : IClassFixture<SchoolAccountWebApplicationFac
     public async Task Ensure_that_the_start_controller_returns_a_successful_result()
     {
         // Arrange
-        var pageUri = _factory.GeneratePath<StartController>(string.Empty);
+        var pageUri = _factory.GeneratePath("Start", "Start");
 
         // Act
         var response = await _client.GetAsync(pageUri, TestContext.Current.CancellationToken);

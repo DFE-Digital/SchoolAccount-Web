@@ -14,7 +14,7 @@ public class LoginActionTests(SchoolAccountWebApplicationFactory<Program> factor
     {
         // Arrange
         var client = factory.CreateUnauthorisedClient();
-        var requestUri = factory.GeneratePath<AccountController>(nameof(AccountController.Login));
+        var requestUri = factory.GeneratePath("Account", "Login");
 
         // Act
         using var content = new StringContent(string.Empty);
@@ -52,7 +52,7 @@ public class LoginActionTests(SchoolAccountWebApplicationFactory<Program> factor
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
         response.Headers.Location?.OriginalString.ShouldEndWith(
-            $"{factory.GeneratePath<DashboardController>(nameof(DashboardController.Dashboard))}"
+            $"{factory.GeneratePath("Dashboard", "Dashboard")}"
         );
     }
 
@@ -61,8 +61,9 @@ public class LoginActionTests(SchoolAccountWebApplicationFactory<Program> factor
     {
         // Arrange
         var client = factory.CreateAuthorisedClient();
-        var requestUri = factory.GeneratePath<AccountController>(
-            nameof(AccountController.Login),
+        var requestUri = factory.GeneratePath(
+            "Account",
+            "Login",
             new { returnUrl = "https://www.google.com" }
         );
 
@@ -83,14 +84,10 @@ public class LoginActionTests(SchoolAccountWebApplicationFactory<Program> factor
     {
         // Arrange
         var client = factory.CreateAuthorisedClient();
-        var requestUri = factory.GeneratePath<AccountController>(
-            nameof(AccountController.Login),
-            new
-            {
-                returnUrl = factory.GeneratePath<DashboardController>(
-                    nameof(DashboardController.Dashboard)
-                ),
-            }
+        var requestUri = factory.GeneratePath(
+            "Account",
+            "Login",
+            new { returnUrl = factory.GeneratePath("Dashboard", "Dashboard") }
         );
 
         // Act
