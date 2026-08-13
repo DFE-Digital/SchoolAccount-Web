@@ -8,7 +8,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder
     .Services.AddApplication()
-    .AddSession()
     .AddPresentation(builder.Environment, builder.Configuration)
     .AddInfrastructure();
 
@@ -32,7 +31,7 @@ app.UseGovUkFrontend();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapStaticAssets().AllowAnonymous();
+app.MapStaticAssets();
 
 app.MapControllerRoute("default", "/{controller}/{action}").WithStaticAssets();
 

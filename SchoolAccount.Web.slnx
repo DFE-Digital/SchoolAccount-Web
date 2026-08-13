@@ -10,7 +10,6 @@
     <File Path="decisions\0006-enforce-code-quality-with-roslyn-analysers.md" />
     <File Path="decisions\0007-supporting-sass-within-gds-styles.md" />
     <File Path="decisions\0008-use-feature-structure.md" />
-    <File Path="decisions\0010-secure-by-default-authorisation.md" />
   </Folder>
   <Folder Name="/docs/">
     <File Path="docs\clean-architecture.md" />

@@ -12,6 +12,7 @@ public static class DependencyInjection
         IConfigurationManager configuration
     )
     {
+        services.AddSession();
         services.AddDsiAuthentication(configuration);
         services.AddControllersWithFeatureViews();
         services.AddGovUkFrontend();

@@ -9,7 +9,6 @@
 
 @using (Html.BeginForm("Login", "Account", FormMethod.Post))
 {
-    <input type="hidden" name="returnUrl" value="@Model.GoTo" />
     <button type="submit" role="button" class="govuk-button">
         Sign in
     </button>

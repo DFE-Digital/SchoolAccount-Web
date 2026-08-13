@@ -14,7 +14,10 @@ public class AccountController : Controller
     {
         returnUrl ??= new Uri(
             Url.Action("Dashboard", "Dashboard")
-                ?? throw new AggregateException("Return Url cannot be automatically determined"),
+                ?? throw new ArgumentException(
+                    "A return url cannot be automatically determined",
+                    nameof(returnUrl)
+                ),
             UriKind.Relative
         );
 

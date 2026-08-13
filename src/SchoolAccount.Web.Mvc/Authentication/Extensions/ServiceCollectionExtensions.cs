@@ -30,13 +30,7 @@ public static class ServiceCollectionExtensions
                 options.DefaultSignOutScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             })
-            .AddCookie(options =>
-            {
-                options.LogoutPath = "/account/logout";
-                options.AccessDeniedPath = "/error/403";
-                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-                options.Cookie.Name = "sa-cookie";
-            })
+            .AddCookie()
             .AddOpenIdConnect(options =>
             {
                 options.Authority = settings.Authority;
@@ -59,7 +53,6 @@ public static class ServiceCollectionExtensions
                 options.Scope.Add("email");
                 options.SaveTokens = true;
                 options.GetClaimsFromUserInfoEndpoint = true;
-                options.SkipUnrecognizedRequests = true;
 
                 options.MapInboundClaims = false;
 
