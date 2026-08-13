@@ -9,7 +9,7 @@ namespace SchoolAccount.Web.Mvc.Features.Accounts;
 [AllowAnonymous]
 public class AccountController : Controller
 {
-    [HttpPost]
+    [HttpGet]
     public IActionResult Login(Uri? returnUrl = null)
     {
         returnUrl ??= new Uri(

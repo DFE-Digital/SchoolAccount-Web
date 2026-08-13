@@ -27,7 +27,6 @@ public static class ServiceCollectionExtensions
             .AddAuthentication(options =>
             {
                 options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultSignOutScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             })
             .AddCookie()
@@ -36,15 +35,7 @@ public static class ServiceCollectionExtensions
                 options.Authority = settings.Authority;
                 options.ClientId = settings.ClientId;
 
-                options.CallbackPath = !string.IsNullOrEmpty(settings.CallbackPath)
-                    ? settings.CallbackPath
-                    : "/signin-oidc";
-
-                options.SignedOutCallbackPath = !string.IsNullOrEmpty(
-                    settings.SignedOutCallbackPath
-                )
-                    ? settings.SignedOutCallbackPath
-                    : "/account/loggedout";
+                options.SignedOutCallbackPath = "/account/loggedout";
 
                 options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.ResponseType = OpenIdConnectResponseType.IdToken;
