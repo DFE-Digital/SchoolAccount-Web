@@ -17,12 +17,7 @@ public class LoginActionTests(SchoolAccountWebApplicationFactory<Program> factor
         var requestUri = factory.GeneratePath("Account", "Login");
 
         // Act
-        using var content = new StringContent(string.Empty);
-        var response = await client.PostAsync(
-            requestUri,
-            content,
-            TestContext.Current.CancellationToken
-        );
+        var response = await client.GetAsync(requestUri, TestContext.Current.CancellationToken);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
@@ -36,18 +31,10 @@ public class LoginActionTests(SchoolAccountWebApplicationFactory<Program> factor
     {
         // Arrange
         var client = factory.CreateAuthorisedClient();
-        var requestUri = factory.GeneratePath(
-            nameof(AccountController),
-            nameof(AccountController.Login)
-        );
+        var requestUri = factory.GeneratePath("Account", "Login");
 
         // Act
-        using var content = new StringContent(string.Empty);
-        var response = await client.PostAsync(
-            requestUri,
-            content,
-            TestContext.Current.CancellationToken
-        );
+        var response = await client.GetAsync(requestUri, TestContext.Current.CancellationToken);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
@@ -68,12 +55,7 @@ public class LoginActionTests(SchoolAccountWebApplicationFactory<Program> factor
         );
 
         // Act
-        using var content = new StringContent(string.Empty);
-        var response = await client.PostAsync(
-            requestUri,
-            content,
-            TestContext.Current.CancellationToken
-        );
+        var response = await client.GetAsync(requestUri, TestContext.Current.CancellationToken);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
@@ -91,12 +73,7 @@ public class LoginActionTests(SchoolAccountWebApplicationFactory<Program> factor
         );
 
         // Act
-        using var content = new StringContent(string.Empty);
-        var response = await client.PostAsync(
-            requestUri,
-            content,
-            TestContext.Current.CancellationToken
-        );
+        var response = await client.GetAsync(requestUri, TestContext.Current.CancellationToken);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Found);

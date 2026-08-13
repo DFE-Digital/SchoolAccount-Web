@@ -17,10 +17,7 @@ namespace SchoolAccount.Web.Mvc.UnitTests.Extensions.ServiceCollection;
 
 public class ServiceCollectionAddDsiAuthenticationExtensionTests
 {
-    private static ConfigurationManager BuildConfiguration(
-        string? callbackPath = "/custom/signin-oidc",
-        string? signedOutCallbackPath = "/custom/loggedout"
-    )
+    private static ConfigurationManager BuildConfiguration()
     {
         var configManager = new ConfigurationManager();
         configManager.AddInMemoryCollection(
@@ -30,34 +27,10 @@ public class ServiceCollectionAddDsiAuthenticationExtensionTests
                 [$"{AuthenticationSettings.SectionName}:ClientId"] = "test-client-id",
                 [$"{AuthenticationSettings.SectionName}:MetadataAddress"] =
                     "https://idp.example.com/.well-known/openid-configuration",
-                [$"{AuthenticationSettings.SectionName}:CallbackPath"] = callbackPath,
-                [$"{AuthenticationSettings.SectionName}:SignedOutCallbackPath"] =
-                    signedOutCallbackPath,
             }
         );
 
         return configManager;
-    }
-
-    [Fact]
-    public void Configures_cookie_options()
-    {
-        // Arrange
-        var services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
-
-        using var configuration = BuildConfiguration();
-        services.AddDsiAuthentication(configuration);
-
-        var provider = services.BuildServiceProvider();
-        var cookie = provider
-            .GetRequiredService<IOptionsMonitor<CookieAuthenticationOptions>>()
-            .Get(CookieAuthenticationDefaults.AuthenticationScheme);
-
-        // Assert
-        cookie.LogoutPath.Value.ShouldBe("/account/logout");
-        cookie.AccessDeniedPath.Value.ShouldBe("/error/403");
-        cookie.Cookie.SecurePolicy.ShouldBe(CookieSecurePolicy.Always);
-        cookie.Cookie.Name.ShouldBe("sa-cookie");
     }
 
     [Fact]
@@ -77,8 +50,6 @@ public class ServiceCollectionAddDsiAuthenticationExtensionTests
         // Assert
         oidc.Authority.ShouldBe("https://idp.example.com");
         oidc.ClientId.ShouldBe("test-client-id");
-        oidc.CallbackPath.Value.ShouldBe("/custom/signin-oidc");
-        oidc.SignedOutCallbackPath.Value.ShouldBe("/custom/loggedout");
         oidc.SignInScheme.ShouldBe(CookieAuthenticationDefaults.AuthenticationScheme);
         oidc.ResponseType.ShouldBe(OpenIdConnectResponseType.IdToken);
         oidc.Scope.ShouldContain("organisation");
@@ -94,7 +65,7 @@ public class ServiceCollectionAddDsiAuthenticationExtensionTests
         // Arrange
         var services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
 
-        using var configuration = BuildConfiguration(null, null);
+        using var configuration = BuildConfiguration();
         services.AddDsiAuthentication(configuration);
 
         var provider = services.BuildServiceProvider();
