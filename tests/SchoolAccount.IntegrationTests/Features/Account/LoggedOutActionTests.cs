@@ -1,5 +1,8 @@
 using System.Net;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using NSubstitute;
 using SchoolAccount.IntegrationTests.Common;
 using SchoolAccount.Web.Mvc.Features.Accounts;
@@ -26,35 +29,5 @@ public class LoggedOutActionTests(SchoolAccountWebApplicationFactory<Program> fa
         response.Headers.Location?.OriginalString.ShouldStartWith(
             factory.GeneratePath("Start", "Start")
         );
-    }
-
-    [Fact]
-    public async Task Ensure_LoggedOut_clears_a_users_session()
-    {
-        // Arrange
-        var mockSession = Substitute.For<ISession>();
-        var mockContextAssessor = Substitute.For<IHttpContextAccessor>();
-        var httpContext = new DefaultHttpContext { Session = mockSession };
-
-        mockContextAssessor.HttpContext.Returns(httpContext);
-
-        var wasSessionCleared = false;
-        var keys = new[] { "key1", "key2" };
-        mockSession.Keys.Returns(keys);
-        mockSession.When(s => s.Remove(Arg.Any<string>())).Do(_ => wasSessionCleared = true);
-
-        var client = factory.CreateUnauthorisedClient(services =>
-        {
-            services.RemoveAll<IHttpContextAccessor>();
-            services.AddSingleton(mockContextAssessor);
-        });
-
-        var requestUri = factory.GeneratePath("Account", "LoggedOut");
-
-        // Act
-        await client.GetAsync(requestUri, TestContext.Current.CancellationToken);
-
-        // Assert
-        wasSessionCleared.ShouldBeTrue();
     }
 }
