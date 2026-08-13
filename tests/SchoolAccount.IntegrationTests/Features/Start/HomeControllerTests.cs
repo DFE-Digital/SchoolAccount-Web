@@ -4,12 +4,11 @@ using SchoolAccount.Application.Greetings.GetTimeSpecificHello;
 using SchoolAccount.IntegrationTests.Common;
 using SchoolAccount.IntegrationTests.Common.Pages;
 using SchoolAccount.SharedKernel;
-using SchoolAccount.Web.Mvc.Features.Start;
 using Shouldly;
 
 namespace SchoolAccount.IntegrationTests.Features.Start;
 
-public class StartControllerTests : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
+public class HomeControllerTests : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
 {
     private readonly SchoolAccountWebApplicationFactory<Program> _factory;
     private readonly HttpClient _client;
@@ -21,7 +20,7 @@ public class StartControllerTests : IClassFixture<SchoolAccountWebApplicationFac
         IQueryHandler<GetTimeSpecificHelloQuery, GetTimeSpecificHelloResponse>
     >();
 
-    public StartControllerTests(SchoolAccountWebApplicationFactory<Program> factory)
+    public HomeControllerTests(SchoolAccountWebApplicationFactory<Program> factory)
     {
         _factory = factory;
         _client = factory.CreateUnauthorisedClient(services =>
@@ -35,7 +34,7 @@ public class StartControllerTests : IClassFixture<SchoolAccountWebApplicationFac
     public async Task Ensure_that_the_start_controller_returns_a_successful_result()
     {
         // Arrange
-        var pageUri = _factory.GeneratePath("Start", "Start");
+        var pageUri = _factory.GeneratePath("Home", "Home");
 
         // Act
         var response = await _client.GetAsync(pageUri, TestContext.Current.CancellationToken);

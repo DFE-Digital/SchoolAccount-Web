@@ -1,7 +1,6 @@
 using System.Net;
 using SchoolAccount.IntegrationTests.Common;
 using SchoolAccount.Web.Mvc.Features.Accounts;
-using SchoolAccount.Web.Mvc.Features.Start;
 using Shouldly;
 
 namespace SchoolAccount.IntegrationTests.Features.Account;
@@ -49,7 +48,7 @@ public class LogoutActionTests(SchoolAccountWebApplicationFactory<Program> facto
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
         response.Headers.Location?.OriginalString.ShouldEndWith(
-            factory.GeneratePath("Start", "Start")
+            factory.GeneratePath("Home", "Home")
         );
     }
 }

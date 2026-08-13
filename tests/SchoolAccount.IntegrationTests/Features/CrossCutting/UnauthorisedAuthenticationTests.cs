@@ -12,13 +12,16 @@ public class UnauthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<
     [Fact]
     public async Task Ensure_that_the_dashboard_controller_redirects_for_unauthorised_users()
     {
+        // Arrange
+        var dashboardUri = factory.GeneratePath("Dashboard", "Dashboard");
+
         // Act
-        var response = await _client.GetAsync("/Dashboard", TestContext.Current.CancellationToken);
+        var response = await _client.GetAsync(dashboardUri, TestContext.Current.CancellationToken);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
         response.Headers.Location?.OriginalString.ShouldBeEquivalentTo(
-            $"/?ReturnUrl={WebUtility.UrlEncode("/Dashboard")}"
+            factory.GeneratePath("Home", "Home", new { ReturnUrl = dashboardUri })
         );
     }
 

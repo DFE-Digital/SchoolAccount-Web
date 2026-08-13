@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using SchoolAccount.IntegrationTests.Common;
 using SchoolAccount.Web.Mvc.Features.Accounts;
-using SchoolAccount.Web.Mvc.Features.Start;
 using Shouldly;
 
 namespace SchoolAccount.IntegrationTests.Features.CrossCutting;
@@ -13,7 +12,7 @@ public class AnonymousEndpointGuardrailTests(SchoolAccountWebApplicationFactory<
     // Adding a new anonymous endpoint should be a conscious, reviewed decision, not an accident.
     private readonly HashSet<string> _allowlistedAnonymousEndpoints =
     [
-        factory.GeneratePath("Start", "Start"),
+        factory.GeneratePath("Home", "Start"),
         factory.GeneratePath("Account", "Login"),
         factory.GeneratePath("Account", "Logout"),
         factory.GeneratePath("Account", "LoggedOut"),

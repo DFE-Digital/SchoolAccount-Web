@@ -6,7 +6,6 @@ using Microsoft.Extensions.Options;
 using NSubstitute;
 using SchoolAccount.IntegrationTests.Common;
 using SchoolAccount.Web.Mvc.Features.Accounts;
-using SchoolAccount.Web.Mvc.Features.Start;
 using Shouldly;
 
 namespace SchoolAccount.IntegrationTests.Features.Account;
@@ -27,7 +26,7 @@ public class LoggedOutActionTests(SchoolAccountWebApplicationFactory<Program> fa
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
         response.Headers.Location?.OriginalString.ShouldStartWith(
-            factory.GeneratePath("Start", "Start")
+            factory.GeneratePath("Home", "Start")
         );
     }
 }

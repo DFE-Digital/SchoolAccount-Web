@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SchoolAccount.SharedKernel;
 
 namespace SchoolAccount.Web.Mvc.Features.Accounts;
 
 [AllowAnonymous]
-public class AccountController : Controller
+public class AccountController(IUserContext userContext) : Controller
 {
     [HttpGet]
     public IActionResult Login(Uri? returnUrl = null)
@@ -35,9 +36,9 @@ public class AccountController : Controller
     [HttpPost]
     public IActionResult Logout()
     {
-        if (!(User.Identity?.IsAuthenticated ?? false))
+        if (!userContext.IsAuthenticated)
         {
-            return RedirectToAction("Start", "Start");
+            return RedirectToAction("Home", "Home");
         }
 
         HttpContext.Session.Clear();
@@ -53,6 +54,6 @@ public class AccountController : Controller
     {
         HttpContext.Session.Clear();
 
-        return RedirectToAction("Start", "Start");
+        return RedirectToAction("Start", "Home");
     }
 }
