@@ -65,6 +65,15 @@ public static class ServiceCollectionExtensions
                 options.SkipUnrecognizedRequests = true;
 
                 options.MapInboundClaims = false;
+
+                options.Events = new OpenIdConnectEvents
+                {
+                    OnRedirectToIdentityProviderForSignOut = async context =>
+                    {
+                        context.HttpContext.Session.Clear();
+                        await Task.CompletedTask;
+                    },
+                };
             });
 
         services.AddScoped<IUserContext, UserContext>();

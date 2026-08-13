@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
@@ -7,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using NSubstitute;
 using SchoolAccount.Web.Mvc.Authentication.Extensions;
 using SchoolAccount.Web.Mvc.Authentication.Models;
 using Shouldly;
@@ -126,5 +128,41 @@ public class ServiceCollectionAddDsiAuthenticationExtensionTests
         authOptions.FallbackPolicy!.Requirements.ShouldContain(r =>
             r is DenyAnonymousAuthorizationRequirement
         );
+    }
+
+    [Fact]
+    public async Task Ensure_that_OnRedirectToIdentityProviderForSignOut_clears_session()
+    {
+        // Arrange
+        var services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
+        using var configuration = BuildConfiguration();
+        services.AddDsiAuthentication(configuration);
+        var provider = services.BuildServiceProvider();
+
+        var oidcOptions = provider
+            .GetRequiredService<IOptionsMonitor<OpenIdConnectOptions>>()
+            .Get(OpenIdConnectDefaults.AuthenticationScheme);
+
+        var mockSession = Substitute.For<ISession>();
+        var httpContext = new DefaultHttpContext { Session = mockSession };
+
+        var scheme = new AuthenticationScheme(
+            OpenIdConnectDefaults.AuthenticationScheme,
+            OpenIdConnectDefaults.AuthenticationScheme,
+            typeof(OpenIdConnectHandler)
+        );
+
+        var redirectContext = new RedirectContext(
+            httpContext,
+            scheme,
+            oidcOptions,
+            new AuthenticationProperties()
+        );
+
+        // Act
+        await oidcOptions.Events.OnRedirectToIdentityProviderForSignOut(redirectContext);
+
+        // Assert
+        mockSession.Received(1).Clear();
     }
 }
