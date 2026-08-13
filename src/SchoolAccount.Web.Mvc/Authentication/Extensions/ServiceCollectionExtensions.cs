@@ -10,7 +10,6 @@ namespace SchoolAccount.Web.Mvc.Authentication.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    [SuppressMessage("Globalization", "CA1308:Normalize strings to uppercase")]
     public static void AddDsiAuthentication(
         this IServiceCollection services,
         IConfigurationManager configuration
