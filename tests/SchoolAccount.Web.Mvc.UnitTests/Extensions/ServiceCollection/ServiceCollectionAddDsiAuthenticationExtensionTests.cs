@@ -54,7 +54,6 @@ public class ServiceCollectionAddDsiAuthenticationExtensionTests
             .Get(CookieAuthenticationDefaults.AuthenticationScheme);
 
         // Assert
-        cookie.LoginPath.Value.ShouldBe("/");
         cookie.LogoutPath.Value.ShouldBe("/account/logout");
         cookie.AccessDeniedPath.Value.ShouldBe("/error/403");
         cookie.Cookie.SecurePolicy.ShouldBe(CookieSecurePolicy.Always);
@@ -106,28 +105,6 @@ public class ServiceCollectionAddDsiAuthenticationExtensionTests
         // Assert
         oidc.CallbackPath.Value.ShouldBe("/signin-oidc");
         oidc.SignedOutCallbackPath.Value.ShouldBe("/account/loggedout");
-    }
-
-    [Fact]
-    public void Registers_authenticated_user_default_and_fallback_policies()
-    {
-        // Arrange
-        var services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
-
-        using var configuration = BuildConfiguration();
-        services.AddDsiAuthentication(configuration);
-
-        // Act
-        var provider = services.BuildServiceProvider();
-        var authOptions = provider.GetRequiredService<IOptions<AuthorizationOptions>>().Value;
-
-        // Assert
-        authOptions.DefaultPolicy.Requirements.ShouldContain(r =>
-            r is DenyAnonymousAuthorizationRequirement
-        );
-        authOptions.FallbackPolicy!.Requirements.ShouldContain(r =>
-            r is DenyAnonymousAuthorizationRequirement
-        );
     }
 
     [Fact]

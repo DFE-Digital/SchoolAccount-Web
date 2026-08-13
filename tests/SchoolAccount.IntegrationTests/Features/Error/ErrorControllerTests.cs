@@ -91,7 +91,7 @@ public class ErrorControllerTests : IClassFixture<SchoolAccountWebApplicationFac
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeFalse();
-        response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]

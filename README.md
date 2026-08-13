@@ -65,7 +65,6 @@ The project requires the following app configuration values to be overridden, id
 {
   "OpenIDConnectSettings": {
     "Authority": "<URL-OF-DSI-OIDC-SERVER>",
-    "MetadataAddress": "<URL-OF-DSI-METAFIELD-ENDPOINT>",
     "ClientId": "<DSI-CLIENT-ID>"
   }
 }

@@ -27,13 +27,11 @@ public static class ServiceCollectionExtensions
             .AddAuthentication(options =>
             {
                 options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.DefaultSignOutScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             })
             .AddCookie(options =>
             {
-                options.LoginPath = "/";
                 options.LogoutPath = "/account/logout";
                 options.AccessDeniedPath = "/error/403";
                 options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
@@ -43,7 +41,6 @@ public static class ServiceCollectionExtensions
             {
                 options.Authority = settings.Authority;
                 options.ClientId = settings.ClientId;
-                options.MetadataAddress = settings.MetadataAddress;
 
                 options.CallbackPath = !string.IsNullOrEmpty(settings.CallbackPath)
                     ? settings.CallbackPath
@@ -77,9 +74,5 @@ public static class ServiceCollectionExtensions
             });
 
         services.AddScoped<IUserContext, UserContext>();
-
-        var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
-
-        services.AddAuthorizationBuilder().SetDefaultPolicy(policy).SetFallbackPolicy(policy);
     }
 }
