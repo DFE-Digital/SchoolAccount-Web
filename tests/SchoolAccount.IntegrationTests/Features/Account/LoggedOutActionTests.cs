@@ -26,7 +26,7 @@ public class LoggedOutActionTests(SchoolAccountWebApplicationFactory<Program> fa
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
         response.Headers.Location?.OriginalString.ShouldStartWith(
-            factory.GeneratePath("Home", "Start")
+            factory.GeneratePath("Start", "Start")
         );
     }
 }
