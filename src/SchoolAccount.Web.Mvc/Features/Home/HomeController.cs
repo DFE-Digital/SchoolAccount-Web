@@ -1,33 +1,20 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SchoolAccount.Application.Abstractions.Messaging;
-using SchoolAccount.Application.Greetings.GetTimeSpecificHello;
-using SchoolAccount.SharedKernel;
 
 namespace SchoolAccount.Web.Mvc.Features.Home;
 
 [Route("/")]
 public class HomeController : Controller
 {
-    [AllowAnonymous]
-    [HttpGet("")]
-    public async Task<IActionResult> Home(
-        [FromServices] IDateTimeProvider dateTimeProvider,
-        [FromServices]
-            IQueryHandler<
-            GetTimeSpecificHelloQuery,
-            GetTimeSpecificHelloResponse
-        > getTimeSpecifyHellosQueryHandler,
-        CancellationToken cancellationToken
-    )
+    [HttpGet(""), AllowAnonymous]
+    public async Task<IActionResult> Home()
     {
-        var model = await getTimeSpecifyHellosQueryHandler.Handle(
-            new GetTimeSpecificHelloQuery(),
-            cancellationToken
-        );
+        if (User.Identity?.IsAuthenticated ?? false)
+        {
+            return RedirectToAction("Dashboard", "Dashboard");
+        }
 
-        return model.IsSuccess
-            ? View(new HomeViewModel(model.Value.Message))
-            : Problem(model.Error.Description);
+        return View(new HomeViewModel());
     }
 }

@@ -1,5 +1,9 @@
+using System.Reflection;
+using JetBrains.Annotations;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -16,53 +20,74 @@ public class SchoolAccountWebApplicationFactory<TProgram> : WebApplicationFactor
     }
 
     public HttpClient CreateAuthorisedClient(
-        Action<IServiceCollection>? additionalConfigurableServices = null
+        Action<IServiceCollection>? additionalConfigurableServices = null,
+        ClientOptions? options = null
     )
     {
-        return CreateClient<MockAuthHandler>(
-            MockAuthHandler.SchemeName,
-            additionalConfigurableServices
-        );
+        return CreateClient<MockAuthHandler>(additionalConfigurableServices, options);
     }
 
     public HttpClient CreateUnauthorisedClient(
-        Action<IServiceCollection>? additionalConfigurableServices = null
+        Action<IServiceCollection>? additionalConfigurableServices = null,
+        ClientOptions? options = null
     )
     {
-        return CreateClient<MockOidcHandler>(
-            MockOidcHandler.SchemeName,
-            additionalConfigurableServices
-        );
+        return CreateClient<MockOidcHandler>(additionalConfigurableServices, options);
+    }
+
+    public string GeneratePath(
+        [AspMvcController] string controller,
+        [AspMvcAction] string action,
+        [AspMvcModelType] object? query = null
+    )
+    {
+        using var scope = Services.CreateScope();
+        var generator = scope.ServiceProvider.GetRequiredService<LinkGenerator>();
+        return generator.GetPathByAction(action, controller.Replace("Controller", ""), query);
     }
 
     private HttpClient CreateClient<THandler>(
-        string schemeName,
-        Action<IServiceCollection>? additionalConfigurableServices = null
+        Action<IServiceCollection>? additionalConfigurableServices = null,
+        ClientOptions? options = null
     )
         where THandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
+        const string schemeName = CookieAuthenticationDefaults.AuthenticationScheme;
+        options ??= new ClientOptions();
+
         return WithWebHostBuilder(builder =>
                 builder.ConfigureTestServices(services =>
                 {
                     services.RemoveAll<IConfigureOptions<AuthenticationOptions>>();
+                    services.RemoveAll<IAuthenticationSchemeProvider>();
+                    services.RemoveAll<IConfigureOptions<OpenIdConnectOptions>>();
+                    services.RemoveAll<IPostConfigureOptions<OpenIdConnectOptions>>();
+                    services.RemoveAll<IConfigureOptions<CookieAuthenticationOptions>>();
+                    services.RemoveAll<IConfigureOptions<AuthenticationOptions>>();
+
                     services
-                        .AddAuthentication(options =>
+                        .AddAuthentication(authenticationOptions =>
                         {
-                            options.DefaultAuthenticateScheme = schemeName;
-                            options.DefaultChallengeScheme = schemeName;
+                            authenticationOptions.DefaultScheme = schemeName;
+                            authenticationOptions.DefaultAuthenticateScheme = schemeName;
+                            authenticationOptions.DefaultChallengeScheme = schemeName;
+                            authenticationOptions.DefaultSignInScheme = schemeName;
+                            authenticationOptions.DefaultSignOutScheme = schemeName;
                         })
+                        .AddScheme<AuthenticationSchemeOptions, THandler>(schemeName, _ => { })
                         .AddScheme<AuthenticationSchemeOptions, THandler>(
                             OpenIdConnectDefaults.AuthenticationScheme,
-                            options => { }
-                        )
-                        .AddScheme<AuthenticationSchemeOptions, THandler>(
-                            schemeName,
-                            options => { }
+                            _ => { }
                         );
 
                     additionalConfigurableServices?.Invoke(services);
                 })
             )
-            .CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
+            .CreateClient(
+                new WebApplicationFactoryClientOptions
+                {
+                    AllowAutoRedirect = options.AllowAutoRedirect,
+                }
+            );
     }
 }

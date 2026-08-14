@@ -1,20 +1,23 @@
 using System.Net;
 using SchoolAccount.IntegrationTests.Common;
+using SchoolAccount.Web.Mvc.Features.Accounts;
+using SchoolAccount.Web.Mvc.Features.Dashboard;
 using Shouldly;
 
-namespace SchoolAccount.IntegrationTests.Features.Authentication.Login;
+namespace SchoolAccount.IntegrationTests.Features.Account;
 
-public class LoginControllerTests(SchoolAccountWebApplicationFactory<Program> factory)
+public class LoginActionTests(SchoolAccountWebApplicationFactory<Program> factory)
     : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
 {
     [Fact]
     public async Task Unauthorised_users_are_redirected_to_DSI()
     {
-        // Assert
+        // Arrange
         var client = factory.CreateUnauthorisedClient();
+        var requestUri = factory.GeneratePath("Account", "Login");
 
         // Act
-        var response = await client.GetAsync("/login", TestContext.Current.CancellationToken);
+        var response = await client.GetAsync(requestUri, TestContext.Current.CancellationToken);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
@@ -28,13 +31,16 @@ public class LoginControllerTests(SchoolAccountWebApplicationFactory<Program> fa
     {
         // Arrange
         var client = factory.CreateAuthorisedClient();
+        var requestUri = factory.GeneratePath("Account", "Login");
 
         // Act
-        var response = await client.GetAsync("/login", TestContext.Current.CancellationToken);
+        var response = await client.GetAsync(requestUri, TestContext.Current.CancellationToken);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
-        response.Headers.Location?.OriginalString.ShouldEndWith("/dashboard");
+        response.Headers.Location?.OriginalString.ShouldEndWith(
+            $"{factory.GeneratePath("Dashboard", "Dashboard")}"
+        );
     }
 
     [Fact]
@@ -42,12 +48,14 @@ public class LoginControllerTests(SchoolAccountWebApplicationFactory<Program> fa
     {
         // Arrange
         var client = factory.CreateAuthorisedClient();
+        var requestUri = factory.GeneratePath(
+            "Account",
+            "Login",
+            new { returnUrl = "https://www.google.com" }
+        );
 
         // Act
-        var response = await client.GetAsync(
-            $"/login?returnUrl={WebUtility.UrlEncode("https://www.google.com")}",
-            TestContext.Current.CancellationToken
-        );
+        var response = await client.GetAsync(requestUri, TestContext.Current.CancellationToken);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
@@ -58,12 +66,14 @@ public class LoginControllerTests(SchoolAccountWebApplicationFactory<Program> fa
     {
         // Arrange
         var client = factory.CreateAuthorisedClient();
+        var requestUri = factory.GeneratePath(
+            "Account",
+            "Login",
+            new { returnUrl = factory.GeneratePath("Dashboard", "Dashboard") }
+        );
 
         // Act
-        var response = await client.GetAsync(
-            $"/login?returnUrl={WebUtility.UrlEncode("/dashboard")}",
-            TestContext.Current.CancellationToken
-        );
+        var response = await client.GetAsync(requestUri, TestContext.Current.CancellationToken);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Found);

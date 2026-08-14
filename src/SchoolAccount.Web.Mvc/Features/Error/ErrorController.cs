@@ -1,14 +1,15 @@
 using System.Net;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace SchoolAccount.Web.Mvc.Features.Error;
 
-[Route("Error")]
+[Route("/{action}"), AllowAnonymous]
 public class ErrorController(ILogger<ErrorController> logger) : Controller
 {
-    [Route("{statusCode}")]
+    [HttpGet("{statusCode}"), AllowAnonymous]
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult StatusCode(HttpStatusCode statusCode)
+    public IActionResult Error(HttpStatusCode statusCode)
     {
         logger.LogWarning(
             "HTTP {StatusCode} error occurred at {Path}",
@@ -17,6 +18,7 @@ public class ErrorController(ILogger<ErrorController> logger) : Controller
         );
 
         var errorViewModel = new ErrorViewModel(statusCode);
+        Response.StatusCode = (int)errorViewModel.StatusCode;
 
         return View(errorViewModel);
     }

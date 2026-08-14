@@ -1,4 +1,5 @@
 using GovUk.Frontend.AspNetCore;
+using Microsoft.AspNetCore.Mvc.Controllers;
 using SchoolAccount.Application;
 using SchoolAccount.Infrastructure;
 using SchoolAccount.Web.Mvc;
@@ -12,8 +13,8 @@ builder
 
 var app = builder.Build();
 
-app.UseStatusCodePagesWithReExecute("/Error/{0}");
-app.UseExceptionHandler("/Error/500");
+app.UseStatusCodePagesWithReExecute("/error/{0}");
+app.UseExceptionHandler("/error/500");
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -24,6 +25,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
+app.UseSession();
 app.UseGovUkFrontend();
 
 app.UseAuthentication();
@@ -31,7 +33,6 @@ app.UseAuthorization();
 
 app.MapStaticAssets();
 
-app.MapControllerRoute(name: "default", pattern: "{controller=Dashboard}/{action=Dashboard}/{id?}")
-    .WithStaticAssets();
+app.MapControllerRoute("default", "/{controller}/{action}").WithStaticAssets();
 
 await app.RunAsync();

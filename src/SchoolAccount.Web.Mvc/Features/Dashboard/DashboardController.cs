@@ -1,15 +1,36 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SchoolAccount.Application.Abstractions.Messaging;
+using SchoolAccount.Application.Greetings.GetTimeSpecificHello;
 using SchoolAccount.SharedKernel;
 
 namespace SchoolAccount.Web.Mvc.Features.Dashboard;
 
-[Route("/"), Authorize]
+[Route("/{action}"), Authorize]
 public class DashboardController(IUserContext userContext) : Controller
 {
-    [HttpGet("dashboard")]
-    public async Task<IActionResult> Dashboard(CancellationToken cancellationToken)
+    [HttpGet]
+    public async Task<IActionResult> Dashboard(
+        [FromServices] IDateTimeProvider dateTimeProvider,
+        [FromServices]
+            IQueryHandler<
+            GetTimeSpecificHelloQuery,
+            GetTimeSpecificHelloResponse
+        > getTimeSpecifyHellosQueryHandler,
+        CancellationToken cancellationToken
+    )
     {
-        return View(new DashboardViewModel(userContext.Name ?? "Unknown"));
+        var result = await getTimeSpecifyHellosQueryHandler.Handle(
+            new GetTimeSpecificHelloQuery(),
+            cancellationToken
+        );
+
+        if (result.IsFailure)
+        {
+            return Problem(result.Error.Description);
+        }
+
+        var model = new DashboardViewModel(userContext.Name ?? "Unknown", result.Value.Message);
+        return View(model);
     }
 }

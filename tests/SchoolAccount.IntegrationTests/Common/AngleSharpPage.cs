@@ -3,33 +3,54 @@ using AngleSharp.Dom;
 
 namespace SchoolAccount.IntegrationTests.Common;
 
-public class AngleSharpPage
+public abstract class AngleSharpPage
 {
-    private readonly IDocument _page;
+    protected IDocument Page;
 
-    public AngleSharpPage(string pageContent)
+    protected AngleSharpPage() { }
+
+    protected AngleSharpPage(string pageContent)
+    {
+        Initialise(pageContent);
+    }
+
+    protected void Initialise(string pageContent)
     {
         var context = BrowsingContext.New(Configuration.Default);
-        _page = context
+        Page = context
             .OpenAsync(req => req.Content(pageContent), TestContext.Current.CancellationToken)
             .Result;
     }
 
-    public string? GetTitle()
+    public static async Task<T> FromResponseAsync<T>(
+        HttpResponseMessage responseMessage,
+        CancellationToken cancellationToken = default
+    )
+        where T : AngleSharpPage, new()
     {
-        var pageTitle = _page.QuerySelector("title");
+        var html = await responseMessage.Content.ReadAsStringAsync(cancellationToken);
+
+        var page = new T();
+        page.Initialise(html);
+
+        return page;
+    }
+
+    public virtual string? GetTitle()
+    {
+        var pageTitle = Page.QuerySelector("title");
         return pageTitle?.TextContent;
     }
 
-    public string? GetFirstHeading()
+    public virtual string? GetFirstHeading()
     {
-        var headingElement = _page.QuerySelector("h1.govuk-heading-l");
+        var headingElement = Page.QuerySelector("h1.govuk-heading-l");
         return headingElement?.TextContent;
     }
 
-    public string? GetFirstBody()
+    public virtual string? GetFirstBody()
     {
-        var bodyElement = _page.QuerySelector("body");
+        var bodyElement = Page.QuerySelector("body");
         return bodyElement?.TextContent;
     }
 }
