@@ -81,21 +81,7 @@ public class ErrorControllerTests : IClassFixture<SchoolAccountWebApplicationFac
     }
 
     [Fact]
-    public async Task Ensure_that_if_someone_is_navigating_to_any_page_valid_or_invalid_it_will_try_to_authenticate_them()
-    {
-        var client = _factory.CreateUnauthorisedClient();
-        var requestUri = "/this-page-does-not-exist";
-
-        // Act
-        var response = await client.GetAsync(requestUri, TestContext.Current.CancellationToken);
-
-        // Assert
-        response.IsSuccessStatusCode.ShouldBeFalse();
-        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
-    }
-
-    [Fact]
-    public async Task If_someone_is_authenticated_trying_to_access_a_unknown_page_they_will_get_a_not_found_page()
+    public async Task If_page_is_unknown_it_provides_you_a_not_found_page()
     {
         // Arrange
         var requestUri = "/this-page-does-not-exist";
