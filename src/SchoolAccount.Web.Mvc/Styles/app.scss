@@ -2,13 +2,16 @@
 @use "govuk-frontend-aspnetcore";
 @use "govuk-frontend" as * with (
   $govuk-font-url-function: meta.get-function("versioned-font-url", $module: "govuk-frontend-aspnetcore"),
-  $govuk-image-url-function: meta.get-function("versioned-image-url", $module: "govuk-frontend-aspnetcore")
+  $govuk-image-url-function: meta.get-function("versioned-image-url", $module: "govuk-frontend-aspnetcore"),
+  $govuk-global-styles: true
 );
 
-@use 'components/dfe-header';
+@use 'components/dfe-header-static-sign-out';
 
 .govuk-width-container {
-  max-width: 1200px;
+  max-width: 1150px;
+  margin: 0 auto;
+  padding: 0 15px;
 }
 
  

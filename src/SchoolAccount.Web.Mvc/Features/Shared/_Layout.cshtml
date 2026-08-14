@@ -15,19 +15,23 @@
 }
 
 @section GovUkHeader {
-    <header class="govuk-header" data-module="govuk-header">
+    <header class="simple-gov-header" data-module="govuk-header">
         <div class="govuk-header__container govuk-width-container">
             <div class="govuk-header__logo">
                 <a href="#" class="govuk-header__link govuk-header__link--homepage">
-                    <img
-                        src="~/assets/images/department-for-education_white.png" alt="Department for Education"
-                        class="govuk-header__logotype">
+                    <img src="~/assets/images/department-for-education_white.png"
+                         alt="Department for Education"
+                         class="govuk-header__logotype">
                 </a>
+            </div>
+            <div class="header-navigation">
                 @if (isAuthenticated)
                 {
-                    using (Html.BeginForm("Logout", "Account", FormMethod.Post))
+                    <span class="header-navigation__school">School Name</span>
+
+                    @using (Html.BeginForm("Logout", "Account", FormMethod.Post))
                     {
-                        <button role="button" type="submit" class="govuk-link dfe-school-account-header__signout">
+                        <button type="submit" class="header-navigation__link">
                             Sign out
                         </button>
                     }

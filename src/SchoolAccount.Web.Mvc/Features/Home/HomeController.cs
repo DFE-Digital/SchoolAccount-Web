@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,7 +6,8 @@ namespace SchoolAccount.Web.Mvc.Features.Home;
 [Route("/")]
 public class HomeController : Controller
 {
-    [HttpGet(""), AllowAnonymous]
+    [HttpGet("")]
+    [AllowAnonymous]
     public async Task<IActionResult> Home()
     {
         if (User.Identity?.IsAuthenticated ?? false)
