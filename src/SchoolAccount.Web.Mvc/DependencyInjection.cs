@@ -1,6 +1,7 @@
 ﻿using GovUk.Frontend.AspNetCore;
 using SchoolAccount.Web.Mvc.Authentication.Extensions;
 using SchoolAccount.Web.Mvc.Infrastructure;
+using SchoolAccount.Web.Mvc.TagHelpers.Components;
 
 namespace SchoolAccount.Web.Mvc;
 
@@ -16,6 +17,7 @@ public static class DependencyInjection
         services.AddDsiAuthentication(configuration);
         services.AddControllersWithFeatureViews();
         services.AddGovUkFrontend();
+        services.AddTagComponents();
 
         if (env.IsDevelopment())
         {
@@ -37,5 +39,18 @@ public static class DependencyInjection
                 options.ViewLocationFormats.Insert(2, "/Features/Shared/{0}.cshtml");
                 options.ViewLocationExpanders.Add(new FeatureViewLocationExpander());
             });
+    }
+
+    private static void AddTagComponents(this IServiceCollection services)
+    {
+        services.Scan(scan =>
+            scan.FromAssembliesOf(typeof(DependencyInjection))
+                .AddClasses(
+                    classes => classes.AssignableTo<IComponentGenerator>(),
+                    publicOnly: false
+                )
+                .AsImplementedInterfaces()
+                .WithScopedLifetime()
+        );
     }
 }
