@@ -8,10 +8,21 @@
 
 @use 'components/dfe-header-static-sign-out';
 
+* {
+  font-family: 'Inter', sans-serif!important;
+}
+
+.govuk-header__link .govuk-header__logotype{
+  height: 30px;
+}
+
+.govuk-header__link:focus .govuk-header__logotype{
+  content: url(/images/department-for-education_black.png);
+  height: 30px;
+}
+
 .govuk-width-container {
-  max-width: 1150px;
-  margin: 0 auto;
-  padding: 0 15px;
+  max-width: 1140px;
 }
 
  

@@ -9,17 +9,6 @@
     margin-bottom: 0;
   }
 
-  .govuk-header__logo {
-    width: auto;
-    padding-right: 0;
-    margin-bottom: 0;
-  }
-
-  .govuk-header__logotype {
-    height: 30px;
-    width: auto;
-  }
-
   .header-navigation {
     display: flex;
     align-items: center;
@@ -27,11 +16,7 @@
 
     &__school {
       color: #ffffff;
-      font-family: "GDS Transport", arial, sans-serif;
       -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-      font-size: 1.1rem;
-      line-height: 1;
     }
 
     &__link {
@@ -40,14 +25,12 @@
       border: none;
       padding: 0;
       margin: 0;
-      font-family: "GDS Transport", arial, sans-serif;
       -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-      font-size: 1.1rem;
+      font-size: 1em;
       font-weight: normal;
-      line-height: 1;
       cursor: pointer;
       text-decoration: underline;
+      text-underline-offset: 0.175em;
 
       &:hover {
         text-decoration-thickness: max(3px, 0.1875rem, 0.12em);
