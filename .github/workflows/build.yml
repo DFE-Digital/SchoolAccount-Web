@@ -102,7 +102,7 @@ jobs:
           context: .
           file: src/SchoolAccount.Web.Mvc/Dockerfile
           target: final
-          push: ${{ github.ref == env.MAIN_BRANCH }}
+          push: true
           tags: ${{ steps.meta.outputs.tags }}
       
       - name: Publish
