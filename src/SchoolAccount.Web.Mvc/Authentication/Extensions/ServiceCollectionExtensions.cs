@@ -49,28 +49,9 @@ public static class ServiceCollectionExtensions
 
                 options.Events = new OpenIdConnectEvents
                 {
-                    OnUserInformationReceived = context =>
+                    OnTokenValidated = context =>
                     {
-                        var organisationName = context.Principal?.FindFirst("organisation")?.Value;
-                        if (
-                            string.IsNullOrEmpty(organisationName)
-                            || context.Principal?.Identity is not ClaimsIdentity identity
-                        )
-                        {
-                            return Task.CompletedTask;
-                        }
-
-                        var name = JsonDocument
-                            .Parse(organisationName)
-                            .RootElement.TryGetProperty("name", out var n)
-                            ? n.GetString()
-                            : null;
-
-                        if (name is not null)
-                        {
-                            identity.AddClaim(new Claim("org_name", name));
-                        }
-
+                        GetOrganisationNameFromClaim(context.Principal);
                         return Task.CompletedTask;
                     },
 
@@ -83,5 +64,28 @@ public static class ServiceCollectionExtensions
             });
 
         services.AddScoped<IUserContext, UserContext>();
+    }
+
+    private static void GetOrganisationNameFromClaim(ClaimsPrincipal? principal)
+    {
+        var organisationClaim = principal?.FindFirst("organisation")?.Value;
+        if (
+            string.IsNullOrEmpty(organisationClaim)
+            || principal?.Identity is not ClaimsIdentity identity
+        )
+        {
+            return;
+        }
+
+        var organisationName = JsonDocument
+            .Parse(organisationClaim)
+            .RootElement.TryGetProperty("name", out var n)
+            ? n.GetString()
+            : null;
+
+        if (organisationName is not null)
+        {
+            identity.AddClaim(new Claim("org_name", organisationName));
+        }
     }
 }
