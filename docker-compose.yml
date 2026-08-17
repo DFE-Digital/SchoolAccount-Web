@@ -2,6 +2,9 @@ services:
   presentation:
     image: ${DOCKER_REGISTRY-}presentation
     container_name: presentation
+    environment:
+      OpenIDConnectSettings__Authority: https://localhost:7041
+      OpenIDConnectSettings__ClientId: SA_TEST_CLIENT
     build:
       context: .
       dockerfile: src/SchoolAccount.Web.Mvc/Dockerfile
