@@ -51,7 +51,7 @@ public static class ServiceCollectionExtensions
                 {
                     OnTokenValidated = context =>
                     {
-                        GetOrganisationNameFromClaim(context.Principal);
+                        AddOrganisationNameClaim(context.Principal);
                         return Task.CompletedTask;
                     },
 
@@ -66,7 +66,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IUserContext, UserContext>();
     }
 
-    private static void GetOrganisationNameFromClaim(ClaimsPrincipal? principal)
+    private static void AddOrganisationNameClaim(ClaimsPrincipal? principal)
     {
         var organisationClaim = principal?.FindFirst("organisation")?.Value;
         if (
@@ -79,8 +79,8 @@ public static class ServiceCollectionExtensions
 
         var organisationName = JsonDocument
             .Parse(organisationClaim)
-            .RootElement.TryGetProperty("name", out var n)
-            ? n.GetString()
+            .RootElement.TryGetProperty("name", out var name)
+            ? name.GetString()
             : null;
 
         if (organisationName is not null)
