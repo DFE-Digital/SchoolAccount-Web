@@ -1,10 +1,15 @@
 using GovUk.Frontend.AspNetCore;
-using Microsoft.AspNetCore.Mvc.Controllers;
 using SchoolAccount.Application;
 using SchoolAccount.Infrastructure;
 using SchoolAccount.Web.Mvc;
+using SchoolAccount.Web.Mvc.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
+
+if (builder.Environment.IsProduction())
+{
+    builder.Configuration.AddAzureAppConfiguration();
+}
 
 builder
     .Services.AddApplication()
