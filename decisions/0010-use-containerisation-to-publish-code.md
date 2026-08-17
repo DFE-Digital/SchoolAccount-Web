@@ -35,4 +35,4 @@ Chosen option: "Use containerisation to publish code", because it aligns with Df
 
 ### Confirmation
 
-The image has been build and published to the [container registry](https://github.com/DFE-Digital/SchoolAccount-Web/pkgs/container/schoolaccount-presentation).
+The image has been build and published to the [container registry](https://github.com/DFE-Digital/SchoolAccount-Web/pkgs/container/schoolaccount-web).

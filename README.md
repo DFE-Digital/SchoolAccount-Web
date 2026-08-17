@@ -158,21 +158,21 @@ is available at http://localhost:8081.
 
 ## Published Docker Image
 
-The Web project is published to the [GitHub Container Registry](https://github.com/DFE-Digital/SchoolAccount-Web/pkgs/container/schoolaccount-presentation)
+The Web project is published to the [GitHub Container Registry](https://github.com/DFE-Digital/SchoolAccount-Web/pkgs/container/schoolaccount-web)
 as a Docker image that can be pulled down and run.
 The image is created on every push to the `main` branch and tagged with the current commit SHA and the latest tag.
 
 To verify the image locally, you can run:
 ```
-docker run --platform linux/amd64 --name presentation -e OpenIDConnectSettings__ClientId=SA_TEST_CLIENT -e OpenIDConnectSettings__Authority=https://localhost:7041 -p 5100:8080 -d ghcr.io/dfe-digital/schoolaccount-presentation:latest
+docker run --platform linux/amd64 --name web -e OpenIDConnectSettings__ClientId=SA_TEST_CLIENT -e OpenIDConnectSettings__Authority=https://localhost:7041 -p 5100:8080 -d ghcr.io/dfe-digital/schoolaccount-web:latest
 ```
 
 You can then test the Web project by visiting http://localhost:5100.
 
 To stop and delete the container, you can run:
 ```
-docker stop presentation
-docker rm presentation
+docker stop web
+docker rm web
 ```
 
 ## Contributing

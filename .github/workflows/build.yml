@@ -14,6 +14,7 @@ env:
   MIN_LINE_COVERAGE: "70"
   WEB_SOLUTION_FILE: SchoolAccount.Web.slnx
   MAIN_BRANCH: refs/heads/main
+  IMAGE_NAME: ghcr.io/dfe-digital/schoolaccount-web
 
 jobs:
   build:
@@ -84,7 +85,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v6
         with:
-          images: ghcr.io/dfe-digital/schoolaccount-presentation
+          images: ${{ env.IMAGE_NAME }}
           tags: |
             type=sha
             type=raw,value=latest,enable=${{ github.ref == env.MAIN_BRANCH }}
