@@ -164,7 +164,7 @@ The image is created on every push to the `main` branch and tagged with the curr
 
 To verify the image locally, you can run:
 ```
-docker run --platform linux/amd64 --name presentation -p 5100:8080 -d ghcr.io/dfe-digital/schoolaccount-presentation:latest
+docker run --platform linux/amd64 --name presentation -e OpenIDConnectSettings__ClientId=SA_TEST_CLIENT -e OpenIDConnectSettings__Authority=https://localhost:7041 -p 5100:8080 -d ghcr.io/dfe-digital/schoolaccount-presentation:latest
 ```
 
 You can then test the Web project by visiting http://localhost:5100.
