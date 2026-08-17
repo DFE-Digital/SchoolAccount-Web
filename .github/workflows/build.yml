@@ -84,7 +84,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v6
         with:
-          images: ghcr.io/dfe-digital/presentation
+          images: ghcr.io/dfe-digital/schoolaccount-presentation
           tags: |
             type=sha
             type=raw,value=latest,enable=${{ github.ref == env.MAIN_BRANCH }}
