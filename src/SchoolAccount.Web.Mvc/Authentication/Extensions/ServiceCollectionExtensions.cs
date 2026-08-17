@@ -1,7 +1,7 @@
-using System.Diagnostics.CodeAnalysis;
+using System.Security.Claims;
+using System.Text.Json;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using SchoolAccount.SharedKernel;
 using SchoolAccount.Web.Mvc.Authentication.Models;
@@ -49,6 +49,31 @@ public static class ServiceCollectionExtensions
 
                 options.Events = new OpenIdConnectEvents
                 {
+                    OnUserInformationReceived = context =>
+                    {
+                        var organisationName = context.Principal?.FindFirst("organisation")?.Value;
+                        if (
+                            string.IsNullOrEmpty(organisationName)
+                            || context.Principal?.Identity is not ClaimsIdentity identity
+                        )
+                        {
+                            return Task.CompletedTask;
+                        }
+
+                        var name = JsonDocument
+                            .Parse(organisationName)
+                            .RootElement.TryGetProperty("name", out var n)
+                            ? n.GetString()
+                            : null;
+
+                        if (name is not null)
+                        {
+                            identity.AddClaim(new Claim("org_name", name));
+                        }
+
+                        return Task.CompletedTask;
+                    },
+
                     OnRedirectToIdentityProviderForSignOut = async context =>
                     {
                         context.HttpContext.Session.Clear();

@@ -8,6 +8,7 @@
     Layout = "_GovUkPageTemplate";
 
     var isAuthenticated = CurrentUser?.IsAuthenticated == true;
+    var organisationName = CurrentUser?.OrganisationName;
 }
 
 @section Head {
@@ -27,7 +28,7 @@
             <div class="header-navigation">
                 @if (isAuthenticated)
                 {
-                    <span class="header-navigation__school">School Name</span>
+                    <span class="header-navigation__school">@organisationName</span>
 
                     @using (Html.BeginForm("Logout", "Account", FormMethod.Post))
                     {

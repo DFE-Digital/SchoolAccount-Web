@@ -14,14 +14,16 @@ public sealed class UserContext : IUserContext, IIdentity
         GivenName = user?.FindFirst("given_name")?.Value;
         Surname = user?.FindFirst("family_name")?.Value;
         EmailAddress = user?.FindFirst("email")?.Value;
+        OrganisationName = user?.FindFirst("org_name")?.Value;
     }
 
     public string? GivenName { get; }
     public string? Surname { get; }
-
     public bool IsAuthenticated { get; }
     public string? Id { get; }
     public string? AuthenticationType { get; }
     public string? Name => $"{GivenName} {Surname}".Trim();
     public string? EmailAddress { get; }
+
+    public string? OrganisationName { get; }
 }
