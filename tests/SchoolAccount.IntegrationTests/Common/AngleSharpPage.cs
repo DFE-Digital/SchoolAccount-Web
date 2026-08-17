@@ -53,4 +53,16 @@ public abstract class AngleSharpPage
         var bodyElement = Page.QuerySelector("body");
         return bodyElement?.TextContent;
     }
+
+    public virtual string? GetSignOutLink()
+    {
+        var signOutElement = Page.QuerySelector("button");
+        return signOutElement?.TextContent;
+    }
+
+    public virtual string? GetOrganisationName()
+    {
+        var organisationNameElement = Page.QuerySelector(".header-navigation__school");
+        return organisationNameElement?.TextContent;
+    }
 }

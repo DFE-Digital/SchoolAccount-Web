@@ -10,11 +10,6 @@ public class HomeController : Controller
     [AllowAnonymous]
     public async Task<IActionResult> Home()
     {
-        if (User.Identity?.IsAuthenticated ?? false)
-        {
-            return RedirectToAction("Dashboard", "Dashboard");
-        }
-
         return View(new HomeViewModel());
     }
 }

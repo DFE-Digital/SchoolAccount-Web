@@ -11,7 +11,8 @@ public static class HttpContextAccessorHelpers
         bool isAuthenticated,
         string? givenName = null,
         string? surname = null,
-        string? email = null
+        string? email = null,
+        string? organisationName = null
     )
     {
         var claims = new List<Claim>();
@@ -32,6 +33,11 @@ public static class HttpContextAccessorHelpers
             {
                 claims.Add(new Claim("email", email));
                 claims.Add(new Claim("sid", Convert.ToBase64String(Encoding.UTF8.GetBytes(email))));
+            }
+
+            if (organisationName != null)
+            {
+                claims.Add(new Claim("org_name", organisationName));
             }
         }
 
