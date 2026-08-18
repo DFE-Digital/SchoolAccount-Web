@@ -3,13 +3,71 @@
     ViewData["Title"] = "Home Page";
 }
 
-<p class="govuk-body">
-    Login with a DSI Account to access your School Account.
-</p>
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-xl">Sign in to school account</h1>
 
-<a asp-controller="Account" asp-action="Login" class="govuk-button">
-    Sign in
-</a>
+        <p class="govuk-body-l">
+            School account brings DfE services and guidance together in one place, helping you understand what you need
+            to do and when.
+        </p>
+
+        <p class="govuk-body">
+            This is an early version that supports the school census. More services and guidance will follow.
+        </p>
+
+        <p class="govuk-body">
+            You'll need a DfE sign-in account.
+        </p>
+
+        @using (Html.BeginForm("Login", "Account", FormMethod.Post))
+        {
+            <button type="submit" class="govuk-button govuk-button--start govuk-!-margin-top-4"
+                    data-module="govuk-button">
+                Sign in or create an account
+                <svg class="govuk-button__start-icon" xmlns="http://www.w3.org/2000/svg" width="17.5" height="19"
+                     viewBox="0 0 33 40" aria-hidden="true">
+                    <path fill="currentColor" d="M0 0h13l20 20-20 20H0l20-20z"/>
+                </svg>
+            </button>
+        }
+    </div>
+</div>
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+        <h2 class="govuk-heading-l govuk-!-margin-top-4">What you'll get</h2>
+
+        <div class="dfe-grid-container start-now-cards">
+            <div class="dfe-card">
+                <img src="/public/images/card-1.jpg" alt="">
+                <div class="dfe-card-container">
+                    <p class="govuk-body">
+                        Step-by-step guidance to help you complete your statutory returns
+                    </p>
+                </div>
+            </div>
+
+            <div class="dfe-card">
+                <img src="/public/images/card-2.jpg" alt="">
+                <div class="dfe-card-container">
+                    <p class="govuk-body">
+                        Statuses that show where you are in the process
+                    </p>
+                </div>
+            </div>
+
+            <div class="dfe-card">
+                <img src="/public/images/card-3.jpg" alt="">
+                <div class="dfe-card-container">
+                    <p class="govuk-body">
+                        Email notifications when something needs your attention
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <dfe-card-grid>
     <dfe-card>
