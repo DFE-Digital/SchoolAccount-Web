@@ -1,11 +1,5 @@
 using System.Net;
-using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Options;
-using NSubstitute;
 using SchoolAccount.IntegrationTests.Common;
-using SchoolAccount.Web.Mvc.Features.Accounts;
 using Shouldly;
 
 namespace SchoolAccount.IntegrationTests.Features.Account;

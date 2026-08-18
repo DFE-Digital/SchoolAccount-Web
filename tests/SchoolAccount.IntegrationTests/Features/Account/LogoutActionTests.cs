@@ -1,6 +1,6 @@
 using System.Net;
 using SchoolAccount.IntegrationTests.Common;
-using SchoolAccount.Web.Mvc.Features.Accounts;
+using SchoolAccount.IntegrationTests.Common.Pages;
 using Shouldly;
 
 namespace SchoolAccount.IntegrationTests.Features.Account;
@@ -50,5 +50,28 @@ public class LogoutActionTests(SchoolAccountWebApplicationFactory<Program> facto
         response.Headers.Location?.OriginalString.ShouldEndWith(
             factory.GeneratePath("Start", "Start")
         );
+    }
+
+    [Fact]
+    public async Task Authenticated_pages_display_the_sign_out_link_for_authorised_users()
+    {
+        // Arrange
+        var client = factory.CreateAuthorisedClient(options: ClientOptions.AllowRedirects);
+        var pageUri = factory.GeneratePath("Dashboard", "Dashboard");
+
+        // Act
+        var response = await client.GetAsync(pageUri, TestContext.Current.CancellationToken);
+        var page = await AngleSharpPage.FromResponseAsync<CommonPage>(
+            response,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        page.ShouldNotBeNull();
+
+        var pageSignOutLink = page.GetSignOutLink();
+        pageSignOutLink.ShouldNotBeNull();
+        pageSignOutLink.ShouldContainWithoutWhitespace("Sign out");
     }
 }

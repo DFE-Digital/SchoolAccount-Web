@@ -3,15 +3,14 @@ using SchoolAccount.Application.Abstractions.Messaging;
 using SchoolAccount.Application.Greetings.GetTimeSpecificHello;
 using SchoolAccount.IntegrationTests.Common;
 using SchoolAccount.IntegrationTests.Common.Pages;
-using SchoolAccount.SharedKernel;
 using Shouldly;
 
 namespace SchoolAccount.IntegrationTests.Features.Start;
 
 public class StartControllerTests : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
 {
-    private readonly SchoolAccountWebApplicationFactory<Program> _factory;
     private readonly HttpClient _client;
+    private readonly SchoolAccountWebApplicationFactory<Program> _factory;
 
     private readonly IQueryHandler<
         GetTimeSpecificHelloQuery,
