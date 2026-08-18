@@ -35,7 +35,6 @@ public static class ServiceCollectionExtensions
                 options.ClientId = settings.ClientId;
 
                 options.SignedOutCallbackPath = "/account/loggedout";
-                
 
                 options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.ResponseType = OpenIdConnectResponseType.IdToken;
@@ -56,11 +55,13 @@ public static class ServiceCollectionExtensions
                     },
                     OnRedirectToIdentityProvider = async n =>
                     {
-                        n.ProtocolMessage.RedirectUri = n.ProtocolMessage.RedirectUri.Replace("http://", "https://");
+                        n.ProtocolMessage.RedirectUri = n.ProtocolMessage.RedirectUri.Replace(
+                            "http://",
+                            "https://"
+                        );
                         await Task.FromResult(0);
-                    }
+                    },
                 };
-                
             });
 
         services.AddScoped<IUserContext, UserContext>();
