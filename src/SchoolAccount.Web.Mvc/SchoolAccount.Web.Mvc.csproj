@@ -21,8 +21,10 @@
 
   <ItemGroup>
     <PackageReference Include="AspNetCore.SassCompiler" />
+    <PackageReference Include="Azure.Identity" />
     <PackageReference Include="GovUk.Frontend.AspNetCore" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" />
+    <PackageReference Include="Microsoft.Azure.AppConfiguration.AspNetCore" />
     <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" />
   </ItemGroup>
 </Project>
