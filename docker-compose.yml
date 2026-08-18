@@ -1,7 +1,6 @@
 services:
   web:
     image: ${DOCKER_REGISTRY-}web
-    container_name: web
     build:
       context: .
       dockerfile: src/SchoolAccount.Web.Mvc/Dockerfile
@@ -10,7 +9,6 @@ services:
 
   seq:
     image: datalust/seq:2024.3
-    container_name: seq
     environment:
       - ACCEPT_EULA=Y
     ports:

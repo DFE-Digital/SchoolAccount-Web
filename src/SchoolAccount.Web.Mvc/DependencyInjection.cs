@@ -17,10 +17,10 @@ public static class DependencyInjection
         services.AddControllersWithFeatureViews();
         services.AddGovUkFrontend();
 
-        if (env.IsDevelopment())
-        {
-            services.AddSassCompiler();
-        }
+        // if (env.IsDevelopment())
+        // {
+        //     services.AddSassCompiler();
+        // }
 
         return services;
     }
