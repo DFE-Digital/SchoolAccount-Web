@@ -1,10 +1,9 @@
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using SchoolAccount.SharedKernel;
 using SchoolAccount.Web.Mvc.Authentication.Models;
+using static SchoolAccount.Web.Mvc.Authentication.ClaimConstants;
 
 namespace SchoolAccount.Web.Mvc.Authentication.Extensions;
 
@@ -40,8 +39,8 @@ public static class ServiceCollectionExtensions
                 options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.ResponseType = OpenIdConnectResponseType.IdToken;
 
-                options.Scope.Add("organisation");
-                options.Scope.Add("email");
+                options.Scope.Add(Organisation);
+                options.Scope.Add(Email);
                 options.SaveTokens = true;
                 options.GetClaimsFromUserInfoEndpoint = true;
 

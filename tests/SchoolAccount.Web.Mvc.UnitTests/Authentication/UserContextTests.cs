@@ -7,13 +7,20 @@ namespace SchoolAccount.Web.Mvc.UnitTests.Authentication;
 public class UserContextTests
 {
     [Theory]
-    [InlineData(true, "John", "Jones", "john.jones@testing.world")]
-    [InlineData(true, "Lisa", "Simpson", "lisa.simpson@testing.world")]
+    [InlineData(true, "John", "Jones", "john.jones@testing.world", "Jones School")]
+    [InlineData(
+        true,
+        "Lisa",
+        "Simpson",
+        "lisa.simpson@testing.world",
+        "Springfield Elementary School"
+    )]
     public void Ensure_that_an_authenticated_user_can_be_retrieved_from_the_user_context(
         bool isAuthenticated,
         string givenName,
         string familyName,
-        string email
+        string email,
+        string organisationName
     )
     {
         // Arrange
@@ -21,7 +28,8 @@ public class UserContextTests
             isAuthenticated,
             givenName,
             familyName,
-            email
+            email,
+            organisationName
         );
 
         // Act
@@ -37,6 +45,8 @@ public class UserContextTests
         context.EmailAddress.ShouldContainWithoutWhitespace(email);
         context.Name.ShouldNotBeNullOrWhiteSpace();
         context.Name.ShouldContainWithoutWhitespace(givenName + " " + familyName);
+        context.OrganisationName.ShouldNotBeNullOrEmpty();
+        context.OrganisationName.ShouldContainWithoutWhitespace(organisationName);
     }
 
     [Fact]
