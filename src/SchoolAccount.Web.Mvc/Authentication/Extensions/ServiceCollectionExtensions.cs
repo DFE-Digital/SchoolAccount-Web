@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using SchoolAccount.SharedKernel;
 using SchoolAccount.Web.Mvc.Authentication.Models;
+using static SchoolAccount.Web.Mvc.Authentication.ClaimConstants;
 
 namespace SchoolAccount.Web.Mvc.Authentication.Extensions;
 
@@ -40,8 +41,8 @@ public static class ServiceCollectionExtensions
                 options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.ResponseType = OpenIdConnectResponseType.IdToken;
 
-                options.Scope.Add("organisation");
-                options.Scope.Add("email");
+                options.Scope.Add(Organisation);
+                options.Scope.Add(Email);
                 options.SaveTokens = true;
                 options.GetClaimsFromUserInfoEndpoint = true;
 
@@ -49,12 +50,6 @@ public static class ServiceCollectionExtensions
 
                 options.Events = new OpenIdConnectEvents
                 {
-                    OnTokenValidated = context =>
-                    {
-                        AddOrganisationNameClaim(context.Principal);
-                        return Task.CompletedTask;
-                    },
-
                     OnRedirectToIdentityProviderForSignOut = async context =>
                     {
                         context.HttpContext.Session.Clear();
@@ -64,28 +59,5 @@ public static class ServiceCollectionExtensions
             });
 
         services.AddScoped<IUserContext, UserContext>();
-    }
-
-    private static void AddOrganisationNameClaim(ClaimsPrincipal? principal)
-    {
-        var organisationClaim = principal?.FindFirst("organisation")?.Value;
-        if (
-            string.IsNullOrEmpty(organisationClaim)
-            || principal?.Identity is not ClaimsIdentity identity
-        )
-        {
-            return;
-        }
-
-        var organisationName = JsonDocument
-            .Parse(organisationClaim)
-            .RootElement.TryGetProperty("name", out var name)
-            ? name.GetString()
-            : null;
-
-        if (organisationName is not null)
-        {
-            identity.AddClaim(new Claim("org_name", organisationName));
-        }
     }
 }

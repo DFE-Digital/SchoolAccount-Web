@@ -2,6 +2,7 @@
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
+using static SchoolAccount.Web.Mvc.Authentication.ClaimConstants;
 
 namespace SchoolAccount.IntegrationTests.Common;
 
@@ -19,9 +20,9 @@ public class MockAuthHandler(
     {
         var claims = new[]
         {
-            new Claim("given_name", FakeGivenName),
-            new Claim("family_name", FakeFamilyName),
-            new Claim("org_name", FakeOrganisationName),
+            new Claim(GivenName, FakeGivenName),
+            new Claim(FamilyName, FakeFamilyName),
+            new Claim(Organisation, $$"""{"name":"{{FakeOrganisationName}}"}"""),
         };
         var identity = new ClaimsIdentity(claims, "Test");
         var principal = new ClaimsPrincipal(identity);

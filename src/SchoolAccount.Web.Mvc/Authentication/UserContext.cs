@@ -1,5 +1,6 @@
 ﻿using System.Security.Principal;
 using SchoolAccount.SharedKernel;
+using SchoolAccount.Web.Mvc.Authentication.Extensions;
 
 namespace SchoolAccount.Web.Mvc.Authentication;
 
@@ -9,12 +10,12 @@ public sealed class UserContext : IUserContext, IIdentity
     {
         var user = contextAccessor.HttpContext?.User;
         IsAuthenticated = user?.Identity?.IsAuthenticated ?? false;
-        Id = user?.FindFirst("sid")?.Value;
+        Id = user?.FindFirst(ClaimConstants.Id)?.Value;
         AuthenticationType = user?.Identity?.AuthenticationType;
-        GivenName = user?.FindFirst("given_name")?.Value;
-        Surname = user?.FindFirst("family_name")?.Value;
-        EmailAddress = user?.FindFirst("email")?.Value;
-        OrganisationName = user?.FindFirst("org_name")?.Value;
+        GivenName = user?.FindFirst(ClaimConstants.GivenName)?.Value;
+        Surname = user?.FindFirst(ClaimConstants.FamilyName)?.Value;
+        EmailAddress = user?.FindFirst(ClaimConstants.Email)?.Value;
+        OrganisationName = user?.GetOrganisation()?.Name;
     }
 
     public string? GivenName { get; }
