@@ -23,6 +23,7 @@ Architecture decisions are recorded as ADRs in the [decisions](decisions) folder
 - [Supporting SASS within GDS Styles](decisions/0007-supporting-sass-within-gds-styles.md) - why SASS support has been enabled
 - [Use feature structure](decisions/0008-use-feature-structure.md) - why the feature structure has been adopted
 - [Authentication using DSI](decisions/0009-authenticate-using-dsi.md) - why we authenticate with DfE Sign-In
+- - [Use containerisation to publish code](decisions/0010-use-containerisation-to-publish-code.md) - why we have chosen to use containerisation and push to the github container registry
 
 New decisions should follow the [ADR template](decisions/0000-adr-template.md).
 
@@ -154,6 +155,25 @@ The solution follows a clean architecture pattern with vertical slice features:
 
 Structured logs are written via Serilog to [Seq](https://datalust.co/seq). When running via Docker Compose, the Seq UI
 is available at http://localhost:8081.
+
+## Published Docker Image
+
+The Web project is published to the [GitHub Container Registry](https://github.com/DFE-Digital/SchoolAccount-Web/pkgs/container/schoolaccount-web)
+as a Docker image that can be pulled down and run.
+The image is created on every push to the `main` branch and tagged with the current commit SHA and the latest tag.
+
+To verify the image locally, you can run:
+```
+docker run --platform linux/amd64 --name web -e OpenIDConnectSettings__ClientId=SA_TEST_CLIENT -e OpenIDConnectSettings__Authority=https://localhost:7041 -p 5100:8080 -d ghcr.io/dfe-digital/schoolaccount-web:latest
+```
+
+You can then test the Web project by visiting http://localhost:5100.
+
+To stop and delete the container, you can run:
+```
+docker stop web
+docker rm web
+```
 
 ## Contributing
 
