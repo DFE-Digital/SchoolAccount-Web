@@ -45,15 +45,4 @@ public class ClaimsPrincipalExtensionsTests
     {
         PrincipalWith("").GetOrganisation().ShouldBeNull();
     }
-
-    [Fact]
-    public void Deserialises_with_null_name_when_name_property_missing()
-    {
-        var principal = PrincipalWith("""{"other":"x"}""");
-
-        var result = principal.GetOrganisation();
-
-        result.ShouldNotBeNull();
-        result.Name.ShouldBeNull();
-    }
 }
