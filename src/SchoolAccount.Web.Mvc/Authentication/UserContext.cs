@@ -26,9 +26,8 @@ public sealed class UserContext : IUserContext, IIdentity
             EmailAddress = GetClaim(ClaimConstants.Email, user);
             var organisationJson = GetClaim(ClaimConstants.Organisation, user);
             Organisation = string.IsNullOrEmpty(organisationJson)
-                ? new Organisation()
-                : JsonSerializer.Deserialize<Organisation>(organisationJson, _options)
-                    ?? new Organisation();
+                ? null
+                : JsonSerializer.Deserialize<Organisation>(organisationJson, _options) ?? null;
         }
     }
 
@@ -40,8 +39,8 @@ public sealed class UserContext : IUserContext, IIdentity
     public string Name => $"{GivenName} {Surname}".Trim();
     public string EmailAddress { get; } = string.Empty;
 
-    public string OrganisationName => Organisation.Name;
-    public Organisation Organisation { get; }
+    public string? OrganisationName => Organisation?.Name;
+    public Organisation? Organisation { get; }
 
     private static string GetClaim(string claimType, ClaimsPrincipal user)
     {
