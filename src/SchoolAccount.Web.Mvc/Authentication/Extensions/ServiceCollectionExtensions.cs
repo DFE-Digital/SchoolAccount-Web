@@ -53,6 +53,17 @@ public static class ServiceCollectionExtensions
                         context.HttpContext.Session.Clear();
                         await Task.CompletedTask;
                     },
+                    // within ACA a container runs on http, though available as https publicly
+                    // this causes the OIDC redirect_url to have the http protocol, rather than https
+                    // DSI does not allow http redirect URLS. The following corrects the URL
+                    OnRedirectToIdentityProvider = async n =>
+                    {
+                        n.ProtocolMessage.RedirectUri = n.ProtocolMessage.RedirectUri.Replace(
+                            "http://",
+                            "https://"
+                        );
+                        await Task.CompletedTask;
+                    },
                 };
             });
 
