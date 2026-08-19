@@ -1,7 +1,5 @@
 using System.Net;
 using SchoolAccount.IntegrationTests.Common;
-using SchoolAccount.Web.Mvc.Features.Accounts;
-using SchoolAccount.Web.Mvc.Features.Dashboard;
 using Shouldly;
 
 namespace SchoolAccount.IntegrationTests.Features.Account;
