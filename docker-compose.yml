@@ -1,7 +1,7 @@
 services:
-  presentation:
-    image: ${DOCKER_REGISTRY-}presentation
-    container_name: presentation
+  web:
+    image: ${DOCKER_REGISTRY-}web
+    container_name: web
     build:
       context: .
       dockerfile: src/SchoolAccount.Web.Mvc/Dockerfile

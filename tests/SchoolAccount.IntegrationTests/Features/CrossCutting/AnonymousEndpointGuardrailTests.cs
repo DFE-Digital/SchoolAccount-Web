@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
 using SchoolAccount.IntegrationTests.Common;
-using SchoolAccount.Web.Mvc.Features.Accounts;
 using Shouldly;
 
 namespace SchoolAccount.IntegrationTests.Features.CrossCutting;
@@ -8,16 +7,6 @@ namespace SchoolAccount.IntegrationTests.Features.CrossCutting;
 public class AnonymousEndpointGuardrailTests(SchoolAccountWebApplicationFactory<Program> factory)
     : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
 {
-    // Every endpoint allowed to bypass authentication must be listed here explicitly.
-    // Adding a new anonymous endpoint should be a conscious, reviewed decision, not an accident.
-    private readonly HashSet<string> _allowlistedAnonymousEndpoints =
-    [
-        factory.GeneratePath("Home", "Start"),
-        factory.GeneratePath("Account", "Login"),
-        factory.GeneratePath("Account", "Logout"),
-        factory.GeneratePath("Account", "LoggedOut"),
-    ];
-
     private static readonly string[] _staticAssetFileExtensions =
     {
         ".css",
@@ -37,6 +26,16 @@ public class AnonymousEndpointGuardrailTests(SchoolAccountWebApplicationFactory<
         ".gz",
         ".json",
     };
+
+    // Every endpoint allowed to bypass authentication must be listed here explicitly.
+    // Adding a new anonymous endpoint should be a conscious, reviewed decision, not an accident.
+    private readonly HashSet<string> _allowlistedAnonymousEndpoints =
+    [
+        factory.GeneratePath("Home", "Start"),
+        factory.GeneratePath("Account", "Login"),
+        factory.GeneratePath("Account", "Logout"),
+        factory.GeneratePath("Account", "LoggedOut"),
+    ];
 
     [Fact]
     public void Endpoints_marked_as_AllowAnonymous_should_only_be_the_ones_on_the_allowlist()

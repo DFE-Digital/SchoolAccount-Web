@@ -1,4 +1,4 @@
-name: Build
+name: Web Build and Deploy
 
 on:
   workflow_dispatch:
@@ -12,12 +12,19 @@ on:
 env:
   DOTNET_VERSION: "10.x"
   MIN_LINE_COVERAGE: "70"
+  WEB_SOLUTION_FILE: SchoolAccount.Web.slnx
+  MAIN_BRANCH: refs/heads/main
+  IMAGE_NAME: ghcr.io/dfe-digital/schoolaccount-web
+  CONTAINERAPP_RESOURCE_GROUP: s268d01rg-uks-sa-poc
+  CONTAINERAPP_NAME: schoolaccount-web-app
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     permissions:
+      contents: read
+      packages: write
       checks: write
       pull-requests: write
 
@@ -30,7 +37,7 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Restore
-        run: dotnet restore SchoolAccount.Web.slnx
+        run: dotnet restore ${{ env.WEB_SOLUTION_FILE }}
 
       - name: Check formatting
         run: |
@@ -38,10 +45,10 @@ jobs:
           dotnet csharpier check .
 
       - name: Build
-        run: dotnet build SchoolAccount.Web.slnx --configuration Release --no-restore
+        run: dotnet build ${{ env.WEB_SOLUTION_FILE }} --configuration Release --no-restore
 
       - name: Test
-        run: dotnet test SchoolAccount.Web.slnx --configuration Release --no-restore --no-build -- --report-trx --coverage --coverage-output-format cobertura --coverage-settings ${{ github.workspace }}/coverage.config
+        run: dotnet test ${{ env.WEB_SOLUTION_FILE }} --configuration Release --no-restore --no-build -- --report-trx --coverage --coverage-output-format cobertura --coverage-settings ${{ github.workspace }}/coverage.config
 
       - name: Test report
         uses: EnricoMi/publish-unit-test-result-action@v2
@@ -68,5 +75,52 @@ jobs:
         with:
           path: TestResults/Merged/SummaryGithub.md
 
+      - name: Log in to GHCR
+        if: ${{ github.event_name == 'push' }}
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v6
+        with:
+          images: ${{ env.IMAGE_NAME }}
+          tags: |
+            type=sha
+            type=raw,value=latest,enable=${{ github.ref == env.MAIN_BRANCH }}
+            type=ref,event=branch
+            
+      - name: Get SHA image tag
+        id: image
+        run: |
+          IMAGE=$(echo "${{ steps.meta.outputs.tags }}" | grep "sha-" | head -n 1)
+          echo "image=$IMAGE" >> $GITHUB_OUTPUT
+          
+      - name: Build & Push Docker image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: src/SchoolAccount.Web.Mvc/Dockerfile
+          target: final
+          push: ${{ github.ref == env.MAIN_BRANCH }}
+          tags: ${{ steps.meta.outputs.tags }}
+      
       - name: Publish
-        run: dotnet publish SchoolAccount.Web.slnx --configuration Release --no-restore --no-build
+        run: dotnet publish ${{ env.WEB_SOLUTION_FILE }} --configuration Release --no-restore --no-build
+
+      - name: Azure Login
+        if: github.event_name == 'push' && github.ref == env.MAIN_BRANCH
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Update ACA Image
+        if: github.event_name == 'push' && github.ref == env.MAIN_BRANCH
+        run: |
+          az containerapp update \
+            --name ${{ env.CONTAINERAPP_NAME }} \
+            --resource-group ${{ env.CONTAINERAPP_RESOURCE_GROUP }} \
+            --image ${{ steps.image.outputs.image }}

@@ -7,4 +7,5 @@ public interface IUserContext
     string? AuthenticationType { get; }
     string? EmailAddress { get; }
     string? Name { get; }
+    string? OrganisationName { get; }
 }

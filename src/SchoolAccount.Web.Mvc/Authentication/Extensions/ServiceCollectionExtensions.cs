@@ -1,10 +1,9 @@
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using SchoolAccount.SharedKernel;
 using SchoolAccount.Web.Mvc.Authentication.Models;
+using static SchoolAccount.Web.Mvc.Authentication.ClaimConstants;
 
 namespace SchoolAccount.Web.Mvc.Authentication.Extensions;
 
@@ -40,8 +39,8 @@ public static class ServiceCollectionExtensions
                 options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.ResponseType = OpenIdConnectResponseType.IdToken;
 
-                options.Scope.Add("organisation");
-                options.Scope.Add("email");
+                options.Scope.Add(Organisation);
+                options.Scope.Add(Email);
                 options.SaveTokens = true;
                 options.GetClaimsFromUserInfoEndpoint = true;
 
@@ -52,6 +51,17 @@ public static class ServiceCollectionExtensions
                     OnRedirectToIdentityProviderForSignOut = async context =>
                     {
                         context.HttpContext.Session.Clear();
+                        await Task.CompletedTask;
+                    },
+                    // within ACA a container runs on http, though available as https publicly
+                    // this causes the OIDC redirect_url to have the http protocol, rather than https
+                    // DSI does not allow http redirect URLS. The following corrects the URL
+                    OnRedirectToIdentityProvider = async n =>
+                    {
+                        n.ProtocolMessage.RedirectUri = n.ProtocolMessage.RedirectUri.Replace(
+                            "http://",
+                            "https://"
+                        );
                         await Task.CompletedTask;
                     },
                 };
