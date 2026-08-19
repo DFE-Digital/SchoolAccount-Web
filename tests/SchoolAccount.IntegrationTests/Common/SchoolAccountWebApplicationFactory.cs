@@ -1,9 +1,7 @@
-using System.Reflection;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -33,6 +31,14 @@ public class SchoolAccountWebApplicationFactory<TProgram> : WebApplicationFactor
     )
     {
         return CreateClient<MockOidcHandler>(additionalConfigurableServices, options);
+    }
+
+    public HttpClient CreateNoOrganisationAuthorisedClient(
+        Action<IServiceCollection>? additionalConfigurableServices = null,
+        ClientOptions? options = null
+    )
+    {
+        return CreateClient<MockNoOrganisationAuthHandler>(additionalConfigurableServices, options);
     }
 
     public string GeneratePath(

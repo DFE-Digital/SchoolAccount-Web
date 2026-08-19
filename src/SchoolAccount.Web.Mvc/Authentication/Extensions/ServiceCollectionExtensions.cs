@@ -53,6 +53,18 @@ public static class ServiceCollectionExtensions
                         context.HttpContext.Session.Clear();
                         await Task.CompletedTask;
                     },
+
+                    OnTicketReceived = context =>
+                    {
+                        var org = context.Principal?.GetOrganisation();
+                        if (org is null)
+                        {
+                            context.Response.Redirect("/error/403");
+                            context.HandleResponse();
+                        }
+                        return Task.CompletedTask;
+                    },
+
                     // within ACA a container runs on http, though available as https publicly
                     // this causes the OIDC redirect_url to have the http protocol, rather than https
                     // DSI does not allow http redirect URLS. The following corrects the URL

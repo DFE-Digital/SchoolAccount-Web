@@ -25,6 +25,5 @@ public sealed class UserContext : IUserContext, IIdentity
     public string? AuthenticationType { get; }
     public string? Name => $"{GivenName} {Surname}".Trim();
     public string? EmailAddress { get; }
-
     public string? OrganisationName { get; }
 }
