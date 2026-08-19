@@ -12,7 +12,7 @@ public record Organisation
 
     public LocalAuthority? LocalAuthority { get; init; }
 
-    public string EstablishmentNumber { get; init; }
+    public string? EstablishmentNumber { get; init; }
 }
 
 public record Category
