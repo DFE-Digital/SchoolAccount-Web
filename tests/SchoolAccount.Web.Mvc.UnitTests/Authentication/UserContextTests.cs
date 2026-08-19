@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using System.Text;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using NSubstitute;
@@ -18,23 +19,8 @@ public class UserContextTests
         var givenName = "John";
         var familyName = "Jones";
         var email = "john.jones@testing.world";
-        var organisationJson = """
-            {
-              "id": "2E774B32-E4DB-445B-B915-736C777FF5A4",
-              "name": "East Herrington Primary Academy",
-              "category": {
-                "id": "001",
-                "name": "Establishment"
-              },
-              "ukprn": "10037611",
-              "establishmentNumber": "2091",
-              "localAuthority": {
-                "id": "502EF2E9-2CA6-4905-9BF7-E80695BD5717",
-                "name": "SUNDERLAND CITY METROPOLITAN BOROUGH COUNCIL",
-                "code": "394"
-              }
-            } 
-            """;
+        var organisationJson =
+            """{"id":"2E774B32-E4DB-445B-B915-736C777FF5A4","name":"East Herrington Primary Academy","category":{"id":"001","name":"Establishment"},"ukprn":"10037611","establishmentNumber":"2091","localAuthority":{"id":"502EF2E9-2CA6-4905-9BF7-E80695BD5717","name":"SUNDERLAND CITY METROPOLITAN BOROUGH COUNCIL","code":"394"}}""";
 
         var accessor = CreateHttpContextAccessor(
             true,
@@ -151,9 +137,7 @@ public class UserContextTests
 
             if (organisation != null)
             {
-                claims.Add(
-                    new Claim(ClaimConstants.Organisation, JsonSerializer.Serialize(organisation))
-                );
+                claims.Add(new Claim(ClaimConstants.Organisation, organisation));
             }
         }
 
