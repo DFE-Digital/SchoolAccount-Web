@@ -145,6 +145,32 @@ public class UserContextTests
         context.Organisation.ShouldBeNull();
     }
 
+    [Fact]
+    public void Ensure_that_malformed_json_is_handled_gracefully()
+    {
+        // Arrange
+        var id = "EEEEEEEE-EEEE-EEEE-EEEE-EEEEEEEEEEEE";
+        var givenName = "John";
+        var familyName = "Jones";
+        var email = "john.jones@testing.world";
+        var organisationJson = "organisation is not valid json";
+
+        var accessor = CreateHttpContextAccessor(
+            true,
+            id,
+            givenName,
+            familyName,
+            email,
+            organisationJson
+        );
+
+        // Act
+        var context = new UserContext(accessor);
+
+        // Assert
+        context.Organisation.ShouldBeNull();
+    }
+
     private static IHttpContextAccessor CreateHttpContextAccessor(
         bool isAuthenticated,
         string? id = null,

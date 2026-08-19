@@ -25,9 +25,10 @@ public sealed class UserContext : IUserContext, IIdentity
             Surname = GetClaim(ClaimConstants.FamilyName, user);
             EmailAddress = GetClaim(ClaimConstants.Email, user);
             var organisationJson = GetClaim(ClaimConstants.Organisation, user);
-            Organisation = string.IsNullOrEmpty(organisationJson)
-                ? null
-                : JsonSerializer.Deserialize<Organisation>(organisationJson, _options) ?? null;
+            if (!string.IsNullOrEmpty(organisationJson))
+            {
+                Organisation = DeserializeOrganisation(organisationJson);
+            }
         }
     }
 
@@ -46,5 +47,17 @@ public sealed class UserContext : IUserContext, IIdentity
     {
         var claim = user.FindFirst(claimType);
         return claim is null ? string.Empty : claim.Value;
+    }
+
+    private static Organisation? DeserializeOrganisation(string organisationJson)
+    {
+        try
+        {
+            return JsonSerializer.Deserialize<Organisation>(organisationJson, _options);
+        }
+        catch (JsonException)
+        {
+            return null;
+        }
     }
 }
