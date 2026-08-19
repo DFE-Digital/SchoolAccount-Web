@@ -39,7 +39,7 @@ public static class ServiceCollectionExtensions
                 options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.ResponseType = OpenIdConnectResponseType.IdToken;
 
-                options.Scope.Add(Organisation);
+                options.Scope.Add(ClaimConstants.Organisation);
                 options.Scope.Add(Email);
                 options.SaveTokens = true;
                 options.GetClaimsFromUserInfoEndpoint = true;

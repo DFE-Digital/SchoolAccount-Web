@@ -5,7 +5,7 @@ namespace SchoolAccount.Web.Mvc.Authentication.Extensions;
 
 public static class ClaimsPrincipalExtensions
 {
-    public static OrganisationClaim? GetOrganisation(
+    public static Organisation? GetOrganisation(
         this ClaimsPrincipal principal,
         JsonSerializerOptions? options = null
     )
@@ -13,7 +13,7 @@ public static class ClaimsPrincipalExtensions
         options ??= new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
         var organisationClaim = principal.FindFirst(ClaimConstants.Organisation)?.Value;
         return !string.IsNullOrEmpty(organisationClaim)
-            ? JsonSerializer.Deserialize<OrganisationClaim>(organisationClaim, options)
+            ? JsonSerializer.Deserialize<Organisation>(organisationClaim, options)
             : null;
     }
 }
