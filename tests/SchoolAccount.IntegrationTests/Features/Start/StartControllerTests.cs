@@ -28,7 +28,7 @@ public class StartControllerTests : IClassFixture<SchoolAccountWebApplicationFac
             >(_ => _getTimeSpecificHelloHandler)
         );
     }
-
+    
     [Fact]
     public async Task Ensure_that_the_start_controller_returns_a_successful_result()
     {
@@ -36,7 +36,11 @@ public class StartControllerTests : IClassFixture<SchoolAccountWebApplicationFac
         var pageUri = _factory.GeneratePath("Start", "Start");
 
         // Act
-        var response = await _client.GetAsync(pageUri, TestContext.Current.CancellationToken);
+        var response = await _client.GetAsync(
+            pageUri,
+            TestContext.Current.CancellationToken
+        );
+
         var page = await AngleSharpPage.FromResponseAsync<CommonPage>(
             response,
             TestContext.Current.CancellationToken
@@ -53,7 +57,7 @@ public class StartControllerTests : IClassFixture<SchoolAccountWebApplicationFac
         var bodyElement = page.GetFirstBody();
         bodyElement.ShouldNotBeNull();
         bodyElement.ShouldContainWithoutWhitespace(
-            "Login with a DSI Account to access your School Account."
+            "Sign in to school account"
         );
     }
 }
