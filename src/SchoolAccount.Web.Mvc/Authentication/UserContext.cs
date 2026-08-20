@@ -16,10 +16,9 @@ public sealed class UserContext : IUserContext, IIdentity
         GivenName = user?.FindFirst(ClaimConstants.GivenName)?.Value;
         Surname = user?.FindFirst(ClaimConstants.FamilyName)?.Value;
         EmailAddress = user?.FindFirst(ClaimConstants.Email)?.Value;
-        OrganisationName = OrganisationName =
-            Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(
-                (user?.GetOrganisation()?.Name ?? string.Empty).ToLower(CultureInfo.CurrentCulture)
-            );
+        OrganisationName = Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(
+            (user?.GetOrganisation()?.Name ?? string.Empty).ToLower(CultureInfo.CurrentCulture)
+        );
     }
 
     public string? GivenName { get; }

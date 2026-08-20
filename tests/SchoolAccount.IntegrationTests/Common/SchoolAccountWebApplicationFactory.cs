@@ -33,14 +33,6 @@ public class SchoolAccountWebApplicationFactory<TProgram> : WebApplicationFactor
         return CreateClient<MockOidcHandler>(additionalConfigurableServices, options);
     }
 
-    public HttpClient CreateNoOrganisationAuthorisedClient(
-        Action<IServiceCollection>? additionalConfigurableServices = null,
-        ClientOptions? options = null
-    )
-    {
-        return CreateClient<MockNoOrganisationAuthHandler>(additionalConfigurableServices, options);
-    }
-
     public string GeneratePath(
         [AspMvcController] string controller,
         [AspMvcAction] string action,

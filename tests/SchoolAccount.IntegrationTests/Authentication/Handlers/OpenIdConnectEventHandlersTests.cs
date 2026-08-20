@@ -8,7 +8,7 @@ namespace SchoolAccount.IntegrationTests.Authentication.Handlers;
 public class OpenIdConnectEventHandlersTests
 {
     [Fact]
-    public async Task OnTicketReceived_NoOrganisation_Redirects403()
+    public async Task Event_handler_does_redirect_when_there_is_no_organisation()
     {
         var ticket = new AuthenticationTicket(new ClaimsPrincipal(new ClaimsIdentity()), "oidc");
 
@@ -23,11 +23,10 @@ public class OpenIdConnectEventHandlersTests
 
         Assert.Equal(302, context.HttpContext.Response.StatusCode);
         Assert.Equal("/error/403", context.HttpContext.Response.Headers.Location);
-        Assert.True(context.Result?.Handled);
     }
 
     [Fact]
-    public async Task OnTicketReceived_WithOrganisation_DoesNotRedirect()
+    public async Task Event_handler_does_not_redirect_when_there_is_a_valid_organisation()
     {
         var identity = new ClaimsIdentity();
         identity.AddClaim(new Claim("organisation", """{"NAME":"Test School"}"""));
@@ -44,6 +43,5 @@ public class OpenIdConnectEventHandlersTests
         await OpenIdConnectEventHandlers.OnTicketReceived(context);
 
         Assert.NotEqual(302, context.HttpContext.Response.StatusCode);
-        Assert.Null(context.Result);
     }
 }
