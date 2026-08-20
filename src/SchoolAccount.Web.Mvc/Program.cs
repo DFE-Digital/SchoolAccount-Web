@@ -2,6 +2,7 @@ using GovUk.Frontend.AspNetCore;
 using SchoolAccount.Application;
 using SchoolAccount.Infrastructure;
 using SchoolAccount.Web.Mvc;
+using SchoolAccount.Web.Mvc.Config;
 using SchoolAccount.Web.Mvc.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,6 +16,12 @@ builder
     .Services.AddApplication()
     .AddPresentation(builder.Environment, builder.Configuration)
     .AddInfrastructure();
+
+builder
+    .Services.AddOptions<CommonApiConfig>()
+    .Bind(builder.Configuration.GetSection("CommonApiSettings"))
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
 
 var app = builder.Build();
 
