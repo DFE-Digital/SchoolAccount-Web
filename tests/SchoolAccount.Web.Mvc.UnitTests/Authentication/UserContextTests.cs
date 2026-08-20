@@ -36,14 +36,16 @@ public class UserContextTests
             }
             """;
 
-        var accessor = CreateHttpContextAccessor(
-            true,
-            id,
-            givenName,
-            familyName,
-            email,
-            organisationJson
-        );
+        var claimsDictionary = new Dictionary<string, string>
+        {
+            [Id] = id,
+            [GivenName] = givenName,
+            [FamilyName] = familyName,
+            [Email] = email,
+            [ClaimConstants.Organisation] = organisationJson,
+        };
+
+        var accessor = CreateHttpContextAccessor(true, claimsDictionary);
 
         // Act
         var context = new UserContext(accessor);
@@ -94,14 +96,16 @@ public class UserContextTests
             }
             """;
 
-        var accessor = CreateHttpContextAccessor(
-            true,
-            id,
-            givenName,
-            familyName,
-            email,
-            organisationJson
-        );
+        var claimsDictionary = new Dictionary<string, string>
+        {
+            [Id] = id,
+            [GivenName] = givenName,
+            [FamilyName] = familyName,
+            [Email] = email,
+            [ClaimConstants.Organisation] = organisationJson,
+        };
+
+        var accessor = CreateHttpContextAccessor(true, claimsDictionary);
 
         // Act
         var context = new UserContext(accessor);
@@ -129,7 +133,7 @@ public class UserContextTests
     public void Ensure_that_an_unauthorised_request_occurs_when_user_context_is_flagged_as_unauthenticated()
     {
         // Arrange
-        var accessor = CreateHttpContextAccessor(false);
+        var accessor = CreateHttpContextAccessor(false, null);
 
         // Act
         var context = new UserContext(accessor);
@@ -153,14 +157,16 @@ public class UserContextTests
         var email = "john.jones@testing.world";
         var organisationJson = "organisation is not valid json";
 
-        var accessor = CreateHttpContextAccessor(
-            true,
-            id,
-            givenName,
-            familyName,
-            email,
-            organisationJson
-        );
+        var claimsDictionary = new Dictionary<string, string>
+        {
+            [Id] = id,
+            [GivenName] = givenName,
+            [FamilyName] = familyName,
+            [Email] = email,
+            [ClaimConstants.Organisation] = organisationJson,
+        };
+
+        var accessor = CreateHttpContextAccessor(true, claimsDictionary);
 
         // Act
         var context = new UserContext(accessor);
@@ -171,41 +177,14 @@ public class UserContextTests
 
     private static IHttpContextAccessor CreateHttpContextAccessor(
         bool isAuthenticated,
-        string? id = null,
-        string? givenName = null,
-        string? surname = null,
-        string? email = null,
-        string? organisation = null
+        Dictionary<string, string>? claimsDictionary
     )
     {
         var claims = new List<Claim>();
 
         if (isAuthenticated)
         {
-            if (id != null)
-            {
-                claims.Add(new Claim(Id, id));
-            }
-
-            if (givenName != null)
-            {
-                claims.Add(new Claim(GivenName, givenName));
-            }
-
-            if (surname != null)
-            {
-                claims.Add(new Claim(FamilyName, surname));
-            }
-
-            if (email != null)
-            {
-                claims.Add(new Claim(Email, email));
-            }
-
-            if (organisation != null)
-            {
-                claims.Add(new Claim(ClaimConstants.Organisation, organisation));
-            }
+            claims = claimsDictionary?.Select(kvp => new Claim(kvp.Key, kvp.Value)).ToList();
         }
 
         var identity = new ClaimsIdentity(claims, isAuthenticated ? "test" : null);
