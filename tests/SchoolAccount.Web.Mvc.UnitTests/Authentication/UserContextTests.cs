@@ -56,28 +56,24 @@ public class UserContextTests
 
         // Assert
         context.IsAuthenticated.ShouldBeTrue();
-        context.GivenName.ShouldContainWithoutWhitespace(givenName);
-        context.Surname.ShouldContainWithoutWhitespace(familyName);
-        context.Id.ShouldContainWithoutWhitespace(id);
-        context.EmailAddress.ShouldContainWithoutWhitespace(email);
-        context.Name.ShouldContainWithoutWhitespace(givenName + " " + familyName);
+        context.GivenName.ShouldBe(givenName);
+        context.Surname.ShouldBe(familyName);
+        context.Id.ShouldBe(id);
+        context.EmailAddress.ShouldBe(email);
+        context.Name.ShouldBe(givenName + " " + familyName);
         context.Organisation.ShouldNotBeNull();
-        context.Organisation.Id.ShouldContainWithoutWhitespace(
-            "2E774B32-E4DB-445B-B915-736C777FF5A4"
-        );
-        context.Organisation.Name.ShouldContainWithoutWhitespace("East Herrington Primary Academy");
-        context.Organisation.Category.Id.ShouldContainWithoutWhitespace("001");
-        context.Organisation.Category.Name.ShouldContainWithoutWhitespace("Establishment");
-        context.Organisation.Ukprn.ShouldContainWithoutWhitespace("10037611");
-        context.Organisation.EstablishmentNumber?.ShouldContainWithoutWhitespace("2091");
+        context.Organisation.Id.ShouldBe("2E774B32-E4DB-445B-B915-736C777FF5A4");
+        context.Organisation.Name.ShouldBe("East Herrington Primary Academy");
+        context.Organisation.Category.Id.ShouldBe("001");
+        context.Organisation.Category.Name.ShouldBe("Establishment");
+        context.Organisation.Ukprn.ShouldBe("10037611");
+        context.Organisation.EstablishmentNumber?.ShouldBe("2091");
         context.Organisation.LocalAuthority.ShouldNotBeNull();
-        context.Organisation.LocalAuthority.Id.ShouldContainWithoutWhitespace(
-            "502EF2E9-2CA6-4905-9BF7-E80695BD5717"
-        );
-        context.Organisation.LocalAuthority.Name.ShouldContainWithoutWhitespace(
+        context.Organisation.LocalAuthority.Id.ShouldBe("502EF2E9-2CA6-4905-9BF7-E80695BD5717");
+        context.Organisation.LocalAuthority.Name.ShouldBe(
             "SUNDERLAND CITY METROPOLITAN BOROUGH COUNCIL"
         );
-        context.Organisation.LocalAuthority.Code.ShouldContainWithoutWhitespace("394");
+        context.Organisation.LocalAuthority.Code.ShouldBe("394");
     }
 
     [Fact]
@@ -116,19 +112,17 @@ public class UserContextTests
 
         // Assert
         context.IsAuthenticated.ShouldBeTrue();
-        context.GivenName.ShouldContainWithoutWhitespace(givenName);
-        context.Surname.ShouldContainWithoutWhitespace(familyName);
-        context.Id.ShouldContainWithoutWhitespace(id);
-        context.EmailAddress.ShouldContainWithoutWhitespace(email);
-        context.Name.ShouldContainWithoutWhitespace(givenName + " " + familyName);
+        context.GivenName.ShouldBe(givenName);
+        context.Surname.ShouldBe(familyName);
+        context.Id.ShouldBe(id);
+        context.EmailAddress.ShouldBe(email);
+        context.Name.ShouldBe(givenName + " " + familyName);
         context.Organisation.ShouldNotBeNull();
-        context.Organisation.Id.ShouldContainWithoutWhitespace(
-            "DD9F7BD6-2828-4FE7-B6DA-7C7C028ED479"
-        );
-        context.Organisation.Name.ShouldContainWithoutWhitespace("BALMORAL LEARNING TRUST");
-        context.Organisation.Category.Id.ShouldContainWithoutWhitespace("010");
-        context.Organisation.Category.Name.ShouldContainWithoutWhitespace("Multi-Academy Trust");
-        context.Organisation.Ukprn.ShouldContainWithoutWhitespace("10059806");
+        context.Organisation.Id.ShouldBe("DD9F7BD6-2828-4FE7-B6DA-7C7C028ED479");
+        context.Organisation.Name.ShouldBe("BALMORAL LEARNING TRUST");
+        context.Organisation.Category.Id.ShouldBe("010");
+        context.Organisation.Category.Name.ShouldBe("Multi-Academy Trust");
+        context.Organisation.Ukprn.ShouldBe("10059806");
         context.Organisation.EstablishmentNumber.ShouldBeNull();
         context.Organisation.LocalAuthority.ShouldBeNull();
     }
