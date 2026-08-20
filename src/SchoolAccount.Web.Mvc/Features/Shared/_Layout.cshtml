@@ -1,14 +1,11 @@
-﻿@using SchoolAccount.SharedKernel
-@inject IUserContext CurrentUser
+﻿@using SchoolAccount.Web.Mvc.Features.Header
+@inject IHeaderContentProvider HeaderContentProvider
 
 @* ReSharper disable Razor.LayoutNotResolved *@
 @* ReSharper disable Razor.SectionNotResolved *@
 
 @{
     Layout = "_GovUkPageTemplate";
-
-    var isAuthenticated = CurrentUser?.IsAuthenticated == true;
-    var organisationName = CurrentUser?.Organisation?.Name;
 }
 
 @section Head {
@@ -26,9 +23,9 @@
                 </a>
             </div>
             <div class="header-navigation">
-                @if (isAuthenticated)
+                @if (HeaderContentProvider.IsAuthenticated)
                 {
-                    <span class="header-navigation__school">@organisationName</span>
+                    <span class="header-navigation__school">@HeaderContentProvider.OrganisationName</span>
 
                     @using (Html.BeginForm("Logout", "Account", FormMethod.Post))
                     {
