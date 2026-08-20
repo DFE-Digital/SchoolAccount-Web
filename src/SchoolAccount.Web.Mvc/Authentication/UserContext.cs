@@ -34,13 +34,13 @@ public sealed class UserContext : IUserContext, IIdentity
         }
     }
 
-    public string GivenName { get; } = string.Empty;
-    public string Surname { get; } = string.Empty;
+    public string GivenName { get; }
+    public string Surname { get; }
     public bool IsAuthenticated { get; }
-    public string Id { get; } = string.Empty;
+    public string Id { get; }
     public string? AuthenticationType { get; }
     public string Name => $"{GivenName} {Surname}".Trim();
-    public string EmailAddress { get; } = string.Empty;
+    public string EmailAddress { get; }
     public Organisation? Organisation { get; }
 
     private static string GetClaim(string claimType, ClaimsPrincipal user)
