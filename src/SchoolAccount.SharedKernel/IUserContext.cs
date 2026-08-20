@@ -1,4 +1,6 @@
-﻿namespace SchoolAccount.SharedKernel;
+﻿using SchoolAccount.SharedKernel.Authentication;
+
+namespace SchoolAccount.SharedKernel;
 
 public interface IUserContext
 {
@@ -7,5 +9,5 @@ public interface IUserContext
     string? AuthenticationType { get; }
     string? EmailAddress { get; }
     string? Name { get; }
-    string? OrganisationName { get; }
+    Organisation? Organisation { get; }
 }
