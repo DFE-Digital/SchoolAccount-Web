@@ -2,7 +2,6 @@
 using System.Security.Principal;
 using System.Text.Json;
 using SchoolAccount.SharedKernel;
-using SchoolAccount.Web.Mvc.Authentication.Extensions;
 
 namespace SchoolAccount.Web.Mvc.Authentication;
 
@@ -39,8 +38,6 @@ public sealed class UserContext : IUserContext, IIdentity
     public string? AuthenticationType { get; }
     public string Name => $"{GivenName} {Surname}".Trim();
     public string EmailAddress { get; } = string.Empty;
-
-    public string? OrganisationName => Organisation?.Name;
     public Organisation? Organisation { get; }
 
     private static string GetClaim(string claimType, ClaimsPrincipal user)

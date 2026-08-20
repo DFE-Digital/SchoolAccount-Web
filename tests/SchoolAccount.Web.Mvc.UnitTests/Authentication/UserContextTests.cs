@@ -72,7 +72,6 @@ public class UserContextTests
             "SUNDERLAND CITY METROPOLITAN BOROUGH COUNCIL"
         );
         context.Organisation.LocalAuthority.Code.ShouldContainWithoutWhitespace("394");
-        context.OrganisationName?.ShouldContainWithoutWhitespace(context.Organisation.Name);
     }
 
     [Fact]
@@ -124,7 +123,6 @@ public class UserContextTests
         context.Organisation.Ukprn.ShouldContainWithoutWhitespace("10059806");
         context.Organisation.EstablishmentNumber.ShouldBeNull();
         context.Organisation.LocalAuthority.ShouldBeNull();
-        context.OrganisationName?.ShouldContainWithoutWhitespace(context.Organisation.Name);
     }
 
     [Fact]

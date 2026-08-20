@@ -8,7 +8,7 @@
     Layout = "_GovUkPageTemplate";
 
     var isAuthenticated = CurrentUser?.IsAuthenticated == true;
-    var organisationName = CurrentUser?.OrganisationName;
+    var organisationName = CurrentUser?.Organisation?.Name;
 }
 
 @section Head {
