@@ -1,5 +1,4 @@
 using System.Security.Claims;
-using System.Text;
 using Microsoft.AspNetCore.Http;
 using NSubstitute;
 using SchoolAccount.Web.Mvc.Authentication;

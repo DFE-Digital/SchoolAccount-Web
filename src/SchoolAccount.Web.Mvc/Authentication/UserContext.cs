@@ -2,6 +2,7 @@
 using System.Security.Principal;
 using System.Text.Json;
 using SchoolAccount.SharedKernel;
+using SchoolAccount.SharedKernel.Authentication;
 
 namespace SchoolAccount.Web.Mvc.Authentication;
 

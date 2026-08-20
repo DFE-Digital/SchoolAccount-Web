@@ -1,4 +1,4 @@
-namespace SchoolAccount.Web.Mvc.Authentication;
+namespace SchoolAccount.SharedKernel.Authentication;
 
 public record Organisation
 {

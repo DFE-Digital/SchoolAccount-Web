@@ -1,4 +1,4 @@
-﻿using SchoolAccount.Web.Mvc.Authentication;
+﻿using SchoolAccount.SharedKernel.Authentication;
 
 namespace SchoolAccount.SharedKernel;
 
