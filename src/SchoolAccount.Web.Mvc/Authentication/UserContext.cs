@@ -1,4 +1,5 @@
-﻿using System.Security.Principal;
+﻿using System.Globalization;
+using System.Security.Principal;
 using SchoolAccount.SharedKernel;
 using SchoolAccount.Web.Mvc.Authentication.Extensions;
 
@@ -15,7 +16,9 @@ public sealed class UserContext : IUserContext, IIdentity
         GivenName = user?.FindFirst(ClaimConstants.GivenName)?.Value;
         Surname = user?.FindFirst(ClaimConstants.FamilyName)?.Value;
         EmailAddress = user?.FindFirst(ClaimConstants.Email)?.Value;
-        OrganisationName = user?.GetOrganisation()?.Name;
+        OrganisationName = Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(
+            (user?.GetOrganisation()?.Name ?? string.Empty).ToLower(CultureInfo.CurrentCulture)
+        );
     }
 
     public string? GivenName { get; }
@@ -25,6 +28,5 @@ public sealed class UserContext : IUserContext, IIdentity
     public string? AuthenticationType { get; }
     public string? Name => $"{GivenName} {Surname}".Trim();
     public string? EmailAddress { get; }
-
     public string? OrganisationName { get; }
 }
