@@ -64,6 +64,6 @@ public class AuthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<Pr
 
         var pageOrganisationName = page.GetOrganisationName();
         pageOrganisationName.ShouldNotBeNull();
-        pageOrganisationName.ShouldContainWithoutWhitespace("Test School");
+        pageOrganisationName.ShouldContainWithoutWhitespace(MockAuthHandler.FakeOrganisationName);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using GovUk.Frontend.AspNetCore;
 using SchoolAccount.Web.Mvc.Authentication.Extensions;
+using SchoolAccount.Web.Mvc.Features.Header;
 using SchoolAccount.Web.Mvc.Infrastructure;
 using SchoolAccount.Web.Mvc.TagHelpers.Components;
 
@@ -18,6 +19,7 @@ public static class DependencyInjection
         services.AddControllersWithFeatureViews();
         services.AddGovUkFrontend();
         services.AddTagComponents();
+        services.AddScoped<IHeaderContentProvider, HeaderContentProvider>();
 
         if (env.IsDevelopment())
         {
