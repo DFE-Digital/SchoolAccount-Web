@@ -50,7 +50,7 @@ public class DashboardController(IUserContext userContext) : Controller
                     {
                         Id = userContext.Id,
                         Email = userContext.EmailAddress,
-                        Organisation = userContext.Organisation,
+                        Organisations = [userContext.Organisation],
                     }
                 ),
                 cancellationToken

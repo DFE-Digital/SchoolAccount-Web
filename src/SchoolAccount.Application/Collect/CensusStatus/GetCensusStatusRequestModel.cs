@@ -8,5 +8,5 @@ public class GetCensusStatusRequestModel
 
     public string Email { get; init; }
 
-    public Organisation Organisation { get; init; }
+    public List<Organisation> Organisations { get; init; }
 }

@@ -1,5 +1,7 @@
 using GovUk.Frontend.AspNetCore;
+using Microsoft.Extensions.Options;
 using SchoolAccount.Application;
+using SchoolAccount.Application.Collect.CensusStatus;
 using SchoolAccount.Infrastructure;
 using SchoolAccount.Web.Mvc;
 using SchoolAccount.Web.Mvc.Config;
@@ -22,6 +24,14 @@ builder
     .Bind(builder.Configuration.GetSection("CommonApiSettings"))
     .ValidateDataAnnotations()
     .ValidateOnStart();
+
+builder.Services.AddHttpClient<ICollectApiService, CollectApiService>(
+    (serviceProvider, client) =>
+    {
+        var config = serviceProvider.GetRequiredService<IOptions<CommonApiConfig>>().Value;
+        client.BaseAddress = new Uri(config.CollectApiUrl);
+    }
+);
 
 var app = builder.Build();
 
