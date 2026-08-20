@@ -1,6 +1,8 @@
 using System.Security.Claims;
+using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Testing;
 using NSubstitute;
 using SchoolAccount.Web.Mvc.Authentication;
 using Shouldly;
@@ -10,7 +12,7 @@ namespace SchoolAccount.Web.Mvc.UnitTests.Authentication;
 
 public class UserContextTests
 {
-    private readonly ILogger<UserContext> _logger = Substitute.For<ILogger<UserContext>>();
+    private readonly FakeLogger<UserContext> _logger = new();
 
     [Fact]
     public void Ensure_that_an_authenticated_user_can_be_retrieved_from_the_user_context_with_an_academy()
@@ -44,7 +46,7 @@ public class UserContextTests
             [GivenName] = givenName,
             [FamilyName] = familyName,
             [Email] = email,
-            [ClaimConstants.Organisation] = organisationJson,
+            [Organisation] = organisationJson,
         };
 
         var accessor = CreateHttpContextAccessor(true, claimsDictionary);
@@ -104,7 +106,7 @@ public class UserContextTests
             [GivenName] = givenName,
             [FamilyName] = familyName,
             [Email] = email,
-            [ClaimConstants.Organisation] = organisationJson,
+            [Organisation] = organisationJson,
         };
 
         var accessor = CreateHttpContextAccessor(true, claimsDictionary);
@@ -165,7 +167,7 @@ public class UserContextTests
             [GivenName] = givenName,
             [FamilyName] = familyName,
             [Email] = email,
-            [ClaimConstants.Organisation] = organisationJson,
+            [Organisation] = organisationJson,
         };
 
         var accessor = CreateHttpContextAccessor(true, claimsDictionary);
@@ -175,9 +177,12 @@ public class UserContextTests
 
         // Assert
         context.Organisation.ShouldBeNull();
-        // #pragma warning disable CA2254
-        //         _logger.LogWarning(Arg.Any<Exception>(), Arg.Any<string>());
-        // #pragma warning restore CA2254
+        _logger.Collector.LatestRecord.ShouldNotBeNull();
+        _logger.Collector.LatestRecord.Level.ShouldBe(LogLevel.Warning);
+        _logger.Collector.LatestRecord.Exception.ShouldBeOfType<JsonException>();
+        _logger.Collector.LatestRecord.Message.ShouldContain(
+            "Failed to deserialize organisation claim"
+        );
     }
 
     private static IHttpContextAccessor CreateHttpContextAccessor(
