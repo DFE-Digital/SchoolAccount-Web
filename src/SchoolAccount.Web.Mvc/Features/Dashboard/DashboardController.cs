@@ -26,6 +26,8 @@ public class DashboardController(IUserContext userContext) : Controller
         CancellationToken cancellationToken
     )
     {
+        var censusGreeting = string.Empty;
+
         var result = await getTimeSpecifyHellosQueryHandler.Handle(
             new GetTimeSpecificHelloQuery(),
             cancellationToken
@@ -36,18 +38,37 @@ public class DashboardController(IUserContext userContext) : Controller
             return Problem(result.Error.Description);
         }
 
-        var censusStatusResult = await getCensusStatusQueryHandler.Handle(
-            new GetCensusStatusQuery(new GetCensusStatusRequestModel()),
-            cancellationToken
-        );
-
-        if (censusStatusResult.IsFailure)
+        if (
+            userContext.Id is not null
+            && userContext.EmailAddress is not null
+            && userContext.Organisation is not null
+        )
         {
-            return Problem(censusStatusResult.Error.Description);
+            var censusStatusResult = await getCensusStatusQueryHandler.Handle(
+                new GetCensusStatusQuery(
+                    new GetCensusStatusRequestModel
+                    {
+                        Id = userContext.Id,
+                        Email = userContext.EmailAddress,
+                        Organisation = userContext.Organisation,
+                    }
+                ),
+                cancellationToken
+            );
+
+            if (censusStatusResult.IsFailure)
+            {
+                return Problem(censusStatusResult.Error.Description);
+            }
+
+            censusGreeting =
+                $"{censusStatusResult.Value.Name}: {censusStatusResult.Value.Status.Name}.";
+        }
+        else
+        {
+            return Problem("User property is missing");
         }
 
-        var censusGreeting =
-            $"{censusStatusResult.Value.Name}: {censusStatusResult.Value.Status.Name}.";
         var model = new DashboardViewModel(
             userContext.Name ?? "Unknown",
             result.Value.Message,
