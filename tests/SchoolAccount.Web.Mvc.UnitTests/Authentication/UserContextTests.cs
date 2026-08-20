@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using NSubstitute;
 using SchoolAccount.Web.Mvc.Authentication;
 using Shouldly;
@@ -9,6 +10,8 @@ namespace SchoolAccount.Web.Mvc.UnitTests.Authentication;
 
 public class UserContextTests
 {
+    private readonly ILogger<UserContext> _logger = Substitute.For<ILogger<UserContext>>();
+
     [Fact]
     public void Ensure_that_an_authenticated_user_can_be_retrieved_from_the_user_context_with_an_academy()
     {
@@ -47,7 +50,7 @@ public class UserContextTests
         var accessor = CreateHttpContextAccessor(true, claimsDictionary);
 
         // Act
-        var context = new UserContext(accessor);
+        var context = new UserContext(accessor, _logger);
 
         // Assert
         context.IsAuthenticated.ShouldBeTrue();
@@ -107,7 +110,7 @@ public class UserContextTests
         var accessor = CreateHttpContextAccessor(true, claimsDictionary);
 
         // Act
-        var context = new UserContext(accessor);
+        var context = new UserContext(accessor, _logger);
 
         // Assert
         context.IsAuthenticated.ShouldBeTrue();
@@ -135,7 +138,7 @@ public class UserContextTests
         var accessor = CreateHttpContextAccessor(false, null);
 
         // Act
-        var context = new UserContext(accessor);
+        var context = new UserContext(accessor, _logger);
 
         // Assert
         context.IsAuthenticated.ShouldBeFalse();
@@ -168,10 +171,13 @@ public class UserContextTests
         var accessor = CreateHttpContextAccessor(true, claimsDictionary);
 
         // Act
-        var context = new UserContext(accessor);
+        var context = new UserContext(accessor, _logger);
 
         // Assert
         context.Organisation.ShouldBeNull();
+        // #pragma warning disable CA2254
+        //         _logger.LogWarning(Arg.Any<Exception>(), Arg.Any<string>());
+        // #pragma warning restore CA2254
     }
 
     private static IHttpContextAccessor CreateHttpContextAccessor(

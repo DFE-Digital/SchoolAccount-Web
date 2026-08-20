@@ -8,13 +8,15 @@ namespace SchoolAccount.Web.Mvc.Authentication;
 
 public sealed class UserContext : IUserContext, IIdentity
 {
+    private readonly ILogger<UserContext> _logger;
     private static readonly JsonSerializerOptions? _options = new JsonSerializerOptions
     {
         PropertyNameCaseInsensitive = true,
     };
 
-    public UserContext(IHttpContextAccessor contextAccessor)
+    public UserContext(IHttpContextAccessor contextAccessor, ILogger<UserContext> logger)
     {
+        _logger = logger;
         var user = contextAccessor.HttpContext?.User;
         if (user is not null)
         {
@@ -47,14 +49,15 @@ public sealed class UserContext : IUserContext, IIdentity
         return claim is null ? string.Empty : claim.Value;
     }
 
-    private static Organisation? DeserializeOrganisation(string organisationJson)
+    private Organisation? DeserializeOrganisation(string organisationJson)
     {
         try
         {
             return JsonSerializer.Deserialize<Organisation>(organisationJson, _options);
         }
-        catch (JsonException)
+        catch (JsonException ex)
         {
+            _logger.LogWarning(ex, "Failed to deserialize organisation claim");
             return null;
         }
     }
