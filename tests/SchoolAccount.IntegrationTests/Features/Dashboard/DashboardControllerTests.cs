@@ -1,11 +1,11 @@
 ﻿using System.Net;
 using NSubstitute;
 using SchoolAccount.Application.Abstractions.Messaging;
+using SchoolAccount.Application.Collect.CensusStatus;
 using SchoolAccount.Application.Greetings.GetTimeSpecificHello;
 using SchoolAccount.IntegrationTests.Common;
 using SchoolAccount.IntegrationTests.Common.Pages;
 using SchoolAccount.SharedKernel;
-using SchoolAccount.Web.Mvc.Features.Dashboard;
 using Shouldly;
 
 namespace SchoolAccount.IntegrationTests.Features.Dashboard;
@@ -22,14 +22,20 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
         IQueryHandler<GetTimeSpecificHelloQuery, GetTimeSpecificHelloResponse>
     >();
 
+    private readonly IQueryHandler<GetCensusStatusQuery, GetCensusStatusResponse> _getCensusStatusHanlder = Substitute.For<
+        IQueryHandler<GetCensusStatusQuery, GetCensusStatusResponse>
+    >();
+
     public DashboardControllerTests(SchoolAccountWebApplicationFactory<Program> factory)
     {
         _factory = factory;
         _client = factory.CreateAuthorisedClient(services =>
+        {
             services.AddScoped<
                 IQueryHandler<GetTimeSpecificHelloQuery, GetTimeSpecificHelloResponse>
-            >(_ => _getTimeSpecificHelloHandler)
-        );
+            >(_ => _getTimeSpecificHelloHandler);
+            services.AddScoped<IQueryHandler<GetCensusStatusQuery, GetCensusStatusResponse>>(_ => _getCensusStatusHanlder);
+        });
     }
 
     [Fact]
@@ -44,6 +50,9 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
             .Handle(Arg.Any<GetTimeSpecificHelloQuery>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success(stubbedGetSpecificHelloResponse));
 
+        _getCensusStatusHanlder.Handle(Arg.Any<GetCensusStatusQuery>(), Arg.Any<CancellationToken>())
+            .Returns(Result.Success(new GetCensusStatusResponse { Name= "Test School", Status = new Status() { Name = "TestStatus" } }));
+        
         var pageUri = _factory.GeneratePath("Dashboard", "Dashboard");
 
         // Act
