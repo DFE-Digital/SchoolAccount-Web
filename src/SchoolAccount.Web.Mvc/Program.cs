@@ -7,6 +7,7 @@ using SchoolAccount.Infrastructure.Collect.CensusStatus;
 using SchoolAccount.Web.Mvc;
 using SchoolAccount.Web.Mvc.Config;
 using SchoolAccount.Web.Mvc.Extensions;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +15,14 @@ if (builder.Environment.IsProduction())
 {
     builder.Configuration.AddAzureAppConfiguration();
 }
+
+builder.Host.UseSerilog(
+    (context, services, loggerConfiguration) =>
+        loggerConfiguration
+            .ReadFrom.Configuration(context.Configuration)
+            .ReadFrom.Services(services)
+            .Enrich.FromLogContext()
+);
 
 builder
     .Services.AddApplication()
@@ -38,6 +47,8 @@ var app = builder.Build();
 
 app.UseStatusCodePagesWithReExecute("/error/{0}");
 app.UseExceptionHandler("/error/500");
+
+app.UseSerilogRequestLogging();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
