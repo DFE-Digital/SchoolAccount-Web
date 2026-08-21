@@ -6,15 +6,28 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using NSubstitute;
+using SchoolAccount.Application.Abstractions.Messaging;
+using SchoolAccount.Application.Collect.CensusStatus;
+using SchoolAccount.SharedKernel;
 
 namespace SchoolAccount.IntegrationTests.Common;
 
 public class SchoolAccountWebApplicationFactory<TProgram> : WebApplicationFactory<TProgram>
     where TProgram : class
 {
+    public readonly IQueryHandler<GetCensusStatusQuery, GetCensusStatusResponse> _handler = Substitute.For<
+        IQueryHandler<GetCensusStatusQuery, GetCensusStatusResponse>
+    >();
+    
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
+        _handler.Handle(Arg.Any<GetCensusStatusQuery>(), Arg.Any<CancellationToken>())
+            .Returns(Result.Success(new GetCensusStatusResponse { Name= "Test School", Status = new Status() { Name = "TestStatus" } }));
         builder.UseEnvironment("IntegrationTests");
+        builder.ConfigureTestServices(services =>
+            services.AddScoped<IQueryHandler<GetCensusStatusQuery, GetCensusStatusResponse>>(_ => _handler)
+        );
     }
 
     public HttpClient CreateAuthorisedClient(
