@@ -1,74 +1,139 @@
-using System.Net;
 using System.Net.Http.Json;
+using System.Text.Json;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SchoolAccount.Application.Collect.CensusStatus;
 using Action = SchoolAccount.Application.Collect.CensusStatus.Action;
 
 namespace SchoolAccount.Infrastructure.Collect.CensusStatus;
 
-public class CollectApiService(HttpClient httpClient, ILogger<CollectApiService> logger)
+public sealed class CollectApiService(HttpClient httpClient, ILogger<CollectApiService> logger)
     : ICollectApiService
 {
+    private const string _statusEndpoint = "/status";
+
     public async Task<List<GetCensusStatusResponse>> GetCensusStatus(GetCensusStatusQuery query)
     {
-        var response = await httpClient.PostAsJsonAsync("/status", query.request);
-
-        if (response.StatusCode == HttpStatusCode.BadRequest)
+        try
         {
-            var validationProblemDetails =
-                await response.Content.ReadFromJsonAsync<HttpValidationProblemDetails>(
-                    CancellationToken.None
-                );
+            using var response = await httpClient.PostAsJsonAsync(_statusEndpoint, query.request);
 
-            if (validationProblemDetails is not null)
+            if (!response.IsSuccessStatusCode)
             {
-                foreach (var error in validationProblemDetails.Errors)
-                {
-                    foreach (var message in error.Value)
-                    {
-                        logger.LogError("{Message}", message);
-                    }
-                }
+                await LogProblem(response, _statusEndpoint);
+
+                return [];
             }
 
-            return [];
+            var content = await response.Content.ReadFromJsonAsync<GetCensusStatusApiResponse>();
+
+            if (content is null)
+            {
+                logger.LogError("Response from {RequestUri} was empty", _statusEndpoint);
+
+                return [];
+            }
+
+            return content.Details.ConvertAll(MapToCensusStatus);
+        }
+        catch (HttpRequestException exception)
+        {
+            logger.LogError(
+                exception,
+                "Request to {RequestUri} could not be sent",
+                _statusEndpoint
+            );
+        }
+        catch (TaskCanceledException exception)
+        {
+            logger.LogError(exception, "Request to {RequestUri} timed out", _statusEndpoint);
+        }
+        catch (JsonException exception)
+        {
+            logger.LogError(
+                exception,
+                "Response from {RequestUri} was not valid JSON",
+                _statusEndpoint
+            );
+        }
+        catch (Exception exception)
+        {
+            logger.LogError(
+                exception,
+                "Request to {RequestUri} failed unexpectedly",
+                _statusEndpoint
+            );
         }
 
-        if (response.StatusCode == HttpStatusCode.InternalServerError)
+        return [];
+    }
+
+    private async Task LogProblem(HttpResponseMessage response, string requestUri)
+    {
+        var statusCode = (int)response.StatusCode;
+        var problemDetails = await ReadProblemDetails(response);
+
+        if (problemDetails is null)
         {
-            var problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>(
-                CancellationToken.None
+            logger.LogError(
+                "Request to {RequestUri} failed with status {StatusCode}",
+                requestUri,
+                statusCode
             );
 
-            if (problemDetails is not null)
-            {
-                logger.LogError("{Message}", problemDetails.Detail);
-            }
-
-            return [];
+            return;
         }
 
-        var results =
-            await response.Content.ReadFromJsonAsync<GetCensusStatusApiResponse>()
-            ?? throw new Exception("Failed to get census status");
+        if (problemDetails.Errors.Count is 0)
+        {
+            logger.LogError(
+                "Request to {RequestUri} failed with status {StatusCode}: {Title} {Detail}",
+                requestUri,
+                statusCode,
+                problemDetails.Title,
+                problemDetails.Detail
+            );
 
-        var statusResponses = results
-            .Details.Select(x => new GetCensusStatusResponse
+            return;
+        }
+
+        foreach (var (field, messages) in problemDetails.Errors)
+        {
+            foreach (var message in messages)
             {
-                Id = x.Id,
-                Interesting = x.Interesting,
-                Actions = x
-                    .Actions.Select(y => new Action
-                    {
-                        Name = y.Name,
-                        Status = new Status { Name = y.Status.Name },
-                    })
-                    .ToList(),
-            })
-            .ToList();
-
-        return statusResponses;
+                logger.LogError(
+                    "Request to {RequestUri} failed validation on {Field}: {ValidationMessage}",
+                    requestUri,
+                    field,
+                    message
+                );
+            }
+        }
     }
+
+    private static async Task<HttpValidationProblemDetails?> ReadProblemDetails(
+        HttpResponseMessage response
+    )
+    {
+        try
+        {
+            return await response.Content.ReadFromJsonAsync<HttpValidationProblemDetails>();
+        }
+        catch (JsonException)
+        {
+            return null;
+        }
+    }
+
+    private static GetCensusStatusResponse MapToCensusStatus(OrganisationResponse organisation) =>
+        new()
+        {
+            Id = organisation.Id,
+            Interesting = organisation.Interesting,
+            Actions = organisation.Actions.ConvertAll(action => new Action
+            {
+                Name = action.Name,
+                Status = new Status { Name = action.Status.Name },
+            }),
+        };
 }
