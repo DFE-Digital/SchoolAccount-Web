@@ -72,10 +72,16 @@ public class CollectApiServiceTests : IDisposable
 
         // Assert
         result.ShouldBeEmpty();
+        _logger.Collector.Count.ShouldBe(1);
         _logger.Collector.LatestRecord.ShouldNotBeNull();
         _logger.Collector.LatestRecord.Level.ShouldBe(LogLevel.Error);
-        _logger.Collector.LatestRecord.Message.ShouldContain(validationMessage);
-        _logger.Collector.LatestRecord.Message.ShouldContain("Email");
+        _logger.Collector.LatestRecord.StructuredState.ShouldNotBeNull();
+        _logger.Collector.LatestRecord.StructuredState.ShouldContain(property =>
+            property.Key == "ValidationErrorCount" && property.Value == "1"
+        );
+        _logger.Collector.LatestRecord.StructuredState.ShouldContain(property =>
+            property.Key == "@ValidationErrors"
+        );
     }
 
     [Fact]

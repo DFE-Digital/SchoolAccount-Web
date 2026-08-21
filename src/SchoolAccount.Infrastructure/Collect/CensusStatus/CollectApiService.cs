@@ -84,31 +84,25 @@ public sealed class CollectApiService(HttpClient httpClient, ILogger<CollectApiS
             return;
         }
 
-        if (problemDetails.Errors.Count is 0)
+        if (problemDetails.Errors.Count > 0)
         {
             logger.LogError(
-                "Request to {RequestUri} failed with status {StatusCode}: {Title} {Detail}",
+                "Request to {RequestUri} failed validation with {ValidationErrorCount} errors {@ValidationErrors}",
                 requestUri,
-                statusCode,
-                problemDetails.Title,
-                problemDetails.Detail
+                problemDetails.Errors.Count,
+                problemDetails.Errors
             );
 
             return;
         }
 
-        foreach (var (field, messages) in problemDetails.Errors)
-        {
-            foreach (var message in messages)
-            {
-                logger.LogError(
-                    "Request to {RequestUri} failed validation on {Field}: {ValidationMessage}",
-                    requestUri,
-                    field,
-                    message
-                );
-            }
-        }
+        logger.LogError(
+            "Request to {RequestUri} failed with status {StatusCode}: {Title} {Detail}",
+            requestUri,
+            statusCode,
+            problemDetails.Title,
+            problemDetails.Detail
+        );
     }
 
     private static async Task<HttpValidationProblemDetails?> ReadProblemDetails(
