@@ -40,7 +40,7 @@ public class DashboardController(IUserContext userContext) : Controller
 
         if (
             !string.IsNullOrEmpty(userContext.Id)
-            &&  !string.IsNullOrEmpty(userContext.EmailAddress)
+            && !string.IsNullOrEmpty(userContext.EmailAddress)
             && userContext.Organisation is not null
         )
         {

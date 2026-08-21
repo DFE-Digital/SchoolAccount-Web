@@ -22,7 +22,10 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
         IQueryHandler<GetTimeSpecificHelloQuery, GetTimeSpecificHelloResponse>
     >();
 
-    private readonly IQueryHandler<GetCensusStatusQuery, GetCensusStatusResponse> _getCensusStatusHanlder = Substitute.For<
+    private readonly IQueryHandler<
+        GetCensusStatusQuery,
+        GetCensusStatusResponse
+    > _getCensusStatusHanlder = Substitute.For<
         IQueryHandler<GetCensusStatusQuery, GetCensusStatusResponse>
     >();
 
@@ -34,7 +37,9 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
             services.AddScoped<
                 IQueryHandler<GetTimeSpecificHelloQuery, GetTimeSpecificHelloResponse>
             >(_ => _getTimeSpecificHelloHandler);
-            services.AddScoped<IQueryHandler<GetCensusStatusQuery, GetCensusStatusResponse>>(_ => _getCensusStatusHanlder);
+            services.AddScoped<IQueryHandler<GetCensusStatusQuery, GetCensusStatusResponse>>(_ =>
+                _getCensusStatusHanlder
+            );
         });
     }
 
@@ -50,9 +55,18 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
             .Handle(Arg.Any<GetTimeSpecificHelloQuery>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success(stubbedGetSpecificHelloResponse));
 
-        _getCensusStatusHanlder.Handle(Arg.Any<GetCensusStatusQuery>(), Arg.Any<CancellationToken>())
-            .Returns(Result.Success(new GetCensusStatusResponse { Name= "Test School", Status = new Status() { Name = "TestStatus" } }));
-        
+        _getCensusStatusHanlder
+            .Handle(Arg.Any<GetCensusStatusQuery>(), Arg.Any<CancellationToken>())
+            .Returns(
+                Result.Success(
+                    new GetCensusStatusResponse
+                    {
+                        Name = "Test School",
+                        Status = new Status() { Name = "TestStatus" },
+                    }
+                )
+            );
+
         var pageUri = _factory.GeneratePath("Dashboard", "Dashboard");
 
         // Act
