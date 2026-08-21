@@ -6,7 +6,7 @@ namespace SchoolAccount.Web.Mvc.Features.Start;
 [Route("/")]
 public class StartController : Controller
 {
-    [HttpGet(""), AllowAnonymous]
+    [HttpGet, AllowAnonymous]
     public async Task<IActionResult> Start()
     {
         return View(new StartViewModel());
