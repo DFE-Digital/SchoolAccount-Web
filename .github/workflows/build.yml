@@ -15,7 +15,7 @@ env:
   WEB_SOLUTION_FILE: SchoolAccount.Web.slnx
   MAIN_BRANCH: refs/heads/main
   IMAGE_NAME: ghcr.io/dfe-digital/schoolaccount-web
-  CONTAINERAPP_RESOURCE_GROUP: s268d01rg-uks-sa-poc
+  CONTAINERAPP_RESOURCE_GROUP: s268d01rg-uks-sa-ace
   CONTAINERAPP_NAME: schoolaccount-web-app
 
 jobs:
@@ -76,7 +76,7 @@ jobs:
           path: TestResults/Merged/SummaryGithub.md
 
       - name: Log in to GHCR
-        if: ${{ github.event_name == 'push' }}
+        #if: ${{ github.event_name == 'push' }}
         uses: docker/login-action@v4
         with:
           registry: ghcr.io
@@ -105,20 +105,20 @@ jobs:
           context: .
           file: src/SchoolAccount.Web.Mvc/Dockerfile
           target: final
-          push: ${{ github.ref == env.MAIN_BRANCH }}
+          push: true
           tags: ${{ steps.meta.outputs.tags }}
       
       - name: Publish
         run: dotnet publish ${{ env.WEB_SOLUTION_FILE }} --configuration Release --no-restore --no-build
 
       - name: Azure Login
-        if: github.event_name == 'push' && github.ref == env.MAIN_BRANCH
+        #if: github.event_name == 'push' && github.ref == env.MAIN_BRANCH
         uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Update ACA Image
-        if: github.event_name == 'push' && github.ref == env.MAIN_BRANCH
+        #if: github.event_name == 'push' && github.ref == env.MAIN_BRANCH
         run: |
           az containerapp update \
             --name ${{ env.CONTAINERAPP_NAME }} \
