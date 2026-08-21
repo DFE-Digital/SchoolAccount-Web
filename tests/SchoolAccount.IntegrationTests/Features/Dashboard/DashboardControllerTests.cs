@@ -25,7 +25,7 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
     private readonly IQueryHandler<
         GetCensusStatusQuery,
         GetCensusStatusResponse
-    > _getCensusStatusHanlder = Substitute.For<
+    > _getCensusStatusHandler = Substitute.For<
         IQueryHandler<GetCensusStatusQuery, GetCensusStatusResponse>
     >();
 
@@ -38,7 +38,7 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
                 IQueryHandler<GetTimeSpecificHelloQuery, GetTimeSpecificHelloResponse>
             >(_ => _getTimeSpecificHelloHandler);
             services.AddScoped<IQueryHandler<GetCensusStatusQuery, GetCensusStatusResponse>>(_ =>
-                _getCensusStatusHanlder
+                _getCensusStatusHandler
             );
         });
     }
@@ -55,7 +55,7 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
             .Handle(Arg.Any<GetTimeSpecificHelloQuery>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success(stubbedGetSpecificHelloResponse));
 
-        _getCensusStatusHanlder
+        _getCensusStatusHandler
             .Handle(Arg.Any<GetCensusStatusQuery>(), Arg.Any<CancellationToken>())
             .Returns(
                 Result.Success(
@@ -89,5 +89,10 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
         headingElement.ShouldBeEquivalentTo(
             $"{GetTimeSpecificHelloHandler.Messages.Morning} {MockAuthHandler.FakeGivenName} {MockAuthHandler.FakeFamilyName}"
         );
+
+        var bodyElement = page.GetFirstBody();
+        bodyElement.ShouldNotBeNull();
+        bodyElement.ShouldContainWithoutWhitespace("Test School");
+        bodyElement.ShouldContainWithoutWhitespace("TestStatus");
     }
 }

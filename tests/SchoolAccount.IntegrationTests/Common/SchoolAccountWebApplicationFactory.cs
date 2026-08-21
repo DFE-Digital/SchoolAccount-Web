@@ -16,9 +16,32 @@ namespace SchoolAccount.IntegrationTests.Common;
 public class SchoolAccountWebApplicationFactory<TProgram> : WebApplicationFactory<TProgram>
     where TProgram : class
 {
+    private readonly IQueryHandler<
+        GetCensusStatusQuery,
+        GetCensusStatusResponse
+    > _getCensusStatusHandler = Substitute.For<
+        IQueryHandler<GetCensusStatusQuery, GetCensusStatusResponse>
+    >();
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseEnvironment("IntegrationTests");
+        builder.ConfigureTestServices(services =>
+            services.AddScoped<IQueryHandler<GetCensusStatusQuery, GetCensusStatusResponse>>(_ =>
+                _getCensusStatusHandler
+            )
+        );
+        _getCensusStatusHandler
+            .Handle(Arg.Any<GetCensusStatusQuery>(), Arg.Any<CancellationToken>())
+            .Returns(
+                Result.Success(
+                    new GetCensusStatusResponse
+                    {
+                        Name = "Autumn School Census",
+                        Status = new Status { Name = "Not Started" },
+                    }
+                )
+            );
     }
 
     public HttpClient CreateAuthorisedClient(
