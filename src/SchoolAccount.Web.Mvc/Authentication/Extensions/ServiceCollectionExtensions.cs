@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
@@ -50,25 +49,26 @@ public static class ServiceCollectionExtensions
 
                 options.Events = new OpenIdConnectEvents
                 {
-                    OnRedirectToIdentityProviderForSignOut = async context =>
-                    {
-                        context.HttpContext.Session.Clear();
-                        await Task.CompletedTask;
-                    },
-
-                    OnTicketReceived = OpenIdConnectEventHandlers.OnTicketReceived,
-
                     // within ACA a container runs on http, though available as https publicly
                     // this causes the OIDC redirect_url to have the http protocol, rather than https
                     // DSI does not allow http redirect URLS. The following corrects the URL
-                    OnRedirectToIdentityProvider = async n =>
+                    OnRedirectToIdentityProvider = async context =>
                     {
-                        n.ProtocolMessage.RedirectUri = n.ProtocolMessage.RedirectUri.Replace(
-                            "http://",
-                            "https://"
-                        );
+                        context.ProtocolMessage.RedirectUri =
+                            context.ProtocolMessage.RedirectUri.Replace("http://", "https://");
                         await Task.CompletedTask;
                     },
+                    OnRedirectToIdentityProviderForSignOut = async context =>
+                    {
+                        context.HttpContext.Session.Clear();
+                        context.ProtocolMessage.PostLogoutRedirectUri =
+                            context.ProtocolMessage.PostLogoutRedirectUri.Replace(
+                                "http://",
+                                "https://"
+                            );
+                        await Task.CompletedTask;
+                    },
+                    OnTicketReceived = OpenIdConnectEventHandlers.OnTicketReceived,
                 };
             });
 
