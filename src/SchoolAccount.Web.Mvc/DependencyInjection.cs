@@ -1,5 +1,6 @@
 ﻿using GovUk.Frontend.AspNetCore;
 using SchoolAccount.Web.Mvc.Authentication.Extensions;
+using SchoolAccount.Web.Mvc.Features.Header;
 using SchoolAccount.Web.Mvc.Infrastructure;
 
 namespace SchoolAccount.Web.Mvc;
@@ -16,6 +17,7 @@ public static class DependencyInjection
         services.AddDsiAuthentication(configuration);
         services.AddControllersWithFeatureViews();
         services.AddGovUkFrontend();
+        services.AddScoped<IHeaderContentProvider, HeaderContentProvider>();
 
         if (env.IsDevelopment())
         {

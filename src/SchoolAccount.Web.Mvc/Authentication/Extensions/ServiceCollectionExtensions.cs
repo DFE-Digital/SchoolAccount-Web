@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using SchoolAccount.SharedKernel;
+using SchoolAccount.Web.Mvc.Authentication.Handlers;
 using SchoolAccount.Web.Mvc.Authentication.Models;
 using static SchoolAccount.Web.Mvc.Authentication.ClaimConstants;
 
@@ -59,6 +60,7 @@ public static class ServiceCollectionExtensions
                         EnsureHttpsRedirectUri(context);
                         await Task.CompletedTask;
                     },
+                    OnTicketReceived = OpenIdConnectEventHandlers.OnTicketReceived,
                 };
             });
 
