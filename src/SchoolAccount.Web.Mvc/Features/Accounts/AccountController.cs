@@ -38,7 +38,7 @@ public class AccountController(IUserContext userContext) : Controller
     {
         if (!userContext.IsAuthenticated)
         {
-            return RedirectToAction("Home", "Home");
+            return RedirectToAction("Start", "Start");
         }
 
         HttpContext.Session.Clear();
@@ -54,6 +54,6 @@ public class AccountController(IUserContext userContext) : Controller
     {
         HttpContext.Session.Clear();
 
-        return RedirectToAction("Start", "Home");
+        return RedirectToAction("Start", "Start");
     }
 }
