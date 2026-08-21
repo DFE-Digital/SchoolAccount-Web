@@ -48,25 +48,31 @@ public static class ServiceCollectionExtensions
 
                 options.Events = new OpenIdConnectEvents
                 {
+                    OnRedirectToIdentityProvider = async context =>
+                    {
+                        EnsureHttpsRedirectUri(context);
+                        await Task.CompletedTask;
+                    },
                     OnRedirectToIdentityProviderForSignOut = async context =>
                     {
                         context.HttpContext.Session.Clear();
-                        await Task.CompletedTask;
-                    },
-                    // within ACA a container runs on http, though available as https publicly
-                    // this causes the OIDC redirect_url to have the http protocol, rather than https
-                    // DSI does not allow http redirect URLS. The following corrects the URL
-                    OnRedirectToIdentityProvider = async n =>
-                    {
-                        n.ProtocolMessage.RedirectUri = n.ProtocolMessage.RedirectUri.Replace(
-                            "http://",
-                            "https://"
-                        );
+                        EnsureHttpsRedirectUri(context);
                         await Task.CompletedTask;
                     },
                 };
             });
 
         services.AddScoped<IUserContext, UserContext>();
+    }
+
+    // within ACA a container runs on http, though available as https publicly
+    // this causes the OIDC redirect_url to have the http protocol, rather than https
+    // DSI does not allow http redirect URLS. The following corrects the URL
+    private static void EnsureHttpsRedirectUri(RedirectContext context)
+    {
+        context.ProtocolMessage.RedirectUri = context.ProtocolMessage.RedirectUri.Replace(
+            "http://",
+            "https://"
+        );
     }
 }
