@@ -39,8 +39,8 @@ public class DashboardController(IUserContext userContext) : Controller
         }
 
         if (
-            userContext.Id is not null
-            && userContext.EmailAddress is not null
+            !string.IsNullOrEmpty(userContext.Id)
+            &&  !string.IsNullOrEmpty(userContext.EmailAddress)
             && userContext.Organisation is not null
         )
         {
