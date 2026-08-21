@@ -1,11 +1,7 @@
 using System.Net.Http.Json;
+using SchoolAccount.Application.Collect.CensusStatus;
 
-namespace SchoolAccount.Application.Collect.CensusStatus;
-
-public interface ICollectApiService
-{
-    Task<GetCensusStatusResponse> GetCensusStatus(GetCensusStatusQuery query);
-}
+namespace SchoolAccount.Infrastructure.Collect.CensusStatus;
 
 public class CollectApiService(HttpClient httpClient) : ICollectApiService
 {

@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using SchoolAccount.Application;
 using SchoolAccount.Application.Collect.CensusStatus;
 using SchoolAccount.Infrastructure;
+using SchoolAccount.Infrastructure.Collect.CensusStatus;
 using SchoolAccount.Web.Mvc;
 using SchoolAccount.Web.Mvc.Config;
 using SchoolAccount.Web.Mvc.Extensions;

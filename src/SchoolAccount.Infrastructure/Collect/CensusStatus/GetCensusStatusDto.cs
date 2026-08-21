@@ -1,4 +1,6 @@
-namespace SchoolAccount.Application.Collect.CensusStatus;
+using SchoolAccount.Application.Collect.CensusStatus;
+
+namespace SchoolAccount.Infrastructure.Collect.CensusStatus;
 
 public class GetCensusStatusDto
 {
