@@ -26,7 +26,7 @@ public class DashboardController(IUserContext userContext) : Controller
         CancellationToken cancellationToken
     )
     {
-        var censusGreeting = string.Empty;
+        List<string> censusGreetings;
 
         var result = await getTimeSpecifyHellosQueryHandler.Handle(
             new GetTimeSpecificHelloQuery(),
@@ -61,8 +61,9 @@ public class DashboardController(IUserContext userContext) : Controller
                 return Problem(censusStatusResult.Error.Description);
             }
 
-            censusGreeting =
-                $"{censusStatusResult.Value.Name}: {censusStatusResult.Value.Status.Name}.";
+            censusGreetings = censusStatusResult
+                .Value.Actions.Select(x => $"{x.Name}, {x.Status.Name}")
+                .ToList();
         }
         else
         {
@@ -72,7 +73,7 @@ public class DashboardController(IUserContext userContext) : Controller
         var model = new DashboardViewModel(
             userContext.Name ?? "Unknown",
             result.Value.Message,
-            censusGreeting
+            censusGreetings
         );
         return View(model);
     }

@@ -10,6 +10,7 @@ using NSubstitute;
 using SchoolAccount.Application.Abstractions.Messaging;
 using SchoolAccount.Application.Collect.CensusStatus;
 using SchoolAccount.SharedKernel;
+using Action = SchoolAccount.Application.Collect.CensusStatus.Action;
 
 namespace SchoolAccount.IntegrationTests.Common;
 
@@ -37,8 +38,16 @@ public class SchoolAccountWebApplicationFactory<TProgram> : WebApplicationFactor
                 Result.Success(
                     new GetCensusStatusResponse
                     {
-                        Name = "Autumn School Census",
-                        Status = new Status { Name = "Not Started" },
+                        Id = "Test-id",
+                        Interesting = true,
+                        Actions =
+                        [
+                            new Action()
+                            {
+                                Name = "Autumn School Census",
+                                Status = new Status { Name = "Not Started" },
+                            },
+                        ],
                     }
                 )
             );

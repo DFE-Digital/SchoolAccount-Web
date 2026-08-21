@@ -13,6 +13,8 @@ public class GetCensusStatusHandler(ICollectApiService collectApiService)
     {
         var response = await collectApiService.GetCensusStatus(query);
 
-        return await Task.FromResult(response);
+        var result = response.FirstOrDefault(x => x.Interesting);
+
+        return await Task.FromResult(result);
     }
 }

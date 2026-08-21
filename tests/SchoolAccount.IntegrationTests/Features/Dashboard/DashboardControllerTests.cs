@@ -7,6 +7,7 @@ using SchoolAccount.IntegrationTests.Common;
 using SchoolAccount.IntegrationTests.Common.Pages;
 using SchoolAccount.SharedKernel;
 using Shouldly;
+using Action = SchoolAccount.Application.Collect.CensusStatus.Action;
 
 namespace SchoolAccount.IntegrationTests.Features.Dashboard;
 
@@ -61,8 +62,16 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
                 Result.Success(
                     new GetCensusStatusResponse
                     {
-                        Name = "Test School",
-                        Status = new Status() { Name = "TestStatus" },
+                        Id = "Test-id",
+                        Interesting = true,
+                        Actions =
+                        [
+                            new Action
+                            {
+                                Name = "TestAction",
+                                Status = new Status { Name = "TestStatus" },
+                            },
+                        ],
                     }
                 )
             );

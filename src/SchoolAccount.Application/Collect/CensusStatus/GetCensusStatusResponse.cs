@@ -2,6 +2,13 @@ namespace SchoolAccount.Application.Collect.CensusStatus;
 
 public record GetCensusStatusResponse
 {
+    public string Id { get; init; }
+    public bool Interesting { get; init; }
+    public List<Action> Actions { get; init; }
+}
+
+public record Action
+{
     public string Name { get; init; }
     public Status Status { get; init; }
 }

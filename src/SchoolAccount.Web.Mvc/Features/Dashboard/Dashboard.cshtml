@@ -6,7 +6,10 @@
 <h1 class="govuk-heading-l">@Model.GreetingsMessage @Model.User</h1>
 
 <p class="govuk-body">
-    @Model.censusGreeting
+    @foreach (var greeting in Model.censusGreetings)
+    {
+        @greeting
+    }
 </p>
 
 <p class="govuk-body">
