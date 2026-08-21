@@ -52,8 +52,6 @@ public class StartControllerTests : IClassFixture<SchoolAccountWebApplicationFac
 
         var bodyElement = page.GetFirstBody();
         bodyElement.ShouldNotBeNull();
-        bodyElement.ShouldContainWithoutWhitespace(
-            "Sign in to school account"
-        );
+        bodyElement.ShouldContainWithoutWhitespace("Sign in to school account");
     }
 }
