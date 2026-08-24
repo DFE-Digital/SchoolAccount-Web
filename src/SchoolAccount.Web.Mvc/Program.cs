@@ -1,4 +1,5 @@
 using GovUk.Frontend.AspNetCore;
+using Microsoft.AspNetCore.HttpOverrides;
 using SchoolAccount.Application;
 using SchoolAccount.Infrastructure;
 using SchoolAccount.Web.Mvc;
@@ -17,6 +18,21 @@ builder
     .AddInfrastructure();
 
 var app = builder.Build();
+
+// Trusts the X-Forwarded-Proto/X-Forwarded-For headers set by the reverse proxy
+// (Caddy locally, Azure Container Apps ingress in production) so ASP.NET Core
+// knows the original request was HTTPS, even though it reaches Kestrel over HTTP.
+// KnownNetworks/KnownProxies default to loopback-only, which the proxy's Docker
+// network IP won't match, so they're cleared to trust any proxy hop instead -
+// the proxy's IP isn't known ahead of time in either environment.
+var forwardedHeadersOptions = new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto,
+};
+forwardedHeadersOptions.KnownIPNetworks.Clear();
+forwardedHeadersOptions.KnownProxies.Clear();
+
+app.UseForwardedHeaders(forwardedHeadersOptions);
 
 app.UseStatusCodePagesWithReExecute("/error/{0}");
 app.UseExceptionHandler("/error/500");
