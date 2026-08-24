@@ -46,6 +46,11 @@ public static class ServiceCollectionExtensions
                 options.GetClaimsFromUserInfoEndpoint = true;
 
                 options.MapInboundClaims = false;
+
+                options.Events = new OpenIdConnectEvents
+                {
+                    OnTicketReceived = OpenIdConnectEventHandlers.OnTicketReceived,
+                };
             });
 
         services.AddScoped<IUserContext, UserContext>();
