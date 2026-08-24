@@ -18,6 +18,7 @@ builder
 
 var app = builder.Build();
 
+app.UseForwardedHeadersDiagnostics(app.Environment);
 app.UseConfiguredForwardedHeaders(app.Configuration);
 app.UseStatusCodePagesWithReExecute("/error/{0}");
 app.UseExceptionHandler("/error/500");
