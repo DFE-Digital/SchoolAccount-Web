@@ -1,6 +1,6 @@
 using Azure.Identity;
 
-namespace SchoolAccount.Web.Mvc.Extensions;
+namespace SchoolAccount.Web.Mvc.Hosting.Extensions;
 
 public static class ConfigurationExtensions
 {
