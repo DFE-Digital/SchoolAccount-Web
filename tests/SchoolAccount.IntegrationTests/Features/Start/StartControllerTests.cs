@@ -7,7 +7,7 @@ using Shouldly;
 
 namespace SchoolAccount.IntegrationTests.Features.Start;
 
-public class HomeControllerTests : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
+public class StartControllerTests : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
 {
     private readonly HttpClient _client;
     private readonly SchoolAccountWebApplicationFactory<Program> _factory;
@@ -19,7 +19,7 @@ public class HomeControllerTests : IClassFixture<SchoolAccountWebApplicationFact
         IQueryHandler<GetTimeSpecificHelloQuery, GetTimeSpecificHelloResponse>
     >();
 
-    public HomeControllerTests(SchoolAccountWebApplicationFactory<Program> factory)
+    public StartControllerTests(SchoolAccountWebApplicationFactory<Program> factory)
     {
         _factory = factory;
         _client = factory.CreateUnauthorisedClient(services =>
@@ -33,7 +33,7 @@ public class HomeControllerTests : IClassFixture<SchoolAccountWebApplicationFact
     public async Task Ensure_that_the_start_controller_returns_a_successful_result()
     {
         // Arrange
-        var pageUri = _factory.GeneratePath("Home", "Home");
+        var pageUri = _factory.GeneratePath("Start", "Start");
 
         // Act
         var response = await _client.GetAsync(pageUri, TestContext.Current.CancellationToken);
@@ -52,8 +52,6 @@ public class HomeControllerTests : IClassFixture<SchoolAccountWebApplicationFact
 
         var bodyElement = page.GetFirstBody();
         bodyElement.ShouldNotBeNull();
-        bodyElement.ShouldContainWithoutWhitespace(
-            "Login with a DSI Account to access your School Account."
-        );
+        bodyElement.ShouldContainWithoutWhitespace("Sign in to school account");
     }
 }

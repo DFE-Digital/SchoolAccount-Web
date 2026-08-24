@@ -31,7 +31,7 @@ public class AnonymousEndpointGuardrailTests(SchoolAccountWebApplicationFactory<
     // Adding a new anonymous endpoint should be a conscious, reviewed decision, not an accident.
     private readonly HashSet<string> _allowlistedAnonymousEndpoints =
     [
-        factory.GeneratePath("Home", "Start"),
+        factory.GeneratePath("Start", "Start"),
         factory.GeneratePath("Account", "Login"),
         factory.GeneratePath("Account", "Logout"),
         factory.GeneratePath("Account", "LoggedOut"),
