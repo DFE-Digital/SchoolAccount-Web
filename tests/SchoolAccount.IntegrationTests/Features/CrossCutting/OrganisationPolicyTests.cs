@@ -2,6 +2,7 @@ using System.Net;
 using System.Security.Claims;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SchoolAccount.IntegrationTests.Common;
+using Shouldly;
 using static SchoolAccount.Web.Mvc.Authentication.ClaimConstants;
 
 namespace SchoolAccount.IntegrationTests.Features.CrossCutting;
@@ -45,7 +46,7 @@ public class OrganisationPolicyTests(SchoolAccountWebApplicationFactory<Program>
             TestContext.Current.CancellationToken
         );
 
-        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     [Theory]
@@ -60,6 +61,6 @@ public class OrganisationPolicyTests(SchoolAccountWebApplicationFactory<Program>
             TestContext.Current.CancellationToken
         );
 
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 }
