@@ -42,7 +42,7 @@ public class UserContextTests
 
         var claimsDictionary = new Dictionary<string, string>
         {
-            [Id] = id,
+            [Sub] = id,
             [GivenName] = givenName,
             [FamilyName] = familyName,
             [Email] = email,
@@ -98,7 +98,7 @@ public class UserContextTests
 
         var claimsDictionary = new Dictionary<string, string>
         {
-            [Id] = id,
+            [Sub] = id,
             [GivenName] = givenName,
             [FamilyName] = familyName,
             [Email] = email,
@@ -157,7 +157,7 @@ public class UserContextTests
 
         var claimsDictionary = new Dictionary<string, string>
         {
-            [Id] = id,
+            [Sub] = id,
             [GivenName] = givenName,
             [FamilyName] = familyName,
             [Email] = email,
