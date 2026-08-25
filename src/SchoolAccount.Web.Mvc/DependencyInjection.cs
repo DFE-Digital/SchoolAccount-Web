@@ -1,4 +1,6 @@
 ﻿using GovUk.Frontend.AspNetCore;
+using Microsoft.AspNetCore.Authorization;
+using SchoolAccount.Web.Mvc.Authentication;
 using SchoolAccount.Web.Mvc.Authentication.Extensions;
 using SchoolAccount.Web.Mvc.Features.Header;
 using SchoolAccount.Web.Mvc.Infrastructure;
@@ -15,6 +17,7 @@ public static class DependencyInjection
     {
         services.AddSession();
         services.AddDsiAuthentication(configuration);
+        services.AddAuthorisation();
         services.AddControllersWithFeatureViews();
         services.AddGovUkFrontend();
         services.AddScoped<IHeaderContentProvider, HeaderContentProvider>();
@@ -39,5 +42,17 @@ public static class DependencyInjection
                 options.ViewLocationFormats.Insert(2, "/Features/Shared/{0}.cshtml");
                 options.ViewLocationExpanders.Add(new FeatureViewLocationExpander());
             });
+    }
+
+    private static void AddAuthorisation(this IServiceCollection services)
+    {
+        services
+            .AddAuthorizationBuilder()
+            .SetDefaultPolicy(
+                new AuthorizationPolicyBuilder()
+                    .RequireAuthenticatedUser()
+                    .RequireClaim(ClaimConstants.OrganisationId)
+                    .Build()
+            );
     }
 }
