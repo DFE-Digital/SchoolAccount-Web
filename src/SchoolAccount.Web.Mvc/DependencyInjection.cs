@@ -18,7 +18,7 @@ public static class DependencyInjection
     {
         services.AddSession();
         services.AddDsiAuthentication(configuration);
-        services.CheckOrganisationClaimIsValid();
+        services.AddOrganisationClaimPolicy();
         services.AddControllersWithFeatureViews();
         services.AddGovUkFrontend();
         services.AddScoped<IHeaderContentProvider, HeaderContentProvider>();
@@ -45,7 +45,7 @@ public static class DependencyInjection
             });
     }
 
-    private static void CheckOrganisationClaimIsValid(this IServiceCollection services)
+    private static void AddOrganisationClaimPolicy(this IServiceCollection services)
     {
         services
             .AddAuthorizationBuilder()
