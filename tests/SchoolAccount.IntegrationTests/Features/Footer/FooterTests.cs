@@ -15,7 +15,9 @@ public class FooterTests(SchoolAccountWebApplicationFactory<Program> factory)
     [InlineData(FooterUrls.PrivacyNotice, "Privacy notice")]
     [InlineData(FooterUrls.OpenGovernmentLicence, "Open Government Licence v3.0")]
     [InlineData(FooterUrls.CrownCopyright, "© Crown copyright")]
-    public async Task Footer_displays_the_expected_links(string expectedHref, string expectedText)
+    public async Task Footer_displays_the_expected_links(
+        string expectedHref, 
+        string expectedText)
     {
         // Arrange
         var pageUri = factory.GeneratePath("Dashboard", "Dashboard");
