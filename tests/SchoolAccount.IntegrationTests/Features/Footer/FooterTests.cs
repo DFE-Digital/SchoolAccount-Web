@@ -43,4 +43,55 @@ public class FooterTests(SchoolAccountWebApplicationFactory<Program> factory)
         footerLink.ShouldNotBeNull();
         footerLink.TextContent.ShouldContainWithoutWhitespace(expectedText);
     }
+    
+    [Fact]
+    public async Task Page_displays_the_footer()
+    {
+        // Arrange
+        var pageUri = factory.GeneratePath("Dashboard", "Dashboard");
+
+        // Act
+        var response = await _client.GetAsync(
+            pageUri,
+            TestContext.Current.CancellationToken
+        );
+
+        var page = await AngleSharpPage.FromResponseAsync<CommonPage>(
+            response,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        page.ShouldNotBeNull();
+        page.GetFooter().ShouldNotBeNull();
+    }
+    
+    [Theory]
+    [InlineData("Dashboard", "Dashboard")]
+    [InlineData("Start", "Start")]
+    public async Task Footer_is_displayed_on_pages_across_the_service(
+        string controller,
+        string action
+    )
+    {
+        // Arrange
+        var pageUri = factory.GeneratePath(controller, action);
+
+        // Act
+        var response = await _client.GetAsync(
+            pageUri,
+            TestContext.Current.CancellationToken
+        );
+
+        var page = await AngleSharpPage.FromResponseAsync<CommonPage>(
+            response,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        page.ShouldNotBeNull();
+        page.GetFooter().ShouldNotBeNull();
+    }
 }

@@ -72,4 +72,9 @@ public abstract class AngleSharpPage
             $".govuk-footer a[href='{href}']"
         );
     }
+    
+    public virtual IElement? GetFooter()
+    {
+        return Page.QuerySelector(".govuk-footer");
+    }
 }
