@@ -1,8 +1,10 @@
+using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using SchoolAccount.Application.Collect.CensusStatus;
+using static System.Net.Mime.MediaTypeNames.Application;
 using Action = SchoolAccount.Application.Collect.CensusStatus.Action;
 
 namespace SchoolAccount.Infrastructure.Collect.CensusStatus;
@@ -14,73 +16,42 @@ public sealed class CollectApiService(HttpClient httpClient, ILogger<CollectApiS
 
     public async Task<List<GetCensusStatusResponse>> GetCensusStatus(GetCensusStatusQuery query)
     {
-        try
+        using var response = await httpClient.PostAsJsonAsync(_statusEndpoint, query.request);
+
+        if (!response.IsSuccessStatusCode)
         {
-            using var response = await httpClient.PostAsJsonAsync(_statusEndpoint, query.request);
+            await LogProblem(response, _statusEndpoint);
 
-            if (!response.IsSuccessStatusCode)
-            {
-                await LogProblem(response, _statusEndpoint);
-
-                return [];
-            }
-
-            var content = await response.Content.ReadFromJsonAsync<GetCensusStatusApiResponse>();
-
-            if (content is null)
-            {
-                logger.LogError("Response from {RequestUri} was empty", _statusEndpoint);
-
-                return [];
-            }
-
-            return content.Details.ConvertAll(MapToCensusStatus);
-        }
-        catch (HttpRequestException exception)
-        {
-            logger.LogError(
-                exception,
-                "Request to {RequestUri} could not be sent",
-                _statusEndpoint
-            );
-        }
-        catch (TaskCanceledException exception)
-        {
-            logger.LogError(exception, "Request to {RequestUri} timed out", _statusEndpoint);
-        }
-        catch (JsonException exception)
-        {
-            logger.LogError(
-                exception,
-                "Response from {RequestUri} was not valid JSON",
-                _statusEndpoint
-            );
-        }
-        catch (Exception exception)
-        {
-            logger.LogError(
-                exception,
-                "Request to {RequestUri} failed unexpectedly",
-                _statusEndpoint
-            );
+            throw new Exception("Request to Collect API had validation failures");
         }
 
-        return [];
+        var content = await response.Content.ReadFromJsonAsync<GetCensusStatusApiResponse>();
+
+        if (content is null)
+        {
+            logger.LogError("Response from {RequestUri} was empty", _statusEndpoint);
+
+            throw new Exception("Response from Collect API was empty");
+        }
+
+        return content.Details.ConvertAll(MapToCensusStatus);
     }
 
     private async Task LogProblem(HttpResponseMessage response, string requestUri)
     {
-        var statusCode = (int)response.StatusCode;
+        var statusCode = response.StatusCode;
+        var isBadRequest = statusCode == HttpStatusCode.BadRequest;
+        var isJson = response.Content.Headers.ContentType?.MediaType is ProblemJson or Json;
+
+        if (!isBadRequest || !isJson)
+        {
+            return;
+        }
+
         var problemDetails = await ReadProblemDetails(response);
 
         if (problemDetails is null)
         {
-            logger.LogError(
-                "Request to {RequestUri} failed with status {StatusCode}",
-                requestUri,
-                statusCode
-            );
-
             return;
         }
 
@@ -92,17 +63,7 @@ public sealed class CollectApiService(HttpClient httpClient, ILogger<CollectApiS
                 problemDetails.Errors.Count,
                 problemDetails.Errors
             );
-
-            return;
         }
-
-        logger.LogError(
-            "Request to {RequestUri} failed with status {StatusCode}: {Title} {Detail}",
-            requestUri,
-            statusCode,
-            problemDetails.Title,
-            problemDetails.Detail
-        );
     }
 
     private static async Task<HttpValidationProblemDetails?> ReadProblemDetails(
