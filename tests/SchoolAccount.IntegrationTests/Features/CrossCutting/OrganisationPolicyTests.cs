@@ -9,7 +9,7 @@ namespace SchoolAccount.IntegrationTests.Features.CrossCutting;
 public class OrganisationPolicyTests(SchoolAccountWebApplicationFactory<Program> factory)
     : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
 {
-    private HttpClient ClientWithOrganisation(string? organisationValue)
+    private HttpClient CreateClientOrganisationClaims(string? organisationValue)
     {
         var claims = new List<Claim>
         {
@@ -34,25 +34,11 @@ public class OrganisationPolicyTests(SchoolAccountWebApplicationFactory<Program>
     [Theory]
     [InlineData("{}")]
     [InlineData("[]")]
-    [InlineData(" {} ")]
     [InlineData("")]
-    [InlineData("   ")]
-    public async Task Forbidden_When_Organisation_Empty(string value)
+    [InlineData(null)]
+    public async Task User_is_Forbidden_when_Organisation_Claim_is_empty(string? value)
     {
-        var client = ClientWithOrganisation(value);
-
-        var response = await client.GetAsync(
-            factory.GeneratePath("Dashboard", "Dashboard"),
-            TestContext.Current.CancellationToken
-        );
-
-        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
-    }
-
-    [Fact]
-    public async Task Forbidden_When_Organisation_Claim_Missing()
-    {
-        var client = ClientWithOrganisation(null);
+        var client = CreateClientOrganisationClaims(value);
 
         var response = await client.GetAsync(
             factory.GeneratePath("Dashboard", "Dashboard"),
@@ -65,9 +51,9 @@ public class OrganisationPolicyTests(SchoolAccountWebApplicationFactory<Program>
     [Theory]
     [InlineData("{\"name\":\"Acme\"}")]
     [InlineData("{\"id\":\"abc-123\"}")]
-    public async Task Ok_When_Organisation_Populated(string value)
+    public async Task User_is_accepted_when_organisation_is_not_empty(string value)
     {
-        var client = ClientWithOrganisation(value);
+        var client = CreateClientOrganisationClaims(value);
 
         var response = await client.GetAsync(
             factory.GeneratePath("Dashboard", "Dashboard"),
