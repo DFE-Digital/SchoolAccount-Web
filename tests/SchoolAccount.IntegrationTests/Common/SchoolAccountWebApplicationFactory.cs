@@ -19,35 +19,38 @@ public class SchoolAccountWebApplicationFactory<TProgram> : WebApplicationFactor
 {
     private readonly IQueryHandler<
         GetCensusStatusQuery,
-        GetCensusStatusResponse
+        List<GetCensusStatusResponse>
     > _getCensusStatusHandler = Substitute.For<
-        IQueryHandler<GetCensusStatusQuery, GetCensusStatusResponse>
+        IQueryHandler<GetCensusStatusQuery, List<GetCensusStatusResponse>>
     >();
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseEnvironment("IntegrationTests");
         builder.ConfigureTestServices(services =>
-            services.AddScoped<IQueryHandler<GetCensusStatusQuery, GetCensusStatusResponse>>(_ =>
-                _getCensusStatusHandler
+            services.AddScoped<IQueryHandler<GetCensusStatusQuery, List<GetCensusStatusResponse>>>(
+                _ => _getCensusStatusHandler
             )
         );
         _getCensusStatusHandler
             .Handle(Arg.Any<GetCensusStatusQuery>(), Arg.Any<CancellationToken>())
             .Returns(
                 Result.Success(
-                    new GetCensusStatusResponse
+                    new List<GetCensusStatusResponse>
                     {
-                        Id = "Test-id",
-                        Interesting = true,
-                        Actions =
-                        [
-                            new Action()
-                            {
-                                Name = "Autumn School Census",
-                                Status = new Status { Name = "Not Started" },
-                            },
-                        ],
+                        new()
+                        {
+                            Id = "Test-id",
+                            Interesting = true,
+                            Actions =
+                            [
+                                new Action()
+                                {
+                                    Name = "Autumn School Census",
+                                    Status = new Status { Name = "Not Started" },
+                                },
+                            ],
+                        },
                     }
                 )
             );

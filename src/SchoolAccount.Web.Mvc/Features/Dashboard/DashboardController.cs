@@ -21,7 +21,7 @@ public class DashboardController(IUserContext userContext) : Controller
         [FromServices]
             IQueryHandler<
             GetCensusStatusQuery,
-            GetCensusStatusResponse
+            List<GetCensusStatusResponse>
         > getCensusStatusQueryHandler,
         CancellationToken cancellationToken
     )
@@ -62,7 +62,7 @@ public class DashboardController(IUserContext userContext) : Controller
             }
 
             censusGreetings = censusStatusResult
-                .Value.Actions.Select(x => $"{x.Name}, {x.Status.Name}")
+                .Value.SelectMany(a => a.Actions.Select(x => $"{x.Name}, {x.Status.Name}"))
                 .ToList();
         }
         else
