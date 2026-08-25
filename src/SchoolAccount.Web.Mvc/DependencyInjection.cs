@@ -51,7 +51,7 @@ public static class DependencyInjection
             .SetDefaultPolicy(
                 new AuthorizationPolicyBuilder()
                     .RequireAuthenticatedUser()
-                    .RequireClaim(ClaimConstants.OrganisationId)
+                    .RequireClaim(ClaimConstants.Organisation)
                     .Build()
             );
     }
