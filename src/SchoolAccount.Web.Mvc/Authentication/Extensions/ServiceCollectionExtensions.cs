@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using SchoolAccount.SharedKernel;
-using SchoolAccount.Web.Mvc.Authentication.Handlers;
 using SchoolAccount.Web.Mvc.Authentication.Models;
 using static SchoolAccount.Web.Mvc.Authentication.ClaimConstants;
 
@@ -29,7 +27,7 @@ public static class ServiceCollectionExtensions
                 options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             })
-            .AddCookie()
+            .AddCookie(options => options.AccessDeniedPath = "/error/403")
             .AddOpenIdConnect(options =>
             {
                 options.Authority = settings.Authority;
@@ -46,11 +44,6 @@ public static class ServiceCollectionExtensions
                 options.GetClaimsFromUserInfoEndpoint = true;
 
                 options.MapInboundClaims = false;
-
-                options.Events = new OpenIdConnectEvents
-                {
-                    OnTicketReceived = OpenIdConnectEventHandlers.OnTicketReceived,
-                };
             });
 
         services.AddScoped<IUserContext, UserContext>();

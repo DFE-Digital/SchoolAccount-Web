@@ -21,7 +21,7 @@ public sealed class UserContext : IUserContext, IIdentity
         if (user is not null)
         {
             IsAuthenticated = user.Identity?.IsAuthenticated ?? false;
-            Id = GetClaim(ClaimConstants.Id, user);
+            Id = GetClaim(ClaimConstants.Sub, user);
             AuthenticationType = user.Identity?.AuthenticationType;
             GivenName = GetClaim(ClaimConstants.GivenName, user);
             Surname = GetClaim(ClaimConstants.FamilyName, user);

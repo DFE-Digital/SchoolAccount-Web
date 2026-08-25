@@ -38,7 +38,7 @@ app.UseGovUkFrontend();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapStaticAssets();
+app.MapStaticAssets().AllowAnonymous();
 
 app.MapControllerRoute("default", "/{controller}/{action}").WithStaticAssets();
 
