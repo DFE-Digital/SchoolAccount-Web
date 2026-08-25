@@ -15,18 +15,13 @@ public class FooterTests(SchoolAccountWebApplicationFactory<Program> factory)
     [InlineData(FooterUrls.PrivacyNotice, "Privacy notice")]
     [InlineData(FooterUrls.OpenGovernmentLicence, "Open Government Licence v3.0")]
     [InlineData(FooterUrls.CrownCopyright, "© Crown copyright")]
-    public async Task Footer_displays_the_expected_links(
-        string expectedHref, 
-        string expectedText)
+    public async Task Footer_displays_the_expected_links(string expectedHref, string expectedText)
     {
         // Arrange
         var pageUri = factory.GeneratePath("Dashboard", "Dashboard");
 
         // Act
-        var response = await _client.GetAsync(
-            pageUri,
-            TestContext.Current.CancellationToken
-        );
+        var response = await _client.GetAsync(pageUri, TestContext.Current.CancellationToken);
 
         var page = await AngleSharpPage.FromResponseAsync<CommonPage>(
             response,
@@ -50,10 +45,7 @@ public class FooterTests(SchoolAccountWebApplicationFactory<Program> factory)
         var pageUri = factory.GeneratePath("Dashboard", "Dashboard");
 
         // Act
-        var response = await _client.GetAsync(
-            pageUri,
-            TestContext.Current.CancellationToken
-        );
+        var response = await _client.GetAsync(pageUri, TestContext.Current.CancellationToken);
 
         var page = await AngleSharpPage.FromResponseAsync<CommonPage>(
             response,
@@ -78,10 +70,7 @@ public class FooterTests(SchoolAccountWebApplicationFactory<Program> factory)
         var pageUri = factory.GeneratePath(controller, action);
 
         // Act
-        var response = await _client.GetAsync(
-            pageUri,
-            TestContext.Current.CancellationToken
-        );
+        var response = await _client.GetAsync(pageUri, TestContext.Current.CancellationToken);
 
         var page = await AngleSharpPage.FromResponseAsync<CommonPage>(
             response,
