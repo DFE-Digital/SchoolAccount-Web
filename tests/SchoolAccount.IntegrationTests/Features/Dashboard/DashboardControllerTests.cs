@@ -102,6 +102,7 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
         var bodyElement = page.GetFirstBody();
         bodyElement.ShouldNotBeNull();
         bodyElement.ShouldContainWithoutWhitespace("Test School");
+        bodyElement.ShouldContainWithoutWhitespace("TestAction");
         bodyElement.ShouldContainWithoutWhitespace("TestStatus");
     }
 }
