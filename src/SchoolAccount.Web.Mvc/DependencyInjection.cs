@@ -52,6 +52,16 @@ public static class DependencyInjection
                 new AuthorizationPolicyBuilder()
                     .RequireAuthenticatedUser()
                     .RequireClaim(ClaimConstants.Organisation)
+                    .RequireAssertion(context =>
+                    {
+                        var claim = context.User.FindFirst(ClaimConstants.Organisation);
+                        if (claim is null || string.IsNullOrWhiteSpace(claim.Value))
+                        {
+                            return false;
+                        }
+
+                        return claim.Value.Trim() is not ("{}" or "[]");
+                    })
                     .Build()
             );
     }
