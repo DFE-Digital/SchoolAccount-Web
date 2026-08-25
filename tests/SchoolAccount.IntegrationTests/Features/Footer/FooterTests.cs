@@ -15,10 +15,7 @@ public class FooterTests(SchoolAccountWebApplicationFactory<Program> factory)
     [InlineData(FooterUrls.PrivacyNotice, "Privacy notice")]
     [InlineData(FooterUrls.OpenGovernmentLicence, "Open Government Licence v3.0")]
     [InlineData(FooterUrls.CrownCopyright, "© Crown copyright")]
-    public async Task Footer_displays_the_expected_links(
-        string expectedHref,
-        string expectedText
-    )
+    public async Task Footer_displays_the_expected_links(string expectedHref, string expectedText)
     {
         // Arrange
         var pageUri = factory.GeneratePath("Dashboard", "Dashboard");
@@ -43,7 +40,7 @@ public class FooterTests(SchoolAccountWebApplicationFactory<Program> factory)
         footerLink.ShouldNotBeNull();
         footerLink.TextContent.ShouldContainWithoutWhitespace(expectedText);
     }
-    
+
     [Fact]
     public async Task Page_displays_the_footer()
     {
@@ -66,7 +63,7 @@ public class FooterTests(SchoolAccountWebApplicationFactory<Program> factory)
         page.ShouldNotBeNull();
         page.GetFooter().ShouldNotBeNull();
     }
-    
+
     [Theory]
     [InlineData("Dashboard", "Dashboard")]
     [InlineData("Start", "Start")]
