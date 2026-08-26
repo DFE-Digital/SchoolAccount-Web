@@ -6,7 +6,7 @@ using SchoolAccount.Infrastructure;
 using SchoolAccount.Infrastructure.Collect.CensusStatus;
 using SchoolAccount.Web.Mvc;
 using SchoolAccount.Web.Mvc.Config;
-using SchoolAccount.Web.Mvc.Extensions;
+using SchoolAccount.Web.Mvc.Hosting.Extensions;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -45,6 +45,8 @@ builder.Services.AddHttpClient<ICollectApiService, CollectApiService>(
 
 var app = builder.Build();
 
+app.UseForwardedHeadersDiagnostics(app.Environment);
+app.UseConfiguredForwardedHeaders(app.Configuration);
 app.UseStatusCodePagesWithReExecute("/error/{0}");
 app.UseExceptionHandler("/error/500");
 

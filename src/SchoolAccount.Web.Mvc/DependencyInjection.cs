@@ -1,4 +1,5 @@
-﻿using GovUk.Frontend.AspNetCore;
+﻿using System.Text.Json;
+using GovUk.Frontend.AspNetCore;
 using Microsoft.AspNetCore.Authorization;
 using SchoolAccount.Web.Mvc.Authentication;
 using SchoolAccount.Web.Mvc.Authentication.Extensions;
@@ -17,7 +18,7 @@ public static class DependencyInjection
     {
         services.AddSession();
         services.AddDsiAuthentication(configuration);
-        services.AddAuthorisation();
+        services.AddOrganisationClaimPolicy();
         services.AddControllersWithFeatureViews();
         services.AddGovUkFrontend();
         services.AddScoped<IHeaderContentProvider, HeaderContentProvider>();
@@ -44,7 +45,7 @@ public static class DependencyInjection
             });
     }
 
-    private static void AddAuthorisation(this IServiceCollection services)
+    private static void AddOrganisationClaimPolicy(this IServiceCollection services)
     {
         services
             .AddAuthorizationBuilder()
@@ -52,7 +53,36 @@ public static class DependencyInjection
                 new AuthorizationPolicyBuilder()
                     .RequireAuthenticatedUser()
                     .RequireClaim(ClaimConstants.Organisation)
+                    .RequireAssertion(context =>
+                    {
+                        var claim = context.User.FindFirst(ClaimConstants.Organisation);
+                        return claim is not null
+                            && !string.IsNullOrWhiteSpace(claim.Value)
+                            && HasProperties(claim.Value);
+                    })
                     .Build()
             );
+    }
+
+    private static bool HasProperties(string obj)
+    {
+        try
+        {
+            using var doc = JsonDocument.Parse(obj);
+            var root = doc.RootElement;
+
+            return root.ValueKind switch
+            {
+                JsonValueKind.Object => root.EnumerateObject().Any(),
+                JsonValueKind.Array => root.EnumerateArray().Any(),
+                JsonValueKind.String => !string.IsNullOrWhiteSpace(root.GetString()),
+                JsonValueKind.Null or JsonValueKind.Undefined => false,
+                _ => true,
+            };
+        }
+        catch (JsonException)
+        {
+            return false;
+        }
     }
 }

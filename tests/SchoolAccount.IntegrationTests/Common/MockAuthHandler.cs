@@ -9,11 +9,14 @@ namespace SchoolAccount.IntegrationTests.Common;
 public class MockAuthHandler(
     IOptionsMonitor<AuthenticationSchemeOptions> options,
     ILoggerFactory logger,
-    UrlEncoder encoder
+    UrlEncoder encoder,
+    MockAuthClaimsOptions claimsOptions
 ) : SignOutAuthenticationHandler<AuthenticationSchemeOptions>(options, logger, encoder)
 {
     public const string FakeGivenName = "Test user";
     public const string FakeFamilyName = "Test surname";
+    private const string FakeSub = "1159ee82-d515-4d34-b28d-ac138cb1506b";
+    private const string FakeEmail = "test@example.com";
     public const string FakeOrganisationName = "Test School";
 
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
@@ -35,14 +38,18 @@ public class MockAuthHandler(
              }
             }
             """;
-        var claims = new[]
-        {
-            new Claim(GivenName, FakeGivenName),
-            new Claim(FamilyName, FakeFamilyName),
-            new Claim(Sub, "1159ee82-d515-4d34-b28d-ac138cb1506b"),
-            new Claim(Email, "test@example.com"),
-            new Claim(Organisation, organisationJson),
-        };
+
+        var claims =
+            claimsOptions.Claims?.ToArray()
+            ??
+            [
+                new Claim(GivenName, FakeGivenName),
+                new Claim(FamilyName, FakeFamilyName),
+                new Claim(Sub, FakeSub),
+                new Claim(Email, FakeEmail),
+                new Claim(Organisation, organisationJson),
+            ];
+
         var identity = new ClaimsIdentity(claims, "Test");
         var principal = new ClaimsPrincipal(identity);
         var ticket = new AuthenticationTicket(principal, "TestScheme");
