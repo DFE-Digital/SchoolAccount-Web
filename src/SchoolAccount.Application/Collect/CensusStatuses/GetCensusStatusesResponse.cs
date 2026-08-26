@@ -4,16 +4,16 @@ public record GetCensusStatusesResponse
 {
     public string Id { get; init; }
     public bool Interesting { get; init; }
-    public List<Action> Actions { get; init; } = [];
+    public List<CensusAction> Actions { get; init; } = [];
 }
 
-public record Action
+public record CensusAction
 {
     public string Name { get; init; }
-    public Status Status { get; init; }
+    public CensusStatus Status { get; init; }
 }
 
-public class Status
+public record CensusStatus
 {
     public string Name { get; init; }
 }

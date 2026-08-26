@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using SchoolAccount.Application.Collect.CensusStatuses;
 using static System.Net.Mime.MediaTypeNames.Application;
-using Action = SchoolAccount.Application.Collect.CensusStatuses.Action;
 
 namespace SchoolAccount.Infrastructure.Collect.CensusStatuses;
 
@@ -102,10 +101,10 @@ public sealed class CollectApiService(HttpClient httpClient, ILogger<CollectApiS
         {
             Id = organisation.Id,
             Interesting = organisation.Interesting,
-            Actions = organisation.Actions.ConvertAll(action => new Action
+            Actions = organisation.Actions.ConvertAll(action => new CensusAction
             {
                 Name = action.Name,
-                Status = new Status { Name = action.Status.Name },
+                Status = new CensusStatus { Name = action.Status.Name },
             }),
         };
 }

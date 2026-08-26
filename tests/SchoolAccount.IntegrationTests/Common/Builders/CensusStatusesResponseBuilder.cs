@@ -1,12 +1,11 @@
 using SchoolAccount.Application.Collect.CensusStatuses;
 using SchoolAccount.SharedKernel;
-using Action = SchoolAccount.Application.Collect.CensusStatuses.Action;
 
 namespace SchoolAccount.IntegrationTests.Common.Builders;
 
 public class CensusStatusesResponseBuilder
 {
-    private readonly List<Action> _actions = [];
+    private readonly List<CensusAction> _actions = [];
     private string _id = "Test-id";
     private bool _interesting = true;
 
@@ -27,10 +26,10 @@ public class CensusStatusesResponseBuilder
     public CensusStatusesResponseBuilder WithAction(string name, string status)
     {
         _actions.Add(
-            new Action
+            new CensusAction
             {
                 Name = name,
-                Status = new Status { Name = status },
+                Status = new CensusStatus { Name = status },
             }
         );
         return this;

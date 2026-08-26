@@ -1,7 +1,6 @@
 using NSubstitute;
 using SchoolAccount.Application.Collect.CensusStatuses;
 using Shouldly;
-using Action = SchoolAccount.Application.Collect.CensusStatuses.Action;
 
 namespace SchoolAccount.ApplicationTests.Collect;
 
@@ -15,10 +14,10 @@ public class GetCensusStatusesHandlerTests
         {
             Actions =
             [
-                new Action
+                new CensusAction
                 {
                     Name = "Action 1",
-                    Status = new Status { Name = "Status 1" },
+                    Status = new CensusStatus { Name = "Status 1" },
                 },
             ],
             Id = "Test-id",
@@ -67,10 +66,10 @@ public class GetCensusStatusesHandlerTests
         {
             Actions =
             [
-                new Action
+                new CensusAction
                 {
                     Name = "Action 1",
-                    Status = new Status { Name = "Status 1" },
+                    Status = new CensusStatus { Name = "Status 1" },
                 },
             ],
             Id = "Test-id-1",
@@ -81,10 +80,10 @@ public class GetCensusStatusesHandlerTests
         {
             Actions =
             [
-                new Action
+                new CensusAction
                 {
                     Name = "Action 2",
-                    Status = new Status { Name = "Status 2" },
+                    Status = new CensusStatus { Name = "Status 2" },
                 },
             ],
             Id = "Test-id-2",
