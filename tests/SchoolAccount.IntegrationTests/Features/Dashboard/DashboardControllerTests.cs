@@ -136,7 +136,4 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
             services.StubQueryHandler(_getCensusStatusesHandler);
         });
     }
-
-    private sealed class StubCensusStatusesHandler
-        : StubQueryHandler<GetCensusStatusesQuery, List<GetCensusStatusesResponse>>;
 }

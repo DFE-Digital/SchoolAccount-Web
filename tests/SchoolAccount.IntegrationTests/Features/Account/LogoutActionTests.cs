@@ -56,7 +56,10 @@ public class LogoutActionTests(SchoolAccountWebApplicationFactory<Program> facto
     public async Task Authenticated_pages_display_the_sign_out_link_for_authorised_users()
     {
         // Arrange
-        var client = factory.CreateAuthorisedClient(options: ClientOptions.AllowRedirects);
+        var client = factory.CreateAuthorisedClient(
+            services => services.StubQueryHandler(StubCensusStatusesHandler.Succeeding()),
+            ClientOptions.AllowRedirects
+        );
         var pageUri = factory.GeneratePath("Dashboard", "Dashboard");
 
         // Act

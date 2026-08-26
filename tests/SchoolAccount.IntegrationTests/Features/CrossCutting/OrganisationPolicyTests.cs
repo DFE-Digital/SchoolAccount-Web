@@ -52,7 +52,9 @@ public class OrganisationPolicyTests(SchoolAccountWebApplicationFactory<Program>
     [Fact]
     public async Task User_is_accepted_when_organisation_is_not_empty()
     {
-        var client = factory.CreateAuthorisedClient();
+        var client = factory.CreateAuthorisedClient(services =>
+            services.StubQueryHandler(StubCensusStatusesHandler.Succeeding())
+        );
 
         var response = await client.GetAsync(
             factory.GeneratePath("Dashboard", "Dashboard"),

@@ -6,54 +6,15 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
-using NSubstitute;
-using SchoolAccount.Application.Abstractions.Messaging;
-using SchoolAccount.Application.Collect.CensusStatuses;
-using SchoolAccount.SharedKernel;
-using Action = SchoolAccount.Application.Collect.CensusStatuses.Action;
 
 namespace SchoolAccount.IntegrationTests.Common;
 
 public class SchoolAccountWebApplicationFactory<TProgram> : WebApplicationFactory<TProgram>
     where TProgram : class
 {
-    private readonly IQueryHandler<
-        GetCensusStatusesQuery,
-        List<GetCensusStatusesResponse>
-    > _getCensusStatusesHandler = Substitute.For<
-        IQueryHandler<GetCensusStatusesQuery, List<GetCensusStatusesResponse>>
-    >();
-
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseEnvironment("IntegrationTests");
-        builder.ConfigureTestServices(services =>
-            services.AddScoped<
-                IQueryHandler<GetCensusStatusesQuery, List<GetCensusStatusesResponse>>
-            >(_ => _getCensusStatusesHandler)
-        );
-        _getCensusStatusesHandler
-            .Handle(Arg.Any<GetCensusStatusesQuery>(), Arg.Any<CancellationToken>())
-            .Returns(
-                Result.Success(
-                    new List<GetCensusStatusesResponse>
-                    {
-                        new()
-                        {
-                            Id = "Test-id",
-                            Interesting = true,
-                            Actions =
-                            [
-                                new Action()
-                                {
-                                    Name = "Autumn School Census",
-                                    Status = new Status { Name = "Not Started" },
-                                },
-                            ],
-                        },
-                    }
-                )
-            );
     }
 
     public HttpClient CreateAuthorisedClient(
