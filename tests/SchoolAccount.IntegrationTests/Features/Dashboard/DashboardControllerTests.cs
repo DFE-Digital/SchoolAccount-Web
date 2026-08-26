@@ -4,9 +4,7 @@ using SchoolAccount.Application.Abstractions.Messaging;
 using SchoolAccount.Application.Collect.CensusStatuses;
 using SchoolAccount.IntegrationTests.Common;
 using SchoolAccount.IntegrationTests.Common.Pages;
-using SchoolAccount.SharedKernel;
 using Shouldly;
-using Action = SchoolAccount.Application.Collect.CensusStatuses.Action;
 
 namespace SchoolAccount.IntegrationTests.Features.Dashboard;
 
@@ -36,21 +34,20 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
     public async Task Ensure_that_the_dashboard_controller_returns_correct_user_name()
     {
         // Arrange
+        var token = TestContext.Current.CancellationToken;
+        var pageUri = _factory.GeneratePath("Dashboard", "Dashboard");
+        var response = CensusStatusesResponseBuilder.Create().NotInteresting();
+
         _getCensusStatusesHandler
             .Handle(Arg.Any<GetCensusStatusesQuery>(), Arg.Any<CancellationToken>())
-            .Returns(Result.Success(CreateNotInterestingCensusStatuses()));
-
-        var pageUri = _factory.GeneratePath("Dashboard", "Dashboard");
+            .Returns(response.AsSuccess());
 
         // Act
-        var response = await _client.GetAsync(pageUri, TestContext.Current.CancellationToken);
-        var page = await AngleSharpPage.FromResponseAsync<CommonPage>(
-            response,
-            TestContext.Current.CancellationToken
-        );
+        var message = await _client.GetAsync(pageUri, token);
+        var page = await AngleSharpPage.FromResponseAsync<CommonPage>(message, token);
 
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        message.StatusCode.ShouldBe(HttpStatusCode.OK);
         page.ShouldNotBeNull();
 
         var pageTitle = page.GetTitle();
@@ -72,21 +69,25 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
     public async Task Ensure_that_the_dashboard_controller_returns_actions_when_there_are_actions()
     {
         // Arrange
+        var response = CensusStatusesResponseBuilder
+            .Create()
+            .WithAction("Test Action", "Test Status");
+
         _getCensusStatusesHandler
             .Handle(Arg.Any<GetCensusStatusesQuery>(), Arg.Any<CancellationToken>())
-            .Returns(Result.Success(CreateInterestingCensusStatuses()));
+            .Returns(response.AsSuccess());
 
         var pageUri = _factory.GeneratePath("Dashboard", "Dashboard");
 
         // Act
-        var response = await _client.GetAsync(pageUri, TestContext.Current.CancellationToken);
+        var message = await _client.GetAsync(pageUri, TestContext.Current.CancellationToken);
         var page = await AngleSharpPage.FromResponseAsync<CommonPage>(
-            response,
+            message,
             TestContext.Current.CancellationToken
         );
 
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        message.StatusCode.ShouldBe(HttpStatusCode.OK);
         page.ShouldNotBeNull();
 
         var bodyElement = page.GetFirstBody();
@@ -94,24 +95,4 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
         bodyElement.ShouldContainWithoutWhitespace("Test Action");
         bodyElement.ShouldContainWithoutWhitespace("Test Status");
     }
-
-    private List<GetCensusStatusesResponse> CreateInterestingCensusStatuses() =>
-        [
-            new()
-            {
-                Id = "Test-id",
-                Interesting = true,
-                Actions =
-                [
-                    new Action
-                    {
-                        Name = "Test Action",
-                        Status = new Status { Name = "Test Status" },
-                    },
-                ],
-            },
-        ];
-
-    private List<GetCensusStatusesResponse> CreateNotInterestingCensusStatuses() =>
-        [new() { Id = "Test-id", Interesting = false }];
 }
