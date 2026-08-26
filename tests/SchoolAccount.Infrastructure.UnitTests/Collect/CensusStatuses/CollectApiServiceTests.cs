@@ -13,6 +13,24 @@ namespace SchoolAccount.Infrastructure.UnitTests.Collect.CensusStatuses;
 public class CollectApiServiceTests : IDisposable
 {
     private const string _baseAddress = "http://localhost";
+    private const string _validationMessage = "The Email field is required.";
+    private readonly CancellationToken _cancellationToken = TestContext.Current.CancellationToken;
+
+    private const string _validationErrorResponse = $$"""
+        {
+          "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
+          "title": "One or more validation errors occurred.",
+          "status": 400,
+          "errors": {
+            "Email": [
+              "{{_validationMessage}}"
+            ]
+          }
+        }
+        """;
+
+    private const string _emptyResponse = "null";
+
     private readonly FakeLogger<CollectApiService> _logger = new();
     private readonly MockHttpMessageHandler _mockHttp = new();
 
@@ -37,10 +55,7 @@ public class CollectApiServiceTests : IDisposable
         var service = ServiceRespondingWith(OK, Json, responseBody);
 
         // Act
-        var result = await service.GetCensusStatuses(
-            EmptyQuery(),
-            TestContext.Current.CancellationToken
-        );
+        var result = await service.GetCensusStatuses(EmptyQuery(), _cancellationToken);
 
         // Assert
         var status = result.ShouldHaveSingleItem();
@@ -51,31 +66,29 @@ public class CollectApiServiceTests : IDisposable
     }
 
     [Fact]
-    public async Task Validation_errors_are_logged_and_the_request_fails()
+    public async Task A_validation_error_response_fails_the_request()
     {
         // Arrange
-        const string validationMessage = "The Email field is required.";
-        const string responseBody = $$"""
-            {
-              "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
-              "title": "One or more validation errors occurred.",
-              "status": 400,
-              "errors": {
-                "Email": [
-                  "{{validationMessage}}"
-                ]
-              }
-            }
-            """;
-
-        var service = ServiceRespondingWith(BadRequest, ProblemJson, responseBody);
+        var service = ServiceRespondingWith(BadRequest, ProblemJson, _validationErrorResponse);
 
         // Act
-        var action = async () =>
-            await service.GetCensusStatuses(EmptyQuery(), TestContext.Current.CancellationToken);
+        var action = async () => await service.GetCensusStatuses(EmptyQuery(), _cancellationToken);
 
         // Assert
         await action.ShouldThrowAsync<HttpRequestException>();
+    }
+
+    [Fact]
+    public async Task Validation_errors_are_logged()
+    {
+        // Arrange
+        var service = ServiceRespondingWith(BadRequest, ProblemJson, _validationErrorResponse);
+
+        // Act
+        var action = async () => await service.GetCensusStatuses(EmptyQuery(), _cancellationToken);
+        await action.ShouldThrowAsync<HttpRequestException>();
+
+        // Assert
         _logger.Collector.Count.ShouldBe(1);
         _logger.Collector.LatestRecord.ShouldNotBeNull();
         _logger.Collector.LatestRecord.Level.ShouldBe(LogLevel.Error);
@@ -89,12 +102,10 @@ public class CollectApiServiceTests : IDisposable
     }
 
     [Fact]
-    public async Task An_empty_response_is_logged_and_the_request_fails()
+    public async Task An_empty_response_fails_the_request()
     {
         // Arrange
-        const string responseBody = "null";
-
-        var service = ServiceRespondingWith(Accepted, Json, responseBody);
+        var service = ServiceRespondingWith(Accepted, Json, _emptyResponse);
 
         // Act
         var action = async () =>
@@ -102,6 +113,20 @@ public class CollectApiServiceTests : IDisposable
 
         // Assert
         await action.ShouldThrowAsync<Exception>();
+    }
+
+    [Fact]
+    public async Task An_empty_response_is_logged()
+    {
+        // Arrange
+        var service = ServiceRespondingWith(Accepted, Json, _emptyResponse);
+
+        // Act
+        var action = async () =>
+            await service.GetCensusStatuses(EmptyQuery(), TestContext.Current.CancellationToken);
+        await action.ShouldThrowAsync<Exception>();
+
+        // Assert
         _logger.Collector.Count.ShouldBe(1);
         _logger.Collector.LatestRecord.ShouldNotBeNull();
         _logger.Collector.LatestRecord.Level.ShouldBe(LogLevel.Error);
