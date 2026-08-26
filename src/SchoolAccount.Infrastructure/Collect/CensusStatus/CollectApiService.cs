@@ -21,7 +21,7 @@ public sealed class CollectApiService(HttpClient httpClient, ILogger<CollectApiS
     {
         using var response = await httpClient.PostAsJsonAsync(
             _statusEndpoint,
-            query.request,
+            query.Request,
             cancellationToken
         );
 
