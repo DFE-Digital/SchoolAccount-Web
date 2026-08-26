@@ -11,7 +11,12 @@ public class GetCensusStatusesHandler(ICollectApiClient collectApiClient)
         CancellationToken cancellationToken
     )
     {
-        var result = await collectApiClient.GetCensusStatuses(query, cancellationToken);
+        var result = await collectApiClient.GetCensusStatuses(
+            query.Id,
+            query.EmailAddress,
+            query.Organisations,
+            cancellationToken
+        );
 
         return result;
     }

@@ -1,5 +1,6 @@
 using NSubstitute;
 using SchoolAccount.Application.Collect.CensusStatuses;
+using SchoolAccount.SharedKernel.Authentication;
 using Shouldly;
 
 namespace SchoolAccount.ApplicationTests.Collect;
@@ -27,7 +28,9 @@ public class GetCensusStatusesHandlerTests
         var collectApiClient = Substitute.For<ICollectApiClient>();
         collectApiClient
             .GetCensusStatuses(
-                Arg.Any<GetCensusStatusesQuery>(),
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<List<Organisation>>(),
                 TestContext.Current.CancellationToken
             )
             .Returns([response]);
@@ -43,7 +46,9 @@ public class GetCensusStatusesHandlerTests
         await collectApiClient
             .Received(1)
             .GetCensusStatuses(
-                Arg.Any<GetCensusStatusesQuery>(),
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<List<Organisation>>(),
                 TestContext.Current.CancellationToken
             );
         result.Value.Count.ShouldBe(1);
@@ -93,7 +98,9 @@ public class GetCensusStatusesHandlerTests
         var collectApiClient = Substitute.For<ICollectApiClient>();
         collectApiClient
             .GetCensusStatuses(
-                Arg.Any<GetCensusStatusesQuery>(),
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<List<Organisation>>(),
                 TestContext.Current.CancellationToken
             )
             .Returns([firstResponse, secondResponse]);
@@ -109,7 +116,9 @@ public class GetCensusStatusesHandlerTests
         await collectApiClient
             .Received(1)
             .GetCensusStatuses(
-                Arg.Any<GetCensusStatusesQuery>(),
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<List<Organisation>>(),
                 TestContext.Current.CancellationToken
             );
         result.Value.Count.ShouldBe(2);

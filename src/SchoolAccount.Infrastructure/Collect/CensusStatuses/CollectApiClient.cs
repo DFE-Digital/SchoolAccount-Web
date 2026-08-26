@@ -4,6 +4,7 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using SchoolAccount.Application.Collect.CensusStatuses;
+using SchoolAccount.SharedKernel.Authentication;
 using static System.Net.Mime.MediaTypeNames.Application;
 
 namespace SchoolAccount.Infrastructure.Collect.CensusStatuses;
@@ -14,11 +15,18 @@ public sealed class CollectApiClient(HttpClient httpClient, ILogger<CollectApiCl
     private const string _statusEndpoint = "/status";
 
     public async Task<List<GetCensusStatusesResponse>> GetCensusStatuses(
-        GetCensusStatusesQuery query,
+        string id,
+        string emailAddress,
+        List<Organisation> organisations,
         CancellationToken cancellationToken
     )
     {
-        var request = MapToRequest(query);
+        var request = new GetCensusStatusesApiRequest
+        {
+            Id = id,
+            Email = emailAddress,
+            Organisations = organisations,
+        };
         using var response = await httpClient.PostAsJsonAsync(
             _statusEndpoint,
             request,
@@ -87,14 +95,6 @@ public sealed class CollectApiClient(HttpClient httpClient, ILogger<CollectApiCl
             return null;
         }
     }
-
-    private static GetCensusStatusesApiRequest MapToRequest(GetCensusStatusesQuery query) =>
-        new()
-        {
-            Id = query.Id,
-            Email = query.EmailAddress,
-            Organisations = query.Organisations,
-        };
 
     private static GetCensusStatusesResponse MapToCensusStatus(OrganisationResponse organisation) =>
         new()

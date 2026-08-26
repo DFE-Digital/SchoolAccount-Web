@@ -50,10 +50,15 @@ public class CollectApiClientTests : IDisposable
             }
             """;
 
-        var service = ClientRespondingWith(OK, Json, responseBody);
+        var client = ClientRespondingWith(OK, Json, responseBody);
 
         // Act
-        var result = await service.GetCensusStatuses(EmptyQuery(), _cancellationToken);
+        var result = await client.GetCensusStatuses(
+            string.Empty,
+            string.Empty,
+            [],
+            _cancellationToken
+        );
 
         // Assert
         var status = result.ShouldHaveSingleItem();
@@ -67,10 +72,11 @@ public class CollectApiClientTests : IDisposable
     public async Task A_validation_error_response_fails_the_request()
     {
         // Arrange
-        var service = ClientRespondingWith(BadRequest, ProblemJson, _validationErrorResponse);
+        var client = ClientRespondingWith(BadRequest, ProblemJson, _validationErrorResponse);
 
         // Act
-        var act = async () => await service.GetCensusStatuses(EmptyQuery(), _cancellationToken);
+        var act = async () =>
+            await client.GetCensusStatuses(string.Empty, string.Empty, [], _cancellationToken);
 
         // Assert
         await act.ShouldThrowAsync<HttpRequestException>();
@@ -80,10 +86,11 @@ public class CollectApiClientTests : IDisposable
     public async Task Validation_errors_are_logged()
     {
         // Arrange
-        var service = ClientRespondingWith(BadRequest, ProblemJson, _validationErrorResponse);
+        var client = ClientRespondingWith(BadRequest, ProblemJson, _validationErrorResponse);
 
         // Act
-        var act = async () => await service.GetCensusStatuses(EmptyQuery(), _cancellationToken);
+        var act = async () =>
+            await client.GetCensusStatuses(string.Empty, string.Empty, [], _cancellationToken);
         await act.ShouldThrowAsync<HttpRequestException>();
 
         // Assert
@@ -103,10 +110,11 @@ public class CollectApiClientTests : IDisposable
     public async Task An_empty_response_fails_the_request()
     {
         // Arrange
-        var service = ClientRespondingWith(Accepted, Json, _nullResponse);
+        var client = ClientRespondingWith(Accepted, Json, _nullResponse);
 
         // Act
-        var act = async () => await service.GetCensusStatuses(EmptyQuery(), _cancellationToken);
+        var act = async () =>
+            await client.GetCensusStatuses(string.Empty, string.Empty, [], _cancellationToken);
 
         // Assert
         await act.ShouldThrowAsync<Exception>();
@@ -116,10 +124,11 @@ public class CollectApiClientTests : IDisposable
     public async Task An_empty_response_is_logged()
     {
         // Arrange
-        var service = ClientRespondingWith(Accepted, Json, _nullResponse);
+        var client = ClientRespondingWith(Accepted, Json, _nullResponse);
 
         // Act
-        var act = async () => await service.GetCensusStatuses(EmptyQuery(), _cancellationToken);
+        var act = async () =>
+            await client.GetCensusStatuses(string.Empty, string.Empty, [], _cancellationToken);
         await act.ShouldThrowAsync<Exception>();
 
         // Assert
@@ -135,8 +144,6 @@ public class CollectApiClientTests : IDisposable
         _mockHttp.Dispose();
         GC.SuppressFinalize(this);
     }
-
-    private static GetCensusStatusesQuery EmptyQuery() => new();
 
     private CollectApiClient ClientRespondingWith(
         HttpStatusCode statusCode,
