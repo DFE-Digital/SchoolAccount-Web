@@ -22,12 +22,7 @@ public sealed class CollectApiClient(HttpClient httpClient, ILogger<CollectApiCl
         CancellationToken cancellationToken
     )
     {
-        var request = new GetCensusStatusesApiRequest
-        {
-            Id = id,
-            Email = emailAddress,
-            Organisations = organisations,
-        };
+        var request = CensusStatusMapper.ToApiRequest(id, emailAddress, organisations);
         using var response = await httpClient.PostAsJsonAsync(
             _statusEndpoint,
             request,
@@ -51,7 +46,7 @@ public sealed class CollectApiClient(HttpClient httpClient, ILogger<CollectApiCl
             throw new Exception("Response from Collect API was empty");
         }
 
-        return content.Details.Select(MapToCensusStatus).ToList();
+        return content.Details.Select(CensusStatusMapper.ToResponse).ToList();
     }
 
     private async Task LogProblem(HttpResponseMessage response, string requestUri)
@@ -96,18 +91,4 @@ public sealed class CollectApiClient(HttpClient httpClient, ILogger<CollectApiCl
             return null;
         }
     }
-
-    private static GetCensusStatusesResponse MapToCensusStatus(OrganisationResponse organisation) =>
-        new()
-        {
-            Id = organisation.Id,
-            Interesting = organisation.Interesting,
-            Actions = organisation
-                .Actions.Select(action => new CensusAction
-                {
-                    Name = action.Name,
-                    Status = new CensusStatus { Name = action.Status.Name },
-                })
-                .ToList(),
-        };
 }
