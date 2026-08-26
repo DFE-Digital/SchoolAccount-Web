@@ -8,27 +8,7 @@ namespace SchoolAccount.ApplicationTests.Collect;
 public class GetCensusStatusHandlerTests
 {
     [Fact]
-    public async Task Handler_returns_failed_result_if_no_interesting_census_statuses_are_found()
-    {
-        // Arrange
-        var response = new GetCensusStatusResponse { Id = "Test-id", Interesting = false };
-
-        var collectApiService = Substitute.For<ICollectApiService>();
-        collectApiService.GetCensusStatus(Arg.Any<GetCensusStatusQuery>()).Returns([response]);
-        var handler = new GetCensusStatusHandler(collectApiService);
-
-        // Act
-        var result = await handler.Handle(
-            new GetCensusStatusQuery(new GetCensusStatusRequestModel()),
-            TestContext.Current.CancellationToken
-        );
-
-        // Assert
-        result.IsFailure.ShouldBeTrue();
-    }
-
-    [Fact]
-    public async Task Handler_returns_correct_response_when_an_interesting_status_is_found()
+    public async Task Handler_returns_correct_response()
     {
         // Arrange
         var response = new GetCensusStatusResponse
@@ -46,7 +26,9 @@ public class GetCensusStatusHandlerTests
         };
 
         var collectApiService = Substitute.For<ICollectApiService>();
-        collectApiService.GetCensusStatus(Arg.Any<GetCensusStatusQuery>()).Returns([response]);
+        collectApiService
+            .GetCensusStatus(Arg.Any<GetCensusStatusQuery>(), TestContext.Current.CancellationToken)
+            .Returns([response]);
         var handler = new GetCensusStatusHandler(collectApiService);
 
         // Act
@@ -56,18 +38,26 @@ public class GetCensusStatusHandlerTests
         );
 
         // Assert
+        await collectApiService
+            .Received(1)
+            .GetCensusStatus(
+                Arg.Any<GetCensusStatusQuery>(),
+                TestContext.Current.CancellationToken
+            );
+        result.Value.Count.ShouldBe(1);
+        var firstResult = result.Value[0];
         result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldNotBeNull();
-        result.Value.Id.ShouldBe(response.Id);
-        result.Value.Interesting.ShouldBe(response.Interesting);
-        result.Value.Actions.ShouldNotBeNull();
-        result.Value.Actions.Count.ShouldBe(response.Actions.Count);
-        result.Value.Actions[0].Name.ShouldBe(response.Actions[0].Name);
-        result.Value.Actions[0].Status.Name.ShouldBe(response.Actions[0].Status.Name);
+        firstResult.Id.ShouldBe(response.Id);
+        firstResult.Interesting.ShouldBe(response.Interesting);
+        firstResult.Actions.ShouldNotBeNull();
+        firstResult.Actions.Count.ShouldBe(response.Actions.Count);
+        firstResult.Actions[0].Name.ShouldBe(response.Actions[0].Name);
+        firstResult.Actions[0].Status.Name.ShouldBe(response.Actions[0].Status.Name);
     }
 
     [Fact]
-    public async Task Handler_returns_first_result_when_two_interesting_statuses_are_found()
+    public async Task Handler_returns_correct_response_with_multiple_responses()
     {
         // Arrange
         var firstResponse = new GetCensusStatusResponse
@@ -80,7 +70,7 @@ public class GetCensusStatusHandlerTests
                     Status = new Status { Name = "Status 1" },
                 },
             ],
-            Id = "Test-id",
+            Id = "Test-id-1",
             Interesting = true,
         };
 
@@ -90,17 +80,17 @@ public class GetCensusStatusHandlerTests
             [
                 new Action
                 {
-                    Name = "Action 1",
-                    Status = new Status { Name = "Status 1" },
+                    Name = "Action 2",
+                    Status = new Status { Name = "Status 2" },
                 },
             ],
-            Id = "Test-id",
+            Id = "Test-id-2",
             Interesting = true,
         };
 
         var collectApiService = Substitute.For<ICollectApiService>();
         collectApiService
-            .GetCensusStatus(Arg.Any<GetCensusStatusQuery>())
+            .GetCensusStatus(Arg.Any<GetCensusStatusQuery>(), TestContext.Current.CancellationToken)
             .Returns([firstResponse, secondResponse]);
         var handler = new GetCensusStatusHandler(collectApiService);
 
@@ -111,13 +101,28 @@ public class GetCensusStatusHandlerTests
         );
 
         // Assert
+        await collectApiService
+            .Received(1)
+            .GetCensusStatus(
+                Arg.Any<GetCensusStatusQuery>(),
+                TestContext.Current.CancellationToken
+            );
+        result.Value.Count.ShouldBe(2);
+        var firstResult = result.Value[0];
         result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldNotBeNull();
-        result.Value.Id.ShouldBe(firstResponse.Id);
-        result.Value.Interesting.ShouldBe(firstResponse.Interesting);
-        result.Value.Actions.ShouldNotBeNull();
-        result.Value.Actions.Count.ShouldBe(firstResponse.Actions.Count);
-        result.Value.Actions[0].Name.ShouldBe(firstResponse.Actions[0].Name);
-        result.Value.Actions[0].Status.Name.ShouldBe(firstResponse.Actions[0].Status.Name);
+        firstResult.Id.ShouldBe(firstResponse.Id);
+        firstResult.Interesting.ShouldBe(firstResponse.Interesting);
+        firstResult.Actions.ShouldNotBeNull();
+        firstResult.Actions.Count.ShouldBe(firstResponse.Actions.Count);
+        firstResult.Actions[0].Name.ShouldBe(firstResponse.Actions[0].Name);
+        firstResult.Actions[0].Status.Name.ShouldBe(firstResponse.Actions[0].Status.Name);
+        var secondResult = result.Value[1];
+        secondResult.Id.ShouldBe(secondResponse.Id);
+        secondResult.Interesting.ShouldBe(secondResponse.Interesting);
+        secondResult.Actions.ShouldNotBeNull();
+        secondResult.Actions.Count.ShouldBe(secondResponse.Actions.Count);
+        secondResult.Actions[0].Name.ShouldBe(secondResponse.Actions[0].Name);
+        secondResult.Actions[0].Status.Name.ShouldBe(secondResponse.Actions[0].Status.Name);
     }
 }
