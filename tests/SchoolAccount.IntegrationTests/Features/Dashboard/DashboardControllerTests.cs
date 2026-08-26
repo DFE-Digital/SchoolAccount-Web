@@ -25,7 +25,7 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
     }
 
     [Fact]
-    public async Task Ensure_that_the_dashboard_controller_returns_correct_user_name()
+    public async Task Greets_the_signed_in_user_by_name()
     {
         // Arrange
         var token = TestContext.Current.CancellationToken;
@@ -46,7 +46,7 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
     }
 
     [Fact]
-    public async Task Ensure_that_the_dashboard_controller_returns_correct_page_title()
+    public async Task Title_is_dashboard()
     {
         // Arrange
         var token = TestContext.Current.CancellationToken;
@@ -67,7 +67,7 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
     }
 
     [Fact]
-    public async Task Ensure_that_the_dashboard_controller_returns_actions_when_there_are_actions()
+    public async Task Census_actions_are_listed_with_their_status()
     {
         // Arrange
         var token = TestContext.Current.CancellationToken;
@@ -92,7 +92,7 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
     }
 
     [Fact]
-    public async Task Ensure_that_the_dashboard_controller_reports_a_problem_when_the_query_fails()
+    public async Task A_failure_to_fetch_census_statuses_is_reported_as_a_problem()
     {
         // Arrange
         var token = TestContext.Current.CancellationToken;
@@ -109,7 +109,7 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
     }
 
     [Fact]
-    public async Task Ensure_that_the_dashboard_controller_fails_when_the_user_context_is_empty()
+    public async Task A_user_with_no_id_email_or_organisation_is_rejected()
     {
         // Arrange
         var token = TestContext.Current.CancellationToken;

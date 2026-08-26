@@ -51,7 +51,7 @@ public class CollectApiServiceTests : IDisposable
     }
 
     [Fact]
-    public async Task Validation_errors_are_logged_and_thrown_as_an_http_exception()
+    public async Task Validation_errors_are_logged_and_the_request_fails()
     {
         // Arrange
         const string validationMessage = "The Email field is required.";
@@ -89,7 +89,7 @@ public class CollectApiServiceTests : IDisposable
     }
 
     [Fact]
-    public async Task Null_response_is_thrown_as_an_exception()
+    public async Task An_empty_response_is_logged_and_the_request_fails()
     {
         // Arrange
         const string responseBody = "null";
