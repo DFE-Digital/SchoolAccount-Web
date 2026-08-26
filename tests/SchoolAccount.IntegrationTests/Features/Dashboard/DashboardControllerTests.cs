@@ -1,5 +1,4 @@
 ﻿using System.Net;
-using NSubstitute;
 using SchoolAccount.Application.Abstractions.Messaging;
 using SchoolAccount.Application.Collect.CensusStatuses;
 using SchoolAccount.IntegrationTests.Common;
@@ -12,13 +11,10 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
 {
     private readonly SchoolAccountWebApplicationFactory<Program> _factory;
     private readonly HttpClient _client;
-
-    private readonly IQueryHandler<
+    private readonly StubQueryHandler<
         GetCensusStatusesQuery,
         List<GetCensusStatusesResponse>
-    > _getCensusStatusesHandler = Substitute.For<
-        IQueryHandler<GetCensusStatusesQuery, List<GetCensusStatusesResponse>>
-    >();
+    > _getCensusStatusesHandler = new();
 
     public DashboardControllerTests(SchoolAccountWebApplicationFactory<Program> factory)
     {
@@ -38,9 +34,7 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
         var pageUri = _factory.GeneratePath("Dashboard", "Dashboard");
         var response = CensusStatusesResponseBuilder.Create().NotInteresting();
 
-        _getCensusStatusesHandler
-            .Handle(Arg.Any<GetCensusStatusesQuery>(), Arg.Any<CancellationToken>())
-            .Returns(response.AsSuccess());
+        _getCensusStatusesHandler.Returns(response.AsSuccess());
 
         // Act
         var message = await _client.GetAsync(pageUri, token);
@@ -73,9 +67,7 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
             .Create()
             .WithAction("Test Action", "Test Status");
 
-        _getCensusStatusesHandler
-            .Handle(Arg.Any<GetCensusStatusesQuery>(), Arg.Any<CancellationToken>())
-            .Returns(response.AsSuccess());
+        _getCensusStatusesHandler.Returns(response.AsSuccess());
 
         var pageUri = _factory.GeneratePath("Dashboard", "Dashboard");
 
