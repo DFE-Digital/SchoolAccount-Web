@@ -7,11 +7,6 @@ using Shouldly;
 
 namespace SchoolAccount.ApplicationTests.Collect;
 
-/// <remarks>
-/// The handler only unpacks the query onto the client, so that is all these cover. Every
-/// integration test stubs <see cref="Application.Abstractions.Messaging.IQueryHandler{TQuery,
-/// TResponse}"/>, which means this is the only place the real handler runs.
-/// </remarks>
 public class GetCensusStatusesHandlerTests
 {
     private readonly CancellationToken _cancellationToken = TestContext.Current.CancellationToken;
