@@ -9,7 +9,8 @@ namespace SchoolAccount.Web.Mvc.Features.Dashboard;
 [Route("/{action}"), Authorize]
 public class DashboardController(
     IUserContext userContext,
-    IQueryHandler<GetCensusStatusesQuery, List<GetCensusStatusesResponse>> getCensusStatusesHandler
+    IQueryHandler<GetCensusStatusesQuery, List<GetCensusStatusesResponse>> getCensusStatusesHandler,
+    ILogger<DashboardController> logger
 ) : Controller
 {
     [HttpGet]
@@ -35,6 +36,12 @@ public class DashboardController(
 
         if (censusStatusesResult.IsFailure)
         {
+            logger.LogError(
+                "Census statuses could not be fetched: {ErrorCode} {ErrorDescription}",
+                censusStatusesResult.Error.Code,
+                censusStatusesResult.Error.Description
+            );
+
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
 
