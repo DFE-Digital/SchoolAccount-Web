@@ -7,6 +7,14 @@ namespace SchoolAccount.ApplicationTests.Collect;
 
 public class GetCensusStatusesHandlerTests
 {
+    private static GetCensusStatusesQuery CreateQuery() =>
+        new()
+        {
+            Id = "test-user-id",
+            EmailAddress = "test-user@example.com",
+            Organisations = [new Organisation { Id = "test-org-id", Name = "Test School" }],
+        };
+
     [Fact]
     public async Task Handler_returns_correct_response()
     {
@@ -25,30 +33,28 @@ public class GetCensusStatusesHandlerTests
             Interesting = true,
         };
 
+        var query = CreateQuery();
         var collectApiClient = Substitute.For<ICollectApiClient>();
         collectApiClient
             .GetCensusStatuses(
-                Arg.Any<string>(),
-                Arg.Any<string>(),
-                Arg.Any<List<Organisation>>(),
+                query.Id,
+                query.EmailAddress,
+                query.Organisations,
                 TestContext.Current.CancellationToken
             )
             .Returns([response]);
         var handler = new GetCensusStatusesHandler(collectApiClient);
 
         // Act
-        var result = await handler.Handle(
-            new GetCensusStatusesQuery(),
-            TestContext.Current.CancellationToken
-        );
+        var result = await handler.Handle(query, TestContext.Current.CancellationToken);
 
         // Assert
         await collectApiClient
             .Received(1)
             .GetCensusStatuses(
-                Arg.Any<string>(),
-                Arg.Any<string>(),
-                Arg.Any<List<Organisation>>(),
+                query.Id,
+                query.EmailAddress,
+                query.Organisations,
                 TestContext.Current.CancellationToken
             );
         result.Value.Count.ShouldBe(1);
@@ -95,30 +101,28 @@ public class GetCensusStatusesHandlerTests
             Interesting = true,
         };
 
+        var query = CreateQuery();
         var collectApiClient = Substitute.For<ICollectApiClient>();
         collectApiClient
             .GetCensusStatuses(
-                Arg.Any<string>(),
-                Arg.Any<string>(),
-                Arg.Any<List<Organisation>>(),
+                query.Id,
+                query.EmailAddress,
+                query.Organisations,
                 TestContext.Current.CancellationToken
             )
             .Returns([firstResponse, secondResponse]);
         var handler = new GetCensusStatusesHandler(collectApiClient);
 
         // Act
-        var result = await handler.Handle(
-            new GetCensusStatusesQuery(),
-            TestContext.Current.CancellationToken
-        );
+        var result = await handler.Handle(query, TestContext.Current.CancellationToken);
 
         // Assert
         await collectApiClient
             .Received(1)
             .GetCensusStatuses(
-                Arg.Any<string>(),
-                Arg.Any<string>(),
-                Arg.Any<List<Organisation>>(),
+                query.Id,
+                query.EmailAddress,
+                query.Organisations,
                 TestContext.Current.CancellationToken
             );
         result.Value.Count.ShouldBe(2);
