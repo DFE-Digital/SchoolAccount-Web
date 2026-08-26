@@ -1,12 +1,7 @@
 using GovUk.Frontend.AspNetCore;
-using Microsoft.Extensions.Options;
 using SchoolAccount.Application;
-using SchoolAccount.Application.Abstractions.Clients;
-using SchoolAccount.Application.Collect.CensusStatuses;
 using SchoolAccount.Infrastructure;
-using SchoolAccount.Infrastructure.Collect.CensusStatuses;
 using SchoolAccount.Web.Mvc;
-using SchoolAccount.Web.Mvc.Config;
 using SchoolAccount.Web.Mvc.Hosting.Extensions;
 using Serilog;
 
@@ -28,21 +23,7 @@ builder.Host.UseSerilog(
 builder
     .Services.AddApplication()
     .AddPresentation(builder.Environment, builder.Configuration)
-    .AddInfrastructure();
-
-builder
-    .Services.AddOptions<CommonApiConfig>()
-    .Bind(builder.Configuration.GetSection("CommonApiSettings"))
-    .ValidateDataAnnotations()
-    .ValidateOnStart();
-
-builder.Services.AddHttpClient<ICollectApiClient, CollectApiClient>(
-    (serviceProvider, client) =>
-    {
-        var config = serviceProvider.GetRequiredService<IOptions<CommonApiConfig>>().Value;
-        client.BaseAddress = new Uri(config.CollectApiUrl);
-    }
-);
+    .AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
 
