@@ -72,10 +72,10 @@ public class CollectApiServiceTests : IDisposable
         var service = ServiceRespondingWith(BadRequest, ProblemJson, _validationErrorResponse);
 
         // Act
-        var action = async () => await service.GetCensusStatuses(EmptyQuery(), _cancellationToken);
+        var act = async () => await service.GetCensusStatuses(EmptyQuery(), _cancellationToken);
 
         // Assert
-        await action.ShouldThrowAsync<HttpRequestException>();
+        await act.ShouldThrowAsync<HttpRequestException>();
     }
 
     [Fact]
@@ -85,8 +85,8 @@ public class CollectApiServiceTests : IDisposable
         var service = ServiceRespondingWith(BadRequest, ProblemJson, _validationErrorResponse);
 
         // Act
-        var action = async () => await service.GetCensusStatuses(EmptyQuery(), _cancellationToken);
-        await action.ShouldThrowAsync<HttpRequestException>();
+        var act = async () => await service.GetCensusStatuses(EmptyQuery(), _cancellationToken);
+        await act.ShouldThrowAsync<HttpRequestException>();
 
         // Assert
         _logger.Collector.Count.ShouldBe(1);
@@ -108,11 +108,10 @@ public class CollectApiServiceTests : IDisposable
         var service = ServiceRespondingWith(Accepted, Json, _emptyResponse);
 
         // Act
-        var action = async () =>
-            await service.GetCensusStatuses(EmptyQuery(), TestContext.Current.CancellationToken);
+        var act = async () => await service.GetCensusStatuses(EmptyQuery(), _cancellationToken);
 
         // Assert
-        await action.ShouldThrowAsync<Exception>();
+        await act.ShouldThrowAsync<Exception>();
     }
 
     [Fact]
@@ -122,9 +121,8 @@ public class CollectApiServiceTests : IDisposable
         var service = ServiceRespondingWith(Accepted, Json, _emptyResponse);
 
         // Act
-        var action = async () =>
-            await service.GetCensusStatuses(EmptyQuery(), TestContext.Current.CancellationToken);
-        await action.ShouldThrowAsync<Exception>();
+        var act = async () => await service.GetCensusStatuses(EmptyQuery(), _cancellationToken);
+        await act.ShouldThrowAsync<Exception>();
 
         // Assert
         _logger.Collector.Count.ShouldBe(1);
