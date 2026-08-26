@@ -1,7 +1,8 @@
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SchoolAccount.Application.Abstractions.Messaging;
+using SchoolAccount.IntegrationTests.Common.Stubs;
 
-namespace SchoolAccount.IntegrationTests.Common;
+namespace SchoolAccount.IntegrationTests.Common.Extensions;
 
 public static class ServiceCollectionExtensions
 {

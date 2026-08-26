@@ -2,6 +2,8 @@ using System.Net;
 using System.Security.Claims;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SchoolAccount.IntegrationTests.Common;
+using SchoolAccount.IntegrationTests.Common.Extensions;
+using SchoolAccount.IntegrationTests.Common.Stubs;
 using Shouldly;
 using static SchoolAccount.Web.Mvc.Authentication.ClaimConstants;
 

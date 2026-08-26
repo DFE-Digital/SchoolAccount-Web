@@ -2,7 +2,7 @@ using SchoolAccount.Application.Collect.CensusStatuses;
 using SchoolAccount.SharedKernel;
 using Action = SchoolAccount.Application.Collect.CensusStatuses.Action;
 
-namespace SchoolAccount.IntegrationTests.Common;
+namespace SchoolAccount.IntegrationTests.Common.Builders;
 
 public class CensusStatusesResponseBuilder
 {
