@@ -1,8 +1,12 @@
 ﻿using System.Net;
+using System.Security.Claims;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using SchoolAccount.Application.Collect.CensusStatuses;
 using SchoolAccount.IntegrationTests.Common;
 using SchoolAccount.IntegrationTests.Common.Pages;
 using Shouldly;
+using static SchoolAccount.IntegrationTests.Common.MockAuthHandler;
+using static SchoolAccount.Web.Mvc.Authentication.ClaimConstants;
 
 namespace SchoolAccount.IntegrationTests.Features.Dashboard;
 
@@ -26,9 +30,8 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
         // Arrange
         var token = TestContext.Current.CancellationToken;
         var pageUri = _factory.GeneratePath("Dashboard", "Dashboard");
-        var response = CensusStatusesResponseBuilder.Create().NotInteresting();
 
-        _getCensusStatusesHandler.Returns(response.AsSuccess());
+        _getCensusStatusesHandler.Returns(CensusStatusesResponseBuilder.Create().AsSuccess());
 
         // Act
         var message = await _client.GetAsync(pageUri, token);
@@ -36,21 +39,31 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
 
         // Assert
         message.StatusCode.ShouldBe(HttpStatusCode.OK);
-        page.ShouldNotBeNull();
+
+        var headingElement = page.GetFirstHeading();
+        headingElement.ShouldNotBeNull();
+        headingElement.ShouldBeEquivalentTo($"Hello {FakeGivenName} {FakeFamilyName}");
+    }
+
+    [Fact]
+    public async Task Ensure_that_the_dashboard_controller_returns_correct_page_title()
+    {
+        // Arrange
+        var token = TestContext.Current.CancellationToken;
+        var pageUri = _factory.GeneratePath("Dashboard", "Dashboard");
+
+        _getCensusStatusesHandler.Returns(CensusStatusesResponseBuilder.Create().AsSuccess());
+
+        // Act
+        var message = await _client.GetAsync(pageUri, token);
+        var page = await AngleSharpPage.FromResponseAsync<CommonPage>(message, token);
+
+        // Assert
+        message.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         var pageTitle = page.GetTitle();
         pageTitle.ShouldNotBeNull();
         pageTitle.ShouldBeEquivalentTo("Dashboard");
-
-        var headingElement = page.GetFirstHeading();
-        headingElement.ShouldNotBeNull();
-        headingElement.ShouldBeEquivalentTo(
-            $"Hello {MockAuthHandler.FakeGivenName} {MockAuthHandler.FakeFamilyName}"
-        );
-
-        var bodyElement = page.GetFirstBody();
-        bodyElement.ShouldNotBeNull();
-        bodyElement.ShouldContainWithoutWhitespace("Test School");
     }
 
     [Fact]
@@ -75,8 +88,53 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
 
         var bodyElement = page.GetFirstBody();
         bodyElement.ShouldNotBeNull();
-        bodyElement.ShouldContainWithoutWhitespace("Test Action");
-        bodyElement.ShouldContainWithoutWhitespace("Test Status");
+        bodyElement.ShouldContain("Test Action, Test Status");
+    }
+
+    [Fact]
+    public async Task Ensure_that_the_dashboard_controller_reports_a_problem_when_the_query_fails()
+    {
+        // Arrange
+        var token = TestContext.Current.CancellationToken;
+        var pageUri = _factory.GeneratePath("Dashboard", "Dashboard");
+        _getCensusStatusesHandler.Returns(CensusStatusesResponseBuilder.AsFailure());
+
+        // Act
+        var message = await _client.GetAsync(pageUri, token);
+        var body = await message.Content.ReadAsStringAsync(token);
+
+        // Assert
+        message.StatusCode.ShouldBe(HttpStatusCode.InternalServerError);
+        body.ShouldContain(CensusStatusesResponseBuilder.FetchFailed.Description);
+    }
+
+    [Fact]
+    public async Task Ensure_that_the_dashboard_controller_fails_when_the_user_context_is_empty()
+    {
+        // Arrange
+        var token = TestContext.Current.CancellationToken;
+        var pageUri = _factory.GeneratePath("Dashboard", "Dashboard");
+        var client = CreateClientWithoutUserDetails();
+
+        _getCensusStatusesHandler.Returns(CensusStatusesResponseBuilder.Create().AsSuccess());
+
+        // Act
+        var message = await client.GetAsync(pageUri, token);
+
+        // Assert
+        message.StatusCode.ShouldBe(HttpStatusCode.InternalServerError);
+    }
+
+    private HttpClient CreateClientWithoutUserDetails()
+    {
+        List<Claim> claims = [new(Organisation, """{"id": 12345}""")];
+
+        return _factory.CreateAuthorisedClient(services =>
+        {
+            services.RemoveAll<MockAuthClaimsOptions>();
+            services.AddSingleton(new MockAuthClaimsOptions { Claims = claims });
+            services.StubQueryHandler(_getCensusStatusesHandler);
+        });
     }
 
     private sealed class StubCensusStatusesHandler

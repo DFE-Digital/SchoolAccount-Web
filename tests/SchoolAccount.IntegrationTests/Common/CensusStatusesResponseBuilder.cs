@@ -51,10 +51,13 @@ public class CensusStatusesResponseBuilder
         return Result.Success<List<GetCensusStatusesResponse>>([Build()]);
     }
 
+    public static readonly Error FetchFailed = Error.Failure(
+        "CensusStatuses.Test",
+        "Census statuses could not be fetched"
+    );
+
     public static Result<List<GetCensusStatusesResponse>> AsFailure(Error? error = null)
     {
-        return Result.Failure<List<GetCensusStatusesResponse>>(
-            error ?? Error.Failure("CensusStatuses.Test", "Census statuses could not be fetched")
-        );
+        return Result.Failure<List<GetCensusStatusesResponse>>(error ?? FetchFailed);
     }
 }
