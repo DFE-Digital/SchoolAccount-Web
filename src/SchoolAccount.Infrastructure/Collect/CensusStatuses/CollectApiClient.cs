@@ -8,8 +8,8 @@ using static System.Net.Mime.MediaTypeNames.Application;
 
 namespace SchoolAccount.Infrastructure.Collect.CensusStatuses;
 
-public sealed class CollectApiService(HttpClient httpClient, ILogger<CollectApiService> logger)
-    : ICollectApiService
+public sealed class CollectApiClient(HttpClient httpClient, ILogger<CollectApiClient> logger)
+    : ICollectApiClient
 {
     private const string _statusEndpoint = "/status";
 

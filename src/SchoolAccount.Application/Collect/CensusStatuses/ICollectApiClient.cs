@@ -1,6 +1,6 @@
 namespace SchoolAccount.Application.Collect.CensusStatuses;
 
-public interface ICollectApiService
+public interface ICollectApiClient
 {
     Task<List<GetCensusStatusesResponse>> GetCensusStatuses(
         GetCensusStatusesQuery query,

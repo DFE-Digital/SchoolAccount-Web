@@ -24,14 +24,14 @@ public class GetCensusStatusesHandlerTests
             Interesting = true,
         };
 
-        var collectApiService = Substitute.For<ICollectApiService>();
-        collectApiService
+        var collectApiClient = Substitute.For<ICollectApiClient>();
+        collectApiClient
             .GetCensusStatuses(
                 Arg.Any<GetCensusStatusesQuery>(),
                 TestContext.Current.CancellationToken
             )
             .Returns([response]);
-        var handler = new GetCensusStatusesHandler(collectApiService);
+        var handler = new GetCensusStatusesHandler(collectApiClient);
 
         // Act
         var result = await handler.Handle(
@@ -40,7 +40,7 @@ public class GetCensusStatusesHandlerTests
         );
 
         // Assert
-        await collectApiService
+        await collectApiClient
             .Received(1)
             .GetCensusStatuses(
                 Arg.Any<GetCensusStatusesQuery>(),
@@ -90,14 +90,14 @@ public class GetCensusStatusesHandlerTests
             Interesting = true,
         };
 
-        var collectApiService = Substitute.For<ICollectApiService>();
-        collectApiService
+        var collectApiClient = Substitute.For<ICollectApiClient>();
+        collectApiClient
             .GetCensusStatuses(
                 Arg.Any<GetCensusStatusesQuery>(),
                 TestContext.Current.CancellationToken
             )
             .Returns([firstResponse, secondResponse]);
-        var handler = new GetCensusStatusesHandler(collectApiService);
+        var handler = new GetCensusStatusesHandler(collectApiClient);
 
         // Act
         var result = await handler.Handle(
@@ -106,7 +106,7 @@ public class GetCensusStatusesHandlerTests
         );
 
         // Assert
-        await collectApiService
+        await collectApiClient
             .Received(1)
             .GetCensusStatuses(
                 Arg.Any<GetCensusStatusesQuery>(),

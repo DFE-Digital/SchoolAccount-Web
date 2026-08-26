@@ -35,7 +35,7 @@ builder
     .ValidateDataAnnotations()
     .ValidateOnStart();
 
-builder.Services.AddHttpClient<ICollectApiService, CollectApiService>(
+builder.Services.AddHttpClient<ICollectApiClient, CollectApiClient>(
     (serviceProvider, client) =>
     {
         var config = serviceProvider.GetRequiredService<IOptions<CommonApiConfig>>().Value;

@@ -3,7 +3,7 @@ using SchoolAccount.SharedKernel;
 
 namespace SchoolAccount.Application.Collect.CensusStatuses;
 
-public class GetCensusStatusesHandler(ICollectApiService collectApiService)
+public class GetCensusStatusesHandler(ICollectApiClient collectApiClient)
     : IQueryHandler<GetCensusStatusesQuery, List<GetCensusStatusesResponse>>
 {
     public async Task<Result<List<GetCensusStatusesResponse>>> Handle(
@@ -11,7 +11,7 @@ public class GetCensusStatusesHandler(ICollectApiService collectApiService)
         CancellationToken cancellationToken
     )
     {
-        var result = await collectApiService.GetCensusStatuses(query, cancellationToken);
+        var result = await collectApiClient.GetCensusStatuses(query, cancellationToken);
 
         return result;
     }

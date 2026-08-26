@@ -10,7 +10,7 @@ using static System.Net.Mime.MediaTypeNames.Application;
 
 namespace SchoolAccount.Infrastructure.UnitTests.Collect.CensusStatuses;
 
-public class CollectApiServiceTests : IDisposable
+public class CollectApiClientTests : IDisposable
 {
     private const string _baseAddress = "http://localhost";
     private const string _nullResponse = "null";
@@ -29,7 +29,7 @@ public class CollectApiServiceTests : IDisposable
         """;
 
     private readonly CancellationToken _cancellationToken = TestContext.Current.CancellationToken;
-    private readonly FakeLogger<CollectApiService> _logger = new();
+    private readonly FakeLogger<CollectApiClient> _logger = new();
     private readonly MockHttpMessageHandler _mockHttp = new();
 
     [Fact]
@@ -50,7 +50,7 @@ public class CollectApiServiceTests : IDisposable
             }
             """;
 
-        var service = ServiceRespondingWith(OK, Json, responseBody);
+        var service = ClientRespondingWith(OK, Json, responseBody);
 
         // Act
         var result = await service.GetCensusStatuses(EmptyQuery(), _cancellationToken);
@@ -67,7 +67,7 @@ public class CollectApiServiceTests : IDisposable
     public async Task A_validation_error_response_fails_the_request()
     {
         // Arrange
-        var service = ServiceRespondingWith(BadRequest, ProblemJson, _validationErrorResponse);
+        var service = ClientRespondingWith(BadRequest, ProblemJson, _validationErrorResponse);
 
         // Act
         var act = async () => await service.GetCensusStatuses(EmptyQuery(), _cancellationToken);
@@ -80,7 +80,7 @@ public class CollectApiServiceTests : IDisposable
     public async Task Validation_errors_are_logged()
     {
         // Arrange
-        var service = ServiceRespondingWith(BadRequest, ProblemJson, _validationErrorResponse);
+        var service = ClientRespondingWith(BadRequest, ProblemJson, _validationErrorResponse);
 
         // Act
         var act = async () => await service.GetCensusStatuses(EmptyQuery(), _cancellationToken);
@@ -103,7 +103,7 @@ public class CollectApiServiceTests : IDisposable
     public async Task An_empty_response_fails_the_request()
     {
         // Arrange
-        var service = ServiceRespondingWith(Accepted, Json, _nullResponse);
+        var service = ClientRespondingWith(Accepted, Json, _nullResponse);
 
         // Act
         var act = async () => await service.GetCensusStatuses(EmptyQuery(), _cancellationToken);
@@ -116,7 +116,7 @@ public class CollectApiServiceTests : IDisposable
     public async Task An_empty_response_is_logged()
     {
         // Arrange
-        var service = ServiceRespondingWith(Accepted, Json, _nullResponse);
+        var service = ClientRespondingWith(Accepted, Json, _nullResponse);
 
         // Act
         var act = async () => await service.GetCensusStatuses(EmptyQuery(), _cancellationToken);
@@ -138,7 +138,7 @@ public class CollectApiServiceTests : IDisposable
 
     private static GetCensusStatusesQuery EmptyQuery() => new();
 
-    private CollectApiService ServiceRespondingWith(
+    private CollectApiClient ClientRespondingWith(
         HttpStatusCode statusCode,
         string mediaType,
         string content
@@ -146,7 +146,7 @@ public class CollectApiServiceTests : IDisposable
     {
         _mockHttp.When($"{_baseAddress}/status").Respond(statusCode, mediaType, content);
 
-        return new CollectApiService(CreateHttpClient(), _logger);
+        return new CollectApiClient(CreateHttpClient(), _logger);
     }
 
     private HttpClient CreateHttpClient()
