@@ -19,9 +19,10 @@ public sealed class CollectApiService(HttpClient httpClient, ILogger<CollectApiS
         CancellationToken cancellationToken
     )
     {
+        var request = MapToRequest(query);
         using var response = await httpClient.PostAsJsonAsync(
             _statusEndpoint,
-            query.Request,
+            request,
             cancellationToken
         );
 
@@ -87,6 +88,14 @@ public sealed class CollectApiService(HttpClient httpClient, ILogger<CollectApiS
             return null;
         }
     }
+
+    private static GetCensusStatusesApiRequest MapToRequest(GetCensusStatusesQuery query) =>
+        new()
+        {
+            Id = query.Id,
+            Email = query.EmailAddress,
+            Organisations = query.Organisations,
+        };
 
     private static GetCensusStatusesResponse MapToCensusStatus(OrganisationResponse organisation) =>
         new()

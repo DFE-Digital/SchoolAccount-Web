@@ -136,7 +136,7 @@ public class CollectApiServiceTests : IDisposable
         GC.SuppressFinalize(this);
     }
 
-    private static GetCensusStatusesQuery EmptyQuery() => new(new GetCensusStatusesRequest());
+    private static GetCensusStatusesQuery EmptyQuery() => new();
 
     private CollectApiService ServiceRespondingWith(
         HttpStatusCode statusCode,

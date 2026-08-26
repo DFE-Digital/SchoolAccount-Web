@@ -36,7 +36,7 @@ public class GetCensusStatusesHandlerTests
 
         // Act
         var result = await handler.Handle(
-            new GetCensusStatusesQuery(new GetCensusStatusesRequest()),
+            new GetCensusStatusesQuery(),
             TestContext.Current.CancellationToken
         );
 
@@ -102,7 +102,7 @@ public class GetCensusStatusesHandlerTests
 
         // Act
         var result = await handler.Handle(
-            new GetCensusStatusesQuery(new GetCensusStatusesRequest()),
+            new GetCensusStatusesQuery(),
             TestContext.Current.CancellationToken
         );
 

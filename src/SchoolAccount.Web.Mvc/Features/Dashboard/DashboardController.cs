@@ -24,17 +24,14 @@ public class DashboardController(
             throw new ArgumentException("Invalid user context");
         }
 
-        var censusStatusesResult = await getCensusStatusesHandler.Handle(
-            new GetCensusStatusesQuery(
-                new GetCensusStatusesRequest
-                {
-                    Id = userContext.Id!,
-                    Email = userContext.EmailAddress!,
-                    Organisations = [userContext.Organisation!],
-                }
-            ),
-            cancellationToken
-        );
+        var query = new GetCensusStatusesQuery
+        {
+            Id = userContext.Id!,
+            EmailAddress = userContext.EmailAddress!,
+            Organisations = [userContext.Organisation!],
+        };
+
+        var censusStatusesResult = await getCensusStatusesHandler.Handle(query, cancellationToken);
 
         if (censusStatusesResult.IsFailure)
         {
