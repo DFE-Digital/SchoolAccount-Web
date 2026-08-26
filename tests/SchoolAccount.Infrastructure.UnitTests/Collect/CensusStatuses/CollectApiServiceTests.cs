@@ -13,7 +13,7 @@ namespace SchoolAccount.Infrastructure.UnitTests.Collect.CensusStatuses;
 public class CollectApiServiceTests : IDisposable
 {
     private const string _baseAddress = "http://localhost";
-    private const string _emptyResponse = "null";
+    private const string _nullResponse = "null";
     private const string _validationMessage = "The Email field is required.";
 
     private const string _validationErrorResponse = $$"""
@@ -104,7 +104,7 @@ public class CollectApiServiceTests : IDisposable
     public async Task An_empty_response_fails_the_request()
     {
         // Arrange
-        var service = ServiceRespondingWith(Accepted, Json, _emptyResponse);
+        var service = ServiceRespondingWith(Accepted, Json, _nullResponse);
 
         // Act
         var act = async () => await service.GetCensusStatuses(EmptyQuery(), _cancellationToken);
@@ -117,7 +117,7 @@ public class CollectApiServiceTests : IDisposable
     public async Task An_empty_response_is_logged()
     {
         // Arrange
-        var service = ServiceRespondingWith(Accepted, Json, _emptyResponse);
+        var service = ServiceRespondingWith(Accepted, Json, _nullResponse);
 
         // Act
         var act = async () => await service.GetCensusStatuses(EmptyQuery(), _cancellationToken);
