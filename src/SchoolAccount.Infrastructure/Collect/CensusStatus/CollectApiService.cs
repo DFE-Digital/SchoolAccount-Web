@@ -14,18 +14,26 @@ public sealed class CollectApiService(HttpClient httpClient, ILogger<CollectApiS
 {
     private const string _statusEndpoint = "/status";
 
-    public async Task<List<GetCensusStatusResponse>> GetCensusStatus(GetCensusStatusQuery query)
+    public async Task<List<GetCensusStatusResponse>> GetCensusStatus(
+        GetCensusStatusQuery query,
+        CancellationToken cancellationToken
+    )
     {
-        using var response = await httpClient.PostAsJsonAsync(_statusEndpoint, query.request);
+        using var response = await httpClient.PostAsJsonAsync(
+            _statusEndpoint,
+            query.request,
+            cancellationToken
+        );
 
         if (!response.IsSuccessStatusCode)
         {
             await LogProblem(response, _statusEndpoint);
-
-            throw new Exception("Request to Collect API had validation failures");
+            response.EnsureSuccessStatusCode();
         }
 
-        var content = await response.Content.ReadFromJsonAsync<GetCensusStatusApiResponse>();
+        var content = await response.Content.ReadFromJsonAsync<GetCensusStatusApiResponse>(
+            cancellationToken
+        );
 
         if (content is null)
         {

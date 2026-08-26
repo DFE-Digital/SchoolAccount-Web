@@ -11,7 +11,7 @@ public class GetCensusStatusHandler(ICollectApiService collectApiService)
         CancellationToken cancellationToken
     )
     {
-        var result = await collectApiService.GetCensusStatus(query);
+        var result = await collectApiService.GetCensusStatus(query, cancellationToken);
 
         return result;
     }

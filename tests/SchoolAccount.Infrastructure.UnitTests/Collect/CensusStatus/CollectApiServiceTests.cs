@@ -37,7 +37,10 @@ public class CollectApiServiceTests : IDisposable
         var service = ServiceRespondingWith(OK, Json, responseBody);
 
         // Act
-        var result = await service.GetCensusStatus(EmptyQuery());
+        var result = await service.GetCensusStatus(
+            EmptyQuery(),
+            TestContext.Current.CancellationToken
+        );
 
         // Assert
         var status = result.ShouldHaveSingleItem();
@@ -48,7 +51,7 @@ public class CollectApiServiceTests : IDisposable
     }
 
     [Fact]
-    public async Task A_request_rejected_as_invalid_returns_no_statuses()
+    public async Task Validation_errors_are_logged_and_thrown_as_an_http_exception()
     {
         // Arrange
         const string validationMessage = "The Email field is required.";
@@ -68,10 +71,11 @@ public class CollectApiServiceTests : IDisposable
         var service = ServiceRespondingWith(BadRequest, ProblemJson, responseBody);
 
         // Act
-        var result = await service.GetCensusStatus(EmptyQuery());
+        var action = async () =>
+            await service.GetCensusStatus(EmptyQuery(), TestContext.Current.CancellationToken);
 
         // Assert
-        result.ShouldBeEmpty();
+        await action.ShouldThrowAsync<HttpRequestException>();
         _logger.Collector.Count.ShouldBe(1);
         _logger.Collector.LatestRecord.ShouldNotBeNull();
         _logger.Collector.LatestRecord.Level.ShouldBe(LogLevel.Error);
@@ -85,97 +89,24 @@ public class CollectApiServiceTests : IDisposable
     }
 
     [Fact]
-    public async Task A_failure_in_the_collect_service_is_logged_with_its_detail()
+    public async Task Null_response_is_thrown_as_an_exception()
     {
         // Arrange
-        const string detail = "Something went wrong upstream.";
-        const string responseBody = $$"""
-            {
-              "title": "An error occurred while processing your request.",
-              "status": 500,
-              "detail": "{{detail}}"
-            }
-            """;
+        const string responseBody = "null";
 
-        var service = ServiceRespondingWith(InternalServerError, ProblemJson, responseBody);
+        var service = ServiceRespondingWith(Accepted, Json, responseBody);
 
         // Act
-        var result = await service.GetCensusStatus(EmptyQuery());
+        var action = async () =>
+            await service.GetCensusStatus(EmptyQuery(), TestContext.Current.CancellationToken);
 
         // Assert
-        result.ShouldBeEmpty();
+        await action.ShouldThrowAsync<Exception>();
+        _logger.Collector.Count.ShouldBe(1);
         _logger.Collector.LatestRecord.ShouldNotBeNull();
         _logger.Collector.LatestRecord.Level.ShouldBe(LogLevel.Error);
-        _logger.Collector.LatestRecord.Message.ShouldContain(detail);
-        _logger.Collector.LatestRecord.Message.ShouldContain("500");
-    }
-
-    [Fact]
-    public async Task An_error_response_without_problem_details_is_logged_with_its_status()
-    {
-        // Arrange
-        var service = ServiceRespondingWith(BadGateway, "text/html", "<html>Bad gateway</html>");
-
-        // Act
-        var result = await service.GetCensusStatus(EmptyQuery());
-
-        // Assert
-        result.ShouldBeEmpty();
-        _logger.Collector.LatestRecord.ShouldNotBeNull();
-        _logger.Collector.LatestRecord.Level.ShouldBe(LogLevel.Error);
-        _logger.Collector.LatestRecord.Message.ShouldContain("502");
-    }
-
-    [Fact]
-    public async Task A_response_that_is_not_valid_json_returns_no_statuses()
-    {
-        // Arrange
-        var service = ServiceRespondingWith(OK, Json, "{ not json");
-
-        // Act
-        var result = await service.GetCensusStatus(EmptyQuery());
-
-        // Assert
-        result.ShouldBeEmpty();
-        _logger.Collector.LatestRecord.ShouldNotBeNull();
-        _logger.Collector.LatestRecord.Level.ShouldBe(LogLevel.Error);
-        _logger.Collector.LatestRecord.Message.ShouldContain("valid JSON");
-    }
-
-    [Fact]
-    public async Task A_collect_service_that_cannot_be_reached_returns_no_statuses()
-    {
-        // Arrange
-        _mockHttp.When($"{_baseAddress}/status").Throw(new HttpRequestException("No such host"));
-
-        var service = new CollectApiService(CreateHttpClient(), _logger);
-
-        // Act
-        var result = await service.GetCensusStatus(EmptyQuery());
-
-        // Assert
-        result.ShouldBeEmpty();
-        _logger.Collector.LatestRecord.ShouldNotBeNull();
-        _logger.Collector.LatestRecord.Level.ShouldBe(LogLevel.Error);
-        _logger.Collector.LatestRecord.Exception.ShouldBeOfType<HttpRequestException>();
-    }
-
-    [Fact]
-    public async Task An_unexpected_failure_returns_no_statuses()
-    {
-        // Arrange
-        _mockHttp.When($"{_baseAddress}/status").Throw(new InvalidOperationException("Boom"));
-
-        var service = new CollectApiService(CreateHttpClient(), _logger);
-
-        // Act
-        var result = await service.GetCensusStatus(EmptyQuery());
-
-        // Assert
-        result.ShouldBeEmpty();
-        _logger.Collector.LatestRecord.ShouldNotBeNull();
-        _logger.Collector.LatestRecord.Level.ShouldBe(LogLevel.Error);
-        _logger.Collector.LatestRecord.Message.ShouldContain("unexpectedly");
+        _logger.Collector.LatestRecord.StructuredState.ShouldNotBeNull();
+        _logger.LatestRecord.Message.ShouldContain("Response from /status was empty");
     }
 
     public void Dispose()
