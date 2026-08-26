@@ -1,5 +1,4 @@
 ﻿using System.Net;
-using SchoolAccount.Application.Abstractions.Messaging;
 using SchoolAccount.Application.Collect.CensusStatuses;
 using SchoolAccount.IntegrationTests.Common;
 using SchoolAccount.IntegrationTests.Common.Pages;
@@ -11,18 +10,13 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
 {
     private readonly SchoolAccountWebApplicationFactory<Program> _factory;
     private readonly HttpClient _client;
-    private readonly StubQueryHandler<
-        GetCensusStatusesQuery,
-        List<GetCensusStatusesResponse>
-    > _getCensusStatusesHandler = new();
+    private readonly StubCensusStatusesHandler _getCensusStatusesHandler = new();
 
     public DashboardControllerTests(SchoolAccountWebApplicationFactory<Program> factory)
     {
         _factory = factory;
         _client = factory.CreateAuthorisedClient(services =>
-            services.AddScoped<
-                IQueryHandler<GetCensusStatusesQuery, List<GetCensusStatusesResponse>>
-            >(_ => _getCensusStatusesHandler)
+            services.StubQueryHandler(_getCensusStatusesHandler)
         );
     }
 
@@ -63,20 +57,17 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
     public async Task Ensure_that_the_dashboard_controller_returns_actions_when_there_are_actions()
     {
         // Arrange
+        var token = TestContext.Current.CancellationToken;
+        var pageUri = _factory.GeneratePath("Dashboard", "Dashboard");
         var response = CensusStatusesResponseBuilder
             .Create()
             .WithAction("Test Action", "Test Status");
 
         _getCensusStatusesHandler.Returns(response.AsSuccess());
 
-        var pageUri = _factory.GeneratePath("Dashboard", "Dashboard");
-
         // Act
-        var message = await _client.GetAsync(pageUri, TestContext.Current.CancellationToken);
-        var page = await AngleSharpPage.FromResponseAsync<CommonPage>(
-            message,
-            TestContext.Current.CancellationToken
-        );
+        var message = await _client.GetAsync(pageUri, token);
+        var page = await AngleSharpPage.FromResponseAsync<CommonPage>(message, token);
 
         // Assert
         message.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -87,4 +78,7 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
         bodyElement.ShouldContainWithoutWhitespace("Test Action");
         bodyElement.ShouldContainWithoutWhitespace("Test Status");
     }
+
+    private sealed class StubCensusStatusesHandler
+        : StubQueryHandler<GetCensusStatusesQuery, List<GetCensusStatusesResponse>>;
 }

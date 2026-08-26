@@ -6,7 +6,7 @@ namespace SchoolAccount.IntegrationTests.Common;
 /// <summary>
 /// A query handler that returns whatever the test configures, in place of the real one.
 /// </summary>
-public sealed class StubQueryHandler<TQuery, TResponse> : IQueryHandler<TQuery, TResponse>
+public class StubQueryHandler<TQuery, TResponse> : IQueryHandler<TQuery, TResponse>
     where TQuery : IQuery<TResponse>
 {
     private Result<TResponse>? _result;
