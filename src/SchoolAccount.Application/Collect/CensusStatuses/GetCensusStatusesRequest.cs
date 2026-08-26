@@ -1,8 +1,8 @@
 using SchoolAccount.SharedKernel.Authentication;
 
-namespace SchoolAccount.Application.Collect.CensusStatus;
+namespace SchoolAccount.Application.Collect.CensusStatuses;
 
-public class GetCensusStatusRequestModel
+public class GetCensusStatusesRequest
 {
     public string Id { get; init; }
 

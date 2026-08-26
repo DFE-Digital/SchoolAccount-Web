@@ -1,12 +1,12 @@
 ﻿using System.Net;
 using NSubstitute;
 using SchoolAccount.Application.Abstractions.Messaging;
-using SchoolAccount.Application.Collect.CensusStatus;
+using SchoolAccount.Application.Collect.CensusStatuses;
 using SchoolAccount.IntegrationTests.Common;
 using SchoolAccount.IntegrationTests.Common.Pages;
 using SchoolAccount.SharedKernel;
 using Shouldly;
-using Action = SchoolAccount.Application.Collect.CensusStatus.Action;
+using Action = SchoolAccount.Application.Collect.CensusStatuses.Action;
 
 namespace SchoolAccount.IntegrationTests.Features.Dashboard;
 
@@ -16,19 +16,19 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
     private readonly HttpClient _client;
 
     private readonly IQueryHandler<
-        GetCensusStatusQuery,
-        List<GetCensusStatusResponse>
-    > _getCensusStatusHandler = Substitute.For<
-        IQueryHandler<GetCensusStatusQuery, List<GetCensusStatusResponse>>
+        GetCensusStatusesQuery,
+        List<GetCensusStatusesResponse>
+    > _getCensusStatusesHandler = Substitute.For<
+        IQueryHandler<GetCensusStatusesQuery, List<GetCensusStatusesResponse>>
     >();
 
     public DashboardControllerTests(SchoolAccountWebApplicationFactory<Program> factory)
     {
         _factory = factory;
         _client = factory.CreateAuthorisedClient(services =>
-            services.AddScoped<IQueryHandler<GetCensusStatusQuery, List<GetCensusStatusResponse>>>(
-                _ => _getCensusStatusHandler
-            )
+            services.AddScoped<
+                IQueryHandler<GetCensusStatusesQuery, List<GetCensusStatusesResponse>>
+            >(_ => _getCensusStatusesHandler)
         );
     }
 
@@ -36,9 +36,9 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
     public async Task Ensure_that_the_dashboard_controller_returns_correct_user_name()
     {
         // Arrange
-        _getCensusStatusHandler
-            .Handle(Arg.Any<GetCensusStatusQuery>(), Arg.Any<CancellationToken>())
-            .Returns(Result.Success(CreateNotInterestingCensusStatusList()));
+        _getCensusStatusesHandler
+            .Handle(Arg.Any<GetCensusStatusesQuery>(), Arg.Any<CancellationToken>())
+            .Returns(Result.Success(CreateNotInterestingCensusStatuses()));
 
         var pageUri = _factory.GeneratePath("Dashboard", "Dashboard");
 
@@ -72,9 +72,9 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
     public async Task Ensure_that_the_dashboard_controller_returns_actions_when_there_are_actions()
     {
         // Arrange
-        _getCensusStatusHandler
-            .Handle(Arg.Any<GetCensusStatusQuery>(), Arg.Any<CancellationToken>())
-            .Returns(Result.Success(CreateInterestingCensusStatusList()));
+        _getCensusStatusesHandler
+            .Handle(Arg.Any<GetCensusStatusesQuery>(), Arg.Any<CancellationToken>())
+            .Returns(Result.Success(CreateInterestingCensusStatuses()));
 
         var pageUri = _factory.GeneratePath("Dashboard", "Dashboard");
 
@@ -95,7 +95,7 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
         bodyElement.ShouldContainWithoutWhitespace("Test Status");
     }
 
-    private List<GetCensusStatusResponse> CreateInterestingCensusStatusList() =>
+    private List<GetCensusStatusesResponse> CreateInterestingCensusStatuses() =>
         [
             new()
             {
@@ -112,6 +112,6 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
             },
         ];
 
-    private List<GetCensusStatusResponse> CreateNotInterestingCensusStatusList() =>
+    private List<GetCensusStatusesResponse> CreateNotInterestingCensusStatuses() =>
         [new() { Id = "Test-id", Interesting = false }];
 }

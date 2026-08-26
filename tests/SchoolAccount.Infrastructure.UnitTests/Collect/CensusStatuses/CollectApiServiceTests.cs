@@ -2,13 +2,13 @@ using System.Net;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Testing;
 using RichardSzalay.MockHttp;
-using SchoolAccount.Application.Collect.CensusStatus;
-using SchoolAccount.Infrastructure.Collect.CensusStatus;
+using SchoolAccount.Application.Collect.CensusStatuses;
+using SchoolAccount.Infrastructure.Collect.CensusStatuses;
 using Shouldly;
 using static System.Net.HttpStatusCode;
 using static System.Net.Mime.MediaTypeNames.Application;
 
-namespace SchoolAccount.Infrastructure.UnitTests.Collect.CensusStatus;
+namespace SchoolAccount.Infrastructure.UnitTests.Collect.CensusStatuses;
 
 public class CollectApiServiceTests : IDisposable
 {
@@ -37,7 +37,7 @@ public class CollectApiServiceTests : IDisposable
         var service = ServiceRespondingWith(OK, Json, responseBody);
 
         // Act
-        var result = await service.GetCensusStatus(
+        var result = await service.GetCensusStatuses(
             EmptyQuery(),
             TestContext.Current.CancellationToken
         );
@@ -72,7 +72,7 @@ public class CollectApiServiceTests : IDisposable
 
         // Act
         var action = async () =>
-            await service.GetCensusStatus(EmptyQuery(), TestContext.Current.CancellationToken);
+            await service.GetCensusStatuses(EmptyQuery(), TestContext.Current.CancellationToken);
 
         // Assert
         await action.ShouldThrowAsync<HttpRequestException>();
@@ -98,7 +98,7 @@ public class CollectApiServiceTests : IDisposable
 
         // Act
         var action = async () =>
-            await service.GetCensusStatus(EmptyQuery(), TestContext.Current.CancellationToken);
+            await service.GetCensusStatuses(EmptyQuery(), TestContext.Current.CancellationToken);
 
         // Assert
         await action.ShouldThrowAsync<Exception>();
@@ -115,7 +115,7 @@ public class CollectApiServiceTests : IDisposable
         GC.SuppressFinalize(this);
     }
 
-    private static GetCensusStatusQuery EmptyQuery() => new(new GetCensusStatusRequestModel());
+    private static GetCensusStatusesQuery EmptyQuery() => new(new GetCensusStatusesRequest());
 
     private CollectApiService ServiceRespondingWith(
         HttpStatusCode statusCode,

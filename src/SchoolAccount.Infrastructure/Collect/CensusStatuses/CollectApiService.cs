@@ -3,19 +3,19 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using SchoolAccount.Application.Collect.CensusStatus;
+using SchoolAccount.Application.Collect.CensusStatuses;
 using static System.Net.Mime.MediaTypeNames.Application;
-using Action = SchoolAccount.Application.Collect.CensusStatus.Action;
+using Action = SchoolAccount.Application.Collect.CensusStatuses.Action;
 
-namespace SchoolAccount.Infrastructure.Collect.CensusStatus;
+namespace SchoolAccount.Infrastructure.Collect.CensusStatuses;
 
 public sealed class CollectApiService(HttpClient httpClient, ILogger<CollectApiService> logger)
     : ICollectApiService
 {
     private const string _statusEndpoint = "/status";
 
-    public async Task<List<GetCensusStatusResponse>> GetCensusStatus(
-        GetCensusStatusQuery query,
+    public async Task<List<GetCensusStatusesResponse>> GetCensusStatuses(
+        GetCensusStatusesQuery query,
         CancellationToken cancellationToken
     )
     {
@@ -31,7 +31,7 @@ public sealed class CollectApiService(HttpClient httpClient, ILogger<CollectApiS
             response.EnsureSuccessStatusCode();
         }
 
-        var content = await response.Content.ReadFromJsonAsync<GetCensusStatusApiResponse>(
+        var content = await response.Content.ReadFromJsonAsync<GetCensusStatusesApiResponse>(
             cancellationToken
         );
 
@@ -88,7 +88,7 @@ public sealed class CollectApiService(HttpClient httpClient, ILogger<CollectApiS
         }
     }
 
-    private static GetCensusStatusResponse MapToCensusStatus(OrganisationResponse organisation) =>
+    private static GetCensusStatusesResponse MapToCensusStatus(OrganisationResponse organisation) =>
         new()
         {
             Id = organisation.Id,

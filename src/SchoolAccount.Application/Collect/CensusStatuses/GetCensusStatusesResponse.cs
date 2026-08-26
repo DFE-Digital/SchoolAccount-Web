@@ -1,6 +1,6 @@
-namespace SchoolAccount.Application.Collect.CensusStatus;
+namespace SchoolAccount.Application.Collect.CensusStatuses;
 
-public record GetCensusStatusResponse
+public record GetCensusStatusesResponse
 {
     public string Id { get; init; }
     public bool Interesting { get; init; }

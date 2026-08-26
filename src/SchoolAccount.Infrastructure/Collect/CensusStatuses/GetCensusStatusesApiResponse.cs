@@ -1,8 +1,6 @@
-using SchoolAccount.Application.Collect.CensusStatus;
+namespace SchoolAccount.Infrastructure.Collect.CensusStatuses;
 
-namespace SchoolAccount.Infrastructure.Collect.CensusStatus;
-
-public class GetCensusStatusApiResponse
+public class GetCensusStatusesApiResponse
 {
     public List<OrganisationResponse> Details { get; init; } = new();
 }

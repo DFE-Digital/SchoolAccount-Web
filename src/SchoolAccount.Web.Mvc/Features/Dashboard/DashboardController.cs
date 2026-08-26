@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SchoolAccount.Application.Abstractions.Messaging;
-using SchoolAccount.Application.Collect.CensusStatus;
+using SchoolAccount.Application.Collect.CensusStatuses;
 using SchoolAccount.SharedKernel;
 
 namespace SchoolAccount.Web.Mvc.Features.Dashboard;
@@ -13,9 +13,9 @@ public class DashboardController(IUserContext userContext) : Controller
     public async Task<IActionResult> Dashboard(
         [FromServices]
             IQueryHandler<
-            GetCensusStatusQuery,
-            List<GetCensusStatusResponse>
-        > getCensusStatusQueryHandler,
+            GetCensusStatusesQuery,
+            List<GetCensusStatusesResponse>
+        > getCensusStatusesQueryHandler,
         CancellationToken cancellationToken
     )
     {
@@ -27,9 +27,9 @@ public class DashboardController(IUserContext userContext) : Controller
             && userContext.Organisation is not null
         )
         {
-            var censusStatusResult = await getCensusStatusQueryHandler.Handle(
-                new GetCensusStatusQuery(
-                    new GetCensusStatusRequestModel
+            var censusStatusesResult = await getCensusStatusesQueryHandler.Handle(
+                new GetCensusStatusesQuery(
+                    new GetCensusStatusesRequest
                     {
                         Id = userContext.Id,
                         Email = userContext.EmailAddress,
@@ -39,12 +39,12 @@ public class DashboardController(IUserContext userContext) : Controller
                 cancellationToken
             );
 
-            if (censusStatusResult.IsFailure)
+            if (censusStatusesResult.IsFailure)
             {
-                return Problem(censusStatusResult.Error.Description);
+                return Problem(censusStatusesResult.Error.Description);
             }
 
-            censusGreetings = censusStatusResult
+            censusGreetings = censusStatusesResult
                 .Value.SelectMany(a => a.Actions.Select(x => $"{x.Name}, {x.Status.Name}"))
                 .ToList();
         }

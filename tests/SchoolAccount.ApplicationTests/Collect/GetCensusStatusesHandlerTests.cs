@@ -1,17 +1,17 @@
 using NSubstitute;
-using SchoolAccount.Application.Collect.CensusStatus;
+using SchoolAccount.Application.Collect.CensusStatuses;
 using Shouldly;
-using Action = SchoolAccount.Application.Collect.CensusStatus.Action;
+using Action = SchoolAccount.Application.Collect.CensusStatuses.Action;
 
 namespace SchoolAccount.ApplicationTests.Collect;
 
-public class GetCensusStatusHandlerTests
+public class GetCensusStatusesHandlerTests
 {
     [Fact]
     public async Task Handler_returns_correct_response()
     {
         // Arrange
-        var response = new GetCensusStatusResponse
+        var response = new GetCensusStatusesResponse
         {
             Actions =
             [
@@ -27,21 +27,24 @@ public class GetCensusStatusHandlerTests
 
         var collectApiService = Substitute.For<ICollectApiService>();
         collectApiService
-            .GetCensusStatus(Arg.Any<GetCensusStatusQuery>(), TestContext.Current.CancellationToken)
+            .GetCensusStatuses(
+                Arg.Any<GetCensusStatusesQuery>(),
+                TestContext.Current.CancellationToken
+            )
             .Returns([response]);
-        var handler = new GetCensusStatusHandler(collectApiService);
+        var handler = new GetCensusStatusesHandler(collectApiService);
 
         // Act
         var result = await handler.Handle(
-            new GetCensusStatusQuery(new GetCensusStatusRequestModel()),
+            new GetCensusStatusesQuery(new GetCensusStatusesRequest()),
             TestContext.Current.CancellationToken
         );
 
         // Assert
         await collectApiService
             .Received(1)
-            .GetCensusStatus(
-                Arg.Any<GetCensusStatusQuery>(),
+            .GetCensusStatuses(
+                Arg.Any<GetCensusStatusesQuery>(),
                 TestContext.Current.CancellationToken
             );
         result.Value.Count.ShouldBe(1);
@@ -60,7 +63,7 @@ public class GetCensusStatusHandlerTests
     public async Task Handler_returns_correct_response_with_multiple_responses()
     {
         // Arrange
-        var firstResponse = new GetCensusStatusResponse
+        var firstResponse = new GetCensusStatusesResponse
         {
             Actions =
             [
@@ -74,7 +77,7 @@ public class GetCensusStatusHandlerTests
             Interesting = true,
         };
 
-        var secondResponse = new GetCensusStatusResponse
+        var secondResponse = new GetCensusStatusesResponse
         {
             Actions =
             [
@@ -90,21 +93,24 @@ public class GetCensusStatusHandlerTests
 
         var collectApiService = Substitute.For<ICollectApiService>();
         collectApiService
-            .GetCensusStatus(Arg.Any<GetCensusStatusQuery>(), TestContext.Current.CancellationToken)
+            .GetCensusStatuses(
+                Arg.Any<GetCensusStatusesQuery>(),
+                TestContext.Current.CancellationToken
+            )
             .Returns([firstResponse, secondResponse]);
-        var handler = new GetCensusStatusHandler(collectApiService);
+        var handler = new GetCensusStatusesHandler(collectApiService);
 
         // Act
         var result = await handler.Handle(
-            new GetCensusStatusQuery(new GetCensusStatusRequestModel()),
+            new GetCensusStatusesQuery(new GetCensusStatusesRequest()),
             TestContext.Current.CancellationToken
         );
 
         // Assert
         await collectApiService
             .Received(1)
-            .GetCensusStatus(
-                Arg.Any<GetCensusStatusQuery>(),
+            .GetCensusStatuses(
+                Arg.Any<GetCensusStatusesQuery>(),
                 TestContext.Current.CancellationToken
             );
         result.Value.Count.ShouldBe(2);

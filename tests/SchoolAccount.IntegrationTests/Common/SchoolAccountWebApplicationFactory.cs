@@ -8,9 +8,9 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using NSubstitute;
 using SchoolAccount.Application.Abstractions.Messaging;
-using SchoolAccount.Application.Collect.CensusStatus;
+using SchoolAccount.Application.Collect.CensusStatuses;
 using SchoolAccount.SharedKernel;
-using Action = SchoolAccount.Application.Collect.CensusStatus.Action;
+using Action = SchoolAccount.Application.Collect.CensusStatuses.Action;
 
 namespace SchoolAccount.IntegrationTests.Common;
 
@@ -18,25 +18,25 @@ public class SchoolAccountWebApplicationFactory<TProgram> : WebApplicationFactor
     where TProgram : class
 {
     private readonly IQueryHandler<
-        GetCensusStatusQuery,
-        List<GetCensusStatusResponse>
-    > _getCensusStatusHandler = Substitute.For<
-        IQueryHandler<GetCensusStatusQuery, List<GetCensusStatusResponse>>
+        GetCensusStatusesQuery,
+        List<GetCensusStatusesResponse>
+    > _getCensusStatusesHandler = Substitute.For<
+        IQueryHandler<GetCensusStatusesQuery, List<GetCensusStatusesResponse>>
     >();
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseEnvironment("IntegrationTests");
         builder.ConfigureTestServices(services =>
-            services.AddScoped<IQueryHandler<GetCensusStatusQuery, List<GetCensusStatusResponse>>>(
-                _ => _getCensusStatusHandler
-            )
+            services.AddScoped<
+                IQueryHandler<GetCensusStatusesQuery, List<GetCensusStatusesResponse>>
+            >(_ => _getCensusStatusesHandler)
         );
-        _getCensusStatusHandler
-            .Handle(Arg.Any<GetCensusStatusQuery>(), Arg.Any<CancellationToken>())
+        _getCensusStatusesHandler
+            .Handle(Arg.Any<GetCensusStatusesQuery>(), Arg.Any<CancellationToken>())
             .Returns(
                 Result.Success(
-                    new List<GetCensusStatusResponse>
+                    new List<GetCensusStatusesResponse>
                     {
                         new()
                         {
