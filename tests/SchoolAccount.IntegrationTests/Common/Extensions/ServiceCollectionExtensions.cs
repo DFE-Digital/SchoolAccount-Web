@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SchoolAccount.Application.Abstractions.Messaging;
-using SchoolAccount.IntegrationTests.Common.Stubs;
+using SchoolAccount.TestCommon.Stubs;
 
 namespace SchoolAccount.IntegrationTests.Common.Extensions;
 
