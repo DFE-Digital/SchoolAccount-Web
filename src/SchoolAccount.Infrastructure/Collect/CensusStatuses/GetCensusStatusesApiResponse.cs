@@ -8,6 +8,7 @@ public class GetCensusStatusesApiResponse
     public IReadOnlyList<OrganisationResponse> Details { get; init; } = [];
 }
 
+[DynamicallyAccessedMembers(AllProperties | AllConstructors)]
 public class OrganisationResponse
 {
     public string Id { get; init; }
@@ -19,12 +20,14 @@ public class OrganisationResponse
     public IReadOnlyList<ActionApiResponse> Actions { get; init; } = [];
 }
 
+[DynamicallyAccessedMembers(AllProperties | AllConstructors)]
 public class ActionApiResponse
 {
     public string Name { get; init; }
     public StatusApiResponse Status { get; init; }
 }
 
+[DynamicallyAccessedMembers(AllProperties | AllConstructors)]
 public class StatusApiResponse
 {
     public string Name { get; init; }
