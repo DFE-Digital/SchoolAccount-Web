@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SchoolAccount.Application.Abstractions.Messaging;
 using SchoolAccount.Application.Collect.CensusStatus;
-using SchoolAccount.Application.Greetings.GetTimeSpecificHello;
 using SchoolAccount.SharedKernel;
 
 namespace SchoolAccount.Web.Mvc.Features.Dashboard;
@@ -12,12 +11,6 @@ public class DashboardController(IUserContext userContext) : Controller
 {
     [HttpGet]
     public async Task<IActionResult> Dashboard(
-        [FromServices] IDateTimeProvider dateTimeProvider,
-        [FromServices]
-            IQueryHandler<
-            GetTimeSpecificHelloQuery,
-            GetTimeSpecificHelloResponse
-        > getTimeSpecifyHellosQueryHandler,
         [FromServices]
             IQueryHandler<
             GetCensusStatusQuery,
@@ -27,16 +20,6 @@ public class DashboardController(IUserContext userContext) : Controller
     )
     {
         List<string> censusGreetings;
-
-        var result = await getTimeSpecifyHellosQueryHandler.Handle(
-            new GetTimeSpecificHelloQuery(),
-            cancellationToken
-        );
-
-        if (result.IsFailure)
-        {
-            return Problem(result.Error.Description);
-        }
 
         if (
             !string.IsNullOrEmpty(userContext.Id)
@@ -70,11 +53,7 @@ public class DashboardController(IUserContext userContext) : Controller
             return Problem("User property is missing");
         }
 
-        var model = new DashboardViewModel(
-            userContext.Name ?? "Unknown",
-            result.Value.Message,
-            censusGreetings
-        );
+        var model = new DashboardViewModel(userContext.Name ?? "Unknown", censusGreetings);
         return View(model);
     }
 }

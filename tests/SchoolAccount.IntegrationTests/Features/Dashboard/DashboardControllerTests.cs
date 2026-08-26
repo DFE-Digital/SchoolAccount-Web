@@ -2,7 +2,6 @@
 using NSubstitute;
 using SchoolAccount.Application.Abstractions.Messaging;
 using SchoolAccount.Application.Collect.CensusStatus;
-using SchoolAccount.Application.Greetings.GetTimeSpecificHello;
 using SchoolAccount.IntegrationTests.Common;
 using SchoolAccount.IntegrationTests.Common.Pages;
 using SchoolAccount.SharedKernel;
@@ -17,13 +16,6 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
     private readonly HttpClient _client;
 
     private readonly IQueryHandler<
-        GetTimeSpecificHelloQuery,
-        GetTimeSpecificHelloResponse
-    > _getTimeSpecificHelloHandler = Substitute.For<
-        IQueryHandler<GetTimeSpecificHelloQuery, GetTimeSpecificHelloResponse>
-    >();
-
-    private readonly IQueryHandler<
         GetCensusStatusQuery,
         List<GetCensusStatusResponse>
     > _getCensusStatusHandler = Substitute.For<
@@ -34,13 +26,9 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
     {
         _factory = factory;
         _client = factory.CreateAuthorisedClient(services =>
-            services
-                .AddScoped<IQueryHandler<GetTimeSpecificHelloQuery, GetTimeSpecificHelloResponse>>(
-                    _ => _getTimeSpecificHelloHandler
-                )
-                .AddScoped<IQueryHandler<GetCensusStatusQuery, List<GetCensusStatusResponse>>>(_ =>
-                    _getCensusStatusHandler
-                )
+            services.AddScoped<IQueryHandler<GetCensusStatusQuery, List<GetCensusStatusResponse>>>(
+                _ => _getCensusStatusHandler
+            )
         );
     }
 
@@ -48,14 +36,6 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
     public async Task Ensure_that_the_dashboard_controller_returns_correct_user_name()
     {
         // Arrange
-        var stubbedGetSpecificHelloResponse = new GetTimeSpecificHelloResponse(
-            GetTimeSpecificHelloHandler.Messages.Morning
-        );
-
-        _getTimeSpecificHelloHandler
-            .Handle(Arg.Any<GetTimeSpecificHelloQuery>(), Arg.Any<CancellationToken>())
-            .Returns(Result.Success(stubbedGetSpecificHelloResponse));
-
         _getCensusStatusHandler
             .Handle(Arg.Any<GetCensusStatusQuery>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success(CreateNotInterestingCensusStatusList()));
@@ -80,7 +60,7 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
         var headingElement = page.GetFirstHeading();
         headingElement.ShouldNotBeNull();
         headingElement.ShouldBeEquivalentTo(
-            $"{GetTimeSpecificHelloHandler.Messages.Morning} {MockAuthHandler.FakeGivenName} {MockAuthHandler.FakeFamilyName}"
+            $"Hello {MockAuthHandler.FakeGivenName} {MockAuthHandler.FakeFamilyName}"
         );
 
         var bodyElement = page.GetFirstBody();
@@ -92,14 +72,6 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
     public async Task Ensure_that_the_dashboard_controller_returns_actions_when_there_are_actions()
     {
         // Arrange
-        var stubbedGetSpecificHelloResponse = new GetTimeSpecificHelloResponse(
-            GetTimeSpecificHelloHandler.Messages.Morning
-        );
-
-        _getTimeSpecificHelloHandler
-            .Handle(Arg.Any<GetTimeSpecificHelloQuery>(), Arg.Any<CancellationToken>())
-            .Returns(Result.Success(stubbedGetSpecificHelloResponse));
-
         _getCensusStatusHandler
             .Handle(Arg.Any<GetCensusStatusQuery>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success(CreateInterestingCensusStatusList()));

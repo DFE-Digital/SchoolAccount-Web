@@ -1,6 +1,3 @@
-using NSubstitute;
-using SchoolAccount.Application.Abstractions.Messaging;
-using SchoolAccount.Application.Greetings.GetTimeSpecificHello;
 using SchoolAccount.IntegrationTests.Common;
 using SchoolAccount.IntegrationTests.Common.Pages;
 using Shouldly;
@@ -12,21 +9,10 @@ public class StartControllerTests : IClassFixture<SchoolAccountWebApplicationFac
     private readonly HttpClient _client;
     private readonly SchoolAccountWebApplicationFactory<Program> _factory;
 
-    private readonly IQueryHandler<
-        GetTimeSpecificHelloQuery,
-        GetTimeSpecificHelloResponse
-    > _getTimeSpecificHelloHandler = Substitute.For<
-        IQueryHandler<GetTimeSpecificHelloQuery, GetTimeSpecificHelloResponse>
-    >();
-
     public StartControllerTests(SchoolAccountWebApplicationFactory<Program> factory)
     {
         _factory = factory;
-        _client = factory.CreateUnauthorisedClient(services =>
-            services.AddScoped<
-                IQueryHandler<GetTimeSpecificHelloQuery, GetTimeSpecificHelloResponse>
-            >(_ => _getTimeSpecificHelloHandler)
-        );
+        _client = factory.CreateUnauthorisedClient();
     }
 
     [Fact]

@@ -2,7 +2,7 @@ using System.Net;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using SchoolAccount.Application.Abstractions.Messaging;
-using SchoolAccount.Application.Greetings.GetTimeSpecificHello;
+using SchoolAccount.Application.Collect.CensusStatus;
 using SchoolAccount.IntegrationTests.Common;
 using SchoolAccount.IntegrationTests.Common.Pages;
 using SchoolAccount.Web.Mvc.Features.Dashboard;
@@ -15,21 +15,20 @@ public class ErrorControllerTests : IClassFixture<SchoolAccountWebApplicationFac
 {
     private readonly SchoolAccountWebApplicationFactory<Program> _factory;
     private readonly HttpClient _authenticatedClient;
-
     private readonly IQueryHandler<
-        GetTimeSpecificHelloQuery,
-        GetTimeSpecificHelloResponse
-    > _getTimeSpecificHelloHandler = Substitute.For<
-        IQueryHandler<GetTimeSpecificHelloQuery, GetTimeSpecificHelloResponse>
+        GetCensusStatusQuery,
+        List<GetCensusStatusResponse>
+    > _getCensusStatusHandler = Substitute.For<
+        IQueryHandler<GetCensusStatusQuery, List<GetCensusStatusResponse>>
     >();
 
     public ErrorControllerTests(SchoolAccountWebApplicationFactory<Program> factory)
     {
         _factory = factory;
         _authenticatedClient = factory.CreateAuthorisedClient(services =>
-            services.AddScoped<
-                IQueryHandler<GetTimeSpecificHelloQuery, GetTimeSpecificHelloResponse>
-            >(_ => _getTimeSpecificHelloHandler)
+            services.AddScoped<IQueryHandler<GetCensusStatusQuery, List<GetCensusStatusResponse>>>(
+                _ => _getCensusStatusHandler
+            )
         );
     }
 
@@ -109,8 +108,9 @@ public class ErrorControllerTests : IClassFixture<SchoolAccountWebApplicationFac
     {
         // Arrange
         var requestUri = _factory.GeneratePath("Dashboard", "Dashboard");
-        _getTimeSpecificHelloHandler
-            .Handle(Arg.Any<GetTimeSpecificHelloQuery>(), Arg.Any<CancellationToken>())
+
+        _getCensusStatusHandler
+            .Handle(Arg.Any<GetCensusStatusQuery>(), Arg.Any<CancellationToken>())
             .Throws(new ApplicationException("Bang!"));
 
         // Act
