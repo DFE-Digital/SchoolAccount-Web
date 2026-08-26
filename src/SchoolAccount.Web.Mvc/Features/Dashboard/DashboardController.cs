@@ -7,17 +7,13 @@ using SchoolAccount.SharedKernel;
 namespace SchoolAccount.Web.Mvc.Features.Dashboard;
 
 [Route("/{action}"), Authorize]
-public class DashboardController(IUserContext userContext) : Controller
+public class DashboardController(
+    IUserContext userContext,
+    IQueryHandler<GetCensusStatusesQuery, List<GetCensusStatusesResponse>> getCensusStatusesHandler
+) : Controller
 {
     [HttpGet]
-    public async Task<IActionResult> Dashboard(
-        [FromServices]
-            IQueryHandler<
-            GetCensusStatusesQuery,
-            List<GetCensusStatusesResponse>
-        > getCensusStatusesQueryHandler,
-        CancellationToken cancellationToken
-    )
+    public async Task<IActionResult> Dashboard(CancellationToken cancellationToken)
     {
         List<string> censusGreetings;
 
@@ -27,7 +23,7 @@ public class DashboardController(IUserContext userContext) : Controller
             && userContext.Organisation is not null
         )
         {
-            var censusStatusesResult = await getCensusStatusesQueryHandler.Handle(
+            var censusStatusesResult = await getCensusStatusesHandler.Handle(
                 new GetCensusStatusesQuery(
                     new GetCensusStatusesRequest
                     {
