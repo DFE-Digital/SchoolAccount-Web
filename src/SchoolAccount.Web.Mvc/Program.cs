@@ -12,13 +12,7 @@ if (builder.Environment.IsProduction())
     builder.Configuration.AddAzureAppConfiguration();
 }
 
-builder.Host.UseSerilog(
-    (context, services, loggerConfiguration) =>
-        loggerConfiguration
-            .ReadFrom.Configuration(context.Configuration)
-            .ReadFrom.Services(services)
-            .Enrich.FromLogContext()
-);
+builder.Host.UseConfiguredSerilog();
 
 builder
     .Services.AddApplication()
@@ -31,13 +25,10 @@ app.UseForwardedHeadersDiagnostics(app.Environment);
 app.UseConfiguredForwardedHeaders(app.Configuration);
 app.UseStatusCodePagesWithReExecute("/error/{0}");
 app.UseExceptionHandler("/error/500");
-
 app.UseSerilogRequestLogging();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
