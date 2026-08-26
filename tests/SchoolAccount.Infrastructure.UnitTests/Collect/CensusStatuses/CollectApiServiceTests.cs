@@ -14,16 +14,15 @@ public class CollectApiServiceTests : IDisposable
 {
     private const string _baseAddress = "http://localhost";
     private const string _nullResponse = "null";
-    private const string _validationMessage = "The Email field is required.";
 
-    private const string _validationErrorResponse = $$"""
+    private const string _validationErrorResponse = """
         {
           "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
           "title": "One or more validation errors occurred.",
           "status": 400,
           "errors": {
             "Email": [
-              "{{_validationMessage}}"
+              "The Email field is required."
             ]
           }
         }
