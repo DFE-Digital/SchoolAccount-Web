@@ -1,3 +1,3 @@
 namespace SchoolAccount.Web.Mvc.Features.Dashboard;
 
-public record DashboardViewModel(string User, List<string> CensusGreetings);
+public record DashboardViewModel(string User, List<string> CensusStatuses);
