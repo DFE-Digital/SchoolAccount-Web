@@ -1,7 +1,7 @@
 using SchoolAccount.Application.Collect.CensusStatuses;
 using SchoolAccount.SharedKernel;
 
-namespace SchoolAccount.IntegrationTests.Common.Builders;
+namespace SchoolAccount.TestCommon.Builders;
 
 public class CensusStatusesResponseBuilder
 {
@@ -35,7 +35,7 @@ public class CensusStatusesResponseBuilder
         return this;
     }
 
-    private GetCensusStatusesResponse Build()
+    public GetCensusStatusesResponse Build()
     {
         return new GetCensusStatusesResponse
         {

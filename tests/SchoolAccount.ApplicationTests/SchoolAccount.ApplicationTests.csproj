@@ -22,5 +22,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\SchoolAccount.Application\SchoolAccount.Application.csproj" />
+    <ProjectReference Include="..\SchoolAccount.TestCommon\SchoolAccount.TestCommon.csproj" />
   </ItemGroup>
 </Project>

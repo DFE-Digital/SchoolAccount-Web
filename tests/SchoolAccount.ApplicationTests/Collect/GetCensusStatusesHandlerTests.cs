@@ -2,6 +2,7 @@ using NSubstitute;
 using SchoolAccount.Application.Abstractions.Clients;
 using SchoolAccount.Application.Collect.CensusStatuses;
 using SchoolAccount.SharedKernel.Authentication;
+using SchoolAccount.TestCommon.Builders;
 using Shouldly;
 
 namespace SchoolAccount.ApplicationTests.Collect;
@@ -20,19 +21,11 @@ public class GetCensusStatusesHandlerTests
     public async Task Handler_returns_correct_response()
     {
         // Arrange
-        var response = new GetCensusStatusesResponse
-        {
-            Actions =
-            [
-                new CensusAction
-                {
-                    Name = "Action 1",
-                    Status = new CensusStatus { Name = "Status 1" },
-                },
-            ],
-            Id = "Test-id",
-            Interesting = true,
-        };
+        var response = CensusStatusesResponseBuilder
+            .Create()
+            .WithId("Test-id")
+            .WithAction("Action 1", "Status 1")
+            .Build();
 
         var query = CreateQuery();
         var collectApiClient = Substitute.For<ICollectApiClient>();
@@ -74,33 +67,17 @@ public class GetCensusStatusesHandlerTests
     public async Task Handler_returns_correct_response_with_multiple_responses()
     {
         // Arrange
-        var firstResponse = new GetCensusStatusesResponse
-        {
-            Actions =
-            [
-                new CensusAction
-                {
-                    Name = "Action 1",
-                    Status = new CensusStatus { Name = "Status 1" },
-                },
-            ],
-            Id = "Test-id-1",
-            Interesting = true,
-        };
+        var firstResponse = CensusStatusesResponseBuilder
+            .Create()
+            .WithId("Test-id-1")
+            .WithAction("Action 1", "Status 1")
+            .Build();
 
-        var secondResponse = new GetCensusStatusesResponse
-        {
-            Actions =
-            [
-                new CensusAction
-                {
-                    Name = "Action 2",
-                    Status = new CensusStatus { Name = "Status 2" },
-                },
-            ],
-            Id = "Test-id-2",
-            Interesting = true,
-        };
+        var secondResponse = CensusStatusesResponseBuilder
+            .Create()
+            .WithId("Test-id-2")
+            .WithAction("Action 2", "Status 2")
+            .Build();
 
         var query = CreateQuery();
         var collectApiClient = Substitute.For<ICollectApiClient>();

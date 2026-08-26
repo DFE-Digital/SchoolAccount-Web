@@ -1,5 +1,5 @@
 using SchoolAccount.Application.Collect.CensusStatuses;
-using SchoolAccount.IntegrationTests.Common.Builders;
+using SchoolAccount.TestCommon.Builders;
 
 namespace SchoolAccount.IntegrationTests.Common.Stubs;
 

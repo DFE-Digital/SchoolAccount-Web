@@ -25,5 +25,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\SchoolAccount.Web.Mvc\SchoolAccount.Web.Mvc.csproj" />
+    <ProjectReference Include="..\SchoolAccount.TestCommon\SchoolAccount.TestCommon.csproj" />
   </ItemGroup>
 </Project>
