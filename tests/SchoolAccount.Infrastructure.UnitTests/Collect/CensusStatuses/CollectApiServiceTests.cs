@@ -13,8 +13,8 @@ namespace SchoolAccount.Infrastructure.UnitTests.Collect.CensusStatuses;
 public class CollectApiServiceTests : IDisposable
 {
     private const string _baseAddress = "http://localhost";
+    private const string _emptyResponse = "null";
     private const string _validationMessage = "The Email field is required.";
-    private readonly CancellationToken _cancellationToken = TestContext.Current.CancellationToken;
 
     private const string _validationErrorResponse = $$"""
         {
@@ -29,8 +29,7 @@ public class CollectApiServiceTests : IDisposable
         }
         """;
 
-    private const string _emptyResponse = "null";
-
+    private readonly CancellationToken _cancellationToken = TestContext.Current.CancellationToken;
     private readonly FakeLogger<CollectApiService> _logger = new();
     private readonly MockHttpMessageHandler _mockHttp = new();
 
