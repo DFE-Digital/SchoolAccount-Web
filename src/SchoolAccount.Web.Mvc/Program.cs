@@ -2,7 +2,7 @@ using GovUk.Frontend.AspNetCore;
 using SchoolAccount.Application;
 using SchoolAccount.Infrastructure;
 using SchoolAccount.Web.Mvc;
-using SchoolAccount.Web.Mvc.Extensions;
+using SchoolAccount.Web.Mvc.Hosting.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +18,8 @@ builder
 
 var app = builder.Build();
 
+app.UseForwardedHeadersDiagnostics(app.Environment);
+app.UseConfiguredForwardedHeaders(app.Configuration);
 app.UseStatusCodePagesWithReExecute("/error/{0}");
 app.UseExceptionHandler("/error/500");
 
