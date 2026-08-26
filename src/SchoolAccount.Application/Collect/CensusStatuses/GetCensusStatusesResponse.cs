@@ -4,7 +4,7 @@ public record GetCensusStatusesResponse
 {
     public string Id { get; init; }
     public bool Interesting { get; init; }
-    public List<CensusAction> Actions { get; init; } = [];
+    public IReadOnlyList<CensusAction> Actions { get; init; } = [];
 }
 
 public record CensusAction

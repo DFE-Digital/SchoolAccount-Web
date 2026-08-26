@@ -1,8 +1,11 @@
+using System.Diagnostics.CodeAnalysis;
+using static System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes;
+
 namespace SchoolAccount.Infrastructure.Collect.CensusStatuses;
 
 public class GetCensusStatusesApiResponse
 {
-    public List<OrganisationResponse> Details { get; init; } = new();
+    public IReadOnlyList<OrganisationResponse> Details { get; init; } = [];
 }
 
 public class OrganisationResponse
@@ -13,7 +16,7 @@ public class OrganisationResponse
     public string Ukprn { get; init; }
     public string Laestab { get; init; }
     public bool Interesting { get; init; }
-    public List<ActionApiResponse> Actions { get; init; } = [];
+    public IReadOnlyList<ActionApiResponse> Actions { get; init; } = [];
 }
 
 public class ActionApiResponse

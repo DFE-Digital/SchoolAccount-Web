@@ -9,5 +9,5 @@ public record GetCensusStatusesQuery : IQuery<List<GetCensusStatusesResponse>>
 
     public string EmailAddress { get; init; }
 
-    public List<Organisation> Organisations { get; init; } = [];
+    public IReadOnlyList<Organisation> Organisations { get; init; } = [];
 }

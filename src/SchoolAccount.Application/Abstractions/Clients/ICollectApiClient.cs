@@ -8,7 +8,7 @@ public interface ICollectApiClient
     Task<List<GetCensusStatusesResponse>> GetCensusStatuses(
         string id,
         string emailAddress,
-        List<Organisation> organisations,
+        IReadOnlyList<Organisation> organisations,
         CancellationToken cancellationToken
     );
 }

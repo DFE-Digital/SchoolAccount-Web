@@ -8,5 +8,5 @@ public class GetCensusStatusesApiRequest
 
     public string Email { get; init; }
 
-    public List<Organisation> Organisations { get; init; }
+    public IReadOnlyList<Organisation> Organisations { get; init; }
 }
