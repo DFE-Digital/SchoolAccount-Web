@@ -1,6 +1,7 @@
+using SchoolAccount.Application.Collect.CensusStatuses;
 using SchoolAccount.SharedKernel.Authentication;
 
-namespace SchoolAccount.Application.Collect.CensusStatuses;
+namespace SchoolAccount.Application.Abstractions.Clients;
 
 public interface ICollectApiClient
 {

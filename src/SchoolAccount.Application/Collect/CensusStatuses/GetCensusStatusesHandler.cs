@@ -1,3 +1,4 @@
+using SchoolAccount.Application.Abstractions.Clients;
 using SchoolAccount.Application.Abstractions.Messaging;
 using SchoolAccount.SharedKernel;
 

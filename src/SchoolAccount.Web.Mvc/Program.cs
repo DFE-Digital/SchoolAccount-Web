@@ -1,6 +1,7 @@
 using GovUk.Frontend.AspNetCore;
 using Microsoft.Extensions.Options;
 using SchoolAccount.Application;
+using SchoolAccount.Application.Abstractions.Clients;
 using SchoolAccount.Application.Collect.CensusStatuses;
 using SchoolAccount.Infrastructure;
 using SchoolAccount.Infrastructure.Collect.CensusStatuses;
