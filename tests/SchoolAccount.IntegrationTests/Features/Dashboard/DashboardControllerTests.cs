@@ -95,7 +95,7 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
     }
 
     [Fact]
-    public async Task A_failure_to_fetch_census_statuses_is_reported_as_a_problem()
+    public async Task A_failure_to_fetch_census_statuses_shows_the_service_error_page()
     {
         // Arrange
         var token = TestContext.Current.CancellationToken;
@@ -104,11 +104,14 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
 
         // Act
         var message = await _client.GetAsync(pageUri, token);
+        var page = await AngleSharpPage.FromResponseAsync<ErrorPage>(message, token);
         var body = await message.Content.ReadAsStringAsync(token);
 
         // Assert
         message.StatusCode.ShouldBe(HttpStatusCode.InternalServerError);
-        body.ShouldContain(CensusStatusesResponseBuilder.FetchFailed.Description);
+        page.IsServerErrorPageTitle().ShouldBeTrue();
+        page.GetFirstHeading().ShouldBe("Sorry, there is a problem with the service");
+        body.ShouldNotContain(CensusStatusesResponseBuilder.FetchFailed.Description);
     }
 
     [Fact]

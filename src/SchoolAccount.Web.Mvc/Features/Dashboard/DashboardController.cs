@@ -35,7 +35,7 @@ public class DashboardController(
 
         if (censusStatusesResult.IsFailure)
         {
-            return Problem(censusStatusesResult.Error.Description);
+            return StatusCode(StatusCodes.Status500InternalServerError);
         }
 
         var censusStatuses = censusStatusesResult
