@@ -65,4 +65,14 @@ public abstract class AngleSharpPage
         var organisationNameElement = Page.QuerySelector(".header-navigation__school");
         return organisationNameElement?.TextContent;
     }
+
+    public virtual IElement? GetFooterLink(string href)
+    {
+        return Page.QuerySelector($".govuk-footer a[href='{href}']");
+    }
+
+    public virtual IElement? GetFooter()
+    {
+        return Page.QuerySelector(".govuk-footer");
+    }
 }
