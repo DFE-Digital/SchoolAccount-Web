@@ -15,41 +15,38 @@ public class DashboardController(
     [HttpGet]
     public async Task<IActionResult> Dashboard(CancellationToken cancellationToken)
     {
-        List<string> censusGreetings;
-
         if (
-            !string.IsNullOrEmpty(userContext.Id)
-            && !string.IsNullOrEmpty(userContext.EmailAddress)
-            && userContext.Organisation is not null
+            string.IsNullOrEmpty(userContext.Id)
+            && string.IsNullOrEmpty(userContext.EmailAddress)
+            && userContext.Organisation is null
         )
         {
-            var censusStatusesResult = await getCensusStatusesHandler.Handle(
-                new GetCensusStatusesQuery(
-                    new GetCensusStatusesRequest
-                    {
-                        Id = userContext.Id,
-                        Email = userContext.EmailAddress,
-                        Organisations = [userContext.Organisation],
-                    }
-                ),
-                cancellationToken
-            );
-
-            if (censusStatusesResult.IsFailure)
-            {
-                return Problem(censusStatusesResult.Error.Description);
-            }
-
-            censusGreetings = censusStatusesResult
-                .Value.SelectMany(a => a.Actions.Select(x => $"{x.Name}, {x.Status.Name}"))
-                .ToList();
+            throw new ArgumentException("Invalid user context");
         }
-        else
+
+        var censusStatusesResult = await getCensusStatusesHandler.Handle(
+            new GetCensusStatusesQuery(
+                new GetCensusStatusesRequest
+                {
+                    Id = userContext.Id!,
+                    Email = userContext.EmailAddress!,
+                    Organisations = [userContext.Organisation!],
+                }
+            ),
+            cancellationToken
+        );
+
+        if (censusStatusesResult.IsFailure)
         {
-            return Problem("User property is missing");
+            return Problem(censusStatusesResult.Error.Description);
         }
 
-        var model = new DashboardViewModel(userContext.Name ?? "Unknown", censusGreetings);
+        var censusStatuses = censusStatusesResult
+            .Value.SelectMany(a => a.Actions.Select(x => $"{x.Name}, {x.Status.Name}"))
+            .ToList();
+
+        var model = new DashboardViewModel(userContext.Name ?? "Unknown", censusStatuses);
+
         return View(model);
     }
 }
