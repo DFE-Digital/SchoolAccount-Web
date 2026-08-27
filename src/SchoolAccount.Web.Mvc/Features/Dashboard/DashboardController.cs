@@ -25,6 +25,11 @@ public class DashboardController(IUserContext userContext) : Controller
             cancellationToken
         );
 
+        var getServiceActionUrlResult = await getServiceActionUrlHandler.Handle(
+            new GetServiceActionUrlQuery(),
+            cancellationToken
+        );
+
         if (result.IsFailure)
         {
             return Problem(result.Error.Description);
