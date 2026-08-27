@@ -3,6 +3,7 @@ using SchoolAccount.Application;
 using SchoolAccount.Infrastructure;
 using SchoolAccount.Web.Mvc;
 using SchoolAccount.Web.Mvc.Hosting.Extensions;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,10 +12,12 @@ if (builder.Environment.IsProduction())
     builder.Configuration.AddAzureAppConfiguration();
 }
 
+builder.Host.UseConfiguredSerilog();
+
 builder
     .Services.AddApplication()
     .AddPresentation(builder.Environment, builder.Configuration)
-    .AddInfrastructure();
+    .AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
 
@@ -22,11 +25,10 @@ app.UseForwardedHeadersDiagnostics(app.Environment);
 app.UseConfiguredForwardedHeaders(app.Configuration);
 app.UseStatusCodePagesWithReExecute("/error/{0}");
 app.UseExceptionHandler("/error/500");
+app.UseSerilogRequestLogging();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
