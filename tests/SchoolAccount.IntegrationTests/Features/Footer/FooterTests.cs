@@ -2,7 +2,6 @@ using System.Net;
 using SchoolAccount.IntegrationTests.Common;
 using SchoolAccount.IntegrationTests.Common.Pages;
 using Shouldly;
-using static SchoolAccount.Web.Mvc.Features.Shared.FooterUrls;
 
 namespace SchoolAccount.IntegrationTests.Features.Footer;
 
@@ -37,8 +36,11 @@ public class FooterTests(SchoolAccountWebApplicationFactory<Program> factory)
     }
 
     [Theory]
-    [InlineData(AccessibilityStatement, "Accessibility statement")]
-    [InlineData(PrivacyNotice, "Privacy notice")]
+    [InlineData("#", "Accessibility statement")]
+    [InlineData(
+        "https://www.gov.uk/government/publications/privacy-information-education-providers-workforce-including-teachers/privacy-information-education-providers-workforce-including-teachers",
+        "Privacy notice"
+    )]
     public async Task Footer_displays_the_expected_links(string expectedHref, string expectedText)
     {
         // Arrange
