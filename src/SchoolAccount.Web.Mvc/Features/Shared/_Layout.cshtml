@@ -49,7 +49,17 @@
 @RenderBody()
 
 @section GovUkFooter {
-
-    <partial name="_Footer"/>
-
+    <govuk-footer>
+        <govuk-footer-meta>
+            <govuk-footer-meta-items>
+                <govuk-footer-meta-item href="#">Accessibility statement</govuk-footer-meta-item>
+                <govuk-footer-meta-item
+                    href="https://www.gov.uk/government/publications/privacy-information-education-providers-workforce-including-teachers/privacy-information-education-providers-workforce-including-teachers">
+                    Privacy notice
+                </govuk-footer-meta-item>
+            </govuk-footer-meta-items>
+        </govuk-footer-meta>
+        <govuk-footer-content-licence/>
+        <govuk-footer-copyright/>
+    </govuk-footer>
 }
