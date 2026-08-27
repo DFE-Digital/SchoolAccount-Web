@@ -1,4 +1,5 @@
 using System.Net;
+using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Testing;
 using RichardSzalay.MockHttp;
@@ -15,7 +16,7 @@ public class CollectApiClientTests : IDisposable
     private const string _baseAddress = "http://localhost";
     private const string _nullResponse = "null";
 
-    private const string _validationErrorResponse = """
+    private const string _validValidationErrorResponse = """
         {
           "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
           "title": "One or more validation errors occurred.",
@@ -27,6 +28,8 @@ public class CollectApiClientTests : IDisposable
           }
         }
         """;
+
+    private const string _invalidValidationErrorResponse = """ { "type": "invalid" """;
 
     private readonly CancellationToken _cancellationToken = TestContext.Current.CancellationToken;
     private readonly FakeLogger<CollectApiClient> _logger = new();
@@ -72,7 +75,7 @@ public class CollectApiClientTests : IDisposable
     public async Task A_validation_error_response_fails_the_request()
     {
         // Arrange
-        var client = ClientRespondingWith(BadRequest, ProblemJson, _validationErrorResponse);
+        var client = ClientRespondingWith(BadRequest, ProblemJson, _validValidationErrorResponse);
 
         // Act
         var act = async () =>
@@ -86,7 +89,7 @@ public class CollectApiClientTests : IDisposable
     public async Task Validation_errors_are_logged()
     {
         // Arrange
-        var client = ClientRespondingWith(BadRequest, ProblemJson, _validationErrorResponse);
+        var client = ClientRespondingWith(BadRequest, ProblemJson, _validValidationErrorResponse);
 
         // Act
         var act = async () =>
@@ -137,6 +140,66 @@ public class CollectApiClientTests : IDisposable
         _logger.Collector.LatestRecord.Level.ShouldBe(LogLevel.Error);
         _logger.Collector.LatestRecord.StructuredState.ShouldNotBeNull();
         _logger.LatestRecord.Message.ShouldContain("Response from /status was empty");
+    }
+
+    [Fact]
+    public async Task A_non_json_response_fails_the_request_with_no_logs()
+    {
+        // Arrange
+        var client = ClientRespondingWith(BadRequest, Pdf, _nullResponse);
+
+        // Act
+        var act = async () =>
+            await client.GetCensusStatuses(string.Empty, string.Empty, [], _cancellationToken);
+
+        // Assert
+        await act.ShouldThrowAsync<HttpRequestException>();
+        _logger.Collector.Count.ShouldBe(0);
+    }
+
+    [Fact]
+    public async Task Null_problem_details_fails_the_request_with_no_logs()
+    {
+        // Arrange
+        var client = ClientRespondingWith(BadRequest, ProblemJson, _nullResponse);
+
+        // Act
+        var act = async () =>
+            await client.GetCensusStatuses(string.Empty, string.Empty, [], _cancellationToken);
+
+        // Assert
+        await act.ShouldThrowAsync<HttpRequestException>();
+        _logger.Collector.Count.ShouldBe(0);
+    }
+
+    [Fact]
+    public async Task A_failed_request_that_is_not_a_bad_request_fails_the_request_with_no_logs()
+    {
+        // Arrange
+        var client = ClientRespondingWith(InternalServerError, Json, _nullResponse);
+
+        // Act
+        var act = async () =>
+            await client.GetCensusStatuses(string.Empty, string.Empty, [], _cancellationToken);
+
+        // Assert
+        await act.ShouldThrowAsync<HttpRequestException>();
+        _logger.Collector.Count.ShouldBe(0);
+    }
+
+    [Fact]
+    public async Task A_failed_request_with_invalid_validation_problem_details_json_fails_the_request_with_no_logs()
+    {
+        // Arrange
+        var client = ClientRespondingWith(BadRequest, ProblemJson, _invalidValidationErrorResponse);
+
+        // Act
+        var act = async () =>
+            await client.GetCensusStatuses(string.Empty, string.Empty, [], _cancellationToken);
+
+        // Assert
+        act.ShouldThrow<HttpRequestException>();
+        _logger.Collector.Count.ShouldBe(0);
     }
 
     public void Dispose()
