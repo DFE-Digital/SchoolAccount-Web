@@ -1,4 +1,5 @@
 ﻿@using SchoolAccount.Web.Mvc.Features.Header
+@using SchoolAccount.Web.Mvc.Features.Shared
 @inject IHeaderContentProvider HeaderContentProvider
 
 @* ReSharper disable Razor.LayoutNotResolved *@
@@ -49,7 +50,17 @@
 @RenderBody()
 
 @section GovUkFooter {
-
-    <partial name="_Footer"/>
-
+    <govuk-footer>
+        <govuk-footer-meta>
+            <govuk-footer-meta-items>
+                <govuk-footer-meta-item href="#">Accessibility statement</govuk-footer-meta-item>
+                <govuk-footer-meta-item
+                    href=@FooterUrls.PrivacyNotice>
+                    Privacy notice
+                </govuk-footer-meta-item>
+            </govuk-footer-meta-items>
+        </govuk-footer-meta>
+        <govuk-footer-content-licence/>
+        <govuk-footer-copyright/>
+    </govuk-footer>
 }
