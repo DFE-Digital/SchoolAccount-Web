@@ -1,6 +1,8 @@
 using System.Net;
 using SchoolAccount.IntegrationTests.Common;
+using SchoolAccount.IntegrationTests.Common.Extensions;
 using SchoolAccount.IntegrationTests.Common.Pages;
+using SchoolAccount.TestCommon.Stubs;
 using Shouldly;
 
 namespace SchoolAccount.IntegrationTests.Features.Footer;
@@ -8,7 +10,9 @@ namespace SchoolAccount.IntegrationTests.Features.Footer;
 public class FooterTests(SchoolAccountWebApplicationFactory<Program> factory)
     : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
 {
-    private readonly HttpClient _client = factory.CreateAuthorisedClient();
+    private readonly HttpClient _client = factory.CreateAuthorisedClient(services =>
+        services.StubQueryHandler(StubCensusStatusesHandler.Succeeding())
+    );
 
     [Theory]
     [InlineData("Dashboard", "Dashboard")]

@@ -36,8 +36,10 @@
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests\SchoolAccount.Web.Mvc.UnitTests\SchoolAccount.Web.Mvc.UnitTests.csproj" />
+    <Project Path="tests/SchoolAccount.Infrastructure.UnitTests/SchoolAccount.Infrastructure.UnitTests.csproj" />
     <Project Path="tests\SchoolAccount.ApplicationTests\SchoolAccount.ApplicationTests.csproj" />
     <Project Path="tests\SchoolAccount.ArchitectureTests\SchoolAccount.ArchitectureTests.csproj" />
     <Project Path="tests\SchoolAccount.IntegrationTests\SchoolAccount.IntegrationTests.csproj" />
+    <Project Path="tests\SchoolAccount.TestCommon\SchoolAccount.TestCommon.csproj" />
   </Folder>
 </Solution>

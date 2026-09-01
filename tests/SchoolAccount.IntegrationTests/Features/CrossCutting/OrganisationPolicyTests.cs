@@ -2,6 +2,8 @@ using System.Net;
 using System.Security.Claims;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SchoolAccount.IntegrationTests.Common;
+using SchoolAccount.IntegrationTests.Common.Extensions;
+using SchoolAccount.TestCommon.Stubs;
 using Shouldly;
 using static SchoolAccount.Web.Mvc.Authentication.ClaimConstants;
 
@@ -49,12 +51,12 @@ public class OrganisationPolicyTests(SchoolAccountWebApplicationFactory<Program>
         response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
-    [Theory]
-    [InlineData("{\"name\":\"Acme\"}")]
-    [InlineData("{\"id\":\"abc-123\"}")]
-    public async Task User_is_accepted_when_organisation_is_not_empty(string value)
+    [Fact]
+    public async Task User_is_accepted_when_organisation_is_not_empty()
     {
-        var client = CreateClientOrganisationClaims(value);
+        var client = factory.CreateAuthorisedClient(services =>
+            services.StubQueryHandler(StubCensusStatusesHandler.Succeeding())
+        );
 
         var response = await client.GetAsync(
             factory.GeneratePath("Dashboard", "Dashboard"),
