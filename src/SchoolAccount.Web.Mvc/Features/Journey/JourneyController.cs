@@ -2,19 +2,22 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SchoolAccount.Application.Abstractions.Messaging;
 using SchoolAccount.Application.Collect.CensusStatuses;
+using SchoolAccount.Application.Features.GetCensusActions;
 using SchoolAccount.SharedKernel;
+using SchoolAccount.Web.Mvc.Features.Dashboard;
 
-namespace SchoolAccount.Web.Mvc.Features.Dashboard;
+namespace SchoolAccount.Web.Mvc.Features.Journey;
 
 [Route("/{action}"), Authorize]
-public class DashboardController(
+public class JourneyController(
     IUserContext userContext,
     IQueryHandler<GetCensusStatusesQuery, List<GetCensusStatusesResponse>> getCensusStatusesHandler,
-    ILogger<DashboardController> logger
+    IQueryHandler<GetServiceActionsQuery, GetServiceActionsResponse> getServiceActionsHandler,
+    ILogger<JourneyController> logger
 ) : Controller
 {
     [HttpGet]
-    public async Task<IActionResult> Dashboard(CancellationToken cancellationToken)
+    public async Task<IActionResult> Journey(CancellationToken cancellationToken)
     {
         if (
             string.IsNullOrEmpty(userContext.Id)
@@ -41,15 +44,27 @@ public class DashboardController(
                 censusStatusesResult.Error.Code,
                 censusStatusesResult.Error.Description
             );
+
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
+
+        var serviceActionsQuery = new GetServiceActionsQuery();
+
+        var serviceActionsResult = await getServiceActionsHandler.Handle(
+            serviceActionsQuery,
+            cancellationToken
+        );
 
         var censusStatuses = censusStatusesResult
             .Value.SelectMany(a => a.Actions.Select(x => $"{x.Name}, {x.Status.Name}"))
             .ToList();
 
-        var model = new DashboardViewModel(userContext.Name ?? "Unknown", censusStatuses);
+        var journeyViewModel = JourneyViewModelBuilder.Build(
+            userContext.Name ?? "Unknown",
+            censusStatuses,
+            serviceActionsResult.Value
+        );
 
-        return View(model);
+        return View(journeyViewModel);
     }
 }

@@ -1,7 +1,7 @@
 using SchoolAccount.Application.Abstractions.Messaging;
 using SchoolAccount.SharedKernel.Authentication;
 
-namespace SchoolAccount.Application.Services.GetServiceActionUrl;
+namespace SchoolAccount.Application.Features.GetCensusActions;
 
 public record GetServiceActionsQuery : IQuery<GetServiceActionsResponse>
 {

@@ -1,0 +1,25 @@
+﻿@model SchoolAccount.Web.Mvc.Features.Journey.JourneyViewModel
+@{
+    ViewData["Title"] = "Journey";
+}
+
+<h1 class="govuk-heading-l">Hello @Model.User</h1>
+
+<p class="govuk-body">
+    @foreach (var censusStatus in Model.CensusStatuses)
+    {
+        @censusStatus
+    }
+</p>
+
+<div class="govuk-button-group">
+    <a href="@Model.CallToActionUrl"
+       role="button"
+       rel="noreferrer noopener"
+       draggable="false"
+       class="govuk-button"
+       data-module="govuk-button">
+        @Model.CallToActionButtonText
+        <span class="govuk-visually-hidden"> opens in new tab</span>
+    </a>
+</div>
