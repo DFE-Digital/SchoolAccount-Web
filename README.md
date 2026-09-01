@@ -60,7 +60,7 @@ Follow these steps to start the MVC locally.
     - Logs (if started with compose) at `http://localhost:8081`
    
 6. Debugging guidance:
-  - Set breakpoints in your C# files under `src/` and start either run configuration with debugging enabled.
+   - Set breakpoints in your C# files under `src/` and start either run configuration with debugging enabled.
 
 ## Configuration
 
