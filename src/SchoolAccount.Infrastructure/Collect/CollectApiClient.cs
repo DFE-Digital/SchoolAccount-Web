@@ -51,17 +51,19 @@ public sealed class CollectApiClient(HttpClient httpClient, ILogger<CollectApiCl
         return content.Details.Select(CensusStatusMapper.ToResponse).ToList();
     }
 
-    public async Task<Result<GetServiceActionsResponse>> GetCensusJourneyContent(string id, string emailAddress, IReadOnlyList<Organisation> organisations,
-        CancellationToken cancellationToken)
+    public async Task<Result<GetServiceActionsResponse>> GetCensusJourneyContent(
+        string id,
+        string emailAddress,
+        IReadOnlyList<Organisation> organisations,
+        CancellationToken cancellationToken
+    )
     {
-        return await Task.FromResult( new GetServiceActionsResponse
-        {
-            CallToAction = new CallToAction()
+        return await Task.FromResult(
+            new GetServiceActionsResponse
             {
-                Url = "#",
-                ButtonText = "Autumn Census Here"
+                CallToAction = new CallToAction() { Url = "#", ButtonText = "Autumn Census Here" },
             }
-        });
+        );
     }
 
     private async Task LogProblem(HttpResponseMessage response, string requestUri)
