@@ -11,6 +11,7 @@ namespace SchoolAccount.Web.Mvc.Features.Dashboard;
 public class DashboardController(
     IUserContext userContext,
     IQueryHandler<GetCensusStatusesQuery, List<GetCensusStatusesResponse>> getCensusStatusesHandler,
+    IQueryHandler<GetServiceActionsQuery, GetServiceActionsResponse> getServiceActionsHandler,
     ILogger<DashboardController> logger
 ) : Controller
 {
@@ -46,12 +47,23 @@ public class DashboardController(
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
 
+        var serviceActionsQuery = new GetServiceActionsQuery();
+
+        var serviceActionsResult = await getServiceActionsHandler.Handle(
+            serviceActionsQuery,
+            cancellationToken
+        );
+
         var censusStatuses = censusStatusesResult
             .Value.SelectMany(a => a.Actions.Select(x => $"{x.Name}, {x.Status.Name}"))
             .ToList();
 
-        var model = new DashboardViewModel(userContext.Name ?? "Unknown", censusStatuses);
+        var dashboardViewModel = DashboardViewModelBuilder.Build(
+            userContext.Name ?? "Unknown",
+            censusStatuses,
+            serviceActionsResult.Value
+        );
 
-        return View(model);
+        return View(dashboardViewModel);
     }
 }
