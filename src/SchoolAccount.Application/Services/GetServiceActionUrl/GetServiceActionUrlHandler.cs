@@ -3,10 +3,10 @@ using SchoolAccount.Application.Abstractions.Messaging;
 namespace SchoolAccount.Application.Services.GetServiceActionUrl;
 
 public class GetServiceActionUrlHandler()
-    : IQueryHandler<GetServiceActionUrlQuery, GetServiceActionUrlResponse>
+    : IQueryHandler<GetServiceActionsQuery, GetServiceActionsResponse>
 {
-    public async Task<GetServiceActionUrlResponse> Handle(
-        GetServiceActionUrlQuery query,
+    public async Task<GetServiceActionsResponse> Handle(
+        GetServiceActionsQuery query,
         CancellationToken cancellationToken
     ) { }
 }

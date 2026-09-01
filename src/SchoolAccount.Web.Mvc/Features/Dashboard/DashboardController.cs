@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SchoolAccount.Application.Abstractions.Messaging;
 using SchoolAccount.Application.Greetings.GetTimeSpecificHello;
+using SchoolAccount.Application.Services.GetServiceActionUrl;
 using SchoolAccount.SharedKernel;
 
 namespace SchoolAccount.Web.Mvc.Features.Dashboard;
@@ -17,6 +18,11 @@ public class DashboardController(IUserContext userContext) : Controller
             GetTimeSpecificHelloQuery,
             GetTimeSpecificHelloResponse
         > getTimeSpecifyHellosQueryHandler,
+        [FromServices]
+            IQueryHandler<
+            GetServiceActionsQuery,
+            GetServiceActionsResponse
+        > getServiceActionsQueryHandler,
         CancellationToken cancellationToken
     )
     {
@@ -25,8 +31,8 @@ public class DashboardController(IUserContext userContext) : Controller
             cancellationToken
         );
 
-        var getServiceActionUrlResult = await getServiceActionUrlHandler.Handle(
-            new GetServiceActionUrlQuery(),
+        var getServiceActionsResult = await getServiceActionsQueryHandler.Handle(
+            new GetServiceActionsQuery(),
             cancellationToken
         );
 
