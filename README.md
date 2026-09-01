@@ -37,6 +37,7 @@ Follow these steps to start the MVC locally.
     - [.NET 10 SDK](https://dotnet.microsoft.com/download)
     - [Docker Desktop](https://www.docker.com/products/docker-desktop/)
     - Rider, Visual Studio, or Visual Studio Code
+    - Pull [Collect API repository](https://github.com/DFE-Digital/SchoolAccount-CollectAPI)
 
 2. Run the setup script from the repository root to restore the dotnet tools and enable the git hooks:
 
@@ -53,11 +54,13 @@ Follow these steps to start the MVC locally.
 
    In Rider or Visual Studio you can use the equivalent `docker-compose` or `http` run configurations from the toolbar.
 
-4. Once running, the presentation is available at `http://localhost:5016`:
-    - Logs (if started with compose) at `http://localhost:8081`
+4. Launch Collect API. 
 
-5. Debugging guidance:
-    - Set breakpoints in your C# files under `src/` and start either run configuration with debugging enabled.
+5. Once running, the presentation is available at `http://localhost:5016`:
+    - Logs (if started with compose) at `http://localhost:8081`
+   
+6. Debugging guidance:
+  - Set breakpoints in your C# files under `src/` and start either run configuration with debugging enabled.
 
 ## Configuration
 
