@@ -19,14 +19,14 @@ public static class CensusJourneyMapper
         };
     }
 
-    public static GetCensusJourneyResponse ToResponse(CallToActionApiResponse content)
+    public static GetCensusJourneyResponse ToResponse(GetCensusJourneyApiResponse content)
     {
         return new GetCensusJourneyResponse
         {
             CallToAction = new CallToAction
             {
-                Url = content.CallToActionUrl,
-                ButtonText = content.CallToActionButtonText,
+                Url = content.CallToAction.Url,
+                ButtonText = content.CallToAction.Label,
             },
         };
     }

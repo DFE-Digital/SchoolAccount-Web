@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Testing;
 using RichardSzalay.MockHttp;
 using SchoolAccount.Application.Collect.CensusStatuses;
+using SchoolAccount.Infrastructure.Collect;
 using SchoolAccount.Infrastructure.Collect.CensusStatuses;
 using Shouldly;
 using static System.Net.HttpStatusCode;
