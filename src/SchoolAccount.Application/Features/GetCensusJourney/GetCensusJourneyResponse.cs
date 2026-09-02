@@ -7,6 +7,6 @@ public record GetCensusJourneyResponse
 
 public record CallToAction
 {
-    public string Url { get; init; }
+    public Uri Url { get; init; }
     public string ButtonText { get; init; }
 }

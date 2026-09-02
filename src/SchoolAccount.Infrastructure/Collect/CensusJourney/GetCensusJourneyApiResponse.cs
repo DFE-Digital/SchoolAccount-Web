@@ -8,5 +8,5 @@ public class GetCensusJourneyApiResponse
 public class CallToActionApiResponse
 {
     public string CallToActionButtonText { get; init; }
-    public string CallToActionUrl { get; init; }
+    public Uri CallToActionUrl { get; init; }
 }

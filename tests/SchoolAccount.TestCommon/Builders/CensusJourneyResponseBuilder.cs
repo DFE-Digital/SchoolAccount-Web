@@ -6,11 +6,13 @@ namespace SchoolAccount.TestCommon.Builders;
 public class CensusJourneyResponseBuilder
 {
     private string _callToActionButtonText = "Go to Autumn Census 2026";
-    private string _callToActionUrl = "#";
+    private Uri _callToActionUrl = new(
+        "https://www.gov.uk/guidance/complete-the-school-census/generate-and-submit-your-return"
+    );
 
     public static CensusJourneyResponseBuilder Create() => new();
 
-    public CensusJourneyResponseBuilder WithCallToActionUrl(string callToActionUrl)
+    public CensusJourneyResponseBuilder WithCallToActionUrl(Uri callToActionUrl)
     {
         _callToActionUrl = callToActionUrl;
         return this;
@@ -22,7 +24,7 @@ public class CensusJourneyResponseBuilder
         return this;
     }
 
-    public GetCensusJourneyResponse Build()
+    private GetCensusJourneyResponse Build()
     {
         return new GetCensusJourneyResponse
         {

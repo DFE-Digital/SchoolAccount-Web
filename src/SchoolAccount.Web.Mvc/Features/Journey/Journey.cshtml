@@ -5,15 +5,10 @@
 
 <h1 class="govuk-heading-l">Hello @Model.User</h1>
 
-<div class="govuk-button-group">
-    <a href="@Model.CallToActionUrl"
-       role="button"
-       rel="noreferrer noopener"
-       draggable="false"
-       class="govuk-button"
-       target="_blank"
-       data-module="govuk-button">
-        @Model.CallToActionButtonText
-        <span class="govuk-visually-hidden"> opens in new tab</span>
-    </a>
-</div>
+<govuk-button-link
+    href="@Model.CallToActionUrl"
+    rel="noreferrer noopener"
+    target="_blank">
+    @Model.CallToActionButtonText
+    <span class="govuk-visually-hidden"> opens in new tab</span>
+</govuk-button-link>

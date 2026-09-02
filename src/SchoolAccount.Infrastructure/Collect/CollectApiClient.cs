@@ -63,7 +63,9 @@ public sealed class CollectApiClient(HttpClient httpClient, ILogger<CollectApiCl
             {
                 CallToAction = new CallToAction
                 {
-                    Url = "#",
+                    Url = new Uri(
+                        $"https://www.gov.uk/guidance/complete-the-school-census/generate-and-submit-your-return"
+                    ),
                     ButtonText = "Go to Autumn Census 2026",
                 },
             }
