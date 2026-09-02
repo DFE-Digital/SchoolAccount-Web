@@ -2,13 +2,13 @@ using SchoolAccount.Application.Abstractions.Clients;
 using SchoolAccount.Application.Abstractions.Messaging;
 using SchoolAccount.SharedKernel;
 
-namespace SchoolAccount.Application.Features.GetCensusActions;
+namespace SchoolAccount.Application.Features.GetCensusJourney;
 
-public class GetServiceActionUrlHandler(ICollectApiClient collectApiClient)
-    : IQueryHandler<GetServiceActionsQuery, GetServiceActionsResponse>
+public class GetCensusJourneyHandler(ICollectApiClient collectApiClient)
+    : IQueryHandler<GetCensusJourneyQuery, GetCensusJourneyResponse>
 {
-    public async Task<Result<GetServiceActionsResponse>> Handle(
-        GetServiceActionsQuery query,
+    public async Task<Result<GetCensusJourneyResponse>> Handle(
+        GetCensusJourneyQuery query,
         CancellationToken cancellationToken
     )
     {

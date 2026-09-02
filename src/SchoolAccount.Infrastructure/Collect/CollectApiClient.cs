@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using SchoolAccount.Application.Abstractions.Clients;
 using SchoolAccount.Application.Collect.CensusStatuses;
-using SchoolAccount.Application.Features.GetCensusActions;
+using SchoolAccount.Application.Features.GetCensusJourney;
 using SchoolAccount.SharedKernel;
 using SchoolAccount.SharedKernel.Authentication;
 using static System.Net.Mime.MediaTypeNames.Application;
@@ -51,7 +51,7 @@ public sealed class CollectApiClient(HttpClient httpClient, ILogger<CollectApiCl
         return content.Details.Select(CensusStatusMapper.ToResponse).ToList();
     }
 
-    public async Task<Result<GetServiceActionsResponse>> GetCensusJourneyContent(
+    public async Task<Result<GetCensusJourneyResponse>> GetCensusJourneyContent(
         string id,
         string emailAddress,
         IReadOnlyList<Organisation> organisations,
@@ -59,9 +59,9 @@ public sealed class CollectApiClient(HttpClient httpClient, ILogger<CollectApiCl
     )
     {
         return await Task.FromResult(
-            new GetServiceActionsResponse
+            new GetCensusJourneyResponse
             {
-                CallToAction = new CallToAction() { Url = "#", ButtonText = "Autumn Census Here" },
+                CallToAction = new CallToAction { Url = "#", ButtonText = "Autumn Census Here" },
             }
         );
     }

@@ -2,17 +2,17 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SchoolAccount.Application.Abstractions.Messaging;
 using SchoolAccount.Application.Collect.CensusStatuses;
-using SchoolAccount.Application.Features.GetCensusActions;
+using SchoolAccount.Application.Features.GetCensusJourney;
 using SchoolAccount.SharedKernel;
-using SchoolAccount.Web.Mvc.Features.Dashboard;
 
 namespace SchoolAccount.Web.Mvc.Features.Journey;
 
-[Route("/{action}"), Authorize]
+[Route("/{action}")]
+[Authorize]
 public class JourneyController(
     IUserContext userContext,
     IQueryHandler<GetCensusStatusesQuery, List<GetCensusStatusesResponse>> getCensusStatusesHandler,
-    IQueryHandler<GetServiceActionsQuery, GetServiceActionsResponse> getServiceActionsHandler,
+    IQueryHandler<GetCensusJourneyQuery, GetCensusJourneyResponse> getCensusJourneyHandler,
     ILogger<JourneyController> logger
 ) : Controller
 {
@@ -48,10 +48,10 @@ public class JourneyController(
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
 
-        var serviceActionsQuery = new GetServiceActionsQuery();
+        var getCensusJourneyQuery = new GetCensusJourneyQuery();
 
-        var serviceActionsResult = await getServiceActionsHandler.Handle(
-            serviceActionsQuery,
+        var gesCensusJourneyResponse = await getCensusJourneyHandler.Handle(
+            getCensusJourneyQuery,
             cancellationToken
         );
 
@@ -62,7 +62,7 @@ public class JourneyController(
         var journeyViewModel = JourneyViewModelBuilder.Build(
             userContext.Name ?? "Unknown",
             censusStatuses,
-            serviceActionsResult.Value
+            gesCensusJourneyResponse.Value
         );
 
         return View(journeyViewModel);

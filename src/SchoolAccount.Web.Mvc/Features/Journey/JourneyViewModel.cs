@@ -6,4 +6,4 @@ public sealed class JourneyViewModel
     public IReadOnlyList<string> CensusStatuses { get; init; }
     public string CallToActionUrl { get; init; }
     public string CallToActionButtonText { get; init; }
-};
+}

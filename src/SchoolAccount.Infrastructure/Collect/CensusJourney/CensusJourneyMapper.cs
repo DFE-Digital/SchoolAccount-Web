@@ -1,4 +1,4 @@
-using SchoolAccount.Application.Features.GetCensusActions;
+using SchoolAccount.Application.Features.GetCensusJourney;
 using SchoolAccount.SharedKernel.Authentication;
 
 namespace SchoolAccount.Infrastructure.Collect.CensusJourney;
@@ -19,9 +19,9 @@ public static class CensusJourneyMapper
         };
     }
 
-    public static GetServiceActionsResponse ToResponse(CallToActionApiResponse content)
+    public static GetCensusJourneyResponse ToResponse(CallToActionApiResponse content)
     {
-        return new GetServiceActionsResponse
+        return new GetCensusJourneyResponse
         {
             CallToAction = new CallToAction
             {

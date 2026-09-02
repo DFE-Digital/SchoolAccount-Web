@@ -1,4 +1,4 @@
-using SchoolAccount.Application.Features.GetCensusActions;
+using SchoolAccount.Application.Features.GetCensusJourney;
 
 namespace SchoolAccount.Web.Mvc.Features.Journey;
 
@@ -7,15 +7,15 @@ public static class JourneyViewModelBuilder
     public static JourneyViewModel Build(
         string user,
         IReadOnlyList<string> censusStatuses,
-        GetServiceActionsResponse getServiceActionsResponse
+        GetCensusJourneyResponse getCensusJourneyResponse
     )
     {
         return new JourneyViewModel
         {
             User = user,
             CensusStatuses = censusStatuses,
-            CallToActionUrl = getServiceActionsResponse.CallToAction.Url,
-            CallToActionButtonText = getServiceActionsResponse.CallToAction.ButtonText,
+            CallToActionUrl = getCensusJourneyResponse.CallToAction.Url,
+            CallToActionButtonText = getCensusJourneyResponse.CallToAction.ButtonText,
         };
     }
 }

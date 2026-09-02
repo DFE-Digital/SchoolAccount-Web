@@ -1,5 +1,5 @@
 using SchoolAccount.Application.Collect.CensusStatuses;
-using SchoolAccount.Application.Features.GetCensusActions;
+using SchoolAccount.Application.Features.GetCensusJourney;
 using SchoolAccount.SharedKernel;
 using SchoolAccount.SharedKernel.Authentication;
 
@@ -14,7 +14,7 @@ public interface ICollectApiClient
         CancellationToken cancellationToken
     );
 
-    Task<Result<GetServiceActionsResponse>> GetCensusJourneyContent(
+    Task<Result<GetCensusJourneyResponse>> GetCensusJourneyContent(
         string id,
         string emailAddress,
         IReadOnlyList<Organisation> organisations,

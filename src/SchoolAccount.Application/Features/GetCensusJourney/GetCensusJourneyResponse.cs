@@ -1,6 +1,6 @@
-namespace SchoolAccount.Application.Features.GetCensusActions;
+namespace SchoolAccount.Application.Features.GetCensusJourney;
 
-public record GetServiceActionsResponse
+public record GetCensusJourneyResponse
 {
     public CallToAction CallToAction { get; init; }
 }
