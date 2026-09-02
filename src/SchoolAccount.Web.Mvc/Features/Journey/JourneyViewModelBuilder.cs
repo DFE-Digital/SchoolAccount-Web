@@ -5,7 +5,7 @@ namespace SchoolAccount.Web.Mvc.Features.Journey;
 public static class JourneyViewModelBuilder
 {
     public static JourneyViewModel Build(
-        string user,
+        string? user,
         GetCensusJourneyResponse getCensusJourneyResponse
     )
     {

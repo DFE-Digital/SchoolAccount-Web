@@ -5,7 +5,7 @@ public sealed class JourneyViewModel
     public Uri CallToActionUrl { get; init; }
     public string CallToActionButtonText { get; init; }
 
-    public string User
+    public string? User
     {
         get;
         init => field = value ?? "Unknown";

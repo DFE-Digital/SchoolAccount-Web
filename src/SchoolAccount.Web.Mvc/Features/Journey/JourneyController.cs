@@ -24,7 +24,7 @@ public class JourneyController(
         );
 
         var journeyViewModel = JourneyViewModelBuilder.Build(
-            userContext.Name ?? "Unknown",
+            userContext.Name,
             gesCensusJourneyResponse.Value
         );
 
