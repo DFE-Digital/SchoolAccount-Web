@@ -61,7 +61,11 @@ public sealed class CollectApiClient(HttpClient httpClient, ILogger<CollectApiCl
         return await Task.FromResult(
             new GetCensusJourneyResponse
             {
-                CallToAction = new CallToAction { Url = "#", ButtonText = "Autumn Census Here" },
+                CallToAction = new CallToAction
+                {
+                    Url = "#",
+                    ButtonText = "Go to Autumn Census 2026",
+                },
             }
         );
     }
