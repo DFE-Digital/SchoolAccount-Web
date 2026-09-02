@@ -6,16 +6,19 @@ using Microsoft.Extensions.Logging;
 using SchoolAccount.Application.Abstractions.Clients;
 using SchoolAccount.Application.Collect.CensusStatuses;
 using SchoolAccount.Application.Features.GetCensusJourney;
+using SchoolAccount.Infrastructure.Collect.CensusJourney;
+using SchoolAccount.Infrastructure.Collect.CensusStatuses;
 using SchoolAccount.SharedKernel;
 using SchoolAccount.SharedKernel.Authentication;
 using static System.Net.Mime.MediaTypeNames.Application;
 
-namespace SchoolAccount.Infrastructure.Collect.CensusStatuses;
+namespace SchoolAccount.Infrastructure.Collect;
 
 public sealed class CollectApiClient(HttpClient httpClient, ILogger<CollectApiClient> logger)
     : ICollectApiClient
 {
     private const string _statusEndpoint = "/status";
+    private const string _censusJourneyEndpoint = "/census/autumn-school-census";
 
     public async Task<List<GetCensusStatusesResponse>> GetCensusStatuses(
         string id,
@@ -58,18 +61,31 @@ public sealed class CollectApiClient(HttpClient httpClient, ILogger<CollectApiCl
         CancellationToken cancellationToken
     )
     {
-        return await Task.FromResult(
-            new GetCensusJourneyResponse
-            {
-                CallToAction = new CallToAction
-                {
-                    Url = new Uri(
-                        $"https://www.gov.uk/guidance/complete-the-school-census/generate-and-submit-your-return"
-                    ),
-                    ButtonText = "Go to Autumn Census 2026",
-                },
-            }
+        var request = CensusJourneyMapper.ToApiRequest(id, emailAddress, organisations);
+        using var response = await httpClient.PostAsJsonAsync(
+            _censusJourneyEndpoint,
+            request,
+            cancellationToken
         );
+
+        if (!response.IsSuccessStatusCode)
+        {
+            await LogProblem(response, _censusJourneyEndpoint);
+            response.EnsureSuccessStatusCode();
+        }
+
+        var content = await response.Content.ReadFromJsonAsync<GetCensusJourneyApiResponse>(
+            cancellationToken
+        );
+
+        if (content is null)
+        {
+            logger.LogError("Response from {RequestUri} was empty", _censusJourneyEndpoint);
+
+            throw new Exception("Response from Collect API was empty");
+        }
+
+        return CensusJourneyMapper.ToResponse(content);
     }
 
     private async Task LogProblem(HttpResponseMessage response, string requestUri)

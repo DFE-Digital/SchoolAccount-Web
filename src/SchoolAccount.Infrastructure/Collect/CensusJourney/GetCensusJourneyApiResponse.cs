@@ -7,6 +7,6 @@ public class GetCensusJourneyApiResponse
 
 public class CallToActionApiResponse
 {
-    public string CallToActionButtonText { get; init; }
-    public Uri CallToActionUrl { get; init; }
+    public string Label { get; init; }
+    public Uri Url { get; init; }
 }
