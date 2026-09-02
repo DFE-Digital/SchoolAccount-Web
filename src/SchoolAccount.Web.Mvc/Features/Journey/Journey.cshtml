@@ -1,0 +1,14 @@
+﻿@model SchoolAccount.Web.Mvc.Features.Journey.JourneyViewModel
+@{
+    ViewData["Title"] = "Journey";
+}
+
+<h1 class="govuk-heading-l">Hello @Model.User</h1>
+
+<govuk-button-link
+    href="@Model.CallToActionUrl"
+    rel="noreferrer noopener"
+    target="_blank">
+    @Model.CallToActionButtonText
+    <span class="govuk-visually-hidden"> opens in new tab</span>
+</govuk-button-link>

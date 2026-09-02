@@ -41,7 +41,6 @@ public class DashboardController(
                 censusStatusesResult.Error.Code,
                 censusStatusesResult.Error.Description
             );
-
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
 
