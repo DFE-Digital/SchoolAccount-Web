@@ -3,6 +3,8 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using SchoolAccount.Application.Collect.CensusStatus;
+using SchoolAccount.Infrastructure.Http;
+using SchoolAccount.SharedKernel;
 using Action = SchoolAccount.Application.Collect.CensusStatus.Action;
 
 namespace SchoolAccount.Infrastructure.Collect.CensusStatus;
@@ -11,6 +13,20 @@ public sealed class CollectApiService(HttpClient httpClient, ILogger<CollectApiS
     : ICollectApiService
 {
     private const string _statusEndpoint = "/status";
+
+    public async Task<Result<List<GetCensusStatusResponse>>> GetCensusStatusAsync(
+        GetCensusStatus query
+    )
+    {
+        return await httpClient
+            .PostAsJsonAsync(_statusEndpoint, query)
+            .Validate(logger, _statusEndpoint)
+            .ValidateProblems()
+            .Query<GetCensusStatusApiResponse, List<GetCensusStatusResponse>>(response =>
+                response.Details.ConvertAll(MapToCensusStatus)
+            )
+            .Catch(logger, _statusEndpoint);
+    }
 
     public async Task<List<GetCensusStatusResponse>> GetCensusStatus(GetCensusStatusQuery query)
     {

@@ -22,6 +22,11 @@ public record Error
 
     public ErrorType Type { get; }
 
+    public Exception? Exception { get; init; }
+
+    public static implicit operator Error(string description) =>
+        new(string.Empty, description, ErrorType.Failure);
+
     public static Error Failure(string code, string description) =>
         new(code, description, ErrorType.Failure);
 
@@ -33,4 +38,7 @@ public record Error
 
     public static Error Conflict(string code, string description) =>
         new(code, description, ErrorType.Conflict);
+
+    public static Error Critical(string description, Exception exception) =>
+        new(exception.GetType().Name, description, ErrorType.Failure) { Exception = exception };
 }

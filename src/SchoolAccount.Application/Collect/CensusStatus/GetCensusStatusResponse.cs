@@ -1,6 +1,15 @@
 namespace SchoolAccount.Application.Collect.CensusStatus;
 
-public record GetCensusStatusResponse
+public class GetCensusStatusResponse(IEnumerable<GetCensusStatus> items)
+    : List<GetCensusStatus>(items)
+{
+    public static GetCensusStatusResponse Create(params GetCensusStatus[] statuses)
+    {
+        return new GetCensusStatusResponse(statuses.ToList());
+    }
+};
+
+public record GetCensusStatus
 {
     public string Id { get; init; }
     public bool Interesting { get; init; }

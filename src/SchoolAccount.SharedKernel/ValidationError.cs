@@ -1,6 +1,6 @@
 ﻿namespace SchoolAccount.SharedKernel;
 
-public sealed record ValidationError(Error[] Errors)
+public sealed record ValidationError(IEnumerable<Error> Errors)
     : Error("Validation.General", "One or more validation errors occurred", ErrorType.Validation)
 {
     public static ValidationError FromResults(IEnumerable<Result> results) =>

@@ -50,4 +50,16 @@ public class Result<TValue> : Result
         value is not null ? Success(value) : Failure<TValue>(Error.NullValue);
 
     public static Result<TValue> ValidationFailure(Error error) => new(default, false, error);
+
+    public bool TryGetValue(out TValue value)
+    {
+        value = Value;
+        return IsSuccess;
+    }
+
+    public TOut Match<TOut>(Func<TValue, TOut> onSuccess, Func<Error, TOut> onFailure) =>
+        IsSuccess ? onSuccess(Value) : onFailure(Error);
+
+    public Result<TOut> Map<TOut>(Func<TValue, TOut> map) =>
+        (Result<TOut>)(IsSuccess ? Success(map(Value)) : Failure(Error));
 }
