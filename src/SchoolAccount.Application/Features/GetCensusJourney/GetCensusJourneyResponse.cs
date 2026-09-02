@@ -6,7 +6,13 @@ public record GetCensusJourneyResponse
     public CallToAction CallToAction { get; init; }
 }
 
-public class StepByStepCollection : List<StepByStep>;
+public class StepByStepCollection : List<StepByStep>
+{
+    public StepByStepCollection() { }
+
+    public StepByStepCollection(IEnumerable<StepByStep> steps)
+        : base(steps) { }
+}
 
 public record StepByStep
 {
