@@ -5,7 +5,7 @@ namespace SchoolAccount.Web.Mvc.Helpers;
 
 public static class HtmlContentHelper
 {
-    public static IHtmlContent Process(
+    public static IHtmlContent AddClassesToNodes(
         string? rawHtml,
         Dictionary<string, string[]> requiredClasses
     )

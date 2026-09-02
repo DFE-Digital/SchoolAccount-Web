@@ -44,7 +44,7 @@ public class StepByStepViewModelCollection
         var model = new StepByStepViewModel(Steps.Count + 1)
         {
             Title = step.Title,
-            Content = HtmlContentHelper.Process(step.Body, requiredClasses),
+            Content = HtmlContentHelper.AddClassesToNodes(step.Body, requiredClasses),
             IsOpen = step.IsOpen,
             Status = step.Status is not null
                 ? new StepByStepStatusViewModel
