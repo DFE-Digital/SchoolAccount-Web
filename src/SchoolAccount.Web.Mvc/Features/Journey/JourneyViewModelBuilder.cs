@@ -15,7 +15,7 @@ public static class JourneyViewModelBuilder
             User = user,
             CallToActionUrl = getCensusJourneyResponse.CallToAction.Url,
             CallToActionButtonText = getCensusJourneyResponse.CallToAction.ButtonText,
-            Steps = new StepByStepViewModelCollection(getCensusJourneyResponse.StepByStep),
+            Steps = StepByStepViewModelCollection.Create(getCensusJourneyResponse.StepByStep),
         };
     }
 }

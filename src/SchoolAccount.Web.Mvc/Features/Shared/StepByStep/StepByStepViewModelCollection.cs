@@ -7,9 +7,14 @@ public class StepByStepViewModelCollection
     public Guid Identifier { get; init; } = Guid.NewGuid();
     public List<StepByStepViewModel> Steps { get; } = [];
 
-    public StepByStepViewModelCollection() { }
+    protected StepByStepViewModelCollection() { }
 
-    public StepByStepViewModelCollection(
+    public static StepByStepViewModelCollection Create()
+    {
+        return new StepByStepViewModelCollection();
+    }
+
+    protected StepByStepViewModelCollection(
         IEnumerable<Application.Features.GetCensusJourney.StepByStep> steps
     )
         : this()
@@ -18,6 +23,13 @@ public class StepByStepViewModelCollection
         {
             AddStep(step);
         }
+    }
+
+    public static StepByStepViewModelCollection Create(
+        IEnumerable<Application.Features.GetCensusJourney.StepByStep> steps
+    )
+    {
+        return new StepByStepViewModelCollection(steps);
     }
 
     public void AddStep(Application.Features.GetCensusJourney.StepByStep step)
