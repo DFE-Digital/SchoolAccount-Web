@@ -2,6 +2,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using SchoolAccount.Application.Abstractions.Clients;
+using SchoolAccount.Infrastructure.Collect;
 using SchoolAccount.Infrastructure.Collect.CensusStatuses;
 using SchoolAccount.Infrastructure.Config;
 using SchoolAccount.Infrastructure.Time;

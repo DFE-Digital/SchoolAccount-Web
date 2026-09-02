@@ -16,10 +16,15 @@ public class JourneyController(
     [HttpGet]
     public async Task<IActionResult> Journey(CancellationToken cancellationToken)
     {
-        var getCensusJourneyQuery = new GetCensusJourneyQuery();
+        var query = new GetCensusJourneyQuery
+        {
+            Id = userContext.Id!,
+            EmailAddress = userContext.EmailAddress!,
+            Organisations = [userContext.Organisation!],
+        };
 
         var gesCensusJourneyResponse = await getCensusJourneyHandler.Handle(
-            getCensusJourneyQuery,
+            query,
             cancellationToken
         );
 
