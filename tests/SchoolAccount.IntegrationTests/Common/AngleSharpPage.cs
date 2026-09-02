@@ -76,8 +76,8 @@ public abstract class AngleSharpPage
         return Page.QuerySelector(".govuk-footer");
     }
 
-    public virtual IElement? GetCallToActionButton()
+    public virtual IElement? GetButtonByLink(string href)
     {
-        return Page.QuerySelector(".govuk-button");
+        return Page.QuerySelector($"a.govuk-button[href='{href}']");
     }
 }

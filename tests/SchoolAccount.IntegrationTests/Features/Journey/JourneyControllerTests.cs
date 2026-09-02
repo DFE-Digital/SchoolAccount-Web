@@ -57,7 +57,9 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         // Assert
         message.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-        var callToActionButton = page.GetCallToActionButton();
+        var callToActionButton = page.GetButtonByLink(
+            "https://www.gov.uk/guidance/complete-the-school-census/generate-and-submit-your-return"
+        );
         callToActionButton.ShouldNotBeNull();
         callToActionButton.TextContent.Trim().ShouldStartWith("Go to Autumn Census 2026");
         callToActionButton.TextContent.Trim().ShouldEndWith("opens in new tab");
