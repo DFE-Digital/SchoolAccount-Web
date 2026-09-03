@@ -23,6 +23,7 @@ public static class JourneyViewModelBuilder
                     FormattedDate = date.Date.ToString("d MMMM yyyy", CultureInfo.InvariantCulture),
                 })
                 .ToList(),
+            Status = getCensusJourneyResponse.Status,
             CallToAction = getCensusJourneyResponse.CallToAction,
         };
     }

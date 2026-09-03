@@ -33,6 +33,11 @@ public static class CensusJourneyMapper
                     Date = importantDate.Date,
                 })
                 .ToList(),
+            Status = new GetCensusJourneyResponseStatus
+            {
+                Name = content.Status.Name,
+                Label = content.Status.Label,
+            },
             CallToAction = new GetCensusJourneyResponseCallToAction
             {
                 Url = content.CallToAction.Url,

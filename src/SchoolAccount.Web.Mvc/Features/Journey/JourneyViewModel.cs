@@ -9,6 +9,7 @@ public sealed class JourneyViewModel
     public string Caption { get; init; }
     public string? Overview { get; init; }
     public IReadOnlyList<ImportantDate> ImportantDates { get; init; } = [];
+    public GetCensusJourneyResponseStatus Status { get; init; }
     public GetCensusJourneyResponseCallToAction CallToAction { get; init; }
     public bool DisplayImportantDates => ImportantDates.Any();
     public bool DisplayOverview => !string.IsNullOrWhiteSpace(Caption);
