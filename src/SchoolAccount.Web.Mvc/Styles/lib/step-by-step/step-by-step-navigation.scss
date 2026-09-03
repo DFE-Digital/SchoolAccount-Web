@@ -19,12 +19,12 @@ $top-border: solid 1px govuk-colour('black', $variant: 'tint-80');
 
 @mixin step-nav-line-position {
   left: 0;
-  margin-left: govuk-em(($number-circle-size / 2) - ($stroke-width / 2), 16);
+  margin-left: govuk-em(calc($number-circle-size / 2) - calc($stroke-width / 2), 16);
 }
 
 @mixin step-nav-line-position-large {
   left: 0;
-  margin-left: govuk-em(($number-circle-size-large / 2) - ($stroke-width / 2), 16);
+  margin-left: govuk-em(calc($number-circle-size-large / 2) - calc($stroke-width / 2), 16);
 }
 
 // custom mixin as govuk-font does undesirable things at different breakpoints
@@ -448,7 +448,7 @@ $top-border: solid 1px govuk-colour('black', $variant: 'tint-80');
 
   .app-step-nav--large & + .app-step-nav__list {
     @include govuk-media-query($from: tablet) {
-      margin-top: -govuk-spacing(3);
+      margin-top: -(govuk-spacing(3));
     }
   }
 }
@@ -507,9 +507,9 @@ $top-border: solid 1px govuk-colour('black', $variant: 'tint-80');
     z-index: 5;
     top: .6em; // position the dot to align with the first row of text in the link
     left: -(govuk-spacing(6) + govuk-spacing(3));
-    margin-top: -($stroke-width / 2);
-    margin-left: ($number-circle-size / 2);
-    width: $number-circle-size / 2;
+    margin-top: -(calc($stroke-width / 2));
+    margin-left: calc($number-circle-size / 2);
+    width: calc($number-circle-size / 2);
     height: $stroke-width;
     background: govuk-colour("black");
   }
@@ -518,7 +518,7 @@ $top-border: solid 1px govuk-colour('black', $variant: 'tint-80');
     @include govuk-media-query($from: tablet) {
       &:before {
         left: -(govuk-spacing(9));
-        margin-left: ($number-circle-size-large / 2);
+        margin-left: calc($number-circle-size-large / 2);
       }
     }
   }
