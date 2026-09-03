@@ -17,7 +17,7 @@ public class CensusJourneyResponseBuilder
     private string _status = "Not Started";
     private string _title = "Autumn School Census";
 
-    public static CensusJourneyResponseBuilder Create()
+    public static CensusJourneyResponseBuilder ACensusJourneyResponse()
     {
         return new CensusJourneyResponseBuilder();
     }
@@ -34,7 +34,7 @@ public class CensusJourneyResponseBuilder
         return this;
     }
 
-    public CensusJourneyResponseBuilder WithOverview(string overview)
+    public CensusJourneyResponseBuilder WithOverview(string? overview)
     {
         _overview = overview;
         return this;
@@ -72,10 +72,15 @@ public class CensusJourneyResponseBuilder
         return this;
     }
 
-    public CensusJourneyResponseBuilder WithCallToActionButtonText(string callToActionButtonText)
+    public CensusJourneyResponseBuilder WithCallToActionLabel(string callToActionButtonText)
     {
         _callToActionLabel = callToActionButtonText;
         return this;
+    }
+
+    public Result<GetCensusJourneyResponse> AsSuccess()
+    {
+        return Result.Success(Build());
     }
 
     private GetCensusJourneyResponse Build()
@@ -93,10 +98,5 @@ public class CensusJourneyResponseBuilder
                 Url = _callToActionUrl,
             },
         };
-    }
-
-    public Result<GetCensusJourneyResponse> AsSuccess()
-    {
-        return Result.Success(Build());
     }
 }

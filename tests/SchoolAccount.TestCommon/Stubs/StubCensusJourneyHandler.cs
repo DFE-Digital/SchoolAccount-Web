@@ -10,7 +10,7 @@ public sealed class StubCensusJourneyHandler
     public static StubCensusJourneyHandler Succeeding()
     {
         var handler = new StubCensusJourneyHandler();
-        handler.Returns(CensusJourneyResponseBuilder.Create().AsSuccess());
+        handler.Returns(CensusJourneyResponseBuilder.ACensusJourneyResponse().AsSuccess());
 
         return handler;
     }

@@ -7,7 +7,7 @@ public class GetCensusJourneyResponseImportantDateBuilder
     private string _label = "Return due";
     private DateOnly _date = DateOnly.FromDateTime(DateTime.Now);
 
-    public static GetCensusJourneyResponseImportantDateBuilder Create() => new();
+    public static GetCensusJourneyResponseImportantDateBuilder AnImportantDate() => new();
 
     public GetCensusJourneyResponseImportantDateBuilder WithLabel(string label)
     {
@@ -15,9 +15,9 @@ public class GetCensusJourneyResponseImportantDateBuilder
         return this;
     }
 
-    public GetCensusJourneyResponseImportantDateBuilder WithDate(DateOnly date)
+    public GetCensusJourneyResponseImportantDateBuilder WithDate(int year, int month, int day)
     {
-        _date = date;
+        _date = new DateOnly(year, month, day);
         return this;
     }
 

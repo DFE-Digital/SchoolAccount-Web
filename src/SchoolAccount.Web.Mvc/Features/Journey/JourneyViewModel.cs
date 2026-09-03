@@ -12,7 +12,7 @@ public sealed class JourneyViewModel
     public IReadOnlyList<ImportantDate> ImportantDates { get; init; } = [];
     public GetCensusJourneyResponseCallToAction CallToAction { get; init; }
     public bool DisplayImportantDates => ImportantDates.Any();
-    public bool DisplayOverview => !string.IsNullOrWhiteSpace(Caption);
+    public bool DisplayOverview => !string.IsNullOrWhiteSpace(Overview);
 }
 
 public sealed class ImportantDate

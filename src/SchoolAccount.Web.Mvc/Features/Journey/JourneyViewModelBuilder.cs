@@ -18,7 +18,8 @@ public static class JourneyViewModelBuilder
             Overview = getCensusJourneyResponse.Overview,
             Status = getCensusJourneyResponse.Status,
             ImportantDates = getCensusJourneyResponse
-                .ImportantDates.Select(date => new ImportantDate
+                .ImportantDates.OrderBy(date => date.Date)
+                .Select(date => new ImportantDate
                 {
                     Label = date.Label,
                     FormattedDate = date.Date.ToString("d MMMM yyyy", CultureInfo.InvariantCulture),
