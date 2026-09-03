@@ -55,7 +55,7 @@ public class CensusJourneyResponseBuilder
     {
         return new GetCensusJourneyResponse
         {
-            StepByStep = new StepByStepCollection(_steps),
+            StepByStep = _steps,
             CallToAction = new CallToAction
             {
                 ButtonText = _callToActionButtonText,

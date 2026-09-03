@@ -2,16 +2,8 @@ namespace SchoolAccount.Application.Features.GetCensusJourney;
 
 public record GetCensusJourneyResponse
 {
-    public StepByStepCollection StepByStep { get; init; } = [];
+    public List<StepByStep> StepByStep { get; init; } = [];
     public CallToAction CallToAction { get; init; }
-}
-
-public class StepByStepCollection : List<StepByStep>
-{
-    public StepByStepCollection() { }
-
-    public StepByStepCollection(IEnumerable<StepByStep> steps)
-        : base(steps) { }
 }
 
 public record StepByStep
