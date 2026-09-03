@@ -1,21 +1,4 @@
-@using GovUk.Frontend.AspNetCore
 @model SchoolAccount.Web.Mvc.Features.Shared.StepByStep.StepByStepViewModelCollection
-
-<script type="text/javascript" src="javascript/step-by-step/step-by-step.navigation.js" asp-append-version="true"></script>
-<script type="text/javascript">
-  function initialiseStepByStep() {
-    let $element = document.querySelector('#@Model.DetermineWrapperIdentifier()');
-    let stepByStepNavigation = new GOVUK.Modules.AppStepNav($element).init();
-  }
-
-  (function () {
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', initialiseStepByStep);
-    } else {
-      initialiseStepByStep();
-    }
-  })();
-</script>
 
 <div data-module="appstepnav" id="@Model.DetermineWrapperIdentifier()"
      data-id="@Model.Identifier" data-remember="@Model.RememberOpenedSteps"
@@ -61,3 +44,19 @@
   </ol>
   
 </div>
+
+<script type="text/javascript" src="javascript/step-by-step/step-by-step.navigation.js" asp-append-version="true"></script>
+<script type="text/javascript">
+  function initialiseStepByStep() {
+    let $element = document.querySelector('#@Model.DetermineWrapperIdentifier()');
+    let stepByStepNavigation = new GOVUK.Modules.AppStepNav($element).init();
+  }
+
+  (function () {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initialiseStepByStep);
+    } else {
+      initialiseStepByStep();
+    }
+  })();
+</script>
