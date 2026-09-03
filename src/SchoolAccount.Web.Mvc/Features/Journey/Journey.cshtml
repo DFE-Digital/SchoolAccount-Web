@@ -2,39 +2,39 @@
 @{
     ViewData["Title"] = "Journey";
 }
-<caption class="govuk-caption-l">@Model.Caption</caption>
-<h1 class="govuk-heading-l">@Model.Title</h1>
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <span class="govuk-caption-xl census-title">@Model.Caption</span>
+        <h1 class="govuk-heading-l">@Model.Title</h1>
 
-@if (Model.DisplayImportantDates)
-{
-    <div class="govuk-grid-column-one-third">
-        <h2 class="gov-uk-heading-m">Important dates</h2>
-        <dl class="govuk-summary-list govuk-!-margin-bottom-9">
-            <div class="govuk-summary-list__row app-govuk-summary-list__two-column">
+        @if (Model.DisplayOverview)
+        {
+            <h2 class="govuk-heading-m">Overview</h2>
+            <p class="govuk-body">@Model.Overview</p>
+        }
+
+        <govuk-button-link
+            href="@Model.CallToAction.Url"
+            rel="noreferrer noopener"
+            target="_blank">
+            @Model.CallToAction.Label
+            <span class="govuk-visually-hidden"> opens in new tab</span>
+        </govuk-button-link>
+    </div>
+
+    @if (Model.DisplayImportantDates)
+    {
+        <div class="govuk-grid-column-one-third">
+            <h2 class="govuk-heading-m">Important dates</h2>
+            <govuk-summary-list>
                 @foreach (var date in Model.ImportantDates)
                 {
-                    <dt class="govuk-summary-list__key">
-                        @date.Label
-                    </dt>
-                    <dd class="govuk-summary-list__value">
-                        {{ @date.Date | govukDate }}
-                    </dd>
+                    <row>
+                        <key>@date.Label</key>
+                        <value>@date.FormattedDate</value>
+                    </row>
                 }
-            </div>
-        </dl>
-    </div>
-}
-
-@if (Model.DisplayOverview)
-{
-    <h2 class="govuk-heading-m">Overview</h2>
-    <body class="govuk-body">@Model.Overview</body>
-}
-
-<govuk-button-link
-    href="@Model.CallToAction.Url"
-    rel="noreferrer noopener"
-    target="_blank">
-    @Model.CallToAction.Label
-    <span class="govuk-visually-hidden"> opens in new tab</span>
-</govuk-button-link>
+            </govuk-summary-list>
+        </div>
+    }
+</div>

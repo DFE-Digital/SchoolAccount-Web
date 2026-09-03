@@ -1,3 +1,4 @@
+using System.Globalization;
 using SchoolAccount.Application.Features.GetCensusJourney;
 
 namespace SchoolAccount.Web.Mvc.Features.Journey;
@@ -15,7 +16,13 @@ public static class JourneyViewModelBuilder
             Title = getCensusJourneyResponse.Title,
             Caption = getCensusJourneyResponse.Caption,
             Overview = getCensusJourneyResponse.Overview,
-            ImportantDates = getCensusJourneyResponse.ImportantDates,
+            ImportantDates = getCensusJourneyResponse
+                .ImportantDates.Select(date => new ImportantDate
+                {
+                    Label = date.Label,
+                    FormattedDate = date.Date.ToString("d MMMM yyyy", CultureInfo.InvariantCulture),
+                })
+                .ToList(),
             CallToAction = getCensusJourneyResponse.CallToAction,
         };
     }

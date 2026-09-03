@@ -6,8 +6,9 @@
   $govuk-global-styles: true
 );
 
-@use 'components/dfe-header-static-sign-out';
-@use 'components/card';
+@use "components/dfe-header-static-sign-out";
+@use "components/card";
+@use "components/govuk-summary-list";
 
 * {
   font-family: 'Inter', sans-serif!important;
