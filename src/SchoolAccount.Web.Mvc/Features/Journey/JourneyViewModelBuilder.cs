@@ -16,6 +16,7 @@ public static class JourneyViewModelBuilder
             Title = getCensusJourneyResponse.Title,
             Caption = getCensusJourneyResponse.Caption,
             Overview = getCensusJourneyResponse.Overview,
+            Status = getCensusJourneyResponse.Status,
             ImportantDates = getCensusJourneyResponse
                 .ImportantDates.Select(date => new ImportantDate
                 {
@@ -23,7 +24,6 @@ public static class JourneyViewModelBuilder
                     FormattedDate = date.Date.ToString("d MMMM yyyy", CultureInfo.InvariantCulture),
                 })
                 .ToList(),
-            Status = getCensusJourneyResponse.Status,
             CallToAction = getCensusJourneyResponse.CallToAction,
         };
     }

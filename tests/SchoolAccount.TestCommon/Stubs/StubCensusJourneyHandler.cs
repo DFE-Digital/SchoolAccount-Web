@@ -1,5 +1,6 @@
 using SchoolAccount.Application.Features.GetCensusJourney;
 using SchoolAccount.TestCommon.Builders;
+using SchoolAccount.TestCommon.Builders.GetCensusJourney;
 
 namespace SchoolAccount.TestCommon.Stubs;
 

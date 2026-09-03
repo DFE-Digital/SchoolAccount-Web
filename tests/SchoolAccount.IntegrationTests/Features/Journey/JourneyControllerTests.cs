@@ -3,6 +3,7 @@ using SchoolAccount.IntegrationTests.Common;
 using SchoolAccount.IntegrationTests.Common.Extensions;
 using SchoolAccount.IntegrationTests.Common.Pages;
 using SchoolAccount.TestCommon.Builders;
+using SchoolAccount.TestCommon.Builders.GetCensusJourney;
 using SchoolAccount.TestCommon.Stubs;
 using Shouldly;
 
