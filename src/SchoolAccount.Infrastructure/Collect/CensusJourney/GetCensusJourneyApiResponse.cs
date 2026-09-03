@@ -8,7 +8,7 @@ public class GetCensusJourneyApiResponse
 
     public GetCensusJourneyApiResponseStatus Status { get; init; }
 
-    public IReadOnlyList<GetCensusJourneyApiResponseImportantDates> ImportantDates { get; init; } =
+    public IReadOnlyList<GetCensusJourneyApiResponseImportantDate> ImportantDates { get; init; } =
     [];
 
     public required GetCensusJourneyApiResponseCallToAction CallToAction { get; init; }
@@ -16,11 +16,10 @@ public class GetCensusJourneyApiResponse
 
 public class GetCensusJourneyApiResponseStatus
 {
-    public string Name { get; init; }
     public string Label { get; init; }
 }
 
-public class GetCensusJourneyApiResponseImportantDates
+public class GetCensusJourneyApiResponseImportantDate
 {
     public string Label { get; init; }
     public DateOnly Date { get; init; }

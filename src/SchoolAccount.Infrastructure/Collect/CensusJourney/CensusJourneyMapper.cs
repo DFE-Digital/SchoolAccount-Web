@@ -26,13 +26,9 @@ public static class CensusJourneyMapper
             Title = content.Title,
             Caption = content.Caption,
             Overview = content.Overview,
-            Status = new GetCensusJourneyResponseStatus
-            {
-                Name = content.Status.Name,
-                Label = content.Status.Label,
-            },
+            Status = content.Status.Label,
             ImportantDates = content
-                .ImportantDates.Select(importantDate => new GetCensusJourneyResponseImportantDates
+                .ImportantDates.Select(importantDate => new GetCensusJourneyResponseImportantDate
                 {
                     Label = importantDate.Label,
                     Date = importantDate.Date,

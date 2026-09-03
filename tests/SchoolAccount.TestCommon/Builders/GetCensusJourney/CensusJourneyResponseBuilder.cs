@@ -5,21 +5,22 @@ namespace SchoolAccount.TestCommon.Builders.GetCensusJourney;
 
 public class CensusJourneyResponseBuilder
 {
-    private string _title = "Autumn School Census";
-    private string _caption = "Complete your census return";
-    private string _overview = "";
-    private List<GetCensusJourneyResponseImportantDates> _importantDates = [];
-    private GetCensusJourneyResponseStatus _status = new GetCensusJourneyResponseStatus
-    {
-        Name = "notStarted",
-        Label = "Not Started",
-    };
     private string _callToActionLabel = "Go to Autumn Census 2026";
+
     private Uri _callToActionUrl = new(
         "https://www.gov.uk/guidance/complete-the-school-census/generate-and-submit-your-return"
     );
 
-    public static CensusJourneyResponseBuilder Create() => new();
+    private string _caption = "Complete your census return";
+    private readonly List<GetCensusJourneyResponseImportantDate> _importantDates = [];
+    private string? _overview;
+    private string _status = "Not Started";
+    private string _title = "Autumn School Census";
+
+    public static CensusJourneyResponseBuilder Create()
+    {
+        return new CensusJourneyResponseBuilder();
+    }
 
     public CensusJourneyResponseBuilder WithTitle(string title)
     {
@@ -39,17 +40,29 @@ public class CensusJourneyResponseBuilder
         return this;
     }
 
-    public CensusJourneyResponseBuilder WithStatus(GetCensusJourneyResponseStatus status)
+    public CensusJourneyResponseBuilder WithStatus(string status)
     {
         _status = status;
         return this;
     }
 
-    public CensusJourneyResponseBuilder WithImportantDates(
-        List<GetCensusJourneyResponseImportantDates> importantDates
+    public CensusJourneyResponseBuilder WithImportantDate(
+        GetCensusJourneyResponseImportantDateBuilder builder
     )
     {
-        _importantDates = importantDates;
+        _importantDates.Add(builder.Build());
+        return this;
+    }
+
+    public CensusJourneyResponseBuilder WithImportantDates(
+        params GetCensusJourneyResponseImportantDateBuilder[] builders
+    )
+    {
+        foreach (var builder in builders)
+        {
+            _importantDates.Add(builder.Build());
+        }
+
         return this;
     }
 
