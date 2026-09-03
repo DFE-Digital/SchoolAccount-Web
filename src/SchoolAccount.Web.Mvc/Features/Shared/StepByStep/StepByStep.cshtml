@@ -1,7 +1,7 @@
 @model SchoolAccount.Web.Mvc.Features.Shared.StepByStep.StepByStepViewModelCollection
 
 <div data-module="appstepnav" id="@Model.DetermineWrapperIdentifier()"
-     data-id="@Model.Identifier" data-remember="@Model.RememberOpenedSteps"
+     data-id="@Model.Identifier" @(Model.RememberOpenedSteps ? "data-remember-state=\"true\"" : "")
      class="app-step-nav js-hidden app-step-nav--large app-step-nav--tags" data-show-text="Show" data-hide-text="Hide"
      data-show-all-text="Show all steps" data-hide-all-text="Hide all steps">
   
@@ -45,7 +45,7 @@
   
 </div>
 
-<script type="text/javascript" src="javascript/step-by-step/step-by-step.navigation.js" asp-append-version="true"></script>
+<script type="text/javascript" src="lib/step-by-step/step-by-step.navigation.js" asp-append-version="true"></script>
 <script type="text/javascript">
   function initialiseStepByStep() {
     let $element = document.querySelector('#@Model.DetermineWrapperIdentifier()');
