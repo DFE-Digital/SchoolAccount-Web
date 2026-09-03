@@ -23,10 +23,20 @@ public static class CensusJourneyMapper
     {
         return new GetCensusJourneyResponse
         {
-            CallToAction = new CallToAction
+            Title = content.Title,
+            Caption = content.Caption,
+            Overview = content.Overview,
+            ImportantDates = content
+                .ImportantDates.Select(importantDate => new GetCensusJourneyResponseImportantDates
+                {
+                    Label = importantDate.Label,
+                    Date = importantDate.Date,
+                })
+                .ToList(),
+            CallToAction = new GetCensusJourneyResponseCallToAction
             {
                 Url = content.CallToAction.Url,
-                ButtonText = content.CallToAction.Label,
+                Label = content.CallToAction.Label,
             },
         };
     }

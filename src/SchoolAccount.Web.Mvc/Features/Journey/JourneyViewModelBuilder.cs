@@ -12,8 +12,11 @@ public static class JourneyViewModelBuilder
         return new JourneyViewModel
         {
             User = user,
-            CallToActionUrl = getCensusJourneyResponse.CallToAction.Url,
-            CallToActionButtonText = getCensusJourneyResponse.CallToAction.ButtonText,
+            Title = getCensusJourneyResponse.Title,
+            Caption = getCensusJourneyResponse.Caption,
+            Overview = getCensusJourneyResponse.Overview,
+            ImportantDates = getCensusJourneyResponse.ImportantDates,
+            CallToAction = getCensusJourneyResponse.CallToAction,
         };
     }
 }
