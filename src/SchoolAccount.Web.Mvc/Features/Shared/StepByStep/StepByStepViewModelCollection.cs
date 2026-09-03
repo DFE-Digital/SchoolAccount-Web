@@ -4,20 +4,24 @@ namespace SchoolAccount.Web.Mvc.Features.Shared.StepByStep;
 
 public class StepByStepViewModelCollection
 {
-    public Guid Identifier { get; init; } = Guid.NewGuid();
+    public Guid Identifier { get; init; }
     public List<StepByStepViewModel> Steps { get; } = [];
 
-    protected StepByStepViewModelCollection() { }
-
-    public static StepByStepViewModelCollection Create()
+    protected StepByStepViewModelCollection(Guid identifier)
     {
-        return new StepByStepViewModelCollection();
+        Identifier = identifier;
+    }
+
+    public static StepByStepViewModelCollection Create(Guid identifier)
+    {
+        return new StepByStepViewModelCollection(identifier);
     }
 
     protected StepByStepViewModelCollection(
+        Guid identifier,
         IEnumerable<Application.Features.GetCensusJourney.StepByStep> steps
     )
-        : this()
+        : this(identifier)
     {
         foreach (var step in steps)
         {
@@ -26,10 +30,11 @@ public class StepByStepViewModelCollection
     }
 
     public static StepByStepViewModelCollection Create(
+        Guid identifier,
         IEnumerable<Application.Features.GetCensusJourney.StepByStep> steps
     )
     {
-        return new StepByStepViewModelCollection(steps);
+        return new StepByStepViewModelCollection(identifier, steps);
     }
 
     public void AddStep(Application.Features.GetCensusJourney.StepByStep step)

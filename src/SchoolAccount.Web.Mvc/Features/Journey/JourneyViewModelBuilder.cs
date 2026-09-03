@@ -1,3 +1,4 @@
+using SchoolAccount.Application.Extensions;
 using SchoolAccount.Application.Features.GetCensusJourney;
 using SchoolAccount.Web.Mvc.Features.Shared.StepByStep;
 
@@ -15,7 +16,10 @@ public static class JourneyViewModelBuilder
             User = user,
             CallToActionUrl = getCensusJourneyResponse.CallToAction.Url,
             CallToActionButtonText = getCensusJourneyResponse.CallToAction.ButtonText,
-            Steps = StepByStepViewModelCollection.Create(getCensusJourneyResponse.StepByStep),
+            Steps = StepByStepViewModelCollection.Create(
+                "Journey:StepByStep".AsGuid(),
+                getCensusJourneyResponse.StepByStep
+            ),
         };
     }
 }
