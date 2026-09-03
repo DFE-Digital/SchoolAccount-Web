@@ -1,3 +1,4 @@
+using SchoolAccount.Application.Extensions;
 using SchoolAccount.Web.Mvc.Helpers;
 
 namespace SchoolAccount.Web.Mvc.Features.Shared.StepByStep;
@@ -5,7 +6,8 @@ namespace SchoolAccount.Web.Mvc.Features.Shared.StepByStep;
 public class StepByStepViewModelCollection
 {
     public Guid Identifier { get; init; }
-    public List<StepByStepViewModel> Steps { get; } = [];
+    public List<StepByStepViewModel> Steps { get; protected set; } = [];
+    public bool RememberOpenedSteps { get; protected set; }
 
     protected StepByStepViewModelCollection(Guid identifier)
     {
@@ -17,27 +19,14 @@ public class StepByStepViewModelCollection
         return new StepByStepViewModelCollection(identifier);
     }
 
-    protected StepByStepViewModelCollection(
-        Guid identifier,
-        IEnumerable<Application.Features.GetCensusJourney.StepByStep> steps
-    )
-        : this(identifier)
+    public static StepByStepViewModelCollection Create(string identifier)
     {
-        foreach (var step in steps)
-        {
-            AddStep(step);
-        }
+        return new StepByStepViewModelCollection(identifier.AsGuid());
     }
 
-    public static StepByStepViewModelCollection Create(
-        Guid identifier,
-        IEnumerable<Application.Features.GetCensusJourney.StepByStep> steps
+    public StepByStepViewModelCollection AddStep(
+        Application.Features.GetCensusJourney.StepByStep step
     )
-    {
-        return new StepByStepViewModelCollection(identifier, steps);
-    }
-
-    public void AddStep(Application.Features.GetCensusJourney.StepByStep step)
     {
         Dictionary<string, string[]> requiredClasses = new()
         {
@@ -61,6 +50,25 @@ public class StepByStepViewModelCollection
         };
 
         Steps.Add(model);
+        return this;
+    }
+
+    public StepByStepViewModelCollection AddSteps(
+        IEnumerable<Application.Features.GetCensusJourney.StepByStep> steps
+    )
+    {
+        foreach (var step in steps)
+        {
+            AddStep(step);
+        }
+
+        return this;
+    }
+
+    public StepByStepViewModelCollection RememberSteps()
+    {
+        RememberOpenedSteps = true;
+        return this;
     }
 
     public string DetermineWrapperIdentifier()

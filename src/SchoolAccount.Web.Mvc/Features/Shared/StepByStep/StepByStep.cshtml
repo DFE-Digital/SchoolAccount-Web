@@ -1,7 +1,6 @@
 @using GovUk.Frontend.AspNetCore
 @model SchoolAccount.Web.Mvc.Features.Shared.StepByStep.StepByStepViewModelCollection
 
-<script type="text/javascript" src="javascript/step-by-step/step-by-step.pollyfills.js" asp-append-version="true"></script>
 <script type="text/javascript" src="javascript/step-by-step/step-by-step.navigation.js" asp-append-version="true"></script>
 <script type="text/javascript">
   function initialiseStepByStep() {
@@ -19,6 +18,7 @@
 </script>
 
 <div data-module="appstepnav" id="@Model.DetermineWrapperIdentifier()"
+     data-id="@Model.Identifier" data-remember="@Model.RememberOpenedSteps"
      class="app-step-nav js-hidden app-step-nav--large app-step-nav--tags" data-show-text="Show" data-hide-text="Hide"
      data-show-all-text="Show all steps" data-hide-all-text="Hide all steps">
   
