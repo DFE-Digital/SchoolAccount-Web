@@ -9,9 +9,9 @@
 @use 'components/dfe-header-static-sign-out';
 @use 'components/card';
 
-@use 'components/steps/_step-by-step-navigation';
-@use 'components/steps/_step-by-step-navigation-header';
-@use 'components/steps/_step-by-step-navigation-related';
+@use 'components/step-by-step/_step-by-step-navigation';
+@use 'components/step-by-step/_step-by-step-navigation-header';
+@use 'components/step-by-step/_step-by-step-navigation-related';
 * {
   font-family: 'Inter', sans-serif!important;
 }
