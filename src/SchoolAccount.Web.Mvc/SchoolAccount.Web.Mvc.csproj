@@ -33,4 +33,9 @@
   <ItemGroup>
     <_ContentIncludedByDefault Remove="Features\Home\Home.cshtml" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\plugins\step-by-step-navigation.js" />
+    <None Include="wwwroot\plugins\step-by-step-polyfills.js" />
+  </ItemGroup>
 </Project>
