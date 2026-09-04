@@ -11,10 +11,5 @@ public sealed class JourneyViewModel
     public string CallToActionButtonText { get; init; }
 
     public StepByStepViewModelCollection? Steps { get; init; }
-
-    public bool TryGetSteps(out StepByStepViewModelCollection steps)
-    {
-        steps = Steps!;
-        return Steps?.HasItems() == true;
-    }
+    public bool HasSteps => Steps is not null;
 }

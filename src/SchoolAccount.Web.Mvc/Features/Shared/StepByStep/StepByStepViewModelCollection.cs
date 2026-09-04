@@ -7,6 +7,7 @@ public class StepByStepViewModelCollection
 {
     public Guid Identifier { get; init; }
     public List<StepByStepViewModel> Steps { get; protected set; } = [];
+    public bool HasItems => Steps.Count > 0;
     public bool RememberOpenedSteps { get; protected set; }
 
     protected StepByStepViewModelCollection(Guid identifier)
@@ -84,10 +85,5 @@ public class StepByStepViewModelCollection
     public string DeterminePanelIdentifier(int index)
     {
         return $"sbs-{Identifier}-panel-{index}";
-    }
-
-    public bool HasItems()
-    {
-        return Steps.Count > 0;
     }
 }
