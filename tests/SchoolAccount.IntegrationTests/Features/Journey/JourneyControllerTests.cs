@@ -86,10 +86,9 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     }
 
     [Theory]
-    [InlineData(null)]
     [InlineData("")]
     [InlineData("      ")]
-    public async Task Overview_does_not_render_when_null_or_empty(string? overview)
+    public async Task Overview_does_not_render_for_an_empty_string(string overview)
     {
         // Arrange
         var token = TestContext.Current.CancellationToken;

@@ -13,7 +13,7 @@ public class CensusJourneyResponseBuilder
 
     private string _caption = "Complete your census return";
     private readonly List<ImportantDate> _importantDates = [];
-    private string? _overview;
+    private string _overview;
     private string _status = "Not Started";
     private readonly List<StepByStep> _steps = [];
     private string _title = "Autumn School Census";
@@ -35,7 +35,7 @@ public class CensusJourneyResponseBuilder
         return this;
     }
 
-    public CensusJourneyResponseBuilder WithOverview(string? overview)
+    public CensusJourneyResponseBuilder WithOverview(string overview)
     {
         _overview = overview;
         return this;

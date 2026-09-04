@@ -4,7 +4,7 @@ public class GetCensusJourneyApiResponse
 {
     public string Title { get; init; }
     public string Caption { get; init; }
-    public string? Overview { get; init; }
+    public string Overview { get; init; } = string.Empty;
 
     public GetCensusJourneyApiResponseStatus Status { get; init; }
 

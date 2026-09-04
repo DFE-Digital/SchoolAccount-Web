@@ -4,7 +4,7 @@ public record GetCensusJourneyResponse
 {
     public string Title { get; init; }
     public string Caption { get; init; }
-    public string? Overview { get; init; }
+    public string Overview { get; init; } = string.Empty;
     public string Status { get; init; }
     public IReadOnlyList<ImportantDate> ImportantDates { get; init; } = [];
     public List<StepByStep> StepByStep { get; init; } = [];
