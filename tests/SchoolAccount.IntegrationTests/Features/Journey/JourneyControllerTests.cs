@@ -195,7 +195,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     }
 
     [Fact]
-    public async Task Call_to_action_button_has_hidden_opens_in_new_tab_for_screen_readers()
+    public async Task Call_to_action_button_has_hidden_opens_in_new_tab_text_for_screen_readers()
     {
         // Arrange
         var token = TestContext.Current.CancellationToken;
@@ -219,5 +219,32 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         callToActionButton.TextContent.Trim().ShouldStartWith("Go to Autumn Census 2026");
         callToActionButton.TextContent.Trim().ShouldEndWith("opens in new tab");
         hiddenSpan.TextContent.Trim().ShouldStartWith("opens in new tab");
+    }
+
+    [Fact]
+    public async Task There_are_steps_on_the_page_by_default()
+    {
+        // Arrange
+        var pageUri = _factory.GeneratePath("Journey", "Journey");
+        _getCensusJourneyHandler.Returns(ACensusJourneyResponse().WithSteps().AsSuccess());
+
+        // Act
+        var message = await _client.GetAsync(pageUri, TestContext.Current.CancellationToken);
+        var page = await AngleSharpPage.FromResponseAsync<JourneyPage>(
+            message,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        message.StatusCode.ShouldBe(HttpStatusCode.OK);
+
+        var component = page.GetStepsComponent();
+        component.IsPresent.ShouldBeTrue();
+
+        var steps = component.GetSteps();
+        steps.Count.ShouldBeGreaterThan(0);
+        steps
+            .Select(x => x.GetTitle())
+            .ShouldBeSubsetOf(["This is a fake step 1", "This is a fake step 2"]);
     }
 }

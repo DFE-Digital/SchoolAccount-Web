@@ -4,10 +4,13 @@ namespace SchoolAccount.TestCommon.Builders.GetCensusJourney;
 
 public class GetCensusJourneyResponseImportantDateBuilder
 {
-    private string _label = "Return due";
     private DateOnly _date = DateOnly.FromDateTime(DateTime.Now);
+    private string _label = "Return due";
 
-    public static GetCensusJourneyResponseImportantDateBuilder AnImportantDate() => new();
+    public static GetCensusJourneyResponseImportantDateBuilder AnImportantDate()
+    {
+        return new GetCensusJourneyResponseImportantDateBuilder();
+    }
 
     public GetCensusJourneyResponseImportantDateBuilder WithLabel(string label)
     {
@@ -21,8 +24,8 @@ public class GetCensusJourneyResponseImportantDateBuilder
         return this;
     }
 
-    public GetCensusJourneyResponseImportantDate Build()
+    public ImportantDate Build()
     {
-        return new GetCensusJourneyResponseImportantDate { Label = _label, Date = _date };
+        return new ImportantDate { Label = _label, Date = _date };
     }
 }

@@ -6,12 +6,20 @@
   $govuk-global-styles: true
 );
 
+@use "lib/step-by-step/step-by-step-navigation";
+@use "lib/step-by-step/step-by-step-navigation-header";
+@use "lib/step-by-step/step-by-step-navigation-related";
+
+@use "components/dfe-header-static-sign-out";
+@use "components/card";
+@use "components/step-by-step";
+@use "components/tags";
 @use "components/dfe-header-static-sign-out";
 @use "components/card";
 @use "components/govuk-summary-list";
 
 * {
-  font-family: 'Inter', sans-serif!important;
+  font-family: 'Inter', sans-serif !important;
 }
 
 .govuk-header__link .govuk-header__logotype {

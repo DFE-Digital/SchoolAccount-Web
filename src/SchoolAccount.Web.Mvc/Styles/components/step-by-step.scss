@@ -1,0 +1,13 @@
+@use "govuk-frontend" as *;
+
+.app-step-nav--large {
+  .app-step-nav__button--title {
+    @include govuk-font($size: 19, $weight: bold);
+  }
+}
+
+.app-step-nav--tags {
+  .govuk-tag {
+    margin-top: govuk-spacing(3);
+  }
+}

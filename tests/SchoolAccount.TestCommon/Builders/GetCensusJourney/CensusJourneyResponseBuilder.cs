@@ -12,9 +12,10 @@ public class CensusJourneyResponseBuilder
     );
 
     private string _caption = "Complete your census return";
-    private readonly List<GetCensusJourneyResponseImportantDate> _importantDates = [];
+    private readonly List<ImportantDate> _importantDates = [];
     private string? _overview;
     private string _status = "Not Started";
+    private readonly List<StepByStep> _steps = [];
     private string _title = "Autumn School Census";
 
     public static CensusJourneyResponseBuilder ACensusJourneyResponse()
@@ -66,6 +67,26 @@ public class CensusJourneyResponseBuilder
         return this;
     }
 
+    public CensusJourneyResponseBuilder WithSteps()
+    {
+        _steps.Add(
+            new StepByStep
+            {
+                Title = "This is a fake step 1",
+                Body = "<p>This is a fake step body</p>",
+            }
+        );
+        _steps.Add(
+            new StepByStep
+            {
+                Title = "This is a fake step 2",
+                Body = "<p>This is a super fake step body</p>",
+            }
+        );
+
+        return this;
+    }
+
     public CensusJourneyResponseBuilder WithCallToActionUrl(Uri callToActionUrl)
     {
         _callToActionUrl = callToActionUrl;
@@ -92,11 +113,7 @@ public class CensusJourneyResponseBuilder
             Overview = _overview,
             Status = _status,
             ImportantDates = _importantDates,
-            CallToAction = new GetCensusJourneyResponseCallToAction
-            {
-                Label = _callToActionLabel,
-                Url = _callToActionUrl,
-            },
+            CallToAction = new CallToAction { Label = _callToActionLabel, Url = _callToActionUrl },
         };
     }
 }
