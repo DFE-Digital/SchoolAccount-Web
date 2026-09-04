@@ -113,6 +113,7 @@ public class CensusJourneyResponseBuilder
             Overview = _overview,
             Status = _status,
             ImportantDates = _importantDates,
+            StepByStep = _steps,
             CallToAction = new CallToAction { Label = _callToActionLabel, Url = _callToActionUrl },
         };
     }
