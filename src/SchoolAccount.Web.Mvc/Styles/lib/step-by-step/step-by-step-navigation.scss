@@ -263,8 +263,8 @@ $top-border: solid 1px govuk-colour('black', $variant: 'tint-80');
     z-index: 6;
     bottom: 0;
     left: 0;
-    margin-left: $number-circle-size / 4;
-    width: $number-circle-size / 2;
+    margin-left: calc($number-circle-size / 4);
+    width: calc($number-circle-size / 2);
     height: 0;
     border-bottom: solid $stroke-width govuk-colour('black', $variant: 'tint-80');
   }
@@ -281,8 +281,8 @@ $top-border: solid 1px govuk-colour('black', $variant: 'tint-80');
   .app-step-nav--large & {
     @include govuk-media-query($from: tablet) {
       &:before {
-        margin-left: $number-circle-size-large / 4;
-        width: $number-circle-size-large / 2;
+        margin-left: calc($number-circle-size-large / 4);
+        width: calc($number-circle-size-large / 2);
       }
 
       &:after {
