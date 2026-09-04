@@ -4,7 +4,7 @@
 
 .app-step-nav-header {
   @include govuk-font(24, $weight: bold);
-  @include govuk-text-colour;
+  color: govuk-functional-colour('text');
 
   position: relative;
   padding: 10px;
