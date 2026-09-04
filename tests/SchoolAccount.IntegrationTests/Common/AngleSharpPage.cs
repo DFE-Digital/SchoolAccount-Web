@@ -54,6 +54,18 @@ public abstract class AngleSharpPage
         return bodyElement?.TextContent;
     }
 
+    public virtual string? GetFirstBodyParagraph()
+    {
+        var bodyElement = Page.QuerySelector("p.govuk-body");
+        return bodyElement?.TextContent;
+    }
+
+    public virtual string? GetFirstCaption()
+    {
+        var captionElement = Page.QuerySelector("span.govuk-caption-xl");
+        return captionElement?.TextContent;
+    }
+
     public virtual string? GetSignOutLink()
     {
         var signOutElement = Page.QuerySelector("button");
@@ -64,6 +76,33 @@ public abstract class AngleSharpPage
     {
         var organisationNameElement = Page.QuerySelector(".header-navigation__school");
         return organisationNameElement?.TextContent;
+    }
+
+    public virtual string GetFirstTag()
+    {
+        var tagElement = Page.QuerySelector(".govuk-tag");
+        return tagElement?.TextContent;
+    }
+
+    public virtual IReadOnlyDictionary<string, string> GetSummaryListPairs()
+    {
+        return Page.QuerySelectorAll("dl.govuk-summary-list div.govuk-summary-list__row")
+            .ToDictionary(
+                row => row.QuerySelector(".govuk-summary-list__key")!.TextContent.Trim(),
+                row => row.QuerySelector(".govuk-summary-list__value")!.TextContent.Trim()
+            );
+    }
+
+    public virtual IReadOnlyList<(string Key, string Value)> GetSummaryListRows()
+    {
+        return Page.QuerySelectorAll("dl.govuk-summary-list div.govuk-summary-list__row")
+            .Select(row =>
+                (
+                    Key: row.QuerySelector(".govuk-summary-list__key")!.TextContent.Trim(),
+                    Value: row.QuerySelector(".govuk-summary-list__value")!.TextContent.Trim()
+                )
+            )
+            .ToList();
     }
 
     public virtual IElement? GetFooterLink(string href)
