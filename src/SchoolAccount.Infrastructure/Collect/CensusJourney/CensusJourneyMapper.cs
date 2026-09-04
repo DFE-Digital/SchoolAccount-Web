@@ -23,6 +23,17 @@ public static class CensusJourneyMapper
     {
         return new GetCensusJourneyResponse
         {
+            Title = content.Title,
+            Caption = content.Caption,
+            Overview = content.Overview,
+            Status = content.Status.Label,
+            ImportantDates = content
+                .ImportantDates.Select(importantDate => new ImportantDate
+                {
+                    Label = importantDate.Label,
+                    Date = importantDate.Date,
+                })
+                .ToList(),
             StepByStep =
             [
                 new StepByStep
@@ -97,7 +108,7 @@ public static class CensusJourneyMapper
             CallToAction = new CallToAction
             {
                 Url = content.CallToAction.Url,
-                ButtonText = content.CallToAction.Label,
+                Label = content.CallToAction.Label,
             },
         };
     }

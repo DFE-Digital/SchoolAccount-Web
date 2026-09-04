@@ -2,19 +2,48 @@
 @{
     ViewData["Title"] = "Journey";
 }
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <span class="govuk-caption-xl census-title">@Model.Caption</span>
+        <h1 class="govuk-heading-l">@Model.Title</h1>
 
-<h1 class="govuk-heading-l">Hello @Model.User</h1>
+        <strong
+            class="govuk-tag govuk-tag--grey status-tag govuk-!-margin-bottom-6 govuk-tag--wide">@Model.Status</strong>
 
-@if (Model.TryGetSteps(out var steps))
-{
-    <h2 class="govuk-heading-m">Step by step</h2>
-    <partial name="~/Features/Shared/StepByStep/StepByStep.cshtml" model="@steps"/>
-}
+        @if (Model.DisplayOverview)
+        {
+            <h2 class="govuk-heading-m">Overview</h2>
+            <p class="govuk-body">@Model.Overview</p>
+        }
+        
+        @if (Model.TryGetSteps(out var steps))
+        {
+            <h2 class="govuk-heading-m">Step by step</h2>
+            <partial name="~/Features/Shared/StepByStep/StepByStep.cshtml" model="@steps"/>
+        }
 
-<govuk-button-link
-    href="@Model.CallToActionUrl"
-    rel="noreferrer noopener"
-    target="_blank">
-    @Model.CallToActionButtonText
-    <span class="govuk-visually-hidden"> opens in new tab</span>
-</govuk-button-link>
+        <govuk-button-link
+            href="@Model.CallToAction.Url"
+            rel="noreferrer noopener"
+            target="_blank">
+            @Model.CallToAction.Label
+            <span class="govuk-visually-hidden"> opens in new tab</span>
+        </govuk-button-link>
+    </div>
+
+    @if (Model.DisplayImportantDates)
+    {
+        <div class="govuk-grid-column-one-third">
+            <h2 class="govuk-heading-m">Important dates</h2>
+            <govuk-summary-list>
+                @foreach (var date in Model.ImportantDates)
+                {
+                    <row>
+                        <key>@date.Label</key>
+                        <value>@date.FormattedDate</value>
+                    </row>
+                }
+            </govuk-summary-list>
+        </div>
+    }
+</div>
