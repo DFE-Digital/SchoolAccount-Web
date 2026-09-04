@@ -5,6 +5,12 @@
 
 <h1 class="govuk-heading-l">Hello @Model.User</h1>
 
+@if (Model.TryGetSteps(out var steps))
+{
+    <h2 class="govuk-heading-m">Step by step</h2>
+    <partial name="~/Features/Shared/StepByStep/StepByStep.cshtml" model="@steps"/>
+}
+
 <govuk-button-link
     href="@Model.CallToActionUrl"
     rel="noreferrer noopener"

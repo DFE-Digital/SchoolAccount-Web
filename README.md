@@ -182,3 +182,14 @@ docker rm web
 1. Branch from `main` using the convention `task/<short-description>` or `feature/<short-description>`.
 2. Open a [pull request](https://github.com/DFE-Digital/SchoolAccount-Web/pulls) against `main`.
 3. The [build workflow](.github/workflows/build.yml) must pass before merging.
+
+# Third-Party Libraries
+
+Some components within the solution are third-party libraries, which **cannot** be managed via NuGet packages. These 
+will be self-managed; listed below and are located within the solution under a `lib` folder.
+
+| Name                    | Version / Date Added | Source |
+|--------------------------|------------------------|--------|
+| Step By Step Navigation | Thu 3rd Sep 2026        | https://github.com/alphagov/govuk-prototype-kit-step-by-step |
+
+_Support for npm packages may be added in the future._

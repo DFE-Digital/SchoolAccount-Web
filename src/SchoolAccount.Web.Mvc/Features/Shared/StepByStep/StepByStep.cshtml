@@ -1,0 +1,62 @@
+@model SchoolAccount.Web.Mvc.Features.Shared.StepByStep.StepByStepViewModelCollection
+
+<div data-module="appstepnav" id="@Model.DetermineWrapperIdentifier()"
+     data-id="@Model.Identifier" @(Model.RememberOpenedSteps ? "data-remember-state=\"true\"" : "")
+     class="app-step-nav js-hidden app-step-nav--large app-step-nav--tags" data-show-text="Show" data-hide-text="Hide"
+     data-show-all-text="Show all steps" data-hide-all-text="Hide all steps">
+  
+  <ol class="app-step-nav__steps">
+    
+    @foreach (var step in Model.Steps)
+    {
+      <li class="app-step-nav__step js-step" id="@Model.DetermineStepIdentifier(step.Index)">
+        
+        @* Title *@
+        <div class="app-step-nav__header js-toggle-panel" data-position="@step.Index">
+          <h2 class="app-step-nav__title">
+            <span class="app-step-nav__circle app-step-nav__circle--number">
+              <span class="app-step-nav__circle-inner">
+                <span class="app-step-nav__circle-background">
+                  <span class="govuk-visually-hidden govuk-!-display-none-print">Step</span> @step.Index
+                  <span
+                    class="govuk-visually-hidden govuk-!-display-none-print" aria-hidden="true">:</span>
+                </span>
+              </span>
+            </span>
+            @if (step.TryGetStatus(out var status))
+            {
+              <strong class="govuk-tag @status.Colour status-tag govuk-tag--wide">
+                @status.Label
+              </strong>
+            }
+            <span class="js-step-title">@step.Title</span>
+          </h2>
+        </div>
+        
+        @* Content *@
+        <div class="app-step-nav__panel js-panel" id="@Model.DeterminePanelIdentifier(step.Index)">
+          @step.Content
+        </div>
+
+      </li>
+    }
+    
+  </ol>
+  
+</div>
+
+<script type="text/javascript" src="lib/step-by-step/step-by-step.navigation.js" asp-append-version="true"></script>
+<script type="text/javascript">
+  function initialiseStepByStep() {
+    let $element = document.querySelector('#@Model.DetermineWrapperIdentifier()');
+    let stepByStepNavigation = new GOVUK.Modules.AppStepNav($element).init();
+  }
+
+  (function () {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initialiseStepByStep);
+    } else {
+      initialiseStepByStep();
+    }
+  })();
+</script>
