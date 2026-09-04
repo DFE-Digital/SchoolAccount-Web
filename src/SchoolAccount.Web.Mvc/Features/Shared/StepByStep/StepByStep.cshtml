@@ -23,10 +23,10 @@
                 </span>
               </span>
             </span>
-            @if (step.TryGetStatus(out var status))
+            @if (step.HasStatus)
             {
-              <strong class="govuk-tag @status.Colour status-tag govuk-tag--wide">
-                @status.Label
+              <strong class="govuk-tag @step.Status.Colour status-tag govuk-tag--wide">
+                @step.Status.Label
               </strong>
             }
             <span class="js-step-title">@step.Title</span>

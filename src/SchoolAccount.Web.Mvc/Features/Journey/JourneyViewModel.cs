@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using SchoolAccount.Application.Features.GetCensusJourney;
 using SchoolAccount.Web.Mvc.Features.Shared.StepByStep;
 
@@ -19,17 +20,14 @@ public sealed class JourneyViewModel
 
     public StepByStepViewModelCollection? Steps { get; init; }
 
+    [MemberNotNullWhen(true, nameof(Steps))]
+    public bool HasSteps => Steps is not null;
+
     public CallToAction CallToAction { get; init; }
 
     public bool DisplayImportantDates => ImportantDates.Any();
 
     public bool DisplayOverview => !string.IsNullOrWhiteSpace(Overview);
-
-    public bool TryGetSteps(out StepByStepViewModelCollection steps)
-    {
-        steps = Steps!;
-        return Steps?.HasItems() == true;
-    }
 }
 
 public sealed class ImportantDate

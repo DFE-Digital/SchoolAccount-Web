@@ -16,10 +16,10 @@
             <p class="govuk-body">@Model.Overview</p>
         }
         
-        @if (Model.TryGetSteps(out var steps))
+        @if (Model.HasSteps)
         {
             <h2 class="govuk-heading-m">Step by step</h2>
-            <partial name="~/Features/Shared/StepByStep/StepByStep.cshtml" model="@steps"/>
+            <partial name="~/Features/Shared/StepByStep/StepByStep.cshtml" model="@Model.Steps"/>
         }
 
         <govuk-button-link
