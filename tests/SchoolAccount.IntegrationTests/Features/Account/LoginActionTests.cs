@@ -25,7 +25,7 @@ public class LoginActionTests(SchoolAccountWebApplicationFactory<Program> factor
     }
 
     [Fact]
-    public async Task Authorised_users_are_redirected_to_the_dashboard()
+    public async Task Authorised_users_are_redirected_to_the_journey_page()
     {
         // Arrange
         var client = factory.CreateAuthorisedClient();
@@ -37,7 +37,7 @@ public class LoginActionTests(SchoolAccountWebApplicationFactory<Program> factor
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
         response.Headers.Location?.OriginalString.ShouldEndWith(
-            $"{factory.GeneratePath("Dashboard", "Dashboard")}"
+            $"{factory.GeneratePath("Journey", "Journey")}"
         );
     }
 

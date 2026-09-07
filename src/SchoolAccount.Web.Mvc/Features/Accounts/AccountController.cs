@@ -13,14 +13,15 @@ public class AccountController(IUserContext userContext) : Controller
     [HttpGet]
     public IActionResult Login(Uri? returnUrl = null)
     {
-        returnUrl ??= new Uri(
-            Url.Action("Dashboard", "Dashboard")
-                ?? throw new ArgumentException(
-                    "A return url cannot be automatically determined",
-                    nameof(returnUrl)
-                ),
-            UriKind.Relative
-        );
+        var defaultRedirect = Url.Action("Journey", "Journey");
+
+        if (defaultRedirect is null)
+        {
+            var message = "A return url cannot be automatically determined";
+            throw new ArgumentException(message, nameof(returnUrl));
+        }
+
+        returnUrl ??= new Uri(defaultRedirect, UriKind.Relative);
 
         if (!Url.IsLocalUrl(returnUrl.ToString()))
         {
