@@ -1,6 +1,5 @@
 using System.Globalization;
 using SchoolAccount.Application.Features.GetCensusJourney;
-using SchoolAccount.Web.Mvc.Features.Shared.StepByStep;
 
 namespace SchoolAccount.Web.Mvc.Features.Journey;
 
@@ -27,10 +26,7 @@ public static class JourneyViewModelBuilder
                 })
                 .ToList(),
             CallToAction = getCensusJourneyResponse.CallToAction,
-            Steps = StepByStepViewModelCollection
-                .Create("Journey:StepByStep")
-                .AddSteps(getCensusJourneyResponse.StepByStep),
-            //.RememberSteps(),
+            Steps = getCensusJourneyResponse.StepByStep,
         };
     }
 }

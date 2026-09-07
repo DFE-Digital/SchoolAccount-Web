@@ -11,3 +11,23 @@
     margin-top: govuk-spacing(3);
   }
 }
+
+// Step panels are filled with HTML from the API, so it arrives without GOV.UK
+// classes on it. Style the elements themselves rather than rewriting the markup.
+// Links need nothing here: $govuk-global-styles gives every <a> the link styles.
+.app-step-nav__panel {
+  p {
+    margin: 0;
+    padding-bottom: govuk-spacing(3);
+    font-size: inherit;
+
+    @include govuk-media-query($from: tablet) {
+      padding-bottom: govuk-spacing(6);
+    }
+  }
+
+  ul {
+    @extend %govuk-list;
+    @extend %govuk-list--bullet;
+  }
+}
