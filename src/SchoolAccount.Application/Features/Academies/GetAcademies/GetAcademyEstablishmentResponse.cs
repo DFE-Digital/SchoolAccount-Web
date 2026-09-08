@@ -1,4 +1,4 @@
-namespace SchoolAccount.Application.Features.Academies;
+namespace SchoolAccount.Application.Features.Academies.GetAcademies;
 
 public class GetAcademyEstablishmentResponse
 {

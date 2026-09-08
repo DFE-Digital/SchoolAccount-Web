@@ -1,4 +1,5 @@
 using SchoolAccount.Application.Features.Academies;
+using SchoolAccount.Application.Features.Academies.GetAcademies;
 
 namespace SchoolAccount.Application.Abstractions.Clients;
 

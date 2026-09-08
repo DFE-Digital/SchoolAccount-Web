@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using GovUK.Dfe.AcademiesApi.Client.Contracts;
 using SchoolAccount.Application.Features.Academies;
+using SchoolAccount.Application.Features.Academies.GetAcademies;
 
 namespace SchoolAccount.Infrastructure.Clients.Academies.GetAcademies;
 
