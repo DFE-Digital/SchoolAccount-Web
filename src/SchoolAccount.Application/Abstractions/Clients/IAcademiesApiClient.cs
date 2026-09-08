@@ -4,10 +4,13 @@ namespace SchoolAccount.Application.Abstractions.Clients;
 
 public class IAcademiesApiClient
 {
-    Task<AcademyOrganisation?> GetOrganisationDetails(
+    Task<GetAcademyOrganisationResponse?> GetOrganisationDetails(
         string ukPrn,
         CancellationToken cancellationToken
     );
 
-    Task<AcademyTrust?> GetTrustDetails(string ukPrn, CancellationToken cancellationToken);
+    Task<GetAcademyTrustResponse?> GetTrustDetails(
+        string ukPrn,
+        CancellationToken cancellationToken
+    );
 }
