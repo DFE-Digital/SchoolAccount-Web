@@ -22,7 +22,7 @@ public static class DependencyInjection
     {
         services.AddServices().AddHealthChecks();
         services.AddCollectApiClient(configuration);
-        services.AddAcademiesApiClient(configuration);
+        services.AddAcademiesApi(configuration);
 
         return services;
     }
@@ -54,7 +54,7 @@ public static class DependencyInjection
         );
     }
 
-    private static void AddAcademiesApiClient(
+    private static void AddAcademiesApi(
         this IServiceCollection services,
         IConfiguration configuration
     )
