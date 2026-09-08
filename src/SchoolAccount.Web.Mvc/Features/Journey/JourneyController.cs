@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SchoolAccount.Application.Abstractions.Messaging;
-using SchoolAccount.Application.Features.GetCensusJourney;
+using SchoolAccount.Application.Features.Collect.GetCensusJourney;
 using SchoolAccount.SharedKernel;
 
 namespace SchoolAccount.Web.Mvc.Features.Journey;

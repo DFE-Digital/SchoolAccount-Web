@@ -1,4 +1,4 @@
-using SchoolAccount.Infrastructure.Collect.CensusStatuses;
+using SchoolAccount.Infrastructure.Clients.Collect.CensusStatuses;
 using SchoolAccount.SharedKernel.Authentication;
 using Shouldly;
 

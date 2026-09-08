@@ -1,7 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using static System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes;
 
-namespace SchoolAccount.Infrastructure.Collect.CensusStatuses;
+namespace SchoolAccount.Infrastructure.Clients.Collect.CensusStatuses;
 
 public class GetCensusStatusesApiResponse
 {

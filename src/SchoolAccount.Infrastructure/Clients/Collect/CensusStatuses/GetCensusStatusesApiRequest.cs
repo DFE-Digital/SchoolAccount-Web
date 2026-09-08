@@ -1,8 +1,8 @@
 using SchoolAccount.SharedKernel.Authentication;
 
-namespace SchoolAccount.Infrastructure.Collect.CensusJourney;
+namespace SchoolAccount.Infrastructure.Clients.Collect.CensusStatuses;
 
-public class GetCensusJourneyApiRequest
+public class GetCensusStatusesApiRequest
 {
     public string Id { get; init; }
 

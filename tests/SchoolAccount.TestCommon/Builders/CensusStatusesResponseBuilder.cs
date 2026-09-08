@@ -1,4 +1,4 @@
-using SchoolAccount.Application.Collect.CensusStatuses;
+using SchoolAccount.Application.Features.Collect.CensusStatuses;
 using SchoolAccount.SharedKernel;
 
 namespace SchoolAccount.TestCommon.Builders;
