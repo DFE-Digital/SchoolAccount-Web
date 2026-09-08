@@ -2,15 +2,15 @@ using SchoolAccount.Application.Features.Academies;
 
 namespace SchoolAccount.Application.Abstractions.Clients;
 
-public class IAcademiesApiClient
+public interface IAcademiesApiClient
 {
-    Task<GetAcademyOrganisationResponse?> GetOrganisationDetails(
-        string ukPrn,
+    Task<GetAcademyEstablishmentResponse> GetEstablishmentDetails(
+        string ukprn,
         CancellationToken cancellationToken
     );
 
-    Task<GetAcademyTrustResponse?> GetTrustDetails(
-        string ukPrn,
+    Task<GetAcademyTrustResponse> GetTrustDetails(
+        string ukprn,
         CancellationToken cancellationToken
     );
 }

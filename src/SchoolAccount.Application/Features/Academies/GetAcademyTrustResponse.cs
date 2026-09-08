@@ -1,16 +1,14 @@
-using System.Text.Json.Serialization;
-
 namespace SchoolAccount.Application.Features.Academies;
 
 public class GetAcademyTrustResponse
 {
-    public string? Name { get; set; }
+    public required string Name { get; init; }
 
-    public string? Ukprn { get; set; }
+    public required string Ukprn { get; init; }
 
-    public GetAcademyNameAndCodeResponse? Type { get; set; }
+    public GetAcademyNameAndCodeResponse? Type { get; init; }
 
-    public string? GroupUid { get; set; }
+    public string? GroupUid { get; init; }
 
     public IReadOnlyList<GetAcademyEstablishmentResponse> Establishments { get; init; } = [];
 }

@@ -1,5 +1,4 @@
 using System.Net;
-using System.Net.Http.Json;
 using System.Text.Json;
 using GovUK.Dfe.AcademiesApi.Client.Contracts;
 using Microsoft.AspNetCore.Http;
@@ -21,7 +20,7 @@ public class AcademiesApiClient(
         JsonSerializerDefaults.Web
     );
 
-    public async Task<GetAcademyTrustResponse?> GetTrustDetails(
+    public async Task<GetAcademyTrustResponse> GetTrustDetails(
         string ukprn,
         CancellationToken cancellationToken
     )
@@ -35,14 +34,18 @@ public class AcademiesApiClient(
             );
             return GetAcademiesMapper.ToTrustResponse(trustResponse, trustEstablishmentsResponse);
         }
+        catch (AcademiesApiException exception) when (exception.StatusCode == 404)
+        {
+            return null;
+        }
         catch (AcademiesApiException exception)
         {
-            LogProblem(exception, $"establishment/{ukprn}");
-            response.EnsureSuccessStatusCode();
+            LogProblem(exception, $"trust/{ukprn}");
+            throw;
         }
     }
 
-    public async Task<GetAcademyEstablishmentResponse> GetAcademyDetails(
+    public async Task<GetAcademyEstablishmentResponse> GetEstablishmentDetails(
         string ukprn,
         CancellationToken cancellationToken
     )
@@ -55,10 +58,14 @@ public class AcademiesApiClient(
             );
             return GetAcademiesMapper.ToEstablishmentResponse(response);
         }
+        catch (AcademiesApiException exception) when (exception.StatusCode == 404)
+        {
+            return null;
+        }
         catch (AcademiesApiException exception)
         {
             LogProblem(exception, $"trust/{ukprn}");
-            response.EnsureSuccessStatusCode();
+            throw;
         }
     }
 

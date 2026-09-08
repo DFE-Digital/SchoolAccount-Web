@@ -1,24 +1,22 @@
-using System.Text.Json.Serialization;
-
 namespace SchoolAccount.Application.Features.Academies;
 
 public class GetAcademyEstablishmentResponse
 {
-    public string Urn { get; set; } = string.Empty;
+    public required string Ukprn { get; init; } = string.Empty;
 
-    public string Ukprn { get; set; } = string.Empty;
+    public required string EstablishmentName { get; init; } = string.Empty;
 
-    public string EstablishmentNumber { get; set; } = string.Empty;
+    public string Urn { get; init; } = string.Empty;
 
-    public string EstablishmentName { get; set; } = string.Empty;
+    public string EstablishmentNumber { get; init; } = string.Empty;
 
-    public string LocalAuthorityCode { get; set; } = string.Empty;
+    public string LocalAuthorityCode { get; init; } = string.Empty;
 
-    public string LocalAuthorityName { get; set; } = string.Empty;
+    public string LocalAuthorityName { get; init; } = string.Empty;
 
-    public GetAcademyNameAndCodeResponse? EstablishmentType { get; set; }
+    public GetAcademyNameAndCodeResponse? EstablishmentType { get; init; }
 
-    public GetAcademyNameAndCodeResponse? EstablishmentGroupType { get; set; }
+    public GetAcademyNameAndCodeResponse? EstablishmentGroupType { get; init; }
 
-    public GetAcademyNameAndCodeResponse? PhaseOfEducation { get; set; }
+    public GetAcademyNameAndCodeResponse? PhaseOfEducation { get; init; }
 }

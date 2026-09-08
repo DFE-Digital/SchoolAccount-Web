@@ -1,12 +1,8 @@
-using System.Text.Json.Serialization;
-
 namespace SchoolAccount.Application.Features.Academies;
 
 public class GetAcademyNameAndCodeResponse
 {
-    [JsonPropertyName("name")]
-    public string? Name { get; set; }
+    public required string Name { get; init; } = string.Empty;
 
-    [JsonPropertyName("code")]
-    public string? Code { get; set; }
+    public string Code { get; init; } = string.Empty;
 }

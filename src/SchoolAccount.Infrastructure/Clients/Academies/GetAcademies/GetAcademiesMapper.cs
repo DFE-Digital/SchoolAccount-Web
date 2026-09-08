@@ -4,7 +4,7 @@ using SchoolAccount.Application.Features.Academies;
 
 namespace SchoolAccount.Infrastructure.Clients.Academies.GetAcademies;
 
-public class GetAcademiesMapper
+public static class GetAcademiesMapper
 {
     public static GetAcademyTrustResponse ToTrustResponse(
         TrustDto trust,
@@ -12,13 +12,17 @@ public class GetAcademiesMapper
     ) =>
         new()
         {
-            Name = trust.Name,
-            Ukprn = trust.Ukprn,
+            Name =
+                trust.Name
+                ?? throw new InvalidOperationException(
+                    $"Trust {trust.Name} returned without a name"
+                ),
+            Ukprn =
+                trust.Ukprn
+                ?? throw new InvalidOperationException("Trust returned without a UKPRN"),
             Type = ToNameAndCodeResponse(trust.Type),
             GroupUid = trust.GroupUid,
-            Establishments = trustEstablishments.Select(establishment =>
-                ToEstablishmentResponse(establishment)
-            ),
+            Establishments = trustEstablishments.Select(ToEstablishmentResponse).ToList(),
         };
 
     public static GetAcademyEstablishmentResponse ToEstablishmentResponse(
@@ -26,18 +30,25 @@ public class GetAcademiesMapper
     ) =>
         new()
         {
-            Urn = establishment.Urn,
-            Ukprn = establishment.Ukprn,
-            EstablishmentNumber = establishment.EstablishmentNumber,
-            EstablishmentName = establishment.Name,
-            LocalAuthorityCode = establishment.LocalAuthorityCode,
-            LocalAuthorityName = establishment.LocalAuthorityName,
+            Ukprn = establishment.Ukprn ?? string.Empty,
+            EstablishmentName = establishment.Name ?? string.Empty,
+            Urn = establishment.Urn ?? string.Empty,
+            EstablishmentNumber = establishment.EstablishmentNumber ?? string.Empty,
+            LocalAuthorityCode = establishment.LocalAuthorityCode ?? string.Empty,
+            LocalAuthorityName = establishment.LocalAuthorityName ?? string.Empty,
             EstablishmentType = ToNameAndCodeResponse(establishment.EstablishmentType),
             EstablishmentGroupType = ToNameAndCodeResponse(establishment.EstablishmentGroupType),
             PhaseOfEducation = ToNameAndCodeResponse(establishment.PhaseOfEducation),
         };
 
-    private static GetAcademyNameAndCodeResponse ToNameAndCodeResponse(
-        NameAndCodeDto nameAndCode
-    ) => new() { Name = nameAndCode.Name, Code = nameAndCode.Code };
+    private static GetAcademyNameAndCodeResponse? ToNameAndCodeResponse(
+        NameAndCodeDto? nameAndCode
+    ) =>
+        nameAndCode is null
+            ? null
+            : new()
+            {
+                Name = nameAndCode.Name ?? string.Empty,
+                Code = nameAndCode.Code ?? string.Empty,
+            };
 }
