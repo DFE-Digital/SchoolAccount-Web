@@ -8,7 +8,4 @@ public class CommonApiConfig
 
     [Required]
     public string CollectApiUrl { get; set; }
-
-    [Required]
-    public string AcademiesApiUrl { get; set; }
 }

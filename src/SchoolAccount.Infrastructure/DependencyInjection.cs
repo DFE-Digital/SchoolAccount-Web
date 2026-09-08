@@ -62,7 +62,7 @@ public static class DependencyInjection
         services.AddAcademiesApiClient<IEstablishmentsV4Client, EstablishmentsV4Client>(
             configuration
         );
-
         services.AddAcademiesApiClient<ITrustsV4Client, TrustsV4Client>(configuration);
+        services.AddScoped<IAcademiesApiClient, AcademiesApiClient>();
     }
 }
