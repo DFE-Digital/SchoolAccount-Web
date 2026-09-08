@@ -7,7 +7,7 @@ public class AcademiesApiConfig
     public const string SectionName = "AcademiesApiSettings";
 
     [Required]
-    public string PublicUrl { get; set; }
+    public string BaseUrl { get; set; }
 
     [Required]
     public string ApiKey { get; set; }
