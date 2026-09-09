@@ -1,0 +1,18 @@
+@model SchoolAccount.Web.Mvc.Features.Shared.MatSchoolsStatusTable.MatSchoolsStatusTableViewModel
+@{
+    ViewData["Title"] = "MatSchoolsStatusTable";
+}
+<govuk-table>
+    <govuk-table-caption class="govuk-table__caption govuk-table__caption--m">@Model.Title</govuk-table-caption>
+    <govuk-table-head>
+        <govuk-table-head-cell aria-sort="none">Name</govuk-table-head-cell>
+        <govuk-table-head-cell aria-sort="descending">Status</govuk-table-head-cell>
+    </govuk-table-head>
+    @foreach (var organisation in Model.Organisations)
+    {
+        <govuk-table-row>
+            <govuk-table-cell>@organisation.Name</govuk-table-cell>
+            <govuk-table-cell>@organisation.Category</govuk-table-cell>
+        </govuk-table-row>
+    }
+</govuk-table>
