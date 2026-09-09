@@ -90,6 +90,7 @@ public class GetAcademiesMapperTests
         var response = GetAcademiesMapper.ToTrustResponse(trust, establishments);
 
         // Assert
+        response.Establishments.ShouldNotBeNull();
         response.Establishments.Count.ShouldBe(2);
         response.Establishments[0].EstablishmentName.ShouldBe("First School");
         response.Establishments[1].EstablishmentName.ShouldBe("Second School");
@@ -105,7 +106,7 @@ public class GetAcademiesMapperTests
         var response = GetAcademiesMapper.ToTrustResponse(trust, []);
 
         // Assert
-        response.Establishments.ShouldBeEmpty();
+        response.Establishments.ShouldBeNull();
     }
 
     [Fact]
@@ -135,13 +136,39 @@ public class GetAcademiesMapperTests
     }
 
     [Fact]
+    public void An_establishment_without_a_ukprn_throws()
+    {
+        // Arrange
+        var establishment = new EstablishmentDto { Ukprn = null, Name = "Test Trust" };
+
+        // Act
+        var mapperResponse = () => GetAcademiesMapper.ToEstablishmentResponse(establishment);
+
+        // Assert
+        Should.Throw<InvalidOperationException>(mapperResponse);
+    }
+
+    [Fact]
+    public void An_establishment_without_a_name_throws()
+    {
+        // Arrange
+        var establishment = new EstablishmentDto { Ukprn = "Test Trust", Name = null };
+
+        // Act
+        var mapperResponse = () => GetAcademiesMapper.ToEstablishmentResponse(establishment);
+
+        // Assert
+        Should.Throw<InvalidOperationException>(mapperResponse);
+    }
+
+    [Fact]
     public void An_establishment_with_null_fields_is_mapped_to_empty_strings()
     {
         // Arrange
         var establishment = new EstablishmentDto
         {
-            Ukprn = null,
-            Name = null,
+            Ukprn = "10011111",
+            Name = "Test School",
             Urn = null,
             EstablishmentNumber = null,
             LocalAuthorityCode = null,
@@ -152,8 +179,8 @@ public class GetAcademiesMapperTests
         var response = GetAcademiesMapper.ToEstablishmentResponse(establishment);
 
         // Assert
-        response.Ukprn.ShouldBe(string.Empty);
-        response.EstablishmentName.ShouldBe(string.Empty);
+        response.Ukprn.ShouldBe("10011111");
+        response.EstablishmentName.ShouldBe("Test School");
         response.Urn.ShouldBe(string.Empty);
         response.EstablishmentNumber.ShouldBe(string.Empty);
         response.LocalAuthorityCode.ShouldBe(string.Empty);
