@@ -14,7 +14,7 @@ The Academies API can allow us to search for a MAT or LA via a UKPRN as well as 
 ## Considered Options
 
 * Academies API
-* GIAS API
+* Get Information About Schools (GIAS) API
 
 ## Decision Outcome
 
