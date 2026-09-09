@@ -1,6 +1,5 @@
 using System.Collections.ObjectModel;
 using GovUK.Dfe.AcademiesApi.Client.Contracts;
-using SchoolAccount.Application.Features.Academies;
 using SchoolAccount.Application.Features.Academies.GetAcademies;
 
 namespace SchoolAccount.Infrastructure.Clients.Academies.GetAcademies;
@@ -10,8 +9,9 @@ public static class GetAcademiesMapper
     public static GetAcademyTrustResponse ToTrustResponse(
         TrustDto trust,
         ObservableCollection<EstablishmentDto> trustEstablishments
-    ) =>
-        new()
+    )
+    {
+        return new GetAcademyTrustResponse
         {
             Name =
                 trust.Name
@@ -25,11 +25,13 @@ public static class GetAcademiesMapper
             GroupUid = trust.GroupUid,
             Establishments = trustEstablishments.Select(ToEstablishmentResponse).ToList(),
         };
+    }
 
     public static GetAcademyEstablishmentResponse ToEstablishmentResponse(
         EstablishmentDto establishment
-    ) =>
-        new()
+    )
+    {
+        return new GetAcademyEstablishmentResponse
         {
             Ukprn = establishment.Ukprn ?? string.Empty,
             EstablishmentName = establishment.Name ?? string.Empty,
@@ -41,15 +43,16 @@ public static class GetAcademiesMapper
             EstablishmentGroupType = ToNameAndCodeResponse(establishment.EstablishmentGroupType),
             PhaseOfEducation = ToNameAndCodeResponse(establishment.PhaseOfEducation),
         };
+    }
 
-    private static GetAcademyNameAndCodeResponse? ToNameAndCodeResponse(
-        NameAndCodeDto? nameAndCode
-    ) =>
-        nameAndCode is null
+    private static GetAcademyNameAndCodeResponse? ToNameAndCodeResponse(NameAndCodeDto? nameAndCode)
+    {
+        return nameAndCode is null
             ? null
-            : new()
+            : new GetAcademyNameAndCodeResponse
             {
                 Name = nameAndCode.Name ?? string.Empty,
                 Code = nameAndCode.Code ?? string.Empty,
             };
+    }
 }

@@ -4,7 +4,6 @@ using GovUK.Dfe.AcademiesApi.Client.Contracts;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using SchoolAccount.Application.Abstractions.Clients;
-using SchoolAccount.Application.Features.Academies;
 using SchoolAccount.Application.Features.Academies.GetAcademies;
 using SchoolAccount.Infrastructure.Clients.Academies.GetAcademies;
 using static System.Net.Mime.MediaTypeNames.Application;
@@ -30,7 +29,7 @@ public class AcademiesApiClient(
         {
             var trustResponse = await trusts.GetTrustByUkprn2Async(ukprn, cancellationToken);
             var trustEstablishmentsResponse = await establishments.GetByTrustAsync(
-                ukprn,
+                trustResponse.Ukprn,
                 cancellationToken
             );
             return GetAcademiesMapper.ToTrustResponse(trustResponse, trustEstablishmentsResponse);
