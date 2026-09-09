@@ -10,5 +10,5 @@ public class GetAcademyTrustResponse
 
     public string? GroupUid { get; init; }
 
-    public IReadOnlyList<GetAcademyEstablishmentResponse> Establishments { get; init; } = [];
+    public IReadOnlyList<GetAcademyEstablishmentResponse>? Establishments { get; init; } = [];
 }

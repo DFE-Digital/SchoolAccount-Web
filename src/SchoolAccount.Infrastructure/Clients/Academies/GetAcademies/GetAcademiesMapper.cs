@@ -14,16 +14,15 @@ public static class GetAcademiesMapper
         return new GetAcademyTrustResponse
         {
             Name =
-                trust.Name
-                ?? throw new InvalidOperationException(
-                    $"Trust {trust.Name} returned without a name"
-                ),
+                trust.Name ?? throw new InvalidOperationException("Trust returned without a name"),
             Ukprn =
                 trust.Ukprn
                 ?? throw new InvalidOperationException("Trust returned without a UKPRN"),
             Type = ToNameAndCodeResponse(trust.Type),
             GroupUid = trust.GroupUid,
-            Establishments = trustEstablishments.Select(ToEstablishmentResponse).ToList(),
+            Establishments = trustEstablishments.Any()
+                ? trustEstablishments.Select(ToEstablishmentResponse).ToList()
+                : null,
         };
     }
 
@@ -33,8 +32,12 @@ public static class GetAcademiesMapper
     {
         return new GetAcademyEstablishmentResponse
         {
-            Ukprn = establishment.Ukprn ?? string.Empty,
-            EstablishmentName = establishment.Name ?? string.Empty,
+            Ukprn =
+                establishment.Ukprn
+                ?? throw new InvalidOperationException("Establishment returned without a UKPRN"),
+            EstablishmentName =
+                establishment.Name
+                ?? throw new InvalidOperationException("Establishment returned without a name"),
             Urn = establishment.Urn ?? string.Empty,
             EstablishmentNumber = establishment.EstablishmentNumber ?? string.Empty,
             LocalAuthorityCode = establishment.LocalAuthorityCode ?? string.Empty,
