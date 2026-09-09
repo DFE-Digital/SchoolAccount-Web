@@ -38,6 +38,10 @@ public class StartControllerTests : IClassFixture<SchoolAccountWebApplicationFac
 
         var bodyElement = page.GetFirstBody();
         bodyElement.ShouldNotBeNull();
-        bodyElement.ShouldContainWithoutWhitespace("Sign in to school account");
+        bodyElement.ShouldContainWithoutWhitespace("Sign in to School Account");
+        bodyElement.ShouldContainWithoutWhitespace(
+            "School Account brings DfE services and guidance"
+        );
+        bodyElement.ShouldContainWithoutWhitespace("You'll need a DfE Sign-in account");
     }
 }
