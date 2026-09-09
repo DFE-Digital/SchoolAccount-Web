@@ -34,10 +34,6 @@ public class AcademiesApiClient(
             );
             return GetAcademiesMapper.ToTrustResponse(trustResponse, trustEstablishmentsResponse);
         }
-        catch (AcademiesApiException exception) when (exception.StatusCode == 404)
-        {
-            return null;
-        }
         catch (AcademiesApiException exception)
         {
             LogProblem(exception, $"trust/{ukprn}");
@@ -57,10 +53,6 @@ public class AcademiesApiClient(
                 cancellationToken
             );
             return GetAcademiesMapper.ToEstablishmentResponse(response);
-        }
-        catch (AcademiesApiException exception) when (exception.StatusCode == 404)
-        {
-            return null;
         }
         catch (AcademiesApiException exception)
         {
