@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SchoolAccount.Application.Abstractions.Messaging;
+using SchoolAccount.Application.Features.Academies.GetAcademies;
 using SchoolAccount.Application.Features.Collect.CensusStatuses;
 using SchoolAccount.SharedKernel;
 
@@ -10,6 +11,7 @@ namespace SchoolAccount.Web.Mvc.Features.Dashboard;
 public class DashboardController(
     IUserContext userContext,
     IQueryHandler<GetCensusStatusesQuery, List<GetCensusStatusesResponse>> getCensusStatusesHandler,
+    IQueryHandler<GetAcademiesQuery, GetAcademyTrustResponse> getAcademiesHandler,
     ILogger<DashboardController> logger
 ) : Controller
 {
@@ -31,6 +33,11 @@ public class DashboardController(
             EmailAddress = userContext.EmailAddress!,
             Organisations = [userContext.Organisation!],
         };
+
+        await getAcademiesHandler.Handle(
+            new GetAcademiesQuery { Ukprn = query.Organisations[0].Ukprn },
+            cancellationToken
+        );
 
         var censusStatusesResult = await getCensusStatusesHandler.Handle(query, cancellationToken);
 

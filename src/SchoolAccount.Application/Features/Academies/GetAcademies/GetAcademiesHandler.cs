@@ -12,7 +12,7 @@ public class GetAcademiesHandler(IAcademiesApiClient academiesApiClient)
         CancellationToken cancellationToken
     )
     {
-        var result = await academiesApiClient.GetTrustDetails(query.ukprn, cancellationToken);
+        var result = await academiesApiClient.GetTrustDetails(query.Ukprn, cancellationToken);
 
         return result;
     }
