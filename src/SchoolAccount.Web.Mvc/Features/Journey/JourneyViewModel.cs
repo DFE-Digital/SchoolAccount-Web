@@ -1,4 +1,4 @@
-using SchoolAccount.Application.Features.GetCensusJourney;
+using SchoolAccount.Application.Features.Collect.GetCensusJourney;
 using SchoolAccount.Web.Mvc.Features.Shared.StepByStep;
 
 namespace SchoolAccount.Web.Mvc.Features.Journey;

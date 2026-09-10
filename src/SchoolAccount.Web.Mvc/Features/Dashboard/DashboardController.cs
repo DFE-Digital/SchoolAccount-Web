@@ -1,12 +1,13 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SchoolAccount.Application.Abstractions.Messaging;
-using SchoolAccount.Application.Collect.CensusStatuses;
+using SchoolAccount.Application.Features.Collect.CensusStatuses;
 using SchoolAccount.SharedKernel;
 
 namespace SchoolAccount.Web.Mvc.Features.Dashboard;
 
-[Route("/{action}"), Authorize]
+[Route("/{action}")]
+[Authorize]
 public class DashboardController(
     IUserContext userContext,
     IQueryHandler<GetCensusStatusesQuery, List<GetCensusStatusesResponse>> getCensusStatusesHandler,

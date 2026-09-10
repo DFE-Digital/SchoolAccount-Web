@@ -11,6 +11,7 @@
     <File Path="decisions\0007-supporting-sass-within-gds-styles.md" />
     <File Path="decisions\0008-use-feature-structure.md" />
     <File Path="decisions\0010-use-containerisation-to-publish-code.md" />
+    <File Path="decisions\0011-use-academies-api.md" />
   </Folder>
   <Folder Name="/docs/">
     <File Path="docs\clean-architecture.md" />

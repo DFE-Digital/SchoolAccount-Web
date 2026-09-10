@@ -1,9 +1,12 @@
+using Dfe.TramsDataApi.Client.Extensions;
+using GovUK.Dfe.AcademiesApi.Client;
+using GovUK.Dfe.AcademiesApi.Client.Contracts;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using SchoolAccount.Application.Abstractions.Clients;
-using SchoolAccount.Infrastructure.Collect;
-using SchoolAccount.Infrastructure.Collect.CensusStatuses;
+using SchoolAccount.Infrastructure.Clients.Academies;
+using SchoolAccount.Infrastructure.Clients.Collect;
 using SchoolAccount.Infrastructure.Config;
 using SchoolAccount.Infrastructure.Time;
 using SchoolAccount.SharedKernel;
@@ -19,6 +22,7 @@ public static class DependencyInjection
     {
         services.AddServices().AddHealthChecks();
         services.AddCollectApiClient(configuration);
+        services.AddAcademiesApi(configuration);
 
         return services;
     }
@@ -48,5 +52,17 @@ public static class DependencyInjection
                 client.BaseAddress = new Uri(config.CollectApiUrl);
             }
         );
+    }
+
+    private static void AddAcademiesApi(
+        this IServiceCollection services,
+        IConfiguration configuration
+    )
+    {
+        services.AddAcademiesApiClient<IEstablishmentsV4Client, EstablishmentsV4Client>(
+            configuration
+        );
+        services.AddAcademiesApiClient<ITrustsV4Client, TrustsV4Client>(configuration);
+        services.AddScoped<IAcademiesApiClient, AcademiesApiClient>();
     }
 }

@@ -10,4 +10,8 @@
   <ItemGroup>
     <InternalsVisibleTo Include="ArchitectureTests" />
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="GovUK.Dfe.AcademiesApi.Client" />
+  </ItemGroup>
 </Project>
