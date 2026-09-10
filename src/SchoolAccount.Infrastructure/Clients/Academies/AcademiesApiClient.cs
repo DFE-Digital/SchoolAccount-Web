@@ -69,7 +69,7 @@ public class AcademiesApiClient(
                 {
                     logger.LogWarning(
                         exception,
-                        "Skipping malformed establishment for establishment {Ukprn}",
+                        "Skipping malformed establishment within trust directory for {Ukprn}",
                         ukprn
                     );
                 }
