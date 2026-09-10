@@ -1,16 +1,13 @@
 using System.Net;
-using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Testing;
 using RichardSzalay.MockHttp;
-using SchoolAccount.Application.Collect.CensusStatuses;
-using SchoolAccount.Infrastructure.Collect;
-using SchoolAccount.Infrastructure.Collect.CensusStatuses;
+using SchoolAccount.Infrastructure.Clients.Collect;
 using Shouldly;
 using static System.Net.HttpStatusCode;
 using static System.Net.Mime.MediaTypeNames.Application;
 
-namespace SchoolAccount.Infrastructure.UnitTests.Collect.CensusStatuses;
+namespace SchoolAccount.Infrastructure.UnitTests.Collect;
 
 public class CollectApiClientTests : IDisposable
 {

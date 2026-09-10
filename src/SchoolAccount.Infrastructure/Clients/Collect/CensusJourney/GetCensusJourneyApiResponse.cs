@@ -1,4 +1,4 @@
-namespace SchoolAccount.Infrastructure.Collect.CensusJourney;
+namespace SchoolAccount.Infrastructure.Clients.Collect.CensusJourney;
 
 public class GetCensusJourneyApiResponse
 {

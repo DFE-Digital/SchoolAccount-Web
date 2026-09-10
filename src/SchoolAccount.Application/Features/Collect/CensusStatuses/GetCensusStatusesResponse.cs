@@ -1,4 +1,4 @@
-namespace SchoolAccount.Application.Collect.CensusStatuses;
+namespace SchoolAccount.Application.Features.Collect.CensusStatuses;
 
 public record GetCensusStatusesResponse
 {

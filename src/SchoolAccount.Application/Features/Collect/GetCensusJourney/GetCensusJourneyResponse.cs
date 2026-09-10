@@ -1,4 +1,4 @@
-namespace SchoolAccount.Application.Features.GetCensusJourney;
+namespace SchoolAccount.Application.Features.Collect.GetCensusJourney;
 
 public record GetCensusJourneyResponse
 {

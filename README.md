@@ -23,7 +23,8 @@ Architecture decisions are recorded as ADRs in the [decisions](decisions) folder
 - [Supporting SASS within GDS Styles](decisions/0007-supporting-sass-within-gds-styles.md) - why SASS support has been enabled
 - [Use feature structure](decisions/0008-use-feature-structure.md) - why the feature structure has been adopted
 - [Authentication using DSI](decisions/0009-authenticate-using-dsi.md) - why we authenticate with DfE Sign-In
-- - [Use containerisation to publish code](decisions/0010-use-containerisation-to-publish-code.md) - why we have chosen to use containerisation and push to the github container registry
+- [Use containerisation to publish code](decisions/0010-use-containerisation-to-publish-code.md) - why we have chosen to use containerisation and push to the github container registry
+- [Integrate with the Academies API](decisions/0011-use-academies-api.md) - why we have used the Academies API
 
 New decisions should follow the [ADR template](decisions/0000-adr-template.md).
 
