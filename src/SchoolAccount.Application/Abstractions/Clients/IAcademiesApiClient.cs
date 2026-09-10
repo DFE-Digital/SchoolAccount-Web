@@ -1,15 +1,16 @@
 using SchoolAccount.Application.Features.Academies.GetAcademies;
+using SchoolAccount.SharedKernel;
 
 namespace SchoolAccount.Application.Abstractions.Clients;
 
 public interface IAcademiesApiClient
 {
-    Task<GetAcademyEstablishmentResponse> GetEstablishmentDetails(
+    Task<Result<GetAcademyEstablishmentResponse>> GetEstablishmentDetails(
         string ukprn,
         CancellationToken cancellationToken
     );
 
-    Task<GetAcademyTrustResponse> GetTrustDetails(
+    Task<Result<GetAcademyTrustResponse>> GetTrustDetails(
         string ukprn,
         CancellationToken cancellationToken
     );

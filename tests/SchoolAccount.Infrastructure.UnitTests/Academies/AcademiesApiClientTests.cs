@@ -1,5 +1,4 @@
 using GovUK.Dfe.AcademiesApi.Client;
-using GovUK.Dfe.AcademiesApi.Client.Contracts;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Testing;
 using RichardSzalay.MockHttp;
@@ -58,10 +57,13 @@ public class AcademiesApiClientTests : IDisposable
         var result = await client.GetTrustDetails(_ukprn, _cancellationToken);
 
         // Assert
-        result.Ukprn.ShouldBe("10012345");
-        result.Name.ShouldBe("Test Trust");
-        result.GroupUid.ShouldBe("TR00123");
-        result.Establishments.ShouldHaveSingleItem().EstablishmentName.ShouldBe("Test School");
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.Ukprn.ShouldBe("10012345");
+        result.Value.Name.ShouldBe("Test Trust");
+        result.Value.GroupUid.ShouldBe("TR00123");
+        result
+            .Value.Establishments.ShouldHaveSingleItem()
+            .EstablishmentName.ShouldBe("Test School");
     }
 
     [Fact]
@@ -81,9 +83,10 @@ public class AcademiesApiClientTests : IDisposable
         var result = await client.GetEstablishmentDetails("10011111", _cancellationToken);
 
         // Assert
-        result.Ukprn.ShouldBe("10011111");
-        result.EstablishmentName.ShouldBe("Test School");
-        result.Urn.ShouldBe("100001");
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.Ukprn.ShouldBe("10011111");
+        result.Value.EstablishmentName.ShouldBe("Test School");
+        result.Value.Urn.ShouldBe("100001");
     }
 
     [Fact]
@@ -96,10 +99,11 @@ public class AcademiesApiClientTests : IDisposable
         var client = ClientRespondingWith();
 
         // Act
-        var act = async () => await client.GetTrustDetails(_ukprn, _cancellationToken);
+        var result = await client.GetTrustDetails(_ukprn, _cancellationToken);
 
         // Assert
-        await act.ShouldThrowAsync<AcademiesApiException>();
+        result.IsFailure.ShouldBeTrue();
+        result.Error.Description.ShouldBe($"Failed to retrieve trust {_ukprn}");
     }
 
     [Fact]
@@ -112,10 +116,10 @@ public class AcademiesApiClientTests : IDisposable
         var client = ClientRespondingWith();
 
         // Act
-        var act = async () => await client.GetTrustDetails(_ukprn, _cancellationToken);
-        await act.ShouldThrowAsync<AcademiesApiException>();
+        var result = await client.GetTrustDetails(_ukprn, _cancellationToken);
 
         // Assert
+        result.IsFailure.ShouldBeTrue();
         _logger.Collector.Count.ShouldBe(1);
         _logger.Collector.LatestRecord.ShouldNotBeNull();
         _logger.Collector.LatestRecord.Level.ShouldBe(LogLevel.Error);

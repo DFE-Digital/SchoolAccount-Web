@@ -5,8 +5,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using SchoolAccount.Application.Abstractions.Clients;
 using SchoolAccount.Application.Features.Academies.GetAcademies;
-using SchoolAccount.Infrastructure.Clients.Academies.GetAcademies;
+using SchoolAccount.SharedKernel;
 using static System.Net.Mime.MediaTypeNames.Application;
+using static System.StringComparison;
+using static SchoolAccount.Infrastructure.Clients.Academies.GetAcademies.GetAcademiesMapper;
 
 namespace SchoolAccount.Infrastructure.Clients.Academies;
 
@@ -20,28 +22,7 @@ public class AcademiesApiClient(
         JsonSerializerDefaults.Web
     );
 
-    public async Task<GetAcademyTrustResponse> GetTrustDetails(
-        string ukprn,
-        CancellationToken cancellationToken
-    )
-    {
-        try
-        {
-            var trustResponse = await trusts.GetTrustByUkprn2Async(ukprn, cancellationToken);
-            var trustEstablishmentsResponse = await establishments.GetByTrustAsync(
-                trustResponse.Ukprn,
-                cancellationToken
-            );
-            return GetAcademiesMapper.ToTrustResponse(trustResponse, trustEstablishmentsResponse);
-        }
-        catch (AcademiesApiException exception)
-        {
-            LogProblem(exception, $"trust/{ukprn}");
-            throw;
-        }
-    }
-
-    public async Task<GetAcademyEstablishmentResponse> GetEstablishmentDetails(
+    public async Task<Result<GetAcademyEstablishmentResponse>> GetEstablishmentDetails(
         string ukprn,
         CancellationToken cancellationToken
     )
@@ -52,12 +33,56 @@ public class AcademiesApiClient(
                 ukprn,
                 cancellationToken
             );
-            return GetAcademiesMapper.ToEstablishmentResponse(response);
+            return Result.Success(ToEstablishmentResponse(response));
+        }
+        catch (AcademiesApiException exception)
+        {
+            LogProblem(exception, $"establishment/{ukprn}");
+            return Result.Failure<GetAcademyEstablishmentResponse>(
+                Error.Failure("Academies API", $"Failed to retrieve establishment {ukprn}")
+            );
+        }
+    }
+
+    public async Task<Result<GetAcademyTrustResponse>> GetTrustDetails(
+        string ukprn,
+        CancellationToken cancellationToken
+    )
+    {
+        try
+        {
+            var trustResponse = await trusts.GetTrustByUkprn2Async(ukprn, cancellationToken);
+            var trustEstablishmentsResponse = await establishments.GetByTrustAsync(
+                ukprn,
+                cancellationToken
+            );
+
+            var trustEstablishments = new List<GetAcademyEstablishmentResponse>();
+
+            foreach (var dto in trustEstablishmentsResponse)
+            {
+                try
+                {
+                    trustEstablishments.Add(ToEstablishmentResponse(dto));
+                }
+                catch (ArgumentException exception)
+                {
+                    logger.LogWarning(
+                        exception,
+                        "Skipping malformed establishment for establishment {Ukprn}",
+                        ukprn
+                    );
+                }
+            }
+
+            return Result.Success(ToTrustResponse(trustResponse, trustEstablishments));
         }
         catch (AcademiesApiException exception)
         {
             LogProblem(exception, $"trust/{ukprn}");
-            throw;
+            return Result.Failure<GetAcademyTrustResponse>(
+                Error.Failure("Academies API", $"Failed to retrieve trust {ukprn}")
+            );
         }
     }
 
@@ -69,8 +94,8 @@ public class AcademiesApiClient(
         var isJson =
             exception.Headers.TryGetValue("Content-Type", out var contentTypes)
             && contentTypes.Any(contentType =>
-                contentType.Contains(ProblemJson, StringComparison.OrdinalIgnoreCase)
-                || contentType.Contains(Json, StringComparison.OrdinalIgnoreCase)
+                contentType.Contains(ProblemJson, OrdinalIgnoreCase)
+                || contentType.Contains(Json, OrdinalIgnoreCase)
             );
 
         if (!isBadRequest || !isJson)

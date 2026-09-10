@@ -1,7 +1,7 @@
-using System.Collections.ObjectModel;
 using GovUK.Dfe.AcademiesApi.Client.Contracts;
-using SchoolAccount.Infrastructure.Clients.Academies.GetAcademies;
+using SchoolAccount.Application.Features.Academies.GetAcademies;
 using Shouldly;
+using static SchoolAccount.Infrastructure.Clients.Academies.GetAcademies.GetAcademiesMapper;
 
 namespace SchoolAccount.Infrastructure.UnitTests.Academies.GetAcademies;
 
@@ -20,7 +20,7 @@ public class GetAcademiesMapperTests
         };
 
         // Act
-        var response = GetAcademiesMapper.ToTrustResponse(trust, []);
+        var response = ToTrustResponse(trust, []);
 
         // Assert
         response.Ukprn.ShouldBe("10012345");
@@ -43,7 +43,7 @@ public class GetAcademiesMapperTests
         };
 
         // Act
-        var response = GetAcademiesMapper.ToTrustResponse(trust, []);
+        var response = ToTrustResponse(trust, []);
 
         // Assert
         response.Type.ShouldBeNull();
@@ -56,10 +56,10 @@ public class GetAcademiesMapperTests
         var trust = new TrustDto { Ukprn = "10012345", Name = null };
 
         // Act
-        var mapperResponse = () => GetAcademiesMapper.ToTrustResponse(trust, []);
+        var mapperResponse = () => ToTrustResponse(trust, []);
 
         // Assert
-        Should.Throw<InvalidOperationException>(mapperResponse);
+        Should.Throw<ArgumentException>(mapperResponse);
     }
 
     [Fact]
@@ -69,10 +69,10 @@ public class GetAcademiesMapperTests
         var trust = new TrustDto { Ukprn = null, Name = "Test Trust" };
 
         // Act
-        var mapperResponse = () => GetAcademiesMapper.ToTrustResponse(trust, []);
+        var mapperResponse = () => ToTrustResponse(trust, []);
 
         // Assert
-        Should.Throw<InvalidOperationException>(mapperResponse);
+        Should.Throw<ArgumentException>(mapperResponse);
     }
 
     [Fact]
@@ -80,14 +80,18 @@ public class GetAcademiesMapperTests
     {
         // Arrange
         var trust = new TrustDto { Ukprn = "10012345", Name = "Test Trust" };
-        var establishments = new ObservableCollection<EstablishmentDto>
+        var establishments = new List<GetAcademyEstablishmentResponse>
         {
-            new() { Ukprn = "10011111", Name = "First School" },
-            new() { Ukprn = "10022222", Name = "Second School" },
+            ToEstablishmentResponse(
+                new EstablishmentDto { Ukprn = "10011111", Name = "First School" }
+            ),
+            ToEstablishmentResponse(
+                new EstablishmentDto { Ukprn = "10022222", Name = "Second School" }
+            ),
         };
 
         // Act
-        var response = GetAcademiesMapper.ToTrustResponse(trust, establishments);
+        var response = ToTrustResponse(trust, establishments);
 
         // Assert
         response.Establishments.ShouldNotBeNull();
@@ -103,10 +107,10 @@ public class GetAcademiesMapperTests
         var trust = new TrustDto { Ukprn = "10012345", Name = "Test Trust" };
 
         // Act
-        var response = GetAcademiesMapper.ToTrustResponse(trust, []);
+        var response = ToTrustResponse(trust, []);
 
         // Assert
-        response.Establishments.ShouldBeNull();
+        response.Establishments.ShouldBeEmpty();
     }
 
     [Fact]
@@ -124,7 +128,7 @@ public class GetAcademiesMapperTests
         };
 
         // Act
-        var response = GetAcademiesMapper.ToEstablishmentResponse(establishment);
+        var response = ToEstablishmentResponse(establishment);
 
         // Assert
         response.Ukprn.ShouldBe("10011111");
@@ -142,10 +146,10 @@ public class GetAcademiesMapperTests
         var establishment = new EstablishmentDto { Ukprn = null, Name = "Test Trust" };
 
         // Act
-        var mapperResponse = () => GetAcademiesMapper.ToEstablishmentResponse(establishment);
+        var mapperResponse = () => ToEstablishmentResponse(establishment);
 
         // Assert
-        Should.Throw<InvalidOperationException>(mapperResponse);
+        Should.Throw<ArgumentException>(mapperResponse);
     }
 
     [Fact]
@@ -155,14 +159,14 @@ public class GetAcademiesMapperTests
         var establishment = new EstablishmentDto { Ukprn = "Test Trust", Name = null };
 
         // Act
-        var mapperResponse = () => GetAcademiesMapper.ToEstablishmentResponse(establishment);
+        var mapperResponse = () => ToEstablishmentResponse(establishment);
 
         // Assert
-        Should.Throw<InvalidOperationException>(mapperResponse);
+        Should.Throw<ArgumentException>(mapperResponse);
     }
 
     [Fact]
-    public void An_establishment_with_null_fields_is_mapped_to_empty_strings()
+    public void An_establishment_with_null_fields_is_mapped_with_nulls()
     {
         // Arrange
         var establishment = new EstablishmentDto
@@ -176,15 +180,15 @@ public class GetAcademiesMapperTests
         };
 
         // Act
-        var response = GetAcademiesMapper.ToEstablishmentResponse(establishment);
+        var response = ToEstablishmentResponse(establishment);
 
         // Assert
         response.Ukprn.ShouldBe("10011111");
         response.EstablishmentName.ShouldBe("Test School");
-        response.Urn.ShouldBe(string.Empty);
-        response.EstablishmentNumber.ShouldBe(string.Empty);
-        response.LocalAuthorityCode.ShouldBe(string.Empty);
-        response.LocalAuthorityName.ShouldBe(string.Empty);
+        response.Urn.ShouldBeNull();
+        response.EstablishmentNumber.ShouldBeNull();
+        response.LocalAuthorityCode.ShouldBeNull();
+        response.LocalAuthorityName.ShouldBeNull();
     }
 
     [Fact]
@@ -205,7 +209,7 @@ public class GetAcademiesMapperTests
         };
 
         // Act
-        var response = GetAcademiesMapper.ToEstablishmentResponse(establishment);
+        var response = ToEstablishmentResponse(establishment);
 
         // Assert
         response.EstablishmentType!.Name.ShouldBe("Academy");
@@ -230,7 +234,7 @@ public class GetAcademiesMapperTests
         };
 
         // Act
-        var response = GetAcademiesMapper.ToEstablishmentResponse(establishment);
+        var response = ToEstablishmentResponse(establishment);
 
         // Assert
         response.EstablishmentType.ShouldBeNull();
@@ -239,7 +243,7 @@ public class GetAcademiesMapperTests
     }
 
     [Fact]
-    public void A_name_and_code_with_null_values_is_mapped_to_empty_strings()
+    public void A_name_and_code_with_null_values_returns_null()
     {
         // Arrange
         var trust = new TrustDto
@@ -250,10 +254,48 @@ public class GetAcademiesMapperTests
         };
 
         // Act
-        var response = GetAcademiesMapper.ToTrustResponse(trust, []);
+        var response = ToTrustResponse(trust, []);
 
         // Assert
-        response.Type!.Name.ShouldBe(string.Empty);
-        response.Type.Code.ShouldBe(string.Empty);
+        response.Type.ShouldBeNull();
+    }
+
+    [Fact]
+    public void A_null_name_for_a_name_and_code_returns_null()
+    {
+        // Arrange
+        var trust = new TrustDto
+        {
+            Ukprn = "10012345",
+            Name = "Test Trust",
+            Type = new NameAndCodeDto { Name = null, Code = "MAT" },
+        };
+
+        // Act
+        var response = ToTrustResponse(trust, []);
+
+        // Assert
+        response.Type.ShouldBeNull();
+    }
+
+    [Fact]
+    public void A_null_code_for_a_name_and_code_returns_a_name_and_code_response()
+    {
+        // Arrange
+        var trust = new TrustDto
+        {
+            Ukprn = "10012345",
+            Name = "Test Trust",
+            Type = new NameAndCodeDto { Name = "Primary School", Code = null },
+        };
+
+        // Act
+        var response = ToTrustResponse(trust, []);
+
+        // Assert
+        response.Type.ShouldNotBeNull();
+        response.Type.Name.ShouldNotBeNull();
+        response.Type.Name.ShouldBe("Primary School");
+        response.Type.Code.ShouldBeNull();
     }
 }
