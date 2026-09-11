@@ -4,7 +4,8 @@ using SchoolAccount.IntegrationTests.Common.Extensions;
 using SchoolAccount.IntegrationTests.Common.Pages;
 using SchoolAccount.TestCommon.Stubs;
 using Shouldly;
-using static SchoolAccount.TestCommon.Builders.GetCensusJourney.CensusJourneyResponseBuilder;
+using static SchoolAccount.TestCommon.Builders.GetCensusJourney.GetCensusJourneyContentResponseBuilder;
+using static SchoolAccount.TestCommon.Builders.GetCensusJourney.GetCensusJourneyResponseBuilder;
 using static SchoolAccount.TestCommon.Builders.GetCensusJourney.GetCensusJourneyResponseImportantDateBuilder;
 
 namespace SchoolAccount.IntegrationTests.Features.Journey;
@@ -31,15 +32,18 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         var token = TestContext.Current.CancellationToken;
         var pageUri = _factory.GeneratePath("Journey", "Journey");
 
-        var journeyResult = ACensusJourneyResponse()
-            .WithTitle("Test Journey Title")
-            .WithCaption("This is a test caption")
-            .WithOverview("This is a test overview")
-            .WithStatus("Test Status")
-            .WithCallToActionLabel("Test Call To Action")
-            .WithCallToActionUrl(_callToActionUri)
-            .WithImportantDate(
-                AnImportantDate().WithLabel("Test Important Date").WithDate(2026, 10, 1)
+        var journeyResult = AGetCensusJourneyResponse()
+            .WithContent(
+                ACensusJourneyContentResponse()
+                    .WithTitle("Test Journey Title")
+                    .WithCaption("This is a test caption")
+                    .WithOverview("This is a test overview")
+                    .WithStatus("Test Status")
+                    .WithCallToActionLabel("Test Call To Action")
+                    .WithCallToActionUrl(_callToActionUri)
+                    .WithImportantDate(
+                        AnImportantDate().WithLabel("Test Important Date").WithDate(2026, 10, 1)
+                    )
             )
             .AsSuccess();
 
@@ -94,7 +98,9 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         var token = TestContext.Current.CancellationToken;
         var pageUri = _factory.GeneratePath("Journey", "Journey");
 
-        var journeyResult = ACensusJourneyResponse().WithOverview(overview).AsSuccess();
+        var journeyResult = AGetCensusJourneyResponse()
+            .WithContent(ACensusJourneyContentResponse().WithOverview(overview))
+            .AsSuccess();
 
         _getCensusJourneyHandler.Returns(journeyResult);
 
@@ -116,7 +122,9 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         var token = TestContext.Current.CancellationToken;
         var pageUri = _factory.GeneratePath("Journey", "Journey");
 
-        var journeyResult = ACensusJourneyResponse().AsSuccess();
+        var journeyResult = AGetCensusJourneyResponse()
+            .WithContent(ACensusJourneyContentResponse())
+            .AsSuccess();
 
         _getCensusJourneyHandler.Returns(journeyResult);
 
@@ -138,10 +146,13 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         var token = TestContext.Current.CancellationToken;
         var pageUri = _factory.GeneratePath("Journey", "Journey");
 
-        var journeyResult = ACensusJourneyResponse()
-            .WithImportantDates(
-                AnImportantDate().WithLabel("Census due").WithDate(2026, 10, 1),
-                AnImportantDate().WithLabel("Return date").WithDate(2026, 10, 28)
+        var journeyResult = AGetCensusJourneyResponse()
+            .WithContent(
+                ACensusJourneyContentResponse()
+                    .WithImportantDates(
+                        AnImportantDate().WithLabel("Census due").WithDate(2026, 10, 1),
+                        AnImportantDate().WithLabel("Return date").WithDate(2026, 10, 28)
+                    )
             )
             .AsSuccess();
 
@@ -171,10 +182,13 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         var token = TestContext.Current.CancellationToken;
         var pageUri = _factory.GeneratePath("Journey", "Journey");
 
-        var journeyResult = ACensusJourneyResponse()
-            .WithImportantDates(
-                AnImportantDate().WithLabel("Later").WithDate(2026, 11, 15),
-                AnImportantDate().WithLabel("Earlier").WithDate(2026, 10, 1)
+        var journeyResult = AGetCensusJourneyResponse()
+            .WithContent(
+                ACensusJourneyContentResponse()
+                    .WithImportantDates(
+                        AnImportantDate().WithLabel("Later").WithDate(2026, 11, 15),
+                        AnImportantDate().WithLabel("Earlier").WithDate(2026, 10, 1)
+                    )
             )
             .AsSuccess();
 
@@ -199,7 +213,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         // Arrange
         var token = TestContext.Current.CancellationToken;
         var pageUri = _factory.GeneratePath("Journey", "Journey");
-        _getCensusJourneyHandler.Returns(ACensusJourneyResponse().AsSuccess());
+        _getCensusJourneyHandler.Returns(AGetCensusJourneyResponse().AsSuccess());
 
         // Act
         var message = await _client.GetAsync(pageUri, token);
@@ -225,7 +239,11 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     {
         // Arrange
         var pageUri = _factory.GeneratePath("Journey", "Journey");
-        _getCensusJourneyHandler.Returns(ACensusJourneyResponse().WithSteps().AsSuccess());
+        _getCensusJourneyHandler.Returns(
+            AGetCensusJourneyResponse()
+                .WithContent(ACensusJourneyContentResponse().WithSteps())
+                .AsSuccess()
+        );
 
         // Act
         var message = await _client.GetAsync(pageUri, TestContext.Current.CancellationToken);

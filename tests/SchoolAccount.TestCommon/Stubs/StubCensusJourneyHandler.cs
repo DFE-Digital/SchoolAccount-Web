@@ -1,17 +1,16 @@
 using SchoolAccount.Application.Features.Collect.GetCensusJourney;
 using SchoolAccount.Application.Features.Collect.GetCensusJourney.Responses;
-using SchoolAccount.TestCommon.Builders;
-using SchoolAccount.TestCommon.Builders.GetCensusJourney;
+using static SchoolAccount.TestCommon.Builders.GetCensusJourney.GetCensusJourneyResponseBuilder;
 
 namespace SchoolAccount.TestCommon.Stubs;
 
 public sealed class StubCensusJourneyHandler
-    : StubQueryHandler<GetCensusJourneyQuery, GetCensusJourneyContentResponse>
+    : StubQueryHandler<GetCensusJourneyQuery, GetCensusJourneyResponse>
 {
     public static StubCensusJourneyHandler Succeeding()
     {
         var handler = new StubCensusJourneyHandler();
-        handler.Returns(CensusJourneyResponseBuilder.ACensusJourneyResponse().AsSuccess());
+        handler.Returns(AGetCensusJourneyResponse().AsSuccess());
 
         return handler;
     }

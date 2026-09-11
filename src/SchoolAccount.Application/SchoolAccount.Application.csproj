@@ -14,8 +14,4 @@
   <ItemGroup>
     <InternalsVisibleTo Include="Application.UnitTests" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Features\Academies\" />
-  </ItemGroup>
 </Project>

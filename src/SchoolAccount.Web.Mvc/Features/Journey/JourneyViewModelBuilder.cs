@@ -18,6 +18,7 @@ public static class JourneyViewModelBuilder
             Title = getCensusJourneyResponse.Content.Title,
             Caption = getCensusJourneyResponse.Content.Caption,
             Overview = getCensusJourneyResponse.Content.Overview,
+            Status = getCensusJourneyResponse.Content.Status,
             ImportantDates = getCensusJourneyResponse
                 .Content.ImportantDates.OrderBy(date => date.Date)
                 .Select(date => new ImportantDate

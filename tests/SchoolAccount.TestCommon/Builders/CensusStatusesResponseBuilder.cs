@@ -7,6 +7,7 @@ public class CensusStatusesResponseBuilder
 {
     private readonly List<CensusAction> _actions = [];
     private string _id = "Test-id";
+    private string _name = "Test School";
     private bool _interesting = true;
 
     public static CensusStatusesResponseBuilder Create() => new();
@@ -14,6 +15,12 @@ public class CensusStatusesResponseBuilder
     public CensusStatusesResponseBuilder WithId(string id)
     {
         _id = id;
+        return this;
+    }
+
+    public CensusStatusesResponseBuilder WithName(string name)
+    {
+        _name = name;
         return this;
     }
 
@@ -40,6 +47,7 @@ public class CensusStatusesResponseBuilder
         return new GetCensusStatusesResponse
         {
             Id = _id,
+            SchoolName = _name,
             Interesting = _interesting,
             Actions = _actions,
         };

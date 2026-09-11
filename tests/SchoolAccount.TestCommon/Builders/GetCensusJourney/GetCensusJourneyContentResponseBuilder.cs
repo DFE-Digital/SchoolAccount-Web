@@ -1,11 +1,12 @@
-using SchoolAccount.Application.Features.Collect.GetCensusJourney;
 using SchoolAccount.Application.Features.Collect.GetCensusJourney.Responses;
 using SchoolAccount.SharedKernel;
 
 namespace SchoolAccount.TestCommon.Builders.GetCensusJourney;
 
-public class CensusJourneyResponseBuilder
+public class GetCensusJourneyContentResponseBuilder
 {
+    private readonly List<ImportantDate> _importantDates = [];
+    private readonly List<StepByStep> _steps = [];
     private string _callToActionLabel = "Go to Autumn Census 2026";
 
     private Uri _callToActionUrl = new(
@@ -13,42 +14,40 @@ public class CensusJourneyResponseBuilder
     );
 
     private string _caption = "Complete your census return";
-    private readonly List<ImportantDate> _importantDates = [];
     private string _overview;
     private string _status = "Not Started";
-    private readonly List<StepByStep> _steps = [];
     private string _title = "Autumn School Census";
 
-    public static CensusJourneyResponseBuilder ACensusJourneyResponse()
+    public static GetCensusJourneyContentResponseBuilder ACensusJourneyContentResponse()
     {
-        return new CensusJourneyResponseBuilder();
+        return new GetCensusJourneyContentResponseBuilder();
     }
 
-    public CensusJourneyResponseBuilder WithTitle(string title)
+    public GetCensusJourneyContentResponseBuilder WithTitle(string title)
     {
         _title = title;
         return this;
     }
 
-    public CensusJourneyResponseBuilder WithCaption(string caption)
+    public GetCensusJourneyContentResponseBuilder WithCaption(string caption)
     {
         _caption = caption;
         return this;
     }
 
-    public CensusJourneyResponseBuilder WithOverview(string overview)
+    public GetCensusJourneyContentResponseBuilder WithOverview(string overview)
     {
         _overview = overview;
         return this;
     }
 
-    public CensusJourneyResponseBuilder WithStatus(string status)
+    public GetCensusJourneyContentResponseBuilder WithStatus(string status)
     {
         _status = status;
         return this;
     }
 
-    public CensusJourneyResponseBuilder WithImportantDate(
+    public GetCensusJourneyContentResponseBuilder WithImportantDate(
         GetCensusJourneyResponseImportantDateBuilder builder
     )
     {
@@ -56,7 +55,7 @@ public class CensusJourneyResponseBuilder
         return this;
     }
 
-    public CensusJourneyResponseBuilder WithImportantDates(
+    public GetCensusJourneyContentResponseBuilder WithImportantDates(
         params GetCensusJourneyResponseImportantDateBuilder[] builders
     )
     {
@@ -68,33 +67,33 @@ public class CensusJourneyResponseBuilder
         return this;
     }
 
-    public CensusJourneyResponseBuilder WithSteps()
+    public GetCensusJourneyContentResponseBuilder WithSteps()
     {
         _steps.Add(
             new StepByStep
             {
                 Title = "This is a fake step 1",
-                Body = "<p>This is a fake step body</p>",
+                Body = "<p>This is a fake step body</p>"
             }
         );
         _steps.Add(
             new StepByStep
             {
                 Title = "This is a fake step 2",
-                Body = "<p>This is a super fake step body</p>",
+                Body = "<p>This is a super fake step body</p>"
             }
         );
 
         return this;
     }
 
-    public CensusJourneyResponseBuilder WithCallToActionUrl(Uri callToActionUrl)
+    public GetCensusJourneyContentResponseBuilder WithCallToActionUrl(Uri callToActionUrl)
     {
         _callToActionUrl = callToActionUrl;
         return this;
     }
 
-    public CensusJourneyResponseBuilder WithCallToActionLabel(string callToActionButtonText)
+    public GetCensusJourneyContentResponseBuilder WithCallToActionLabel(string callToActionButtonText)
     {
         _callToActionLabel = callToActionButtonText;
         return this;
@@ -105,7 +104,7 @@ public class CensusJourneyResponseBuilder
         return Result.Success(Build());
     }
 
-    private GetCensusJourneyContentResponse Build()
+    public GetCensusJourneyContentResponse Build()
     {
         return new GetCensusJourneyContentResponse
         {
@@ -115,7 +114,7 @@ public class CensusJourneyResponseBuilder
             Status = _status,
             ImportantDates = _importantDates,
             StepByStep = _steps,
-            CallToAction = new CallToAction { Label = _callToActionLabel, Url = _callToActionUrl },
+            CallToAction = new CallToAction { Label = _callToActionLabel, Url = _callToActionUrl }
         };
     }
 }
