@@ -2,7 +2,7 @@ using SchoolAccount.Application.Abstractions.Clients;
 using SchoolAccount.Application.Abstractions.Messaging;
 using SchoolAccount.SharedKernel;
 
-namespace SchoolAccount.Application.Collect.CensusStatuses;
+namespace SchoolAccount.Application.Features.Collect.CensusStatuses;
 
 public class GetCensusStatusesHandler(ICollectApiClient collectApiClient)
     : IQueryHandler<GetCensusStatusesQuery, List<GetCensusStatusesResponse>>

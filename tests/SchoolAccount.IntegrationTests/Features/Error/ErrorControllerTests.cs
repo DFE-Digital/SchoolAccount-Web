@@ -2,7 +2,7 @@ using System.Net;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using SchoolAccount.Application.Abstractions.Messaging;
-using SchoolAccount.Application.Collect.CensusStatuses;
+using SchoolAccount.Application.Features.Collect.CensusStatuses;
 using SchoolAccount.IntegrationTests.Common;
 using SchoolAccount.IntegrationTests.Common.Pages;
 using SchoolAccount.Web.Mvc.Features.Dashboard;

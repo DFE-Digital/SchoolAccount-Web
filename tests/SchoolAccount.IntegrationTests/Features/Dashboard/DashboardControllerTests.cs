@@ -1,7 +1,6 @@
 ﻿using System.Net;
 using System.Security.Claims;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using SchoolAccount.Application.Collect.CensusStatuses;
 using SchoolAccount.IntegrationTests.Common;
 using SchoolAccount.IntegrationTests.Common.Extensions;
 using SchoolAccount.IntegrationTests.Common.Pages;

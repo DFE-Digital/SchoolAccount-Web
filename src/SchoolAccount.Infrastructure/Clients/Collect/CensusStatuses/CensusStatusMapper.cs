@@ -1,7 +1,7 @@
-using SchoolAccount.Application.Collect.CensusStatuses;
+using SchoolAccount.Application.Features.Collect.CensusStatuses;
 using SchoolAccount.SharedKernel.Authentication;
 
-namespace SchoolAccount.Infrastructure.Collect.CensusStatuses;
+namespace SchoolAccount.Infrastructure.Clients.Collect.CensusStatuses;
 
 public static class CensusStatusMapper
 {

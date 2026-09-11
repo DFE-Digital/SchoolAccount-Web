@@ -1,4 +1,4 @@
-using SchoolAccount.Application.Features.GetCensusJourney;
+using SchoolAccount.Application.Features.Collect.GetCensusJourney;
 using SchoolAccount.TestCommon.Builders;
 using SchoolAccount.TestCommon.Builders.GetCensusJourney;
 

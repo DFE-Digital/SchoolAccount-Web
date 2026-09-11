@@ -1,5 +1,5 @@
-using SchoolAccount.Application.Collect.CensusStatuses;
-using SchoolAccount.Application.Features.GetCensusJourney;
+using SchoolAccount.Application.Features.Collect.CensusStatuses;
+using SchoolAccount.Application.Features.Collect.GetCensusJourney;
 using SchoolAccount.SharedKernel;
 using SchoolAccount.SharedKernel.Authentication;
 

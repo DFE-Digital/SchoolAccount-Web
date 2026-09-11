@@ -1,7 +1,7 @@
-using SchoolAccount.Application.Features.GetCensusJourney;
+using SchoolAccount.Application.Features.Collect.GetCensusJourney;
 using SchoolAccount.SharedKernel.Authentication;
 
-namespace SchoolAccount.Infrastructure.Collect.CensusJourney;
+namespace SchoolAccount.Infrastructure.Clients.Collect.CensusJourney;
 
 public static class CensusJourneyMapper
 {

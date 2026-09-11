@@ -4,15 +4,15 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using SchoolAccount.Application.Abstractions.Clients;
-using SchoolAccount.Application.Collect.CensusStatuses;
-using SchoolAccount.Application.Features.GetCensusJourney;
-using SchoolAccount.Infrastructure.Collect.CensusJourney;
-using SchoolAccount.Infrastructure.Collect.CensusStatuses;
+using SchoolAccount.Application.Features.Collect.CensusStatuses;
+using SchoolAccount.Application.Features.Collect.GetCensusJourney;
+using SchoolAccount.Infrastructure.Clients.Collect.CensusJourney;
+using SchoolAccount.Infrastructure.Clients.Collect.CensusStatuses;
 using SchoolAccount.SharedKernel;
 using SchoolAccount.SharedKernel.Authentication;
 using static System.Net.Mime.MediaTypeNames.Application;
 
-namespace SchoolAccount.Infrastructure.Collect;
+namespace SchoolAccount.Infrastructure.Clients.Collect;
 
 public sealed class CollectApiClient(HttpClient httpClient, ILogger<CollectApiClient> logger)
     : ICollectApiClient
