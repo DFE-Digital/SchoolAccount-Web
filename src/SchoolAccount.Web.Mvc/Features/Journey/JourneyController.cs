@@ -25,14 +25,14 @@ public class JourneyController(
             Ukprn = userContext.Organisation!.Ukprn,
         };
 
-        var gesCensusJourneyResponse = await getCensusJourneyHandler.Handle(
+        var getCensusJourneyResponse = await getCensusJourneyHandler.Handle(
             query,
             cancellationToken
         );
 
         var journeyViewModel = JourneyViewModelBuilder.Build(
             userContext.Name,
-            gesCensusJourneyResponse.Value
+            getCensusJourneyResponse.Value
         );
 
         return View(journeyViewModel);

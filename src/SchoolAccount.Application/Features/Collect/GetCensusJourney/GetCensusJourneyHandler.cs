@@ -2,7 +2,7 @@ using SchoolAccount.Application.Abstractions.Clients;
 using SchoolAccount.Application.Abstractions.Messaging;
 using SchoolAccount.Application.Features.Collect.GetCensusJourney.Responses;
 using SchoolAccount.SharedKernel;
-using SchoolAccount.SharedKernel.Authentication;
+using static SchoolAccount.Application.Features.Collect.GetCensusJourney.GetCensusJourneyMapper;
 
 namespace SchoolAccount.Application.Features.Collect.GetCensusJourney;
 
@@ -16,13 +16,6 @@ public class GetCensusJourneyHandler(
         CancellationToken cancellationToken
     )
     {
-        var censusJourneyContentResult = await collectApiClient.GetCensusJourneyContent(
-            query.Id,
-            query.EmailAddress,
-            query.Organisations,
-            cancellationToken
-        );
-
         var academiesApiResult = await academiesApiClient.GetTrustDetails(
             query.Ukprn,
             cancellationToken
@@ -36,30 +29,9 @@ public class GetCensusJourneyHandler(
 
             if (academyEstablishments != null && academyEstablishments.Any())
             {
-                var trustOrganisations = academyEstablishments
-                    .Select(establishment => new Organisation
-                    {
-                        Name = establishment.EstablishmentName,
-                        Ukprn = establishment.Ukprn,
-                        EstablishmentNumber = establishment.EstablishmentNumber,
-                        Category =
-                            establishment.EstablishmentGroupType != null
-                                ? new Category
-                                {
-                                    Id = establishment.EstablishmentGroupType.Code,
-                                    Name = establishment.EstablishmentGroupType.Name,
-                                }
-                                : new Category(),
-                        LocalAuthority = new LocalAuthority
-                        {
-                            Id = establishment.LocalAuthorityCode!,
-                            Name = establishment.LocalAuthorityName!,
-                            Code = establishment.LocalAuthorityCode!,
-                        },
-                    })
+                organisations = academyEstablishments
+                    .Select(TrustEstablishmentToOrganisation)
                     .ToList();
-
-                organisations = trustOrganisations;
             }
         }
 
@@ -70,11 +42,17 @@ public class GetCensusJourneyHandler(
             cancellationToken
         );
 
-        var getCensusJourney = new GetCensusJourneyResponse
-        {
-            Content = censusJourneyContentResult.Value,
-            SchoolStatuses = censusStatusesResult,
-        };
+        var censusJourneyContentResult = await collectApiClient.GetCensusJourneyContent(
+            query.Id,
+            query.EmailAddress,
+            query.Organisations,
+            cancellationToken
+        );
+
+        var getCensusJourney = CreateGetCensusJourneyResponse(
+            censusJourneyContentResult.Value,
+            censusStatusesResult
+        );
 
         return await Task.FromResult(getCensusJourney);
     }

@@ -3,6 +3,7 @@ namespace SchoolAccount.Application.Features.Collect.CensusStatuses;
 public record GetCensusStatusesResponse
 {
     public string Id { get; init; }
+    public string SchoolName { get; init; }
     public bool Interesting { get; init; }
     public IReadOnlyList<CensusAction> Actions { get; init; } = [];
 }

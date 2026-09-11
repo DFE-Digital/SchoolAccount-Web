@@ -34,6 +34,8 @@ public sealed class JourneyViewModel
         steps = Steps!;
         return Steps?.HasItems() == true;
     }
+
+    public bool IsMatOrLocalAuthority => MatSchoolsStatuses is not null;
 }
 
 public sealed class ImportantDate
