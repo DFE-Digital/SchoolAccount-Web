@@ -34,4 +34,8 @@
   <ItemGroup>
     <_ContentIncludedByDefault Remove="Features\Home\Home.cshtml" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="wwwroot\lib\moj\.DS_Store" />
+  </ItemGroup>
 </Project>

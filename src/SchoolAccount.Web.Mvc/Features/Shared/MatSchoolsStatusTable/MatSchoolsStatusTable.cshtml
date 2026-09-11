@@ -2,17 +2,26 @@
 @{
     ViewData["Title"] = "MatSchoolsStatusTable";
 }
-<govuk-table>
-    <govuk-table-caption class="govuk-table__caption govuk-table__caption--m">@Model.Title</govuk-table-caption>
-    <govuk-table-head>
-        <govuk-table-head-cell aria-sort="none">Name</govuk-table-head-cell>
-        <govuk-table-head-cell aria-sort="descending">Status</govuk-table-head-cell>
-    </govuk-table-head>
-    @foreach (var schoolStatus in Model.SchoolStatuses)
-    {
-        <govuk-table-row>
-            <govuk-table-cell>@schoolStatus.Name</govuk-table-cell>
-            <govuk-table-cell>@schoolStatus.Status</govuk-table-cell>
-        </govuk-table-row>
-    }
-</govuk-table>
+
+<div>
+    <table class="govuk-table" data-module="moj-sortable-table">
+        <caption class="govuk-table__caption govuk-table__caption--m">@Model.Title</caption>
+        <thead class="govuk-table__head">
+        <tr lass="govuk-table__row">
+            <th scope="col" class="govuk-table__header" aria-sort="none">Name</th>
+            <th scope="col" class="govuk-table__header" aria-sort="descending">Status</th>
+        </tr>
+        </thead>
+        <tbody class="govuk-table__body">
+        @foreach (var schoolStatus in Model.SchoolStatuses)
+        {
+            <tr lass="govuk-table__row">
+                <td class="govuk-table__cell">@schoolStatus.Name</td>
+                <td class="govuk-table__cell">@schoolStatus.Status</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
+
+
