@@ -1,9 +1,9 @@
 using SchoolAccount.Application.Abstractions.Messaging;
 using SchoolAccount.SharedKernel.Authentication;
 
-namespace SchoolAccount.Application.Features.GetCensusJourney;
+namespace SchoolAccount.Application.Features.Collect.CensusStatuses;
 
-public record GetCensusJourneyQuery : IQuery<GetCensusJourneyResponse>
+public record GetCensusStatusesQuery : IQuery<List<GetCensusStatusesResponse>>
 {
     public string Id { get; init; }
 

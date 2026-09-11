@@ -1,6 +1,6 @@
 using NSubstitute;
 using SchoolAccount.Application.Abstractions.Clients;
-using SchoolAccount.Application.Collect.CensusStatuses;
+using SchoolAccount.Application.Features.Collect.CensusStatuses;
 using SchoolAccount.SharedKernel.Authentication;
 using SchoolAccount.TestCommon.Builders;
 using Shouldly;
