@@ -1,4 +1,4 @@
-using SchoolAccount.Application.Features.Academies.GetAcademies;
+using SchoolAccount.Application.Features.Collect.GetCensusJourney.Responses;
 using SchoolAccount.SharedKernel;
 
 namespace SchoolAccount.Application.Abstractions.Clients;

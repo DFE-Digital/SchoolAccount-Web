@@ -1,4 +1,5 @@
 using SchoolAccount.Application.Features.Collect.GetCensusJourney;
+using SchoolAccount.Application.Features.Collect.GetCensusJourney.Responses;
 using SchoolAccount.SharedKernel.Authentication;
 
 namespace SchoolAccount.Infrastructure.Clients.Collect.CensusJourney;
@@ -19,9 +20,9 @@ public static class CensusJourneyMapper
         };
     }
 
-    public static GetCensusJourneyResponse ToResponse(GetCensusJourneyApiResponse content)
+    public static GetCensusJourneyContentResponse ToResponse(GetCensusJourneyApiResponse content)
     {
-        return new GetCensusJourneyResponse
+        return new GetCensusJourneyContentResponse
         {
             Title = content.Title,
             Caption = content.Caption,

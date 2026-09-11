@@ -1,5 +1,6 @@
 using GovUK.Dfe.AcademiesApi.Client.Contracts;
 using SchoolAccount.Application.Features.Academies.GetAcademies;
+using SchoolAccount.Application.Features.Collect.GetCensusJourney.Responses;
 using Shouldly;
 using static SchoolAccount.Infrastructure.Clients.Academies.GetAcademies.GetAcademiesMapper;
 

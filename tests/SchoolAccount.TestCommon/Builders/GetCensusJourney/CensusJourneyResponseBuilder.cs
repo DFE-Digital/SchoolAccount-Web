@@ -1,4 +1,5 @@
 using SchoolAccount.Application.Features.Collect.GetCensusJourney;
+using SchoolAccount.Application.Features.Collect.GetCensusJourney.Responses;
 using SchoolAccount.SharedKernel;
 
 namespace SchoolAccount.TestCommon.Builders.GetCensusJourney;
@@ -99,14 +100,14 @@ public class CensusJourneyResponseBuilder
         return this;
     }
 
-    public Result<GetCensusJourneyResponse> AsSuccess()
+    public Result<GetCensusJourneyContentResponse> AsSuccess()
     {
         return Result.Success(Build());
     }
 
-    private GetCensusJourneyResponse Build()
+    private GetCensusJourneyContentResponse Build()
     {
-        return new GetCensusJourneyResponse
+        return new GetCensusJourneyContentResponse
         {
             Title = _title,
             Caption = _caption,

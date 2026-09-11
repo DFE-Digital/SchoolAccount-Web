@@ -1,6 +1,7 @@
 using NSubstitute;
 using SchoolAccount.Application.Abstractions.Clients;
 using SchoolAccount.Application.Features.Academies.GetAcademies;
+using SchoolAccount.Application.Features.Collect.GetCensusJourney.Responses;
 using Shouldly;
 
 namespace SchoolAccount.ApplicationTests.Academies.GetAcademies;

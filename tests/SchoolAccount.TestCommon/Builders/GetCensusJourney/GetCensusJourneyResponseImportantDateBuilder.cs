@@ -1,4 +1,5 @@
 using SchoolAccount.Application.Features.Collect.GetCensusJourney;
+using SchoolAccount.Application.Features.Collect.GetCensusJourney.Responses;
 
 namespace SchoolAccount.TestCommon.Builders.GetCensusJourney;
 

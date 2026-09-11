@@ -8,11 +8,11 @@
         <govuk-table-head-cell aria-sort="none">Name</govuk-table-head-cell>
         <govuk-table-head-cell aria-sort="descending">Status</govuk-table-head-cell>
     </govuk-table-head>
-    @foreach (var organisation in Model.Organisations)
+    @foreach (var schoolStatus in Model.SchoolStatuses)
     {
         <govuk-table-row>
-            <govuk-table-cell>@organisation.Name</govuk-table-cell>
-            <govuk-table-cell>@organisation.Category</govuk-table-cell>
+            <govuk-table-cell>@schoolStatus.Name</govuk-table-cell>
+            <govuk-table-cell>@schoolStatus.Status</govuk-table-cell>
         </govuk-table-row>
     }
 </govuk-table>
