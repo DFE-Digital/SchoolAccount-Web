@@ -70,24 +70,8 @@ public static class GetCensusJourneyMapperTests
             result.Id.ShouldBe("test-ukprn");
             result.Ukprn.ShouldBe("test-ukprn");
             result.Name.ShouldBe("Test Establishment");
-        }
-
-        [Fact]
-        public void The_establishment_type_is_mapped_to_the_category()
-        {
-            // Arrange
-            var establishment = AnAcademyEstablishment()
-                .WithEstablishmentType(
-                    AnAcademyNameAndCode().WithName("Test Type Name").WithCode("test-type-code")
-                )
-                .Build();
-
-            // Act
-            var result = TrustEstablishmentToOrganisation(establishment);
-
-            // Assert
-            result.Category.Id.ShouldBe("test-type-code");
-            result.Category.Name.ShouldBe("Test Type Name");
+            result.Category.Id.ShouldBe("001");
+            result.Category.Name.ShouldBe("Establishment");
         }
 
         [Fact]

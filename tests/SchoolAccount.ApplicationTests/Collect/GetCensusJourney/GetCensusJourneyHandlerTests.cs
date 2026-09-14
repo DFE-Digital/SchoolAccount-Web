@@ -17,6 +17,7 @@ public class GetCensusJourneyHandlerTests
 {
     private readonly IAcademiesApiClient _academiesApiClient =
         Substitute.For<IAcademiesApiClient>();
+
     private readonly CancellationToken _cancellationToken = TestContext.Current.CancellationToken;
     private readonly ICollectApiClient _collectApiClient = Substitute.For<ICollectApiClient>();
     private readonly GetCensusJourneyQuery _query = CreateQuery();
@@ -28,17 +29,77 @@ public class GetCensusJourneyHandlerTests
         MockGetCensusJourneyContentResponse(ACensusJourneyContentResponse().Build());
     }
 
-    [Fact]
-    public async Task Trust_details_are_requested_for_the_queries_ukprn()
+    [Theory]
+    [InlineData("002", "Local Authority")]
+    [InlineData("010", "Multi Academy Trust")]
+    [InlineData("013", "Single Academy Trust")]
+    public async Task Academies_api_is_called_when_an_organisation_has_establishments(
+        string categoryId,
+        string categoryName
+    )
     {
-        // Arrange
+        var query = new GetCensusJourneyQuery
+        {
+            Id = "test-user-id",
+            EmailAddress = "test-user@example.com",
+            Ukprn = "12345678",
+            Organisations =
+            [
+                new Organisation
+                {
+                    Id = "test-org-id",
+                    Name = "Test School",
+                    Category = new Category { Id = categoryId, Name = categoryName },
+                },
+            ],
+        };
         var handler = CreateHandler();
 
         // Act
-        await handler.Handle(_query, _cancellationToken);
+        await handler.Handle(query, _cancellationToken);
 
         // Assert
-        await _academiesApiClient.Received(1).GetTrustDetails(_query.Ukprn, _cancellationToken);
+        await _academiesApiClient.Received(1).GetTrustDetails(query.Ukprn, _cancellationToken);
+    }
+
+    [Theory]
+    [InlineData("000", "Unknown")]
+    [InlineData("001", "Establishment")]
+    [InlineData("003", "Other Legacy Organisation")]
+    [InlineData("004", "Early Years Setting")]
+    [InlineData("008", "Other Stakeholder")]
+    [InlineData("009", "Training Provider")]
+    [InlineData("011", "Government")]
+    [InlineData("012", "Other Gias Stakeholder")]
+    [InlineData("050", "Software Supplier")]
+    [InlineData("051", "Further Education")]
+    public async Task Academies_api_is_bypassed_when_not_an_organisation_with_establishments(
+        string categoryId,
+        string categoryName
+    )
+    {
+        var query = new GetCensusJourneyQuery
+        {
+            Id = "test-user-id",
+            EmailAddress = "test-user@example.com",
+            Ukprn = "12345678",
+            Organisations =
+            [
+                new Organisation
+                {
+                    Id = "test-org-id",
+                    Name = "Test School",
+                    Category = new Category { Id = categoryId, Name = categoryName },
+                },
+            ],
+        };
+        var handler = CreateHandler();
+
+        // Act
+        await handler.Handle(query, _cancellationToken);
+
+        // Assert
+        await _academiesApiClient.DidNotReceive().GetTrustDetails(query.Ukprn, _cancellationToken);
     }
 
     [Fact]
@@ -77,12 +138,13 @@ public class GetCensusJourneyHandlerTests
     public async Task The_query_organisations_are_used_when_the_academies_api_fails()
     {
         // Arrange
+        var handler = CreateHandler();
+
         _academiesApiClient
             .GetTrustDetails(_query.Ukprn, _cancellationToken)
             .Returns(
                 Result.Failure<GetAcademyTrustResponse>(Error.NotFound("test-error", "Test error"))
             );
-        var handler = CreateHandler();
 
         // Act
         await handler.Handle(_query, _cancellationToken);
@@ -225,7 +287,15 @@ public class GetCensusJourneyHandlerTests
             Id = "test-user-id",
             EmailAddress = "test-user@example.com",
             Ukprn = "12345678",
-            Organisations = [new Organisation { Id = "test-org-id", Name = "Test School" }],
+            Organisations =
+            [
+                new Organisation
+                {
+                    Id = "test-org-id",
+                    Name = "Test School",
+                    Category = new Category { Id = "010", Name = "Multi Academy Trust" },
+                },
+            ],
         };
     }
 }

@@ -13,6 +13,4 @@ public record GetCensusJourneyQuery : IQuery<GetCensusJourneyResponse>
     public IReadOnlyList<Organisation> Organisations { get; init; } = [];
 
     public string Ukprn { get; init; }
-
-    public OrganisationCategory Category { get; init; }
 }
