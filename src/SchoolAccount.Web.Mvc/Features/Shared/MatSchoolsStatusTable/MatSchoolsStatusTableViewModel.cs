@@ -1,10 +1,8 @@
-using SchoolAccount.SharedKernel.Authentication;
-
 namespace SchoolAccount.Web.Mvc.Features.Shared.MatSchoolsStatusTable;
 
 public class MatSchoolsStatusTableViewModel
 {
-    public string Title => $"Schools in your trust";
+    public string Title => "Schools in your trust";
 
     public IReadOnlyList<SchoolStatus> SchoolStatuses { get; init; } = [];
 }
