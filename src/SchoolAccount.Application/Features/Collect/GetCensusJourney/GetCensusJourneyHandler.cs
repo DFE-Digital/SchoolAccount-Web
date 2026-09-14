@@ -31,7 +31,7 @@ public class GetCensusJourneyHandler(
             {
                 var academyEstablishments = academiesApiResult.Value.Establishments;
 
-                if (academyEstablishments != null && academyEstablishments.Any())
+                if (academyEstablishments is not null && academyEstablishments.Any())
                 {
                     organisations = academyEstablishments
                         .Select(TrustEstablishmentToOrganisation)

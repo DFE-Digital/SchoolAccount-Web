@@ -29,15 +29,12 @@ public static class GetCensusJourneyMapper
             Ukprn = establishment.Ukprn,
             EstablishmentNumber = establishment.EstablishmentNumber,
             Category = new Category { Id = "001", Name = "Establishment" },
-            LocalAuthority = establishment
-                is { LocalAuthorityName: not null, LocalAuthorityCode: not null }
-                ? new LocalAuthority
-                {
-                    Id = establishment.LocalAuthorityCode,
-                    Name = establishment.LocalAuthorityName,
-                    Code = establishment.LocalAuthorityCode,
-                }
-                : new LocalAuthority(),
+            LocalAuthority = new()
+            {
+                Id = establishment.LocalAuthorityCode ?? string.Empty,
+                Name = establishment.LocalAuthorityName ?? string.Empty,
+                Code = establishment.LocalAuthorityCode ?? string.Empty,
+            },
         };
     }
 }
