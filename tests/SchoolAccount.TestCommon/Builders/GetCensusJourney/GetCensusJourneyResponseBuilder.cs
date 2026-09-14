@@ -47,7 +47,7 @@ public class GetCensusJourneyResponseBuilder
         return Result.Success(Build());
     }
 
-    private GetCensusJourneyResponse Build()
+    public GetCensusJourneyResponse Build()
     {
         return new GetCensusJourneyResponse
         {
