@@ -1,6 +1,7 @@
 using System.Globalization;
 using SchoolAccount.Application.Features.Collect.GetCensusJourney.Responses;
-using SchoolAccount.Web.Mvc.Features.Shared.MatSchoolsStatusTable;
+using SchoolAccount.SharedKernel.Authentication;
+using SchoolAccount.Web.Mvc.Features.Shared.MultipleSchoolsStatusTable;
 using SchoolAccount.Web.Mvc.Features.Shared.StepByStep;
 
 namespace SchoolAccount.Web.Mvc.Features.Journey;
@@ -9,7 +10,8 @@ public static class JourneyViewModelBuilder
 {
     public static JourneyViewModel Build(
         string? user,
-        GetCensusJourneyResponse getCensusJourneyResponse
+        GetCensusJourneyResponse getCensusJourneyResponse,
+        Organisation organisation
     )
     {
         return new JourneyViewModel
@@ -31,18 +33,20 @@ public static class JourneyViewModelBuilder
             Steps = StepByStepViewModelCollection
                 .Create("Journey:StepByStep")
                 .AddSteps(getCensusJourneyResponse.Content.StepByStep),
-            MatSchoolsStatuses = new MatSchoolsStatusTableViewModel
-            {
-                SchoolStatuses = getCensusJourneyResponse
-                    .SchoolStatuses.SelectMany(a =>
-                        a.Actions.Select(x => new SchoolStatus
-                        {
-                            Name = a.SchoolName,
-                            Status = x.Status.Name,
-                        })
-                    )
-                    .ToList(),
-            },
+            MatSchoolsStatuses = organisation.HasEstablishments()
+                ? new MultipleSchoolsStatusTableViewModel
+                {
+                    SchoolStatuses = getCensusJourneyResponse
+                        .SchoolStatuses.SelectMany(a =>
+                            a.Actions.Select(x => new SchoolStatus
+                            {
+                                Name = a.SchoolName,
+                                Status = x.Status.Name,
+                            })
+                        )
+                        .ToList(),
+                }
+                : null,
             //.RememberSteps(),
         };
     }

@@ -2,7 +2,9 @@ using SchoolAccount.Application.Abstractions.Clients;
 using SchoolAccount.Application.Abstractions.Messaging;
 using SchoolAccount.Application.Features.Collect.GetCensusJourney.Responses;
 using SchoolAccount.SharedKernel;
+using SchoolAccount.SharedKernel.Authentication;
 using static SchoolAccount.Application.Features.Collect.GetCensusJourney.GetCensusJourneyMapper;
+using static SchoolAccount.SharedKernel.Authentication.OrganisationCategory;
 
 namespace SchoolAccount.Application.Features.Collect.GetCensusJourney;
 
@@ -16,22 +18,25 @@ public class GetCensusJourneyHandler(
         CancellationToken cancellationToken
     )
     {
-        var academiesApiResult = await academiesApiClient.GetTrustDetails(
-            query.Ukprn,
-            cancellationToken
-        );
-
         var organisations = query.Organisations;
 
-        if (academiesApiResult.IsSuccess)
+        if (organisations[0].HasEstablishments())
         {
-            var academyEstablishments = academiesApiResult.Value.Establishments;
+            var academiesApiResult = await academiesApiClient.GetTrustDetails(
+                query.Ukprn,
+                cancellationToken
+            );
 
-            if (academyEstablishments != null && academyEstablishments.Any())
+            if (academiesApiResult.IsSuccess)
             {
-                organisations = academyEstablishments
-                    .Select(TrustEstablishmentToOrganisation)
-                    .ToList();
+                var academyEstablishments = academiesApiResult.Value.Establishments;
+
+                if (academyEstablishments != null && academyEstablishments.Any())
+                {
+                    organisations = academyEstablishments
+                        .Select(TrustEstablishmentToOrganisation)
+                        .ToList();
+                }
             }
         }
 

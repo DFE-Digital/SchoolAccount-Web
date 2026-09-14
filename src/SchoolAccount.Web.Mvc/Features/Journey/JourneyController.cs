@@ -4,6 +4,7 @@ using SchoolAccount.Application.Abstractions.Messaging;
 using SchoolAccount.Application.Features.Collect.GetCensusJourney;
 using SchoolAccount.Application.Features.Collect.GetCensusJourney.Responses;
 using SchoolAccount.SharedKernel;
+using static SchoolAccount.SharedKernel.Authentication.OrganisationCategory;
 
 namespace SchoolAccount.Web.Mvc.Features.Journey;
 
@@ -32,7 +33,8 @@ public class JourneyController(
 
         var journeyViewModel = JourneyViewModelBuilder.Build(
             userContext.Name,
-            getCensusJourneyResponse.Value
+            getCensusJourneyResponse.Value,
+            userContext.Organisation
         );
 
         return View(journeyViewModel);

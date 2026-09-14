@@ -20,6 +20,11 @@ public record Category
     public string Id { get; init; }
 
     public string Name { get; init; }
+
+    public OrganisationCategory Value =>
+        int.TryParse(Id, out var id) && Enum.IsDefined(typeof(OrganisationCategory), id)
+            ? (OrganisationCategory)id
+            : OrganisationCategory.Unknown;
 }
 
 public record LocalAuthority

@@ -305,9 +305,12 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
 
         var schoolStatus = page.GetTableCellByHeader();
         schoolStatus.ShouldNotBeNull();
-        schoolStatus[0]["Name"].ShouldBe("Test School 1");
-        schoolStatus[0]["Status"].ShouldBe("Not Started");
-        schoolStatus[1]["Name"].ShouldBe("Test School 2");
-        schoolStatus[1]["Status"].ShouldBe("Submitted");
+        schoolStatus.ShouldSatisfyAllConditions(
+            () => schoolStatus.Count.ShouldBe(2),
+            () => schoolStatus[0]["Name"].ShouldBe("Test School 1"),
+            () => schoolStatus[0]["Status"].ShouldBe("Not Started"),
+            () => schoolStatus[1]["Name"].ShouldBe("Test School 2"),
+            () => schoolStatus[1]["Status"].ShouldBe("Submitted")
+        );
     }
 }

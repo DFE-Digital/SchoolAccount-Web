@@ -28,14 +28,7 @@ public static class GetCensusJourneyMapper
             Name = establishment.EstablishmentName,
             Ukprn = establishment.Ukprn,
             EstablishmentNumber = establishment.EstablishmentNumber,
-            Category =
-                establishment.EstablishmentType != null
-                    ? new Category
-                    {
-                        Id = establishment.EstablishmentType.Code,
-                        Name = establishment.EstablishmentType.Name,
-                    }
-                    : new Category(),
+            Category = new Category { Id = "001", Name = "Establishment" },
             LocalAuthority = establishment
                 is { LocalAuthorityName: not null, LocalAuthorityCode: not null }
                 ? new LocalAuthority
