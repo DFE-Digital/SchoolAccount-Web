@@ -73,14 +73,14 @@ public class GetCensusJourneyContentResponseBuilder
             new StepByStep
             {
                 Title = "This is a fake step 1",
-                Body = "<p>This is a fake step body</p>"
+                Body = "<p>This is a fake step body</p>",
             }
         );
         _steps.Add(
             new StepByStep
             {
                 Title = "This is a fake step 2",
-                Body = "<p>This is a super fake step body</p>"
+                Body = "<p>This is a super fake step body</p>",
             }
         );
 
@@ -93,7 +93,9 @@ public class GetCensusJourneyContentResponseBuilder
         return this;
     }
 
-    public GetCensusJourneyContentResponseBuilder WithCallToActionLabel(string callToActionButtonText)
+    public GetCensusJourneyContentResponseBuilder WithCallToActionLabel(
+        string callToActionButtonText
+    )
     {
         _callToActionLabel = callToActionButtonText;
         return this;
@@ -114,7 +116,7 @@ public class GetCensusJourneyContentResponseBuilder
             Status = _status,
             ImportantDates = _importantDates,
             StepByStep = _steps,
-            CallToAction = new CallToAction { Label = _callToActionLabel, Url = _callToActionUrl }
+            CallToAction = new CallToAction { Label = _callToActionLabel, Url = _callToActionUrl },
         };
     }
 }
