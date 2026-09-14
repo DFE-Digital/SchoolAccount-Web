@@ -119,4 +119,44 @@ public abstract class AngleSharpPage
     {
         return Page.QuerySelector($"a.govuk-button[href='{href}']");
     }
+
+    public virtual IReadOnlyList<string> GetTableHeaders()
+    {
+        return Page.QuerySelectorAll("table.govuk-table thead th.govuk-table__header")
+            .Select(header => header.TextContent.Trim())
+            .ToList();
+    }
+
+    public virtual IReadOnlyList<IReadOnlyList<string>> GetTableRows()
+    {
+        return Page.QuerySelectorAll("table.govuk-table tbody tr")
+            .Select(row =>
+                (IReadOnlyList<string>)
+                    row.QuerySelectorAll("td.govuk-table__cell")
+                        .Select(cell => cell.TextContent.Trim())
+                        .ToList()
+            )
+            .ToList();
+    }
+
+    public virtual IReadOnlyList<IReadOnlyDictionary<string, string>> GetTableCellByHeader()
+    {
+        var headers = GetTableHeaders();
+
+        return Page.QuerySelectorAll("table.govuk-table tbody tr")
+            .Select(row =>
+                (IReadOnlyDictionary<string, string>)
+                    row.QuerySelectorAll("td.govuk-table__cell")
+                        .Select(
+                            (cell, index) =>
+                                new
+                                {
+                                    Key = index < headers.Count ? headers[index] : $"Column{index}",
+                                    Value = cell.TextContent.Trim(),
+                                }
+                        )
+                        .ToDictionary(cell => cell.Key, cell => cell.Value)
+            )
+            .ToList();
+    }
 }

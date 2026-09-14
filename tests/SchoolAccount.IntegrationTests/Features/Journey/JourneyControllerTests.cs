@@ -4,6 +4,7 @@ using SchoolAccount.IntegrationTests.Common.Extensions;
 using SchoolAccount.IntegrationTests.Common.Pages;
 using SchoolAccount.TestCommon.Stubs;
 using Shouldly;
+using static SchoolAccount.TestCommon.Builders.CensusStatusesResponseBuilder;
 using static SchoolAccount.TestCommon.Builders.GetCensusJourney.GetCensusJourneyContentResponseBuilder;
 using static SchoolAccount.TestCommon.Builders.GetCensusJourney.GetCensusJourneyResponseBuilder;
 using static SchoolAccount.TestCommon.Builders.GetCensusJourney.GetCensusJourneyResponseImportantDateBuilder;
@@ -26,7 +27,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     }
 
     [Fact]
-    public async Task Page_successfully_renders()
+    public async Task Page_content_successfully_renders()
     {
         // Arrange
         var token = TestContext.Current.CancellationToken;
@@ -263,5 +264,50 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         steps
             .Select(x => x.GetTitle())
             .ShouldBeSubsetOf(["This is a fake step 1", "This is a fake step 2"]);
+    }
+
+    [Fact]
+    public async Task School_statuses_are_displayed()
+    {
+        // Arrange
+        var pageUri = _factory.GeneratePath("Journey", "Journey");
+        _getCensusJourneyHandler.Returns(
+            AGetCensusJourneyResponse()
+                .WithSchoolStatuses(
+                    ACensusStatusResponse()
+                        .WithName("Test School 1")
+                        .WithAction("Autumn Census 2026", "Not Started"),
+                    ACensusStatusResponse()
+                        .WithName("Test School 2")
+                        .WithAction("Autumn Census 2026", "Submitted")
+                )
+                .AsSuccess()
+        );
+
+        // Act
+        var message = await _client.GetAsync(pageUri, TestContext.Current.CancellationToken);
+        var page = await AngleSharpPage.FromResponseAsync<JourneyPage>(
+            message,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        message.StatusCode.ShouldBe(HttpStatusCode.OK);
+
+        var tableHeadings = page.GetTableHeaders();
+        tableHeadings.ShouldNotBeNull();
+        tableHeadings[0].ShouldBe("Name");
+        tableHeadings[1].ShouldBe("Status");
+
+        var tableRows = page.GetTableRows();
+        tableRows.ShouldNotBeNull();
+        tableRows.Count.ShouldBe(2);
+
+        var schoolStatus = page.GetTableCellByHeader();
+        schoolStatus.ShouldNotBeNull();
+        schoolStatus[0]["Name"].ShouldBe("Test School 1");
+        schoolStatus[0]["Status"].ShouldBe("Not Started");
+        schoolStatus[1]["Name"].ShouldBe("Test School 2");
+        schoolStatus[1]["Status"].ShouldBe("Submitted");
     }
 }

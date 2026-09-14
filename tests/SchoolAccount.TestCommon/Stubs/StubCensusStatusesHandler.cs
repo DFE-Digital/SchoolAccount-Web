@@ -12,7 +12,7 @@ public sealed class StubCensusStatusesHandler
     public static StubCensusStatusesHandler Succeeding()
     {
         var handler = new StubCensusStatusesHandler();
-        handler.Returns(CensusStatusesResponseBuilder.Create().AsSuccess());
+        handler.Returns(CensusStatusesResponseBuilder.ACensusStatusResponse().AsSuccess());
 
         return handler;
     }

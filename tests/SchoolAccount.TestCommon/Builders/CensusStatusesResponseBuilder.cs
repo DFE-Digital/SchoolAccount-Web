@@ -10,7 +10,7 @@ public class CensusStatusesResponseBuilder
     private string _name = "Test School";
     private bool _interesting = true;
 
-    public static CensusStatusesResponseBuilder Create() => new();
+    public static CensusStatusesResponseBuilder ACensusStatusResponse() => new();
 
     public CensusStatusesResponseBuilder WithId(string id)
     {
