@@ -30,7 +30,6 @@ public class GetCensusJourneyHandlerTests
     }
 
     [Theory]
-    [InlineData("002", "Local Authority")]
     [InlineData("010", "Multi Academy Trust")]
     [InlineData("013", "Single Academy Trust")]
     public async Task Academies_api_is_called_when_an_organisation_has_establishments(
@@ -65,6 +64,7 @@ public class GetCensusJourneyHandlerTests
     [Theory]
     [InlineData("000", "Unknown")]
     [InlineData("001", "Establishment")]
+    [InlineData("002", "Local Authority")]
     [InlineData("003", "Other Legacy Organisation")]
     [InlineData("004", "Early Years Setting")]
     [InlineData("008", "Other Stakeholder")]

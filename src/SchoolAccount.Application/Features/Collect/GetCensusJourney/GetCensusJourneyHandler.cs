@@ -20,7 +20,7 @@ public class GetCensusJourneyHandler(
     {
         var organisations = query.Organisations;
 
-        if (organisations[0].HasEstablishments())
+        if (organisations[0].IsTrust())
         {
             var academiesApiResult = await academiesApiClient.GetTrustDetails(
                 query.Ukprn,
