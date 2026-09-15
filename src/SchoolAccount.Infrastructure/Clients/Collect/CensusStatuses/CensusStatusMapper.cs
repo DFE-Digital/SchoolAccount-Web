@@ -21,6 +21,7 @@ public static class CensusStatusMapper
         new()
         {
             Id = organisation.Id,
+            SchoolName = organisation.Name,
             Interesting = organisation.Interesting,
             Actions = organisation
                 .Actions.Select(action => new CensusAction

@@ -4,7 +4,7 @@ using GovUK.Dfe.AcademiesApi.Client.Contracts;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using SchoolAccount.Application.Abstractions.Clients;
-using SchoolAccount.Application.Features.Academies.GetAcademies;
+using SchoolAccount.Application.Features.Collect.GetCensusJourney.Responses;
 using SchoolAccount.SharedKernel;
 using static System.Net.Mime.MediaTypeNames.Application;
 using static System.StringComparison;

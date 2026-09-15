@@ -25,7 +25,7 @@ public class StepByStepViewModelCollection
     }
 
     public StepByStepViewModelCollection AddStep(
-        Application.Features.Collect.GetCensusJourney.StepByStep step
+        Application.Features.Collect.GetCensusJourney.Responses.StepByStep step
     )
     {
         Dictionary<string, string[]> requiredClasses = new()
@@ -54,7 +54,7 @@ public class StepByStepViewModelCollection
     }
 
     public StepByStepViewModelCollection AddSteps(
-        IEnumerable<Application.Features.Collect.GetCensusJourney.StepByStep> steps
+        IEnumerable<Application.Features.Collect.GetCensusJourney.Responses.StepByStep> steps
     )
     {
         foreach (var step in steps)

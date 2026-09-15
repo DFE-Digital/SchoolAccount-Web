@@ -1,5 +1,5 @@
 using GovUK.Dfe.AcademiesApi.Client.Contracts;
-using SchoolAccount.Application.Features.Academies.GetAcademies;
+using SchoolAccount.Application.Features.Collect.GetCensusJourney.Responses;
 
 namespace SchoolAccount.Infrastructure.Clients.Academies.GetAcademies;
 
@@ -46,7 +46,10 @@ public static class GetAcademiesMapper
 
     private static GetAcademyNameAndCodeResponse? ToNameAndCodeResponse(NameAndCodeDto? nameAndCode)
     {
-        return nameAndCode is null || string.IsNullOrEmpty(nameAndCode.Name)
+        return
+            nameAndCode is null
+            || string.IsNullOrEmpty(nameAndCode.Name)
+            || string.IsNullOrEmpty(nameAndCode.Code)
             ? null
             : new GetAcademyNameAndCodeResponse
             {
