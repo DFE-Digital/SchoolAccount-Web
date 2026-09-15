@@ -3,7 +3,6 @@ using Shouldly;
 using static SchoolAccount.Application.Features.Collect.GetCensusJourney.GetCensusJourneyMapper;
 using static SchoolAccount.TestCommon.Builders.CensusStatusesResponseBuilder;
 using static SchoolAccount.TestCommon.Builders.GetAcademyTrustResponseBuilder.GetAcademyEstablishmentResponseBuilder;
-using static SchoolAccount.TestCommon.Builders.GetAcademyTrustResponseBuilder.GetAcademyNameAndCodeResponseBuilder;
 using static SchoolAccount.TestCommon.Builders.GetCensusJourney.GetCensusJourneyContentResponseBuilder;
 using static SchoolAccount.TestCommon.Builders.GetCensusJourney.GetCensusJourneyResponseBuilder;
 
