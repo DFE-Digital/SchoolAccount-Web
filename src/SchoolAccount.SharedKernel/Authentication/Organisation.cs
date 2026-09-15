@@ -10,7 +10,7 @@ public record Organisation
 
     public Category Category { get; init; }
 
-    public string Ukprn { get; init; }
+    public string? Ukprn { get; init; }
 
     public LocalAuthority? LocalAuthority { get; init; }
 

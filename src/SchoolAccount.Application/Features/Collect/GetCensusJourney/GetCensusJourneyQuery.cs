@@ -12,5 +12,5 @@ public record GetCensusJourneyQuery : IQuery<GetCensusJourneyResponse>
 
     public Organisation Organisation { get; init; }
 
-    public string Ukprn { get; init; }
+    public string? Ukprn { get; init; }
 }

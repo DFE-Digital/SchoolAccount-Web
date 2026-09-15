@@ -31,15 +31,44 @@ public class GetCensusJourneyHandlerTests
     }
 
     [Fact]
-    public async Task Academies_api_is_called_when_an_organisation_is_not_an_establishment_category()
+    public async Task Academies_api_is_not_called_when_the_organisation_is_an_establishment_category()
     {
+        // Arrange
         var handler = CreateHandler();
 
         // Act
         await handler.Handle(_matQuery, _cancellationToken);
 
         // Assert
-        await _academiesApiClient.Received(1).GetTrustDetails(_matQuery.Ukprn, _cancellationToken);
+        await _academiesApiClient.Received(1).GetTrustDetails(_matQuery.Ukprn!, _cancellationToken);
+    }
+
+    [Fact]
+    public async Task Academies_api_is_not_called_when_the_organisation_ukprn_is_null()
+    {
+        // Arrange
+        var query = new GetCensusJourneyQuery
+        {
+            Id = "test-user-id",
+            EmailAddress = "test-user@example.com",
+            Ukprn = null,
+            Organisation = new Organisation
+            {
+                Id = "test-org-id",
+                Name = "Test School",
+                Category = new Category { Id = "010", Name = "Multi Academy Trust" },
+            },
+        };
+
+        var handler = CreateHandler();
+
+        // Act
+        await handler.Handle(query, _cancellationToken);
+
+        // Assert
+        await _academiesApiClient
+            .DidNotReceive()
+            .GetTrustDetails(Arg.Any<string>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -125,7 +154,7 @@ public class GetCensusJourneyHandlerTests
     private void MockGetAcademiesResponse(GetAcademyTrustResponse trust)
     {
         _academiesApiClient
-            .GetTrustDetails(_matQuery.Ukprn, _cancellationToken)
+            .GetTrustDetails(_matQuery.Ukprn!, _cancellationToken)
             .Returns(Result.Success(trust));
     }
 
