@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using SchoolAccount.Application.Abstractions.Clients;
 using SchoolAccount.Application.Features.Collect.CensusStatuses;
-using SchoolAccount.Application.Features.Collect.GetCensusJourney;
 using SchoolAccount.Application.Features.Collect.GetCensusJourney.Responses;
 using SchoolAccount.Infrastructure.Clients.Collect.CensusJourney;
 using SchoolAccount.Infrastructure.Clients.Collect.CensusStatuses;

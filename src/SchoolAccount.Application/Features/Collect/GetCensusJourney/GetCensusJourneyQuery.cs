@@ -10,7 +10,7 @@ public record GetCensusJourneyQuery : IQuery<GetCensusJourneyResponse>
 
     public string EmailAddress { get; init; }
 
-    public IReadOnlyList<Organisation> Organisations { get; init; } = [];
+    public Organisation Organisation { get; init; }
 
     public string Ukprn { get; init; }
 }

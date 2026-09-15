@@ -21,7 +21,7 @@ public class JourneyController(
         {
             Id = userContext.Id!,
             EmailAddress = userContext.EmailAddress!,
-            Organisations = [userContext.Organisation!],
+            Organisation = userContext.Organisation!,
             Ukprn = userContext.Organisation!.Ukprn,
         };
 

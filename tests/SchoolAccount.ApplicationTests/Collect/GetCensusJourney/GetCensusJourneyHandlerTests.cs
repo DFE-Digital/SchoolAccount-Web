@@ -15,12 +15,13 @@ namespace SchoolAccount.ApplicationTests.Collect.GetCensusJourney;
 
 public class GetCensusJourneyHandlerTests
 {
+    private static readonly GetCensusJourneyQuery _matQuery = CreateMatQuery();
+
     private readonly IAcademiesApiClient _academiesApiClient =
         Substitute.For<IAcademiesApiClient>();
 
     private readonly CancellationToken _cancellationToken = TestContext.Current.CancellationToken;
     private readonly ICollectApiClient _collectApiClient = Substitute.For<ICollectApiClient>();
-    private readonly GetCensusJourneyQuery _query = CreateQuery();
 
     public GetCensusJourneyHandlerTests()
     {
@@ -29,69 +30,32 @@ public class GetCensusJourneyHandlerTests
         MockGetCensusJourneyContentResponse(ACensusJourneyContentResponse().Build());
     }
 
-    [Theory]
-    [InlineData("010", "Multi Academy Trust")]
-    [InlineData("013", "Single Academy Trust")]
-    public async Task Academies_api_is_called_when_an_organisation_has_establishments(
-        string categoryId,
-        string categoryName
-    )
+    [Fact]
+    public async Task Academies_api_is_called_when_an_organisation_is_not_an_establishment_category()
     {
-        var query = new GetCensusJourneyQuery
-        {
-            Id = "test-user-id",
-            EmailAddress = "test-user@example.com",
-            Ukprn = "12345678",
-            Organisations =
-            [
-                new Organisation
-                {
-                    Id = "test-org-id",
-                    Name = "Test School",
-                    Category = new Category { Id = categoryId, Name = categoryName },
-                },
-            ],
-        };
         var handler = CreateHandler();
 
         // Act
-        await handler.Handle(query, _cancellationToken);
+        await handler.Handle(_matQuery, _cancellationToken);
 
         // Assert
-        await _academiesApiClient.Received(1).GetTrustDetails(query.Ukprn, _cancellationToken);
+        await _academiesApiClient.Received(1).GetTrustDetails(_matQuery.Ukprn, _cancellationToken);
     }
 
-    [Theory]
-    [InlineData("000", "Unknown")]
-    [InlineData("001", "Establishment")]
-    [InlineData("002", "Local Authority")]
-    [InlineData("003", "Other Legacy Organisation")]
-    [InlineData("004", "Early Years Setting")]
-    [InlineData("008", "Other Stakeholder")]
-    [InlineData("009", "Training Provider")]
-    [InlineData("011", "Government")]
-    [InlineData("012", "Other Gias Stakeholder")]
-    [InlineData("050", "Software Supplier")]
-    [InlineData("051", "Further Education")]
-    public async Task Academies_api_is_bypassed_when_not_an_organisation_with_establishments(
-        string categoryId,
-        string categoryName
-    )
+    [Fact]
+    public async Task Academies_api_is_bypassed_when_the_organisation_is_of_establishment_category()
     {
         var query = new GetCensusJourneyQuery
         {
             Id = "test-user-id",
             EmailAddress = "test-user@example.com",
-            Ukprn = "12345678",
-            Organisations =
-            [
-                new Organisation
-                {
-                    Id = "test-org-id",
-                    Name = "Test School",
-                    Category = new Category { Id = categoryId, Name = categoryName },
-                },
-            ],
+            Ukprn = "1234567",
+            Organisation = new Organisation
+            {
+                Id = "test-org-id",
+                Name = "Test School",
+                Category = new Category { Id = "001", Name = "Establishment" },
+            },
         };
         var handler = CreateHandler();
 
@@ -117,110 +81,19 @@ public class GetCensusJourneyHandlerTests
         var handler = CreateHandler();
 
         // Act
-        await handler.Handle(_query, _cancellationToken);
+        await handler.Handle(_matQuery, _cancellationToken);
 
         // Assert
         await _collectApiClient
             .Received(1)
             .GetCensusStatuses(
-                _query.Id,
-                _query.EmailAddress,
+                _matQuery.Id,
+                _matQuery.EmailAddress,
                 Arg.Is<IReadOnlyList<Organisation>>(organisations =>
                     organisations.Count == 2
                     && organisations[0].Name == "First Establishment"
                     && organisations[1].Name == "Second Establishment"
                 ),
-                _cancellationToken
-            );
-    }
-
-    [Fact]
-    public async Task The_query_organisations_are_used_when_the_academies_api_fails()
-    {
-        // Arrange
-        var handler = CreateHandler();
-
-        _academiesApiClient
-            .GetTrustDetails(_query.Ukprn, _cancellationToken)
-            .Returns(
-                Result.Failure<GetAcademyTrustResponse>(Error.NotFound("test-error", "Test error"))
-            );
-
-        // Act
-        await handler.Handle(_query, _cancellationToken);
-
-        // Assert
-        await _collectApiClient
-            .Received(1)
-            .GetCensusStatuses(
-                _query.Id,
-                _query.EmailAddress,
-                _query.Organisations,
-                _cancellationToken
-            );
-    }
-
-    [Fact]
-    public async Task The_query_organisations_are_used_when_the_trust_has_no_establishments()
-    {
-        // Arrange
-        MockGetAcademiesResponse(AnAcademyTrust().WithEstablishments().Build());
-        var handler = CreateHandler();
-
-        // Act
-        await handler.Handle(_query, _cancellationToken);
-
-        // Assert
-        await _collectApiClient
-            .Received(1)
-            .GetCensusStatuses(
-                _query.Id,
-                _query.EmailAddress,
-                _query.Organisations,
-                _cancellationToken
-            );
-    }
-
-    [Fact]
-    public async Task The_query_organisations_are_used_when_the_trust_establishments_are_null()
-    {
-        // Arrange
-        MockGetAcademiesResponse(AnAcademyTrust().WithNullEstablishments().Build());
-        var handler = CreateHandler();
-
-        // Act
-        await handler.Handle(_query, _cancellationToken);
-
-        // Assert
-        await _collectApiClient
-            .Received(1)
-            .GetCensusStatuses(
-                _query.Id,
-                _query.EmailAddress,
-                _query.Organisations,
-                _cancellationToken
-            );
-    }
-
-    [Fact]
-    public async Task Census_journey_content_is_requested_for_the_query_organisations()
-    {
-        // Arrange
-        MockGetAcademiesResponse(
-            AnAcademyTrust().WithEstablishments(AnAcademyEstablishment()).Build()
-        );
-        var handler = CreateHandler();
-
-        // Act
-        await handler.Handle(_query, _cancellationToken);
-
-        // Assert
-        await _collectApiClient
-            .Received(1)
-            .GetCensusJourneyContent(
-                _query.Id,
-                _query.EmailAddress,
-                _query.Organisations,
                 _cancellationToken
             );
     }
@@ -236,7 +109,7 @@ public class GetCensusJourneyHandlerTests
         var handler = CreateHandler();
 
         // Act
-        var result = await handler.Handle(_query, _cancellationToken);
+        var result = await handler.Handle(_matQuery, _cancellationToken);
 
         // Assert
         result.IsSuccess.ShouldBeTrue();
@@ -252,7 +125,7 @@ public class GetCensusJourneyHandlerTests
     private void MockGetAcademiesResponse(GetAcademyTrustResponse trust)
     {
         _academiesApiClient
-            .GetTrustDetails(_query.Ukprn, _cancellationToken)
+            .GetTrustDetails(_matQuery.Ukprn, _cancellationToken)
             .Returns(Result.Success(trust));
     }
 
@@ -260,8 +133,8 @@ public class GetCensusJourneyHandlerTests
     {
         _collectApiClient
             .GetCensusStatuses(
-                _query.Id,
-                _query.EmailAddress,
+                _matQuery.Id,
+                _matQuery.EmailAddress,
                 Arg.Any<IReadOnlyList<Organisation>>(),
                 _cancellationToken
             )
@@ -272,30 +145,27 @@ public class GetCensusJourneyHandlerTests
     {
         _collectApiClient
             .GetCensusJourneyContent(
-                _query.Id,
-                _query.EmailAddress,
+                _matQuery.Id,
+                _matQuery.EmailAddress,
                 Arg.Any<IReadOnlyList<Organisation>>(),
                 _cancellationToken
             )
             .Returns(Result.Success(content));
     }
 
-    private static GetCensusJourneyQuery CreateQuery()
+    private static GetCensusJourneyQuery CreateMatQuery()
     {
         return new GetCensusJourneyQuery
         {
             Id = "test-user-id",
             EmailAddress = "test-user@example.com",
             Ukprn = "12345678",
-            Organisations =
-            [
-                new Organisation
-                {
-                    Id = "test-org-id",
-                    Name = "Test School",
-                    Category = new Category { Id = "010", Name = "Multi Academy Trust" },
-                },
-            ],
+            Organisation = new Organisation
+            {
+                Id = "test-org-id",
+                Name = "Test School",
+                Category = new Category { Id = "010", Name = "Multi Academy Trust" },
+            },
         };
     }
 }
