@@ -2,7 +2,7 @@ namespace SchoolAccount.SharedKernel.Authentication;
 
 public record Organisation
 {
-    private const string _establishmentCategoryId = "001";
+    public const string EstablishmentCategoryId = "001";
 
     public string Id { get; init; }
 
@@ -17,7 +17,7 @@ public record Organisation
     public string? EstablishmentNumber { get; init; }
 
     public bool IsEstablishment =>
-        Category.Id.Equals(_establishmentCategoryId, StringComparison.OrdinalIgnoreCase);
+        Category.Id.Equals(EstablishmentCategoryId, StringComparison.OrdinalIgnoreCase);
 }
 
 public record Category

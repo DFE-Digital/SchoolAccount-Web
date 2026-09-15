@@ -1,6 +1,7 @@
 using SchoolAccount.Application.Features.Collect.CensusStatuses;
 using SchoolAccount.Application.Features.Collect.GetCensusJourney.Responses;
 using SchoolAccount.SharedKernel.Authentication;
+using static SchoolAccount.SharedKernel.Authentication.Organisation;
 
 namespace SchoolAccount.Application.Features.Collect.GetCensusJourney;
 
@@ -28,7 +29,7 @@ public static class GetCensusJourneyMapper
             Name = establishment.EstablishmentName,
             Ukprn = establishment.Ukprn,
             EstablishmentNumber = establishment.EstablishmentNumber,
-            Category = new Category { Id = "001", Name = "Establishment" },
+            Category = new Category { Id = EstablishmentCategoryId, Name = "Establishment" },
             LocalAuthority = new()
             {
                 Id = establishment.LocalAuthorityCode ?? string.Empty,
