@@ -3,6 +3,7 @@ using SchoolAccount.Application.Features.Collect.GetCensusJourney.Responses;
 using SchoolAccount.SharedKernel.Authentication;
 using SchoolAccount.Web.Mvc.Features.Shared.MultipleSchoolsStatusTable;
 using SchoolAccount.Web.Mvc.Features.Shared.StepByStep;
+using static SchoolAccount.Web.Mvc.Features.Shared.MultipleSchoolsStatusTable.MultipleSchoolsStatusTableViewModel;
 
 namespace SchoolAccount.Web.Mvc.Features.Journey;
 
@@ -33,7 +34,7 @@ public static class JourneyViewModelBuilder
             Steps = StepByStepViewModelCollection
                 .Create("Journey:StepByStep")
                 .AddSteps(getCensusJourneyResponse.Content.StepByStep),
-            MatSchoolsStatuses = organisation.HasEstablishments()
+            MatSchoolsStatuses = !organisation.IsEstablishment
                 ? new MultipleSchoolsStatusTableViewModel
                 {
                     SchoolStatuses = getCensusJourneyResponse

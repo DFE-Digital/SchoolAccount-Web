@@ -2,6 +2,8 @@ namespace SchoolAccount.SharedKernel.Authentication;
 
 public record Organisation
 {
+    private const string _establishmentCategoryId = "001";
+
     public string Id { get; init; }
 
     public string Name { get; init; }
@@ -13,6 +15,9 @@ public record Organisation
     public LocalAuthority? LocalAuthority { get; init; }
 
     public string? EstablishmentNumber { get; init; }
+
+    public bool IsEstablishment =>
+        Category.Id.Equals(_establishmentCategoryId, StringComparison.OrdinalIgnoreCase);
 }
 
 public record Category
@@ -20,11 +25,6 @@ public record Category
     public string Id { get; init; }
 
     public string Name { get; init; }
-
-    public OrganisationCategory Value =>
-        int.TryParse(Id, out var id) && Enum.IsDefined(typeof(OrganisationCategory), id)
-            ? (OrganisationCategory)id
-            : OrganisationCategory.Unknown;
 }
 
 public record LocalAuthority

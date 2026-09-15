@@ -50,13 +50,15 @@ public class GetCensusStatusesHandlerTests
         result.Value.ShouldBe([response]);
     }
 
-    private static GetCensusStatusesQuery CreateQuery() =>
-        new()
+    private static GetCensusStatusesQuery CreateQuery()
+    {
+        return new GetCensusStatusesQuery
         {
             Id = "test-user-id",
             EmailAddress = "test-user@example.com",
             Organisations = [new Organisation { Id = "test-org-id", Name = "Test School" }],
         };
+    }
 
     private ICollectApiClient ClientReturning(
         GetCensusStatusesQuery query,

@@ -2,9 +2,7 @@ using SchoolAccount.Application.Abstractions.Clients;
 using SchoolAccount.Application.Abstractions.Messaging;
 using SchoolAccount.Application.Features.Collect.GetCensusJourney.Responses;
 using SchoolAccount.SharedKernel;
-using SchoolAccount.SharedKernel.Authentication;
 using static SchoolAccount.Application.Features.Collect.GetCensusJourney.GetCensusJourneyMapper;
-using static SchoolAccount.SharedKernel.Authentication.OrganisationCategory;
 
 namespace SchoolAccount.Application.Features.Collect.GetCensusJourney;
 
@@ -20,7 +18,7 @@ public class GetCensusJourneyHandler(
     {
         var organisations = query.Organisations;
 
-        if (organisations[0].IsTrust())
+        if (!organisations[0].IsEstablishment)
         {
             var academiesApiResult = await academiesApiClient.GetTrustDetails(
                 query.Ukprn,
