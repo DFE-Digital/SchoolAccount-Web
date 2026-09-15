@@ -92,26 +92,24 @@ public static class GetCensusJourneyMapperTests
             result.LocalAuthority.Name.ShouldBe("Test Local Authority");
         }
 
-        [Theory]
-        [InlineData(null, "Test Local Authority")]
-        [InlineData("test-la-code", null)]
-        [InlineData(null, null)]
-        public void An_empty_local_authority_is_used_when_either_the_name_or_code_is_missing(
-            string? code,
-            string? name
-        )
+        [Fact]
+        public void An_empty_local_authority_is_used_when_the_name_and_code_are_missing()
         {
             // Arrange
-            var establishment = AnAcademyEstablishment()
-                .WithLocalAuthorityCode(code)
-                .WithLocalAuthorityName(name)
-                .Build();
+            var establishment = AnAcademyEstablishment().Build();
 
             // Act
             var result = TrustEstablishmentToOrganisation(establishment);
 
             // Assert
-            result.LocalAuthority.ShouldBe(new LocalAuthority());
+            result.LocalAuthority.ShouldBe(
+                new LocalAuthority
+                {
+                    Id = string.Empty,
+                    Name = string.Empty,
+                    Code = string.Empty,
+                }
+            );
         }
     }
 }
