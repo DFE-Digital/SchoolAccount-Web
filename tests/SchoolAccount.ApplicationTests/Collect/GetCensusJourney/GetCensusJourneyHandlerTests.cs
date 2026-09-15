@@ -31,7 +31,7 @@ public class GetCensusJourneyHandlerTests
     }
 
     [Fact]
-    public async Task Academies_api_is_not_called_when_the_organisation_is_an_establishment_category()
+    public async Task Academies_api_is_called_when_the_organisation_is_not_of_an_establishment_category()
     {
         // Arrange
         var handler = CreateHandler();
@@ -40,7 +40,9 @@ public class GetCensusJourneyHandlerTests
         await handler.Handle(_matQuery, _cancellationToken);
 
         // Assert
-        await _academiesApiClient.Received(1).GetTrustDetails(_matQuery.Ukprn!, _cancellationToken);
+        await _academiesApiClient
+            .Received(1)
+            .GetTrustDetails(_matQuery.Organisation.Ukprn!, _cancellationToken);
     }
 
     [Fact]
@@ -51,11 +53,11 @@ public class GetCensusJourneyHandlerTests
         {
             Id = "test-user-id",
             EmailAddress = "test-user@example.com",
-            Ukprn = null,
             Organisation = new Organisation
             {
                 Id = "test-org-id",
                 Name = "Test School",
+                Ukprn = null,
                 Category = new Category { Id = "010", Name = "Multi Academy Trust" },
             },
         };
@@ -78,11 +80,11 @@ public class GetCensusJourneyHandlerTests
         {
             Id = "test-user-id",
             EmailAddress = "test-user@example.com",
-            Ukprn = "1234567",
             Organisation = new Organisation
             {
                 Id = "test-org-id",
                 Name = "Test School",
+                Ukprn = "1234567",
                 Category = new Category { Id = "001", Name = "Establishment" },
             },
         };
@@ -92,7 +94,9 @@ public class GetCensusJourneyHandlerTests
         await handler.Handle(query, _cancellationToken);
 
         // Assert
-        await _academiesApiClient.DidNotReceive().GetTrustDetails(query.Ukprn, _cancellationToken);
+        await _academiesApiClient
+            .DidNotReceive()
+            .GetTrustDetails(query.Organisation.Ukprn, _cancellationToken);
     }
 
     [Fact]
@@ -154,7 +158,7 @@ public class GetCensusJourneyHandlerTests
     private void MockGetAcademiesResponse(GetAcademyTrustResponse trust)
     {
         _academiesApiClient
-            .GetTrustDetails(_matQuery.Ukprn!, _cancellationToken)
+            .GetTrustDetails(_matQuery.Organisation.Ukprn!, _cancellationToken)
             .Returns(Result.Success(trust));
     }
 
@@ -188,11 +192,11 @@ public class GetCensusJourneyHandlerTests
         {
             Id = "test-user-id",
             EmailAddress = "test-user@example.com",
-            Ukprn = "12345678",
             Organisation = new Organisation
             {
                 Id = "test-org-id",
                 Name = "Test School",
+                Ukprn = "1234567",
                 Category = new Category { Id = "010", Name = "Multi Academy Trust" },
             },
         };

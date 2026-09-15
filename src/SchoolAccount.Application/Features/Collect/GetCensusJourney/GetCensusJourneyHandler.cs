@@ -19,7 +19,7 @@ public class GetCensusJourneyHandler(
     {
         var organisations = query.Organisation.IsEstablishment
             ? [query.Organisation]
-            : await GetEstablishmentsFromTrust(query, cancellationToken);
+            : await GetEstablishmentsFromTrust(query.Organisation.Ukprn, cancellationToken);
 
         var censusStatusesResult = await collectApiClient.GetCensusStatuses(
             query.Id,
@@ -44,14 +44,14 @@ public class GetCensusJourneyHandler(
     }
 
     private async Task<IReadOnlyList<Organisation>> GetEstablishmentsFromTrust(
-        GetCensusJourneyQuery query,
+        string? ukprn,
         CancellationToken cancellationToken
     )
     {
-        if (!string.IsNullOrEmpty(query.Ukprn))
+        if (!string.IsNullOrEmpty(ukprn))
         {
             var academiesApiResult = await academiesApiClient.GetTrustDetails(
-                query.Ukprn,
+                ukprn,
                 cancellationToken
             );
 

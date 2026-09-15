@@ -22,7 +22,6 @@ public class JourneyController(
             Id = userContext.Id!,
             EmailAddress = userContext.EmailAddress!,
             Organisation = userContext.Organisation!,
-            Ukprn = userContext.Organisation!.Ukprn,
         };
 
         var getCensusJourneyResponse = await getCensusJourneyHandler.Handle(
@@ -33,7 +32,7 @@ public class JourneyController(
         var journeyViewModel = JourneyViewModelBuilder.Build(
             userContext.Name,
             getCensusJourneyResponse.Value,
-            userContext.Organisation
+            userContext.Organisation!
         );
 
         return View(journeyViewModel);
