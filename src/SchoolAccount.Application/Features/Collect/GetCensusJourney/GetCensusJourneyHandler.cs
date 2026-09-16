@@ -17,9 +17,7 @@ public class GetCensusJourneyHandler(
         CancellationToken cancellationToken
     )
     {
-        var organisations = query.Organisation.IsEstablishment
-            ? [query.Organisation]
-            : await GetEstablishmentsFromTrust(query.Organisation.Ukprn, cancellationToken);
+        var organisations = await GetOrganisations(query, cancellationToken);
 
         var censusStatusesResult = await collectApiClient.GetCensusStatuses(
             query.Id,
@@ -43,29 +41,40 @@ public class GetCensusJourneyHandler(
         return await Task.FromResult(getCensusJourney);
     }
 
+    private async Task<IReadOnlyList<Organisation>> GetOrganisations(
+        GetCensusJourneyQuery query,
+        CancellationToken cancellationToken
+    )
+    {
+        if (query.Organisation.IsEstablishment)
+        {
+            return [query.Organisation];
+        }
+
+        var trustEstablishments = await GetEstablishmentsFromTrust(
+            query.Organisation.Ukprn,
+            cancellationToken
+        );
+
+        return trustEstablishments.Any() ? trustEstablishments : [query.Organisation];
+    }
+
     private async Task<IReadOnlyList<Organisation>> GetEstablishmentsFromTrust(
         string? ukprn,
         CancellationToken cancellationToken
     )
     {
-        if (!string.IsNullOrEmpty(ukprn))
+        if (string.IsNullOrEmpty(ukprn))
         {
-            var academiesApiResult = await academiesApiClient.GetTrustDetails(
-                ukprn,
-                cancellationToken
-            );
-
-            if (academiesApiResult.IsSuccess)
-            {
-                var academyEstablishments = academiesApiResult.Value.Establishments;
-
-                if (academyEstablishments is not null && academyEstablishments.Any())
-                {
-                    return academyEstablishments.Select(TrustEstablishmentToOrganisation).ToList();
-                }
-            }
+            return [];
         }
 
-        return [];
+        var result = await academiesApiClient.GetTrustDetails(ukprn, cancellationToken);
+        if (!result.IsSuccess)
+        {
+            return [];
+        }
+
+        return result.Value.Establishments.Select(TrustEstablishmentToOrganisation).ToList();
     }
 }
