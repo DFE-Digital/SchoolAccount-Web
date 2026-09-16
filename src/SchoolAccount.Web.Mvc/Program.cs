@@ -7,7 +7,7 @@ using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
-if (!builder.Environment.IsDevelopment())
+if (!builder.Environment.IsDevelopment() && !builder.Environment.IsEnvironment("IntegrationTests"))
 {
     builder.Configuration.AddAzureAppConfiguration();
 }
