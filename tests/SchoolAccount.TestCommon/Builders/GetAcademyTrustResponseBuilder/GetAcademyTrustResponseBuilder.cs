@@ -6,7 +6,7 @@ public class GetAcademyTrustResponseBuilder
 {
     private string _name = "Test Trust";
     private string _ukprn = "12345678";
-    private List<GetAcademyEstablishmentResponse>? _establishments = [];
+    private readonly List<GetAcademyEstablishmentResponse> _establishments = [];
 
     public static GetAcademyTrustResponseBuilder AnAcademyTrust() => new();
 
@@ -26,7 +26,7 @@ public class GetAcademyTrustResponseBuilder
         GetAcademyEstablishmentResponseBuilder builder
     )
     {
-        _establishments!.Add(builder.Build());
+        _establishments.Add(builder.Build());
         return this;
     }
 
@@ -36,15 +36,9 @@ public class GetAcademyTrustResponseBuilder
     {
         foreach (var builder in builders)
         {
-            _establishments!.Add(builder.Build());
+            _establishments.Add(builder.Build());
         }
 
-        return this;
-    }
-
-    public GetAcademyTrustResponseBuilder WithNullEstablishments()
-    {
-        _establishments = null;
         return this;
     }
 

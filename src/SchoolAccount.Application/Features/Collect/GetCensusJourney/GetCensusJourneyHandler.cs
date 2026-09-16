@@ -75,6 +75,6 @@ public class GetCensusJourneyHandler(
             return [];
         }
 
-        return result.Value.Establishments?.Select(TrustEstablishmentToOrganisation).ToList() ?? [];
+        return result.Value.Establishments.Select(TrustEstablishmentToOrganisation).ToList();
     }
 }
