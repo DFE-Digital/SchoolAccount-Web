@@ -44,7 +44,7 @@
     {
         <div class="govuk-grid-column-one-third">
             <h2 class="govuk-heading-m">Important dates</h2>
-            <govuk-summary-list>
+            <govuk-summary-list class="govuk-!-margin-bottom-9">
                 @foreach (var date in Model.ImportantDates)
                 {
                     <row>
@@ -61,7 +61,7 @@
         <div class="govuk-grid-column-one-third">
             <h2 class="govuk-heading-m">Understand your status</h2>
             <p class="govuk-body">Your status is updated overnight.</p>
-            <ul class="govuk-list govuk-list--bullet">
+            <ul class="govuk-list govuk-list--bullet govuk-list--spaced govuk-!-margin-bottom-9">
                 @foreach (var status in Model.UnderstandStatuses)
                 {
                     <li><b>@status.Name</b>: @status.Description</li>
