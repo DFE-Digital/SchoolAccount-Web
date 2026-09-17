@@ -59,14 +59,21 @@
     @if (Model.DisplayUnderstandStatuses)
     {
         <div class="govuk-grid-column-one-third">
-            <h2 class="govuk-heading-m">Understand your status</h2>
-            <p class="govuk-body">Your status is updated overnight.</p>
-            <ul class="govuk-list govuk-list--bullet govuk-list--spaced govuk-!-margin-bottom-9">
-                @foreach (var status in Model.UnderstandStatuses)
-                {
-                    <li><b>@status.Name</b>: @status.Description</li>
-                }
-            </ul>
+            <h2 class="govuk-heading-m">Autumn school census statuses</h2>
+            <p class="govuk-body">Statuses are updated overnight. You will be emailed when the status changes.</p>
+            <details class="govuk-details">
+                <summary class="govuk-details__summary">
+                    <span class="govuk-details__summary-text">Help understanding your status </span>
+                </summary>
+                <div class="govuk-details__text">
+                    <ul class="govuk-list govuk-list--bullet govuk-list--spaced">
+                        @foreach (var status in Model.UnderstandStatuses)
+                        {
+                            <li><strong>@status.Name</strong>: @status.Description</li>
+                        }
+                    </ul>
+                </div>
+            </details>
         </div>
     }
 </div>
