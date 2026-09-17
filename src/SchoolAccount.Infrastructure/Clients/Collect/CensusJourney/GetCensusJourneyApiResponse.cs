@@ -11,7 +11,16 @@ public class GetCensusJourneyApiResponse
     public IReadOnlyList<GetCensusJourneyApiResponseImportantDate> ImportantDates { get; init; } =
     [];
 
+    public IReadOnlyList<GetCensusJourneyApiUnderstandStatus> UnderstandStatuses { get; init; } =
+    [];
+
     public required GetCensusJourneyApiResponseCallToAction CallToAction { get; init; }
+}
+
+public class GetCensusJourneyApiUnderstandStatus
+{
+    public string Name { get; init; }
+    public string Description { get; init; }
 }
 
 public class GetCensusJourneyApiResponseStatus

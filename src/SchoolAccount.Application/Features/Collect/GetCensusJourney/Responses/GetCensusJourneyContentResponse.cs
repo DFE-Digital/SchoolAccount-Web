@@ -12,9 +12,17 @@ public record GetCensusJourneyContentResponse
 
     public IReadOnlyList<ImportantDate> ImportantDates { get; init; } = [];
 
+    public IReadOnlyList<UnderstandStatus> UnderstandStatuses { get; init; } = [];
+
     public List<StepByStep> StepByStep { get; init; } = [];
 
     public CallToAction CallToAction { get; init; }
+}
+
+public record UnderstandStatus
+{
+    public string Name { get; init; }
+    public string Description { get; init; }
 }
 
 public record ImportantDate

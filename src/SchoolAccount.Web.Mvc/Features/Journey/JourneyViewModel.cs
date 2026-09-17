@@ -21,6 +21,8 @@ public sealed class JourneyViewModel
 
     public IReadOnlyList<ImportantDate> ImportantDates { get; init; } = [];
 
+    public IReadOnlyList<UnderstandStatus> UnderstandStatuses { get; init; } = [];
+
     public StepByStepViewModelCollection? Steps { get; init; }
 
     public CallToAction CallToAction { get; init; }
@@ -28,6 +30,7 @@ public sealed class JourneyViewModel
     public bool DisplayImportantDates => ImportantDates.Any();
 
     public bool DisplayOverview => !string.IsNullOrWhiteSpace(Overview);
+    public bool DisplayUnderstandStatuses => UnderstandStatuses.Any();
 
     public bool TryGetSteps(out StepByStepViewModelCollection steps)
     {
@@ -43,4 +46,11 @@ public sealed class ImportantDate
 {
     public string Label { get; init; }
     public string FormattedDate { get; init; }
+}
+
+public sealed class UnderstandStatus
+{
+    public string Name { get; init; }
+
+    public string Description { get; init; }
 }

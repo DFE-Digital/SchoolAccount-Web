@@ -55,4 +55,18 @@
             </govuk-summary-list>
         </div>
     }
+    
+    @if (Model.DisplayUnderstandStatuses)
+    {
+        <div class="govuk-grid-column-one-third">
+            <h2 class="govuk-heading-m">Understand your status</h2>
+            <p class="govuk-body">Your status is updated overnight.</p>
+            <ul class="govuk-list govuk-list--bullet">
+                @foreach (var status in Model.UnderstandStatuses)
+                {
+                    <li><b>@status.Name</b>: @status.Description</li>
+                }
+            </ul>
+        </div>
+    }
 </div>

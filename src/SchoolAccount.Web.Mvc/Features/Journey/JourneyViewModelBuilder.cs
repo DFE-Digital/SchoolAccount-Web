@@ -30,6 +30,13 @@ public static class JourneyViewModelBuilder
                     FormattedDate = date.Date.ToString("d MMMM yyyy", CultureInfo.InvariantCulture),
                 })
                 .ToList(),
+            UnderstandStatuses = getCensusJourneyResponse
+                .Content.UnderstandStatuses.Select(understandStatus => new UnderstandStatus
+                {
+                    Name = understandStatus.Name,
+                    Description = understandStatus.Description,
+                })
+                .ToList(),
             CallToAction = getCensusJourneyResponse.Content.CallToAction,
             Steps = StepByStepViewModelCollection
                 .Create("Journey:StepByStep")

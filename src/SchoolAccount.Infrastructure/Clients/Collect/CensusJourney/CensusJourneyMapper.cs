@@ -111,6 +111,13 @@ public static class CensusJourneyMapper
                 Url = content.CallToAction.Url,
                 Label = content.CallToAction.Label,
             },
+            UnderstandStatuses = content
+                .UnderstandStatuses.Select(understandStatus => new UnderstandStatus
+                {
+                    Name = understandStatus.Name,
+                    Description = understandStatus.Description,
+                })
+                .ToList(),
         };
     }
 }
