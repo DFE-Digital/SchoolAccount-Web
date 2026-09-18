@@ -1,0 +1,62 @@
+.feedback-banner {
+  padding: govuk-spacing(5) govuk-spacing(4);
+  background-color: govuk-colour("blue", $variant: "tint-95");
+  border-top-width: 5px;
+  border-top-style: solid;
+  border-top-color: govuk-colour("blue");
+  @include govuk-font($size: 19);
+}
+
+.footer-feedback {
+  background: govuk-colour("blue", $variant: "tint-95");
+  border-top-width: 1px;
+  border-top-style: solid;
+  border-top-color: govuk-colour("blue", $variant: "tint-50");
+
+  &__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: govuk-spacing(4) 0;
+  }
+
+  &__row--submitted {
+    display: block;
+    padding: govuk-spacing(5) govuk-spacing(2);
+  }
+
+  textarea {
+    margin-bottom: govuk-spacing(3);
+  }
+
+  &__cancel {
+    background: govuk-colour("white");
+  }
+
+  &__primary {
+    margin-bottom: 0;
+    background: #003a69;
+    color: govuk-colour("white");
+    border: 2px solid transparent;
+    box-shadow: 0 2px 0 #002d18;
+    @include govuk-font($size: 19);
+
+    &:hover {
+      background: #00294a;
+    }
+
+    &:focus {
+      background: govuk-colour("yellow");
+      color: govuk-colour("black");
+    }
+  }
+
+  @media (max-width: 800px) {
+    &__row {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+  }
+}
