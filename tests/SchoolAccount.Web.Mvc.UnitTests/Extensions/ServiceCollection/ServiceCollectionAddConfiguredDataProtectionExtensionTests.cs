@@ -3,30 +3,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using SchoolAccount.Web.Mvc.Hosting.Extensions;
-using SchoolAccount.Web.Mvc.Hosting.Models;
 using Shouldly;
+using static SchoolAccount.Web.Mvc.Hosting.Models.DataProtectionSettings;
 
 namespace SchoolAccount.Web.Mvc.UnitTests.Extensions.ServiceCollection;
 
 public class ServiceCollectionAddConfiguredDataProtectionExtensionTests
 {
-    private static ConfigurationManager BuildConfiguration(
-        string? keyRingBlobUri = null,
-        string? keyEncryptionKeyUri = null
-    )
-    {
-        var configManager = new ConfigurationManager();
-        configManager.AddInMemoryCollection(
-            new Dictionary<string, string?>
-            {
-                [$"{DataProtectionSettings.SectionName}:KeyRingBlobUri"] = keyRingBlobUri,
-                [$"{DataProtectionSettings.SectionName}:KeyEncryptionKeyUri"] = keyEncryptionKeyUri,
-            }
-        );
-
-        return configManager;
-    }
-
     [Fact]
     public void Persists_the_key_ring_to_blob_storage_when_configured()
     {
@@ -37,6 +20,7 @@ public class ServiceCollectionAddConfiguredDataProtectionExtensionTests
             "https://example.blob.core.windows.net/keys/schoolaccount.xml",
             "https://example.vault.azure.net/keys/data-protection"
         );
+
         services.AddConfiguredDataProtection(configuration);
 
         var provider = services.BuildServiceProvider();
@@ -71,5 +55,22 @@ public class ServiceCollectionAddConfiguredDataProtectionExtensionTests
 
         // Assert - nothing registered, so the framework's own defaults apply
         services.ShouldBeEmpty();
+    }
+
+    private static ConfigurationManager BuildConfiguration(
+        string? keyRingBlobUri = null,
+        string? keyEncryptionKeyUri = null
+    )
+    {
+        var configManager = new ConfigurationManager();
+        configManager.AddInMemoryCollection(
+            new Dictionary<string, string?>
+            {
+                [$"{SectionName}:KeyRingBlobUri"] = keyRingBlobUri,
+                [$"{SectionName}:KeyEncryptionKeyUri"] = keyEncryptionKeyUri,
+            }
+        );
+
+        return configManager;
     }
 }

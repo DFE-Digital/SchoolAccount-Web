@@ -8,13 +8,12 @@ public static class ServiceCollectionExtensions
 {
     /// <summary>
     /// Persists the Data Protection key ring to blob storage, encrypted with a Key Vault key, so
-    /// that every instance of the app shares one key ring and it survives a restart. Without this
+    /// that every instance of the app shares one key ring, and it survives a restart. Without this
     /// the keys are ephemeral and per-instance, which breaks anything encrypted by one instance
-    /// and read by another - the authentication cookie, and the OIDC correlation cookie and
-    /// message state, which fail the sign-in callback with "Unable to unprotect the message.State".
+    /// and read by another.
     /// </summary>
     /// <remarks>
-    /// Falls back to the framework's local key ring when no blob and key are configured, which is
+    /// Falls back to a local key ring when no blob and key are configured, which is
     /// what local development and the integration tests run on.
     /// </remarks>
     public static IServiceCollection AddConfiguredDataProtection(
