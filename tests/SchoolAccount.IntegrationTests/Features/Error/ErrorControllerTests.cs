@@ -5,7 +5,6 @@ using SchoolAccount.Application.Abstractions.Messaging;
 using SchoolAccount.Application.Features.Collect.CensusStatuses;
 using SchoolAccount.IntegrationTests.Common;
 using SchoolAccount.IntegrationTests.Common.Pages;
-using SchoolAccount.Web.Mvc.Features.Dashboard;
 using SchoolAccount.Web.Mvc.Features.Error;
 using Shouldly;
 
@@ -137,8 +136,7 @@ public class ErrorControllerTests : IClassFixture<SchoolAccountWebApplicationFac
     [Fact]
     public async Task Error_page_is_rendered_when_re_executed_with_a_non_get_method()
     {
-        // Arrange - UseExceptionHandler and UseStatusCodePagesWithReExecute re-execute the error
-        // page with the original request's method, so a POST must render rather than return 405
+        // Arrange
         var requestUri = _factory.GeneratePath("Error", "Error", new { statusCode = 500 });
 
         // Act
@@ -147,6 +145,7 @@ public class ErrorControllerTests : IClassFixture<SchoolAccountWebApplicationFac
             content: null,
             TestContext.Current.CancellationToken
         );
+
         var page = await AngleSharpPage.FromResponseAsync<ErrorPage>(
             response,
             TestContext.Current.CancellationToken
@@ -170,12 +169,13 @@ public class ErrorControllerTests : IClassFixture<SchoolAccountWebApplicationFac
             content: null,
             TestContext.Current.CancellationToken
         );
+
         var page = await AngleSharpPage.FromResponseAsync<ErrorPage>(
             response,
             TestContext.Current.CancellationToken
         );
 
-        // Assert - without a body the caller only sees a bare status code
+        // Assert
         page.ShouldNotBeNull();
         page.IsServerErrorPageTitle().ShouldBeTrue();
         response.IsSuccessStatusCode.ShouldBeFalse();
