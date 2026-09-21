@@ -71,6 +71,10 @@ The project requires the following app configuration values to be overridden, id
   "OpenIDConnectSettings": {
     "Authority": "<URL-OF-DSI-OIDC-SERVER>",
     "ClientId": "<DSI-CLIENT-ID>"
+  },
+  "AcademiesApiClient": {
+    "BaseUrl": "<URL-OF-ACADEMIES-API>",
+    "ApiKey": "<ACADEMIES-API-KEY>"
   }
 }
 ```

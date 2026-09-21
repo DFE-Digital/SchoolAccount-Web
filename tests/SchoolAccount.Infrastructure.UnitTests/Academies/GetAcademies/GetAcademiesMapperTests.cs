@@ -1,5 +1,5 @@
 using GovUK.Dfe.AcademiesApi.Client.Contracts;
-using SchoolAccount.Application.Features.Academies.GetAcademies;
+using SchoolAccount.Application.Features.Collect.GetCensusJourney.Responses;
 using Shouldly;
 using static SchoolAccount.Infrastructure.Clients.Academies.GetAcademies.GetAcademiesMapper;
 
@@ -279,7 +279,7 @@ public class GetAcademiesMapperTests
     }
 
     [Fact]
-    public void A_null_code_for_a_name_and_code_returns_a_name_and_code_response()
+    public void A_null_code_for_a_name_and_code_returns_null()
     {
         // Arrange
         var trust = new TrustDto
@@ -293,9 +293,6 @@ public class GetAcademiesMapperTests
         var response = ToTrustResponse(trust, []);
 
         // Assert
-        response.Type.ShouldNotBeNull();
-        response.Type.Name.ShouldNotBeNull();
-        response.Type.Name.ShouldBe("Primary School");
-        response.Type.Code.ShouldBeNull();
+        response.Type.ShouldBeNull();
     }
 }

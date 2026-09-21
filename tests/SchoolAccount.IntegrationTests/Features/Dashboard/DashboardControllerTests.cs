@@ -33,7 +33,9 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
         var token = TestContext.Current.CancellationToken;
         var pageUri = _factory.GeneratePath("Dashboard", "Dashboard");
 
-        _getCensusStatusesHandler.Returns(CensusStatusesResponseBuilder.Create().AsSuccess());
+        _getCensusStatusesHandler.Returns(
+            CensusStatusesResponseBuilder.ACensusStatusResponse().AsSuccess()
+        );
 
         // Act
         var message = await _client.GetAsync(pageUri, token);
@@ -54,7 +56,9 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
         var token = TestContext.Current.CancellationToken;
         var pageUri = _factory.GeneratePath("Dashboard", "Dashboard");
 
-        _getCensusStatusesHandler.Returns(CensusStatusesResponseBuilder.Create().AsSuccess());
+        _getCensusStatusesHandler.Returns(
+            CensusStatusesResponseBuilder.ACensusStatusResponse().AsSuccess()
+        );
 
         // Act
         var message = await _client.GetAsync(pageUri, token);
@@ -75,7 +79,7 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
         var token = TestContext.Current.CancellationToken;
         var pageUri = _factory.GeneratePath("Dashboard", "Dashboard");
         var response = CensusStatusesResponseBuilder
-            .Create()
+            .ACensusStatusResponse()
             .WithAction("Test Action", "Test Status");
 
         _getCensusStatusesHandler.Returns(response.AsSuccess());
@@ -121,7 +125,9 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
         var pageUri = _factory.GeneratePath("Dashboard", "Dashboard");
         var client = CreateClientWithoutUserDetails();
 
-        _getCensusStatusesHandler.Returns(CensusStatusesResponseBuilder.Create().AsSuccess());
+        _getCensusStatusesHandler.Returns(
+            CensusStatusesResponseBuilder.ACensusStatusResponse().AsSuccess()
+        );
 
         // Act
         var message = await client.GetAsync(pageUri, token);

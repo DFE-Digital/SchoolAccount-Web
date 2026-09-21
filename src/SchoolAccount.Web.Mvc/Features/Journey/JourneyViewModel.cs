@@ -1,4 +1,6 @@
 using SchoolAccount.Application.Features.Collect.GetCensusJourney;
+using SchoolAccount.Application.Features.Collect.GetCensusJourney.Responses;
+using SchoolAccount.Web.Mvc.Features.Shared.MultipleSchoolsStatusTable;
 using SchoolAccount.Web.Mvc.Features.Shared.StepByStep;
 
 namespace SchoolAccount.Web.Mvc.Features.Journey;
@@ -15,6 +17,8 @@ public sealed class JourneyViewModel
 
     public string Status { get; init; }
 
+    public MultipleSchoolsStatusTableViewModel? MatSchoolsStatuses { get; init; }
+
     public IReadOnlyList<ImportantDate> ImportantDates { get; init; } = [];
 
     public StepByStepViewModelCollection? Steps { get; init; }
@@ -30,6 +34,9 @@ public sealed class JourneyViewModel
         steps = Steps!;
         return Steps?.HasItems() == true;
     }
+
+    public bool IsMatOrLocalAuthority =>
+        MatSchoolsStatuses is not null && MatSchoolsStatuses.SchoolStatuses.Any();
 }
 
 public sealed class ImportantDate

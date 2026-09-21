@@ -1,4 +1,5 @@
 using SchoolAccount.Application.Abstractions.Messaging;
+using SchoolAccount.Application.Features.Collect.GetCensusJourney.Responses;
 using SchoolAccount.SharedKernel.Authentication;
 
 namespace SchoolAccount.Application.Features.Collect.GetCensusJourney;
@@ -9,5 +10,5 @@ public record GetCensusJourneyQuery : IQuery<GetCensusJourneyResponse>
 
     public string EmailAddress { get; init; }
 
-    public IReadOnlyList<Organisation> Organisations { get; init; } = [];
+    public Organisation Organisation { get; init; }
 }

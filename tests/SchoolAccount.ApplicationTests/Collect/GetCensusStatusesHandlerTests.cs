@@ -16,7 +16,7 @@ public class GetCensusStatusesHandlerTests
     {
         // Arrange
         var query = CreateQuery();
-        var response = CensusStatusesResponseBuilder.Create().Build();
+        var response = CensusStatusesResponseBuilder.ACensusStatusResponse().Build();
         var collectApiClient = ClientReturning(query, response);
         var handler = new GetCensusStatusesHandler(collectApiClient);
 
@@ -39,7 +39,7 @@ public class GetCensusStatusesHandlerTests
     {
         // Arrange
         var query = CreateQuery();
-        var response = CensusStatusesResponseBuilder.Create().Build();
+        var response = CensusStatusesResponseBuilder.ACensusStatusResponse().Build();
         var handler = new GetCensusStatusesHandler(ClientReturning(query, response));
 
         // Act
@@ -50,13 +50,15 @@ public class GetCensusStatusesHandlerTests
         result.Value.ShouldBe([response]);
     }
 
-    private static GetCensusStatusesQuery CreateQuery() =>
-        new()
+    private static GetCensusStatusesQuery CreateQuery()
+    {
+        return new GetCensusStatusesQuery
         {
             Id = "test-user-id",
             EmailAddress = "test-user@example.com",
             Organisations = [new Organisation { Id = "test-org-id", Name = "Test School" }],
         };
+    }
 
     private ICollectApiClient ClientReturning(
         GetCensusStatusesQuery query,

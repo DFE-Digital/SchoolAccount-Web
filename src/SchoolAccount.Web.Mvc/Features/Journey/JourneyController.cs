@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SchoolAccount.Application.Abstractions.Messaging;
 using SchoolAccount.Application.Features.Collect.GetCensusJourney;
+using SchoolAccount.Application.Features.Collect.GetCensusJourney.Responses;
 using SchoolAccount.SharedKernel;
 
 namespace SchoolAccount.Web.Mvc.Features.Journey;
@@ -20,17 +21,18 @@ public class JourneyController(
         {
             Id = userContext.Id!,
             EmailAddress = userContext.EmailAddress!,
-            Organisations = [userContext.Organisation!],
+            Organisation = userContext.Organisation!,
         };
 
-        var gesCensusJourneyResponse = await getCensusJourneyHandler.Handle(
+        var getCensusJourneyResponse = await getCensusJourneyHandler.Handle(
             query,
             cancellationToken
         );
 
         var journeyViewModel = JourneyViewModelBuilder.Build(
             userContext.Name,
-            gesCensusJourneyResponse.Value
+            getCensusJourneyResponse.Value,
+            userContext.Organisation!
         );
 
         return View(journeyViewModel);
