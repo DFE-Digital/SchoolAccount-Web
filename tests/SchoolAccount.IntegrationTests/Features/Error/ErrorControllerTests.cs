@@ -133,4 +133,51 @@ public class ErrorControllerTests : IClassFixture<SchoolAccountWebApplicationFac
         response.IsSuccessStatusCode.ShouldBeFalse();
         response.StatusCode.ShouldBe(HttpStatusCode.InternalServerError);
     }
+
+    [Fact]
+    public async Task Error_page_is_rendered_when_re_executed_with_a_non_get_method()
+    {
+        // Arrange - UseExceptionHandler and UseStatusCodePagesWithReExecute re-execute the error
+        // page with the original request's method, so a POST must render rather than return 405
+        var requestUri = _factory.GeneratePath("Error", "Error", new { statusCode = 500 });
+
+        // Act
+        var response = await _authenticatedClient.PostAsync(
+            requestUri,
+            content: null,
+            TestContext.Current.CancellationToken
+        );
+        var page = await AngleSharpPage.FromResponseAsync<ErrorPage>(
+            response,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        page.ShouldNotBeNull();
+        page.IsServerErrorPageTitle().ShouldBeTrue();
+        response.StatusCode.ShouldBe(HttpStatusCode.InternalServerError);
+    }
+
+    [Fact]
+    public async Task A_post_to_an_unknown_page_renders_an_error_page()
+    {
+        // Arrange
+        var requestUri = "/this-page-does-not-exist";
+
+        // Act
+        var response = await _authenticatedClient.PostAsync(
+            requestUri,
+            content: null,
+            TestContext.Current.CancellationToken
+        );
+        var page = await AngleSharpPage.FromResponseAsync<ErrorPage>(
+            response,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert - without a body the caller only sees a bare status code
+        page.ShouldNotBeNull();
+        page.IsServerErrorPageTitle().ShouldBeTrue();
+        response.IsSuccessStatusCode.ShouldBeFalse();
+    }
 }
