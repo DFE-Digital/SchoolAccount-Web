@@ -1,0 +1,44 @@
+@{
+    const string feedbackSubmittedName = "footer-feedback__row--submitted";
+    
+    var feedbackSubmitted = ViewData.ContainsKey(feedbackSubmittedName) && ViewData[feedbackSubmittedName] != null;
+}
+
+<section id="page-feedback" class="footer-feedback" aria-label="Page feedback">
+    <div class="govuk-width-container">
+        @if (!feedbackSubmitted)
+        {
+            <div class="footer-feedback__initial" aria-live="polite">
+                <div class="footer-feedback__row">
+                    <h2 class="govuk-heading-s govuk-!-margin-bottom-0">Give feedback on this page or report a problem
+                    </h2>
+                    <a asp-controller="Feedback" asp-action="Respond" type="submit" class="govuk-button footer-feedback__primary">
+                        Give feedback
+                    </a>
+                </div>
+            </div>
+        }
+        else
+        {
+            <form id="tell-us-form">
+                <div class="govuk-form-group">
+                    <div class="govuk-form-group">
+                        <h2 class="govuk-label-wrapper govuk-heading-m">
+                            <label class="govuk-label govuk-label--m" for="what-do-you-want-to-tell-us">
+                                Your feedback
+                            </label>
+                        </h2>
+                        <div id="what-do-you-want-to-tell-us-hint" class="govuk-hint">
+                            Tell us what you think or describe the problem
+                        </div>
+                        <textarea class="govuk-textarea" id="what-do-you-want-to-tell-us" name="whatDoYouWantToTellUs" rows="5"></textarea>
+                    </div>
+                </div>
+                <div class="govuk-button-group">
+                    <a asp-controller="Feedback" asp-action="Submit" type="submit" class="govuk-button footer-feedback__send" data-module="govuk-button">Send feedback</a>
+                    <a asp-controller="Feedback" asp-action="Cancel" type="button" class="govuk-button govuk-button--secondary footer-feedback__cancel" data-module="govuk-button">Cancel</a>
+                </div>
+            </form>
+        }
+    </div>
+</section>

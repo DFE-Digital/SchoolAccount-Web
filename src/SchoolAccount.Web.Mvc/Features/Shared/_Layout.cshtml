@@ -51,19 +51,7 @@
 @RenderBody()
 
 @section GovUkFooter {
-    <section id="page-feedback" class="footer-feedback" aria-label="Page feedback">
-        <div class="govuk-width-container">
-            <div class="footer-feedback__initial" aria-live="polite">
-                <div class="footer-feedback__row">
-                    <h2 class="govuk-heading-s govuk-!-margin-bottom-0">Give feedback on this page or report a problem
-                    </h2>
-                    <button type="submit" class="govuk-button footer-feedback__primary">
-                        Give feedback
-                    </button>
-                </div>
-            </div>
-        </div>
-    </section>
+    <partial name="~/Features/Feedback/_FooterFeedback.cshtml"/>
     <govuk-footer>
         <govuk-footer-meta>
             <govuk-footer-meta-items>
