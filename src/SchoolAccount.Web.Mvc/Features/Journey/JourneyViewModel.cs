@@ -30,12 +30,11 @@ public sealed class JourneyViewModel
 
     public bool DisplayOverview => !string.IsNullOrWhiteSpace(Overview);
 
-    public bool DisplayUnderstandStatuses => UnderstandStatuses.Any();
+    public bool DisplayUnderstandStatuses =>
+        UnderstandStatuses.Any() && (Status != "No Data" || IsMatOrLocalAuthority);
 
     public bool IsMatOrLocalAuthority =>
         MatSchoolsStatuses is not null && MatSchoolsStatuses.SchoolStatuses.Any();
-
-    public bool IsNoDataStatus => Status == "No Data";
 
     public bool TryGetSteps(out StepByStepViewModelCollection steps)
     {
