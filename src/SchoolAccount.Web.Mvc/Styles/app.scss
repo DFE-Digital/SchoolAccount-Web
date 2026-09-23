@@ -10,11 +10,12 @@
 @use "lib/step-by-step/step-by-step-navigation-header";
 @use "lib/step-by-step/step-by-step-navigation-related";
 
+@use "components/card";
+@use "components/dfe-header-static-sign-out";
+@use "components/feedback";
+@use "components/govuk-summary-list";
 @use "components/step-by-step";
 @use "components/tags";
-@use "components/dfe-header-static-sign-out";
-@use "components/card";
-@use "components/govuk-summary-list";
 
 * {
   font-family: 'Inter', sans-serif !important;

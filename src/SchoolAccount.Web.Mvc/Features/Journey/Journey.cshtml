@@ -39,10 +39,9 @@
             <span class="govuk-visually-hidden"> opens in new tab</span>
         </govuk-button-link>
     </div>
-
-    @if (Model.DisplayImportantDates)
-    {
-        <div class="govuk-grid-column-one-third">
+    <div class="govuk-grid-column-one-third">
+        @if (Model.DisplayImportantDates)
+        {
             <h2 class="govuk-heading-m">Important dates</h2>
             <govuk-summary-list>
                 @foreach (var date in Model.ImportantDates)
@@ -53,6 +52,21 @@
                     </row>
                 }
             </govuk-summary-list>
+        }
+        
+        <div class="feedback-banner govuk-!-margin-top-0 govuk-!-margin-bottom-6">
+            <h2 class="govuk-heading-m">@Model.SupportService.Title</h2>
+            <p class="govuk-body">
+                <a
+                    href="@Model.SupportService.Url"
+                    class="govuk-link govuk-link--no-visited-state"
+                    rel="noreferrer noopener"
+                    target="_blank"
+                >
+                    @Model.SupportService.Description</a
+                >
+                for queries and help.
+            </p>
         </div>
-    }
+    </div>
 </div>
