@@ -35,6 +35,12 @@ public static class CensusJourneyMapper
                     Date = importantDate.Date,
                 })
                 .ToList(),
+            SupportService = new SupportService
+            {
+                Title = content.SupportService.Title,
+                Description = content.SupportService.Description,
+                Url = content.SupportService.Url,
+            },
             StepByStep =
             [
                 new StepByStep
