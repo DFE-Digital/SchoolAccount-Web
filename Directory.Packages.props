@@ -6,6 +6,8 @@
   <ItemGroup>
     <!-- Static code analysis -->
     <PackageVersion Include="AngleSharp" Version="1.8.2" />
+    <PackageVersion Include="Azure.Extensions.AspNetCore.DataProtection.Blobs" Version="1.5.4" />
+    <PackageVersion Include="Azure.Extensions.AspNetCore.DataProtection.Keys" Version="1.6.4" />
     <PackageVersion Include="Azure.Identity" Version="1.21.0" />
     <PackageVersion Include="GovUK.Dfe.AcademiesApi.Client" Version="0.0.4" />
     <PackageVersion Include="JetBrains.Annotations" Version="2026.2.0" />
