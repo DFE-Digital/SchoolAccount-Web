@@ -6,13 +6,13 @@
   $govuk-global-styles: true
 );
 
-@use 'components/dfe-header';
 @use "lib/step-by-step/step-by-step-navigation";
 @use "lib/step-by-step/step-by-step-navigation-header";
 @use "lib/step-by-step/step-by-step-navigation-related";
 
 @use "components/step-by-step";
 @use "components/tags";
+@use 'components/dfe-header';
 @use "components/dfe-header-static-sign-out";
 @use "components/card";
 @use "components/govuk-summary-list";
