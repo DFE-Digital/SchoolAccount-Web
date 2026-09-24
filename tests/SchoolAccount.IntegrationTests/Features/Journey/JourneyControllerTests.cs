@@ -9,6 +9,7 @@ using static SchoolAccount.TestCommon.Builders.CensusStatusesResponseBuilder;
 using static SchoolAccount.TestCommon.Builders.GetCensusJourney.GetCensusJourneyContentResponseBuilder;
 using static SchoolAccount.TestCommon.Builders.GetCensusJourney.GetCensusJourneyResponseBuilder;
 using static SchoolAccount.TestCommon.Builders.GetCensusJourney.GetCensusJourneyResponseImportantDateBuilder;
+using static SchoolAccount.TestCommon.Builders.GetCensusJourney.GetCensusJourneyResponseUnderstandStatusBuilder;
 using static SchoolAccount.Web.Mvc.Authentication.ClaimConstants;
 
 namespace SchoolAccount.IntegrationTests.Features.Journey;
@@ -269,7 +270,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     }
 
     [Fact]
-    public async Task School_status_table_not_be_displayed()
+    public async Task School_status_table_not_displayed_when_not_a_mat()
     {
         // Arrange
         var pageUri = _factory.GeneratePath("Journey", "Journey");
@@ -348,6 +349,84 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
                     ACensusStatusResponse()
                         .WithName("Test School 2")
                         .WithAction("Autumn Census 2026", "Submitted")
+                )
+                .AsSuccess()
+        );
+
+        // Act
+        var message = await client.GetAsync(pageUri, token);
+        var page = await AngleSharpPage.FromResponseAsync<JourneyPage>(message, token);
+
+        // Assert
+        message.StatusCode.ShouldBe(HttpStatusCode.OK);
+
+        var tableHeadings = page.GetTableHeaders();
+        tableHeadings.ShouldNotBeNull();
+        tableHeadings[0].ShouldBe("Name");
+        tableHeadings[1].ShouldBe("Status");
+
+        var tableRows = page.GetTableRows();
+        tableRows.ShouldNotBeNull();
+        tableRows.Count.ShouldBe(2);
+
+        var schoolStatus = page.GetTableCellByHeader();
+        schoolStatus.ShouldNotBeNull();
+        schoolStatus.ShouldSatisfyAllConditions(
+            () => schoolStatus.Count.ShouldBe(2),
+            () => schoolStatus[0]["Name"].ShouldBe("Test School 1"),
+            () => schoolStatus[0]["Status"].ShouldBe("Not Started"),
+            () => schoolStatus[1]["Name"].ShouldBe("Test School 2"),
+            () => schoolStatus[1]["Status"].ShouldBe("Submitted")
+        );
+    }
+
+    [Fact]
+    public async Task Understand_statuses_component_is_displayed_for_multi_academy_trust()
+    {
+        // Arrange
+        var token = TestContext.Current.CancellationToken;
+        var pageUri = _factory.GeneratePath("Journey", "Journey");
+
+        var trustJson = """
+            {
+             "id": "2E774B32-E4DB-445B-B915-736C777FF5A4",
+             "name": "Test Multi Academy Trust",
+             "category": { "id": "010", "name": "Multi Academy Trust" },
+             "ukprn": "10037611",
+             "establishments": [
+                 { "urn": "100001", "name": "Test School 1" },
+                 { "urn": "100002", "name": "Test School 2" }
+             ]
+            }
+            """;
+
+        var client = _factory.CreateAuthorisedClient(services =>
+        {
+            services.StubQueryHandler(_getCensusJourneyHandler);
+            services.AddSingleton(
+                new MockAuthClaimsOptions
+                {
+                    Claims =
+                    [
+                        new Claim(GivenName, MockAuthHandler.FakeGivenName),
+                        new Claim(FamilyName, MockAuthHandler.FakeFamilyName),
+                        new Claim(Sub, "1159ee82-d515-4d34-b28d-ac138cb1506b"),
+                        new Claim(Email, "test@example.com"),
+                        new Claim(Organisation, trustJson),
+                    ],
+                }
+            );
+        });
+
+        _getCensusJourneyHandler.Returns(
+            AGetCensusJourneyResponse()
+                .WithContent(
+                    ACensusJourneyContentResponse()
+                        .WithUnderstandStatus(
+                            AUnderstandStatus()
+                                .WithName("Test Status")
+                                .WithDescription("Test status description.")
+                        )
                 )
                 .AsSuccess()
         );
