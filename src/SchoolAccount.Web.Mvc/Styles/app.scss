@@ -10,23 +10,16 @@
 @use "lib/step-by-step/step-by-step-navigation-header";
 @use "lib/step-by-step/step-by-step-navigation-related";
 
+@use "components/card";
+@use 'components/dfe-header';
+@use "components/dfe-header-static-sign-out";
+@use "components/feedback";
+@use "components/govuk-summary-list";
 @use "components/step-by-step";
 @use "components/tags";
-@use "components/dfe-header-static-sign-out";
-@use "components/card";
-@use "components/govuk-summary-list";
 
 * {
   font-family: 'Inter', sans-serif !important;
-}
-
-.govuk-header__link .govuk-header__logotype {
-  height: 30px;
-}
-
-.govuk-header__link:focus .govuk-header__logotype {
-  content: url(/images/department-for-education_black.png);
-  height: 30px;
 }
 
 .govuk-width-container {

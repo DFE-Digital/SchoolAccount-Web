@@ -16,10 +16,10 @@ namespace SchoolAccount.IntegrationTests.Features.Journey;
 
 public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
 {
-    private readonly Uri _callToActionUri = new("https://www.gov.uk/");
     private readonly HttpClient _client;
     private readonly SchoolAccountWebApplicationFactory<Program> _factory;
     private readonly StubCensusJourneyHandler _getCensusJourneyHandler = new();
+    private readonly Uri _testUri = new("https://www.gov.uk/");
 
     public JourneyControllerTests(SchoolAccountWebApplicationFactory<Program> factory)
     {
@@ -43,8 +43,9 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
                     .WithCaption("This is a test caption")
                     .WithOverview("This is a test overview")
                     .WithStatus("Test Status")
+                    .WithSupportServiceTitle("Test Support Service")
                     .WithCallToActionLabel("Test Call To Action")
-                    .WithCallToActionUrl(_callToActionUri)
+                    .WithCallToActionUrl(_testUri)
                     .WithImportantDate(
                         AnImportantDate().WithLabel("Test Important Date").WithDate(2026, 10, 1)
                     )
@@ -59,26 +60,16 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
 
         // Assert
         message.StatusCode.ShouldBe(HttpStatusCode.OK);
-
-        var pageTitle = page.GetTitle();
-        pageTitle.ShouldNotBeNull();
-        pageTitle.ShouldBeEquivalentTo("Journey");
-
-        var pageHeading = page.GetFirstHeading();
-        pageHeading.ShouldNotBeNull();
-        pageHeading.ShouldBeEquivalentTo("Test Journey Title");
-
-        var pageBody = page.GetFirstBodyParagraph();
-        pageBody.ShouldNotBeNull();
-        pageBody.ShouldBeEquivalentTo("This is a test overview");
-
-        var pageCaption = page.GetFirstCaption();
-        pageCaption.ShouldNotBeNull();
-        pageCaption.ShouldBeEquivalentTo("This is a test caption");
-
-        var pageTag = page.GetFirstTag();
-        pageTag.ShouldNotBeNull();
-        pageTag.ShouldBeEquivalentTo("Test Status");
+        page.GetTitle().ShouldBe("Journey");
+        page.GetFirstHeading().ShouldBe("Test Journey Title");
+        page.GetFirstBodyParagraph().ShouldBe("This is a test overview");
+        page.GetFirstCaption().ShouldBe("This is a test caption");
+        page.GetFirstTag().ShouldBe("Test Status");
+        page.GetFirstCaption().ShouldBe("This is a test caption");
+        page.GetFirstTag().ShouldBe("Test Status");
+        page.GetFirstTag().ShouldBe("Test Status");
+        page.GetComponentByContent(".govuk-heading-m", "Test Support Service")
+            .ShouldBe("Test Support Service");
 
         var pageImportantDates = page.GetSummaryListPairs();
         pageImportantDates.ShouldNotBeNull();
@@ -88,7 +79,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
             "1 October 2026"
         );
 
-        var callToActionButton = page.GetButtonByLink(_callToActionUri.ToString());
+        var callToActionButton = page.GetButtonByLink(_testUri.ToString());
         callToActionButton.ShouldNotBeNull();
         callToActionButton.TextContent.Trim().ShouldStartWith("Test Call To Action");
     }
@@ -115,8 +106,8 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         // Assert
         message.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-        var pageBody = page.GetFirstBodyParagraph();
-        pageBody.ShouldBeNull();
+        var overviewHeading = page.GetComponentByContent(".govuk-heading-m", "Overview");
+        overviewHeading.ShouldBeNull();
     }
 
     [Fact]

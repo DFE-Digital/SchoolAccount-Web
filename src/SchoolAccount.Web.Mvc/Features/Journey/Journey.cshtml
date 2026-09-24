@@ -73,5 +73,19 @@
                 </govuk-details-text>
             </govuk-details>
         }
+        <div class="feedback-banner govuk-!-margin-top-0 govuk-!-margin-bottom-6">
+            <h2 class="govuk-heading-m">@Model.SupportService.Title</h2>
+            <p class="govuk-body">
+                <a
+                    href="@Model.SupportService.Url"
+                    class="govuk-link govuk-link--no-visited-state"
+                    rel="noreferrer noopener"
+                    target="_blank"
+                >
+                    @Model.SupportService.Description</a
+                >
+                for queries and help.
+            </p>
+        </div>
     </div>
 </div>
