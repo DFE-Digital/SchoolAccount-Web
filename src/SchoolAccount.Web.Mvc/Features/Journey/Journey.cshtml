@@ -40,9 +40,9 @@
         </govuk-button-link>
     </div>
 
-    @if (Model.DisplayImportantDates)
-    {
-        <div class="govuk-grid-column-one-third">
+    <div class="govuk-grid-column-one-third">
+        @if (Model.DisplayImportantDates)
+        {
             <h2 class="govuk-heading-m">Important dates</h2>
             <govuk-summary-list class="govuk-!-margin-bottom-9">
                 @foreach (var date in Model.ImportantDates)
@@ -53,20 +53,25 @@
                     </row>
                 }
             </govuk-summary-list>
-        </div>
-    }
+        }
 
-    @if (Model.DisplayUnderstandStatuses)
-    {
-        <div class="govuk-grid-column-one-third">
-            <h2 class="govuk-heading-m">Understand your status</h2>
-            <p class="govuk-body">Your status is updated overnight.</p>
-            <ul class="govuk-list govuk-list--bullet govuk-list--spaced">
-                @foreach (var status in Model.UnderstandStatuses)
-                {
-                    <li><strong>@status.Name</strong>: @status.Description</li>
-                }
-            </ul>
-        </div>
-    }
+        @if (Model.DisplayUnderstandStatuses)
+        {
+            <h2 class="govuk-heading-m">About your status</h2>
+            <p class="govuk-body">Statuses are updated overnight. You will be emailed when the status changes.</p>
+            <govuk-details>
+                <govuk-details-summary>
+                    What your status means
+                </govuk-details-summary>
+                <govuk-details-text>
+                    <ul class="govuk-list govuk-list--bullet govuk-list--spaced">
+                        @foreach (var status in Model.UnderstandStatuses)
+                        {
+                            <li><strong>@status.Name</strong>: @status.Description</li>
+                        }
+                    </ul>
+                </govuk-details-text>
+            </govuk-details>
+        }
+    </div>
 </div>
