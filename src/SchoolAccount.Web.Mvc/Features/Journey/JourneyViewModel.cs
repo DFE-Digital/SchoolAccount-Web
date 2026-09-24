@@ -49,7 +49,7 @@ public sealed class SupportService
 {
     public required string Title { get; init; }
     public required string Description { get; init; }
-    public required string Url { get; init; }
+    public required Uri Url { get; init; }
 }
 
 public sealed class CallToAction
