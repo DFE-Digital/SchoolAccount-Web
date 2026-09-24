@@ -30,7 +30,17 @@ public static class JourneyViewModelBuilder
                     FormattedDate = date.Date.ToString("d MMMM yyyy", CultureInfo.InvariantCulture),
                 })
                 .ToList(),
-            CallToAction = getCensusJourneyResponse.Content.CallToAction,
+            SupportService = new SupportService
+            {
+                Title = getCensusJourneyResponse.Content.SupportService.Title,
+                Description = getCensusJourneyResponse.Content.SupportService.Description,
+                Url = getCensusJourneyResponse.Content.SupportService.Url,
+            },
+            CallToAction = new CallToAction
+            {
+                Label = getCensusJourneyResponse.Content.CallToAction.Label,
+                Url = getCensusJourneyResponse.Content.CallToAction.Url,
+            },
             Steps = StepByStepViewModelCollection
                 .Create("Journey:StepByStep")
                 .AddSteps(getCensusJourneyResponse.Content.StepByStep),

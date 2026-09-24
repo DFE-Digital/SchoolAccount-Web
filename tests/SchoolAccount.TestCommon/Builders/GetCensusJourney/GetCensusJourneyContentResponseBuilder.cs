@@ -16,6 +16,10 @@ public class GetCensusJourneyContentResponseBuilder
     private string _caption = "Complete your census return";
     private string _overview;
     private string _status = "Not Started";
+    private string _supportServiceDescription =
+        "Contact the Autumn school census team (opens in new tab)";
+    private string _supportServiceTitle = "Get help with the Autumn school census";
+    private Uri _supportServiceUrl = new("https://www.gov.uk/");
     private string _title = "Autumn School Census";
 
     public static GetCensusJourneyContentResponseBuilder ACensusJourneyContentResponse()
@@ -67,6 +71,28 @@ public class GetCensusJourneyContentResponseBuilder
         return this;
     }
 
+    public GetCensusJourneyContentResponseBuilder WithSupportServiceTitle(
+        string supportServiceTitle
+    )
+    {
+        _supportServiceTitle = supportServiceTitle;
+        return this;
+    }
+
+    public GetCensusJourneyContentResponseBuilder WithSupportServiceDescription(
+        string supportServiceDescription
+    )
+    {
+        _supportServiceDescription = supportServiceDescription;
+        return this;
+    }
+
+    public GetCensusJourneyContentResponseBuilder WithSupportServiceUrl(Uri supportServiceUrl)
+    {
+        _supportServiceUrl = supportServiceUrl;
+        return this;
+    }
+
     public GetCensusJourneyContentResponseBuilder WithSteps()
     {
         _steps.Add(
@@ -115,6 +141,12 @@ public class GetCensusJourneyContentResponseBuilder
             Overview = _overview,
             Status = _status,
             ImportantDates = _importantDates,
+            SupportService = new SupportService
+            {
+                Title = _supportServiceTitle,
+                Description = _supportServiceDescription,
+                Url = _supportServiceUrl,
+            },
             StepByStep = _steps,
             CallToAction = new CallToAction { Label = _callToActionLabel, Url = _callToActionUrl },
         };
