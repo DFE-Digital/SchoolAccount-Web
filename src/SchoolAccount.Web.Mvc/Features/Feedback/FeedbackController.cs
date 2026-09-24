@@ -2,15 +2,20 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace SchoolAccount.Web.Mvc.Features.Feedback;
 
-[ApiController]
-public class FeedbackController : ControllerBase
+public class FeedbackController : Controller
 {
-    private const string FeedbackSubmittedName = "footer-feedback__row--submitted";
+    [HttpGet]
+    public IActionResult Feedback()
+    {
+        var model = new FeedbackViewModel { IsResponding = true };
+        return View(model);
+    }
 
-    [HttpPost]
-    public IActionResult Respond() { }
+    // public IActionResult Submit() { }
 
-    public IActionResult Submit() { }
-
-    public IActionResult Cancel() { }
+    [HttpGet]
+    public IActionResult Cancel()
+    {
+        return View(new FeedbackViewModel());
+    }
 }

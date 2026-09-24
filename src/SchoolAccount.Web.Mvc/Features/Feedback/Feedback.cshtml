@@ -1,18 +1,14 @@
-@{
-    const string feedbackSubmittedName = "footer-feedback__row--submitted";
-    
-    var feedbackSubmitted = ViewData.ContainsKey(feedbackSubmittedName) && ViewData[feedbackSubmittedName] != null;
-}
+@model SchoolAccount.Web.Mvc.Features.Feedback.FeedbackViewModel
 
 <section id="page-feedback" class="footer-feedback" aria-label="Page feedback">
     <div class="govuk-width-container">
-        @if (!feedbackSubmitted)
+        @if (!Model.IsResponding)
         {
             <div class="footer-feedback__initial" aria-live="polite">
                 <div class="footer-feedback__row">
                     <h2 class="govuk-heading-s govuk-!-margin-bottom-0">Give feedback on this page or report a problem
                     </h2>
-                    <a asp-controller="Feedback" asp-action="Respond" type="submit" class="govuk-button footer-feedback__primary">
+                    <a asp-controller="Feedback" asp-action="Feedback" type="submit" class="govuk-button footer-feedback__primary">
                         Give feedback
                     </a>
                 </div>
