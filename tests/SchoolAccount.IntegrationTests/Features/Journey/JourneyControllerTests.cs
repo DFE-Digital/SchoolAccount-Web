@@ -372,7 +372,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     }
 
     [Fact]
-    public async Task Understand_statuses_list_is_displayed_when_status_is_not_unavailabe()
+    public async Task Understand_statuses_list_is_displayed_when_status_is_not_unavailable()
     {
         // Arrange
         var pageUri = _factory.GeneratePath("Journey", "Journey");
@@ -404,7 +404,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     }
 
     [Fact]
-    public async Task Understand_statuses_list_is_not_displayed_when_status_is_unavailabe()
+    public async Task Understand_statuses_list_is_not_displayed_when_status_is_unavailable()
     {
         // Arrange
         var pageUri = _factory.GeneratePath("Journey", "Journey");
