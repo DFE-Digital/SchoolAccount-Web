@@ -372,7 +372,70 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     }
 
     [Fact]
-    public async Task Understand_statuses_component_is_displayed_for_multi_academy_trust()
+    public async Task Understand_statuses_list_is_displayed_when_status_is_not_unavailabe()
+    {
+        // Arrange
+        var pageUri = _factory.GeneratePath("Journey", "Journey");
+        _getCensusJourneyHandler.Returns(
+            AGetCensusJourneyResponse()
+                .WithContent(
+                    ACensusJourneyContentResponse()
+                        .WithStatus("Authorised")
+                        .WithUnderstandStatus(
+                            AUnderstandStatus()
+                                .WithName("Test Status")
+                                .WithDescription("Test status description.")
+                        )
+                )
+                .AsSuccess()
+        );
+
+        // Act
+        var message = await _client.GetAsync(pageUri, TestContext.Current.CancellationToken);
+        var page = await AngleSharpPage.FromResponseAsync<JourneyPage>(
+            message,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        message.StatusCode.ShouldBe(HttpStatusCode.OK);
+        page.GetComponentByContent("li", "Test Status")
+            .ShouldBe("Test Status: Test status description.");
+    }
+
+    [Fact]
+    public async Task Understand_statuses_list_is_not_displayed_when_status_is_unavailabe()
+    {
+        // Arrange
+        var pageUri = _factory.GeneratePath("Journey", "Journey");
+        _getCensusJourneyHandler.Returns(
+            AGetCensusJourneyResponse()
+                .WithContent(
+                    ACensusJourneyContentResponse()
+                        .WithStatus("Unavailable")
+                        .WithUnderstandStatus(
+                            AUnderstandStatus()
+                                .WithName("Test Status")
+                                .WithDescription("Test status description.")
+                        )
+                )
+                .AsSuccess()
+        );
+
+        // Act
+        var message = await _client.GetAsync(pageUri, TestContext.Current.CancellationToken);
+        var page = await AngleSharpPage.FromResponseAsync<JourneyPage>(
+            message,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        message.StatusCode.ShouldBe(HttpStatusCode.OK);
+        page.GetComponentByContent("li", "Test Status").ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task Understand_statuses_list_is_displayed_for_multi_academy_trust()
     {
         // Arrange
         var token = TestContext.Current.CancellationToken;
@@ -428,24 +491,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
 
         // Assert
         message.StatusCode.ShouldBe(HttpStatusCode.OK);
-
-        var tableHeadings = page.GetTableHeaders();
-        tableHeadings.ShouldNotBeNull();
-        tableHeadings[0].ShouldBe("Name");
-        tableHeadings[1].ShouldBe("Status");
-
-        var tableRows = page.GetTableRows();
-        tableRows.ShouldNotBeNull();
-        tableRows.Count.ShouldBe(2);
-
-        var schoolStatus = page.GetTableCellByHeader();
-        schoolStatus.ShouldNotBeNull();
-        schoolStatus.ShouldSatisfyAllConditions(
-            () => schoolStatus.Count.ShouldBe(2),
-            () => schoolStatus[0]["Name"].ShouldBe("Test School 1"),
-            () => schoolStatus[0]["Status"].ShouldBe("Not Started"),
-            () => schoolStatus[1]["Name"].ShouldBe("Test School 2"),
-            () => schoolStatus[1]["Status"].ShouldBe("Submitted")
-        );
+        page.GetComponentByContent("li", "Test Status")
+            .ShouldBe("Test Status: Test status description.");
     }
 }
