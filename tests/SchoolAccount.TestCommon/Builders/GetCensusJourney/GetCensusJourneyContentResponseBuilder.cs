@@ -6,6 +6,7 @@ namespace SchoolAccount.TestCommon.Builders.GetCensusJourney;
 public class GetCensusJourneyContentResponseBuilder
 {
     private readonly List<ImportantDate> _importantDates = [];
+    private readonly List<UnderstandStatus> _understandStatuses = [];
     private readonly List<StepByStep> _steps = [];
     private string _callToActionLabel = "Go to Autumn Census 2026";
 
@@ -66,6 +67,26 @@ public class GetCensusJourneyContentResponseBuilder
         foreach (var builder in builders)
         {
             _importantDates.Add(builder.Build());
+        }
+
+        return this;
+    }
+
+    public GetCensusJourneyContentResponseBuilder WithUnderstandStatus(
+        GetCensusJourneyResponseUnderstandStatusBuilder builder
+    )
+    {
+        _understandStatuses.Add(builder.Build());
+        return this;
+    }
+
+    public GetCensusJourneyContentResponseBuilder WithUnderstandStatuses(
+        params GetCensusJourneyResponseUnderstandStatusBuilder[] builders
+    )
+    {
+        foreach (var builder in builders)
+        {
+            _understandStatuses.Add(builder.Build());
         }
 
         return this;
@@ -141,6 +162,7 @@ public class GetCensusJourneyContentResponseBuilder
             Overview = _overview,
             Status = _status,
             ImportantDates = _importantDates,
+            UnderstandStatuses = _understandStatuses,
             SupportService = new SupportService
             {
                 Title = _supportServiceTitle,

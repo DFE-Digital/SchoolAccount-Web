@@ -1,3 +1,4 @@
+using SchoolAccount.Application.Features.Collect.GetCensusJourney.Responses;
 using SchoolAccount.Web.Mvc.Features.Shared.MultipleSchoolsStatusTable;
 using SchoolAccount.Web.Mvc.Features.Shared.StepByStep;
 
@@ -19,6 +20,8 @@ public sealed class JourneyViewModel
 
     public IReadOnlyList<ImportantDate> ImportantDates { get; init; } = [];
 
+    public IReadOnlyList<UnderstandStatus> UnderstandStatuses { get; init; } = [];
+
     public StepByStepViewModelCollection? Steps { get; init; }
 
     public SupportService SupportService { get; init; }
@@ -29,20 +32,30 @@ public sealed class JourneyViewModel
 
     public bool DisplayOverview => !string.IsNullOrWhiteSpace(Overview);
 
-    public bool IsMatOrLocalAuthority =>
-        MatSchoolsStatuses is not null && MatSchoolsStatuses.SchoolStatuses.Any();
+    public bool DisplayUnderstandStatuses =>
+        UnderstandStatuses.Any() && (Status != "Unavailable" || IsMatOrLocalAuthority);
 
     public bool TryGetSteps(out StepByStepViewModelCollection steps)
     {
         steps = Steps!;
         return Steps?.HasItems() == true;
     }
+
+    public bool IsMatOrLocalAuthority =>
+        MatSchoolsStatuses is not null && MatSchoolsStatuses.SchoolStatuses.Any();
 }
 
 public sealed class ImportantDate
 {
     public string Label { get; init; }
     public string FormattedDate { get; init; }
+}
+
+public sealed class UnderstandStatus
+{
+    public string Name { get; init; }
+
+    public string Description { get; init; }
 }
 
 public sealed class SupportService
