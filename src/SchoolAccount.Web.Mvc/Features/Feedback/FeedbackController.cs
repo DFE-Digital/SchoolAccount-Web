@@ -4,18 +4,13 @@ namespace SchoolAccount.Web.Mvc.Features.Feedback;
 
 public class FeedbackController : Controller
 {
-    [HttpGet]
-    public IActionResult Feedback()
-    {
-        var model = new FeedbackViewModel { IsResponding = true };
-        return View(model);
-    }
-
-    // public IActionResult Submit() { }
-
-    [HttpGet]
-    public IActionResult Cancel()
-    {
-        return View(new FeedbackViewModel());
-    }
+    // [HttpPost]
+    // [ValidateAntiForgeryToken]
+    // public async Task<IActionResult> Send(string message)
+    // {
+    //     await _container.CreateIfNotExistsAsync();
+    //     var blob = _container.GetBlobClient($"{Guid.NewGuid()}.txt");
+    //     await blob.UploadAsync(BinaryData.FromString(message));
+    //     return Ok(new { success = true });
+    // }
 }

@@ -1,40 +1,74 @@
-@model SchoolAccount.Web.Mvc.Features.Feedback.FeedbackViewModel
+@{
+    var isResponding = false;
+    var isSubmitted = false;
+}
 
 <section id="page-feedback" class="footer-feedback" aria-label="Page feedback">
     <div class="govuk-width-container">
-        @if (!Model.IsResponding)
-        {
-            <div class="footer-feedback__initial" aria-live="polite">
-                <div class="footer-feedback__row">
+        <div class="footer-feedback__initial" aria-live="polite">
+            <div class="footer-feedback__row">
+                @if (!isResponding)
+                {
                     <h2 class="govuk-heading-s govuk-!-margin-bottom-0">Give feedback on this page or report a problem
                     </h2>
-                    <a asp-controller="Feedback" asp-action="Feedback" type="submit" class="govuk-button footer-feedback__primary">
+                    <button type="button" id="respond" class="govuk-button footer-feedback__primary">
                         Give feedback
-                    </a>
-                </div>
-            </div>
-        }
-        else
-        {
-            <form id="tell-us-form">
-                <div class="govuk-form-group">
-                    <div class="govuk-form-group">
-                        <h2 class="govuk-label-wrapper govuk-heading-m">
-                            <label class="govuk-label govuk-label--m" for="what-do-you-want-to-tell-us">
-                                Your feedback
-                            </label>
-                        </h2>
-                        <div id="what-do-you-want-to-tell-us-hint" class="govuk-hint">
-                            Tell us what you think or describe the problem
+                    </button>
+                }
+                else
+                {
+                    <form id="tell-us-form" asp-controller="Feedback" asp-action="Submit" method="post">
+                        <div class="govuk-form-group">
+                            <div class="govuk-form-group">
+                                <h2 class="govuk-label-wrapper govuk-heading-m">
+                                    <label class="govuk-label govuk-label--m" for="what-do-you-want-to-tell-us">
+                                        Your feedback
+                                    </label>
+                                </h2>
+                                <div id="what-do-you-want-to-tell-us-hint" class="govuk-hint">
+                                    Tell us what you think or describe the problem
+                                </div>
+                                <textarea class="govuk-textarea" id="what-do-you-want-to-tell-us" name="whatDoYouWantToTellUs" rows="5"></textarea>
+                            </div>
                         </div>
-                        <textarea class="govuk-textarea" id="what-do-you-want-to-tell-us" name="whatDoYouWantToTellUs" rows="5"></textarea>
-                    </div>
-                </div>
-                <div class="govuk-button-group">
-                    <a asp-controller="Feedback" asp-action="Submit" type="submit" class="govuk-button footer-feedback__send" data-module="govuk-button">Send feedback</a>
-                    <a asp-controller="Feedback" asp-action="Cancel" type="button" class="govuk-button govuk-button--secondary footer-feedback__cancel" data-module="govuk-button">Cancel</a>
-                </div>
-            </form>
-        }
+                        <div class="govuk-button-group">
+                            <button type="submit" class="govuk-button footer-feedback__send" data-module="govuk-button">Send feedback</button>
+                            <button type="button" id="cancel" class="govuk-button govuk-button--secondary footer-feedback__cancel" data-module="govuk-button">Cancel</button>
+                        </div>
+                    </form>
+                }
+                @if (isSubmitted)
+                {
+                    <h2 class="govuk-heading-s govuk-!-margin-bottom-0">Thank you for your feedback</h2>
+                }
+            </div>
+        </div>
     </div>
 </section>
+
+<script>
+    document.getElementById("tell-us-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const form = e.target;
+    
+        try {
+            const res = await fetch(form.action, { method: "POST", body: new FormData(form) });
+            if (!res.ok) throw new Error();
+            form.reset();
+            @isSubmitted = true;
+            @isResponding = false;
+        } catch {
+            console.log("Unable to submit feedback. Please try again later.");
+        }
+    });
+    
+    document.getElementById("respond").addEventListener("click", (e) => {
+        e.preventDefault();
+        @isResponding = true;
+    })
+    
+    document.getElementById("cancel").addEventListener("click", (e) => {
+        e.preventDefault();
+        @isResponding = false;
+    })
+</script>
