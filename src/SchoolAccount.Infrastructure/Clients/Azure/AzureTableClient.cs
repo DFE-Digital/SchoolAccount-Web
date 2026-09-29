@@ -1,23 +1,17 @@
 using Azure;
 using Azure.Data.Tables;
-using Azure.Identity;
 using SchoolAccount.Application.Abstractions.Clients;
 using SchoolAccount.SharedKernel;
 using Serilog;
 
-namespace SchoolAccount.Infrastructure.Clients.Blob;
+namespace SchoolAccount.Infrastructure.Clients.Azure;
 
-public class AzureTableClient : IAzureTableClient
+public class AzureTableClient(TableClient tableClient) : IAzureTableClient
 {
     public async Task<Result> SendFeedback(string message, string ukprn, string? laestab)
     {
         try
         {
-            var tableClient = new TableClient(
-                "DefaultEndpointsProtocol=https;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;",
-                "FeedbackTable"
-            );
-
             await tableClient.CreateIfNotExistsAsync();
 
             var now = DateTime.UtcNow;

@@ -1,14 +1,13 @@
-using Azure.Identity;
+using Azure.Data.Tables;
 using Dfe.TramsDataApi.Client.Extensions;
 using GovUK.Dfe.AcademiesApi.Client;
 using GovUK.Dfe.AcademiesApi.Client.Contracts;
-using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using SchoolAccount.Application.Abstractions.Clients;
 using SchoolAccount.Infrastructure.Clients.Academies;
-using SchoolAccount.Infrastructure.Clients.Blob;
+using SchoolAccount.Infrastructure.Clients.Azure;
 using SchoolAccount.Infrastructure.Clients.Collect;
 using SchoolAccount.Infrastructure.Config;
 using SchoolAccount.Infrastructure.Time;
@@ -26,7 +25,7 @@ public static class DependencyInjection
         services.AddServices().AddHealthChecks();
         services.AddCollectApiClient(configuration);
         services.AddAcademiesApi(configuration);
-        services.AddAzureBlobClient(configuration);
+        services.AddAzureTableClient(configuration);
 
         return services;
     }
@@ -70,16 +69,13 @@ public static class DependencyInjection
         services.AddScoped<IAcademiesApiClient, AcademiesApiClient>();
     }
 
-    private static void AddAzureBlobClient(
+    private static void AddAzureTableClient(
         this IServiceCollection services,
         IConfiguration configuration
     )
     {
-        services.AddAzureClients(builder =>
-        {
-            builder.AddTableServiceClient(new Uri(configuration["Azure:TableStorageUrl"]!));
-            builder.UseCredential(new DefaultAzureCredential());
-        });
+        var connectionString = configuration.GetSection("Azure")["TableStorageUrl"];
+        services.AddSingleton(new TableClient(connectionString, "FeedbackTable"));
 
         services.AddScoped<IAzureTableClient, AzureTableClient>();
     }
