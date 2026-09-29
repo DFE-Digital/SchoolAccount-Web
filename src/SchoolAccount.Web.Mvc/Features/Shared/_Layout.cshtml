@@ -29,6 +29,7 @@
                 {
                     <span class="header-navigation__school">@HeaderContentProvider.OrganisationName</span>
 
+                    @Html.AntiForgeryToken()
                     @using (Html.BeginForm("Logout", "Account", FormMethod.Post))
                     {
                         <button type="submit" class="header-navigation__link">
@@ -51,7 +52,10 @@
 @RenderBody()
 
 @section GovUkFooter {
-    <partial name="~/Features/Feedback/Feedback.cshtml"/>
+    @if (HeaderContentProvider.IsAuthenticated)
+    {
+        @await Component.InvokeAsync("Feedback")
+    }
     <govuk-footer>
         <govuk-footer-meta>
             <govuk-footer-meta-items>
