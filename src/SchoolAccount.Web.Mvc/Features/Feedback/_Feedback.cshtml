@@ -12,14 +12,13 @@
                         <h2 class="govuk-heading-s govuk-!-margin-bottom-0">
                             Give feedback on this page or report a problem
                         </h2>
-                        <a href="@(Model.OpenUrl)#page-feedback" role="button" draggable="false"
+                        <a asp-controller="Feedback" asp-action="Open" id="open" type="button"
                            class="govuk-button footer-feedback__primary" data-module="govuk-button">
                             Give feedback
                         </a>
                         break;
                     case FeedbackState.Responding:
                         <form id="tell-us-form" asp-controller="Feedback" asp-action="Submit" method="post" novalidate>
-                            <input type="hidden" name="returnUrl" value="@Model.ReturnUrl"/>
                             <div class="govuk-form-group">
                                 <div class="govuk-form-group">
                                     <h2 class="govuk-label-wrapper govuk-heading-m">
@@ -37,10 +36,10 @@
                                 <button type="submit" class="govuk-button footer-feedback__send" data-module="govuk-button">
                                     Send feedback
                                 </button>
-                                <a href="@(Model.ReturnUrl)#page-feedback" role="button" draggable="false"
+                                <button id="cancel" type="button"
                                    class="govuk-button govuk-button--secondary footer-feedback__cancel" data-module="govuk-button">
                                     Cancel
-                                </a>
+                                </button>
                             </div>
                         </form>
                         break;
@@ -52,3 +51,66 @@
         </div>
     </div>
 </section>
+
+<script>
+    async function replaceFeedback(url, options = {}) {
+        const feedback = document.querySelector("#page-feedback");
+
+        if (!feedback) {
+            return;
+        }
+
+        const response = await fetch(url, {
+            ...options,
+            headers: {
+                "X-Requested-With": "XMLHttpRequest",
+                ...(options.headers || {})
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error("Feedback request failed.");
+        }
+
+        const html = await response.text();
+
+        feedback.outerHTML = html;
+    }
+
+    document.getElementById("open").addEventListener("click", async (event) => {
+        event.preventDefault();
+        if (event.target.closest("[data-feedback-open]")) {
+            await replaceFeedback("/Feedback/Open");
+        }
+    });
+
+    document.getElementById("cancel").addEventListener("click", async (event) => {
+        event.preventDefault();
+        if (event.target.closest("[data-feedback-cancel]")) {
+            await replaceFeedback("/Feedback/Cancel");
+        }
+    });
+
+    document.getElementById("tell-us-form").addEventListener("submit", async (event) => {
+        const form = event.target.closest("#tell-us-form");
+
+        if (!form) {
+            return;
+        }
+
+        event.preventDefault();
+
+        const submitButton = form.querySelector('button[type="submit"]');
+        submitButton.disabled = true;
+
+        try {
+            await replaceFeedback(form.action, {
+                method: "POST",
+                body: new FormData(form)
+            });
+        } catch (error) {
+            console.error(error);
+            submitButton.disabled = false;
+        }
+    });
+</script>

@@ -1,4 +1,3 @@
-using Azure;
 using Microsoft.AspNetCore.Mvc;
 using SchoolAccount.Application.Abstractions.Messaging;
 using SchoolAccount.Application.Features.Feedback;
@@ -27,6 +26,24 @@ public class FeedbackController(
             CancellationToken.None
         );
 
-        return Ok(new { success = true });
+        var model = new FeedbackViewModel { State = FeedbackState.Submitted };
+
+        return PartialView("~/Features/Feedback/_Feedback.cshtml", model);
+    }
+
+    [HttpGet]
+    public IActionResult Open()
+    {
+        var model = new FeedbackViewModel { State = FeedbackState.Responding };
+
+        return PartialView("~/Features/Feedback/_Feedback.cshtml", model);
+    }
+
+    [HttpGet]
+    public IActionResult Cancel()
+    {
+        var model = new FeedbackViewModel { State = FeedbackState.Initial };
+
+        return PartialView("~/Features/Feedback/_Feedback.cshtml", model);
     }
 }
