@@ -4,52 +4,56 @@
 <section id="page-feedback" class="footer-feedback" aria-label="Page feedback">
     <div class="govuk-width-container">
         <div class="footer-feedback__initial" aria-live="polite">
-            <div class="footer-feedback__row">
                 @Html.AntiForgeryToken()
                 @switch (Model.State)
                 {
                     case FeedbackState.Initial:
-                        <h2 class="govuk-heading-s govuk-!-margin-bottom-0">
-                            Give feedback on this page or report a problem
-                        </h2>
-                        <a asp-controller="Feedback" asp-action="Open" id="open" type="button"
-                           class="govuk-button footer-feedback__primary" draggable="false">
-                            Give feedback
-                        </a>
+                        <div class="footer-feedback__row">
+                            <h2 class="govuk-heading-s govuk-!-margin-bottom-0">
+                                Give feedback on this page or report a problem
+                            </h2>
+                            <a asp-controller="Feedback" asp-action="Open" id="open" type="button"
+                               class="govuk-button footer-feedback__primary" draggable="false">
+                                Give feedback
+                            </a>
+                        </div>
                         break;
                     case FeedbackState.Responding:
-                        <form id="tell-us-form" asp-controller="Feedback" asp-action="Submit" method="post" novalidate>
-                            <div class="govuk-form-group">
+                        <div class="footer-feedback__row footer-feedback__row--submitted">
+                            <form id="tell-us-form" asp-controller="Feedback" asp-action="Submit" method="post" novalidate>
                                 <div class="govuk-form-group">
-                                    <h2 class="govuk-label-wrapper govuk-heading-m">
-                                        <label class="govuk-label govuk-label--m" for="feedbackMessage">
-                                            Your feedback
-                                        </label>
-                                    </h2>
-                                    <div id="what-do-you-want-to-tell-us-hint" class="govuk-hint">
-                                        Tell us what you think or describe the problem
+                                    <div class="govuk-form-group">
+                                        <h2 class="govuk-label-wrapper govuk-heading-m">
+                                            <label class="govuk-label govuk-label--m" for="feedbackMessage">
+                                                Your feedback
+                                            </label>
+                                        </h2>
+                                        <div id="what-do-you-want-to-tell-us-hint" class="govuk-hint">
+                                            Tell us what you think or describe the problem
+                                        </div>
+                                        <textarea class="govuk-textarea" id="feedbackMessage" name="feedbackMessage" rows="5"></textarea>
                                     </div>
-                                    <textarea class="govuk-textarea" id="feedbackMessage" name="feedbackMessage" rows="5"></textarea>
                                 </div>
-                            </div>
-                            <div class="govuk-button-group">
-                                <button type="submit" class="govuk-button footer-feedback__send">
-                                    Send feedback
-                                </button>
-                                <a asp-controller="Feedback" asp-action="Cancel" id="cancel" type="button"
-                                   class="govuk-button govuk-button--secondary footer-feedback__cancel" draggable="false">
-                                    Cancel
-                                </a>
-                            </div>
-                        </form>
+                                <div class="govuk-button-group">
+                                    <button type="submit" class="govuk-button footer-feedback__send">
+                                        Send feedback
+                                    </button>
+                                    <a asp-controller="Feedback" asp-action="Cancel" id="cancel" type="button"
+                                       class="govuk-button govuk-button--secondary footer-feedback__cancel" draggable="false">
+                                        Cancel
+                                    </a>
+                                </div>
+                            </form>
+                        </div>
                         break;
                     case FeedbackState.Submitted:
-                        <h2 class="govuk-heading-s govuk-!-margin-bottom-0">Thank you for your feedback</h2>
+                        <div class="footer-feedback__row footer-feedback__row--submitted">
+                            <h2 class="govuk-heading-s govuk-!-margin-bottom-0">Thank you for your feedback</h2>
+                        </div>
                         break;
                 }
             </div>
         </div>
-    </div>
 </section>
 
 <script type="text/javascript" src="lib/feedback/feedback.js" asp-append-version="true"></script>
