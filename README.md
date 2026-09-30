@@ -63,6 +63,31 @@ Follow these steps to start the MVC locally.
 6. Debugging guidance:
    - Set breakpoints in your C# files under `src/` and start either run configuration with debugging enabled.
 
+### Feedback Component
+
+To ensure the feedback component is functional locally, there are tools that can be used to see this journey.
+
+1. Install prerequisites:
+    - [Azure Storage Explorer](https://azure.microsoft.com/en-us/products/storage/storage-explorer)
+
+2. Pull the latest Docker image of Azurite and run it
+```
+docker pull mcr.microsoft.com/azure-storage/azurite
+docker run -p 10000:10000 -p 10001:10001 -p 10002:10002 mcr.microsoft.com/azure-storage/azurite
+```
+
+3. Open `appsettings.Development.json` and add this connection string
+```json
+{
+  "Azure": {
+    "TableStorageUrl": "DefaultEndpointsProtocol=https;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;"
+  }
+}
+```
+
+4. Open Azure Storage Explorer and connect to the Azurite instance running on `http://127.0.0.1:10002/devstoreaccount1/`
+
+5. Use the feedback component as an authenticated user to populate the table
 ## Configuration
 
 The project requires the following app configuration values to be overridden, ideally using [User Secrets](https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-6.0&tabs=windows):
