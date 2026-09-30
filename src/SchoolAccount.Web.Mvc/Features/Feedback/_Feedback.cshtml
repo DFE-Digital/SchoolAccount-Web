@@ -36,10 +36,10 @@
                                 <button type="submit" class="govuk-button footer-feedback__send" data-module="govuk-button">
                                     Send feedback
                                 </button>
-                                <button id="cancel" type="button"
+                                <a asp-controller="Feedback" asp-action="Cancel" id="cancel" type="button"
                                    class="govuk-button govuk-button--secondary footer-feedback__cancel" data-module="govuk-button">
                                     Cancel
-                                </button>
+                                </a>
                             </div>
                         </form>
                         break;
@@ -77,40 +77,24 @@
         feedback.outerHTML = html;
     }
 
-    document.getElementById("open").addEventListener("click", async (event) => {
+    document.addEventListener("click", async (event) => {
+        const link = event.target.closest("#open, #cancel");
+        if (!link) return;
+
         event.preventDefault();
-        if (event.target.closest("[data-feedback-open]")) {
-            await replaceFeedback("/Feedback/Open");
-        }
+        await replaceFeedback(link.href);
     });
 
-    document.getElementById("cancel").addEventListener("click", async (event) => {
-        event.preventDefault();
-        if (event.target.closest("[data-feedback-cancel]")) {
-            await replaceFeedback("/Feedback/Cancel");
-        }
-    });
-
-    document.getElementById("tell-us-form").addEventListener("submit", async (event) => {
+    document.addEventListener("submit", async (event) => {
         const form = event.target.closest("#tell-us-form");
-
-        if (!form) {
-            return;
-        }
+        if (!form) return;
 
         event.preventDefault();
+        form.querySelector('button[type="submit"]').disabled = true;
 
-        const submitButton = form.querySelector('button[type="submit"]');
-        submitButton.disabled = true;
-
-        try {
-            await replaceFeedback(form.action, {
-                method: "POST",
-                body: new FormData(form)
-            });
-        } catch (error) {
-            console.error(error);
-            submitButton.disabled = false;
-        }
+        await replaceFeedback(form.action, {
+            method: "POST",
+            body: new FormData(form)
+        });
     });
 </script>
