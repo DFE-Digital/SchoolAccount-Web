@@ -1,9 +1,10 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using GovUk.Frontend.AspNetCore;
 using Microsoft.AspNetCore.Authorization;
 using SchoolAccount.Web.Mvc.Authentication;
 using SchoolAccount.Web.Mvc.Authentication.Extensions;
 using SchoolAccount.Web.Mvc.Features.Header;
+using SchoolAccount.Web.Mvc.Hosting.Extensions;
 using SchoolAccount.Web.Mvc.Infrastructure;
 
 namespace SchoolAccount.Web.Mvc;
@@ -16,6 +17,7 @@ public static class DependencyInjection
         IConfigurationManager configuration
     )
     {
+        services.AddConfiguredDataProtection(configuration);
         services.AddSession();
         services.AddDsiAuthentication(configuration);
         services.AddOrganisationClaimPolicy();

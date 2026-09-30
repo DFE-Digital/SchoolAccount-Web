@@ -1,4 +1,3 @@
-using SchoolAccount.Application.Features.Collect.GetCensusJourney;
 using SchoolAccount.Application.Features.Collect.GetCensusJourney.Responses;
 using SchoolAccount.SharedKernel.Authentication;
 
@@ -35,6 +34,19 @@ public static class CensusJourneyMapper
                     Date = importantDate.Date,
                 })
                 .ToList(),
+            UnderstandStatuses = content
+                .UnderstandStatuses.Select(understandStatus => new UnderstandStatus
+                {
+                    Name = understandStatus.Name,
+                    Description = understandStatus.Description,
+                })
+                .ToList(),
+            SupportService = new SupportService
+            {
+                Title = content.SupportService.Title,
+                Description = content.SupportService.Description,
+                Url = content.SupportService.Url,
+            },
             StepByStep =
             [
                 new StepByStep

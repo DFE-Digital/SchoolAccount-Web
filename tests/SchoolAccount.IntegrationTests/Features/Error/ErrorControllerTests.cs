@@ -5,7 +5,6 @@ using SchoolAccount.Application.Abstractions.Messaging;
 using SchoolAccount.Application.Features.Collect.CensusStatuses;
 using SchoolAccount.IntegrationTests.Common;
 using SchoolAccount.IntegrationTests.Common.Pages;
-using SchoolAccount.Web.Mvc.Features.Dashboard;
 using SchoolAccount.Web.Mvc.Features.Error;
 using Shouldly;
 
@@ -132,5 +131,53 @@ public class ErrorControllerTests : IClassFixture<SchoolAccountWebApplicationFac
 
         response.IsSuccessStatusCode.ShouldBeFalse();
         response.StatusCode.ShouldBe(HttpStatusCode.InternalServerError);
+    }
+
+    [Fact]
+    public async Task Error_page_is_rendered_when_re_executed_with_a_non_get_method()
+    {
+        // Arrange
+        var requestUri = _factory.GeneratePath("Error", "Error", new { statusCode = 500 });
+
+        // Act
+        var response = await _authenticatedClient.PostAsync(
+            requestUri,
+            content: null,
+            TestContext.Current.CancellationToken
+        );
+
+        var page = await AngleSharpPage.FromResponseAsync<ErrorPage>(
+            response,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        page.ShouldNotBeNull();
+        page.IsServerErrorPageTitle().ShouldBeTrue();
+        response.StatusCode.ShouldBe(HttpStatusCode.InternalServerError);
+    }
+
+    [Fact]
+    public async Task A_post_to_an_unknown_page_renders_an_error_page()
+    {
+        // Arrange
+        var requestUri = "/this-page-does-not-exist";
+
+        // Act
+        var response = await _authenticatedClient.PostAsync(
+            requestUri,
+            content: null,
+            TestContext.Current.CancellationToken
+        );
+
+        var page = await AngleSharpPage.FromResponseAsync<ErrorPage>(
+            response,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        page.ShouldNotBeNull();
+        page.IsServerErrorPageTitle().ShouldBeTrue();
+        response.IsSuccessStatusCode.ShouldBeFalse();
     }
 }

@@ -10,11 +10,21 @@ public record GetCensusJourneyContentResponse
 
     public string Status { get; init; }
 
+    public SupportService SupportService { get; init; }
+
     public IReadOnlyList<ImportantDate> ImportantDates { get; init; } = [];
+
+    public IReadOnlyList<UnderstandStatus> UnderstandStatuses { get; init; } = [];
 
     public List<StepByStep> StepByStep { get; init; } = [];
 
     public CallToAction CallToAction { get; init; }
+}
+
+public record UnderstandStatus
+{
+    public string Name { get; init; }
+    public string Description { get; init; }
 }
 
 public record ImportantDate
@@ -22,6 +32,13 @@ public record ImportantDate
     public string Label { get; init; }
 
     public DateOnly Date { get; init; }
+}
+
+public sealed class SupportService
+{
+    public required string Title { get; init; }
+    public required string Description { get; init; }
+    public required Uri Url { get; init; }
 }
 
 public record StepByStep

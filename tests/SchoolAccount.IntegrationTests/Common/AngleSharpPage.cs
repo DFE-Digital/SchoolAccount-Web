@@ -36,6 +36,14 @@ public abstract class AngleSharpPage
         return page;
     }
 
+    public virtual string? GetComponentByContent(string componentClass, string content)
+    {
+        var component = Page.QuerySelectorAll(componentClass)
+            .FirstOrDefault(h => h.TextContent?.Contains(content) ?? false);
+
+        return component?.TextContent;
+    }
+
     public virtual string? GetTitle()
     {
         var pageTitle = Page.QuerySelector("title");

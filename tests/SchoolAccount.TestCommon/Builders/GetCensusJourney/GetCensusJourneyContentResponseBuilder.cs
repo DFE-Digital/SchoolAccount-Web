@@ -6,6 +6,7 @@ namespace SchoolAccount.TestCommon.Builders.GetCensusJourney;
 public class GetCensusJourneyContentResponseBuilder
 {
     private readonly List<ImportantDate> _importantDates = [];
+    private readonly List<UnderstandStatus> _understandStatuses = [];
     private readonly List<StepByStep> _steps = [];
     private string _callToActionLabel = "Go to Autumn Census 2026";
 
@@ -16,6 +17,10 @@ public class GetCensusJourneyContentResponseBuilder
     private string _caption = "Complete your census return";
     private string _overview;
     private string _status = "Not Started";
+    private string _supportServiceDescription =
+        "Contact the Autumn school census team (opens in new tab)";
+    private string _supportServiceTitle = "Get help with the Autumn school census";
+    private Uri _supportServiceUrl = new("https://www.gov.uk/");
     private string _title = "Autumn School Census";
 
     public static GetCensusJourneyContentResponseBuilder ACensusJourneyContentResponse()
@@ -67,6 +72,48 @@ public class GetCensusJourneyContentResponseBuilder
         return this;
     }
 
+    public GetCensusJourneyContentResponseBuilder WithUnderstandStatus(
+        GetCensusJourneyResponseUnderstandStatusBuilder builder
+    )
+    {
+        _understandStatuses.Add(builder.Build());
+        return this;
+    }
+
+    public GetCensusJourneyContentResponseBuilder WithUnderstandStatuses(
+        params GetCensusJourneyResponseUnderstandStatusBuilder[] builders
+    )
+    {
+        foreach (var builder in builders)
+        {
+            _understandStatuses.Add(builder.Build());
+        }
+
+        return this;
+    }
+
+    public GetCensusJourneyContentResponseBuilder WithSupportServiceTitle(
+        string supportServiceTitle
+    )
+    {
+        _supportServiceTitle = supportServiceTitle;
+        return this;
+    }
+
+    public GetCensusJourneyContentResponseBuilder WithSupportServiceDescription(
+        string supportServiceDescription
+    )
+    {
+        _supportServiceDescription = supportServiceDescription;
+        return this;
+    }
+
+    public GetCensusJourneyContentResponseBuilder WithSupportServiceUrl(Uri supportServiceUrl)
+    {
+        _supportServiceUrl = supportServiceUrl;
+        return this;
+    }
+
     public GetCensusJourneyContentResponseBuilder WithSteps()
     {
         _steps.Add(
@@ -115,6 +162,13 @@ public class GetCensusJourneyContentResponseBuilder
             Overview = _overview,
             Status = _status,
             ImportantDates = _importantDates,
+            UnderstandStatuses = _understandStatuses,
+            SupportService = new SupportService
+            {
+                Title = _supportServiceTitle,
+                Description = _supportServiceDescription,
+                Url = _supportServiceUrl,
+            },
             StepByStep = _steps,
             CallToAction = new CallToAction { Label = _callToActionLabel, Url = _callToActionUrl },
         };
