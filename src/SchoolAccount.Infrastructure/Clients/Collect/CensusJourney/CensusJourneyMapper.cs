@@ -63,7 +63,7 @@ public static class CensusJourneyMapper
                     Title = "Prepare the data in your MIS",
                     Body = """
                         <p>Data for the census is prepared and checked in your school’s MIS, not in COLLECT. COLLECT is only used to submit the return and fix any errors.</p>
-                        <p>There is <a href="https://www.gov.uk/guidance/complete-the-school-census/data-items-2026-to-2027">guidance on data items</a> covering everything the census collects this term. Your MIS supplier’s guidance will tell you where to record this data.</p>
+                        <p>There is <a href="https://www.gov.uk/guidance/complete-the-school-census/data-items-2026-to-2027">guidance on data items</a> covering everything the census collects. Your MIS supplier’s guidance will tell you where to record this data.</p>
                         <p>Start preparing the data well before census day. You may need information from several people in your school, including your:</p>
                         <ul>
                          <li>headteacher</li>
