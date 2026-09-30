@@ -13,7 +13,7 @@
                             Give feedback on this page or report a problem
                         </h2>
                         <a asp-controller="Feedback" asp-action="Open" id="open" type="button"
-                           class="govuk-button footer-feedback__primary" data-module="govuk-button">
+                           class="govuk-button footer-feedback__primary" draggable="false">
                             Give feedback
                         </a>
                         break;
@@ -33,11 +33,11 @@
                                 </div>
                             </div>
                             <div class="govuk-button-group">
-                                <button type="submit" class="govuk-button footer-feedback__send" data-module="govuk-button">
+                                <button type="submit" class="govuk-button footer-feedback__send">
                                     Send feedback
                                 </button>
                                 <a asp-controller="Feedback" asp-action="Cancel" id="cancel" type="button"
-                                   class="govuk-button govuk-button--secondary footer-feedback__cancel" data-module="govuk-button">
+                                   class="govuk-button govuk-button--secondary footer-feedback__cancel" draggable="false">
                                     Cancel
                                 </a>
                             </div>
@@ -52,49 +52,4 @@
     </div>
 </section>
 
-<script>
-    async function replaceFeedback(url, options = {}) {
-        const feedback = document.querySelector("#page-feedback");
-
-        if (!feedback) {
-            return;
-        }
-
-        const response = await fetch(url, {
-            ...options,
-            headers: {
-                "X-Requested-With": "XMLHttpRequest",
-                ...(options.headers || {})
-            }
-        });
-
-        if (!response.ok) {
-            throw new Error("Feedback request failed.");
-        }
-
-        const html = await response.text();
-
-        feedback.outerHTML = html;
-    }
-
-    document.addEventListener("click", async (event) => {
-        const link = event.target.closest("#open, #cancel");
-        if (!link) return;
-
-        event.preventDefault();
-        await replaceFeedback(link.href);
-    });
-
-    document.addEventListener("submit", async (event) => {
-        const form = event.target.closest("#tell-us-form");
-        if (!form) return;
-
-        event.preventDefault();
-        form.querySelector('button[type="submit"]').disabled = true;
-
-        await replaceFeedback(form.action, {
-            method: "POST",
-            body: new FormData(form)
-        });
-    });
-</script>
+<script type="text/javascript" src="lib/feedback/feedback.js" asp-append-version="true"></script>
