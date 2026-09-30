@@ -28,6 +28,10 @@
     padding: govuk-spacing(5) govuk-spacing(2);
   }
 
+  &__form {
+    padding: govuk-spacing(5) govuk-spacing(2);
+  }
+
   textarea {
     margin-bottom: govuk-spacing(3);
   }
@@ -59,6 +63,28 @@
       display: grid;
       grid-template-columns: 1fr;
       gap: 20px;
+    }
+  }
+  // If javascript is disabled then hide the controls that need Javascript
+  &:not(.footer-feedback--js) {
+    .footer-feedback__prompt,
+    .footer-feedback__cancel {
+      display: none;
+    }
+  }
+
+  // If javascript is enabled then hide the form until Give Feedback has been clicked
+  &--js .footer-feedback__form {
+    display: none;
+  }
+
+  &--js.footer-feedback--open {
+    .footer-feedback__form {
+      display: block;
+    }
+
+    .footer-feedback__prompt {
+      display: none;
     }
   }
 }

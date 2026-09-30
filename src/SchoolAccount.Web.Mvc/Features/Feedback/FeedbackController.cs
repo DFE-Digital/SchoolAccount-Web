@@ -12,7 +12,7 @@ public class FeedbackController(
 {
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Submit(string feedbackMessage)
+    public async Task<IActionResult> Submit(string feedbackMessage, string? returnUrl)
     {
         await feedbackQueryHandler.Handle(
             new FeedbackCommand
@@ -26,24 +26,21 @@ public class FeedbackController(
             CancellationToken.None
         );
 
-        var model = new FeedbackViewModel { State = FeedbackState.Submitted };
+        if (Request.Headers.XRequestedWith == "XMLHttpRequest")
+        {
+            return PartialView(
+                "~/Features/Feedback/_Feedback.cshtml",
+                new FeedbackViewModel { State = FeedbackState.Submitted }
+            );
+        }
 
-        return PartialView("~/Features/Feedback/_Feedback.cshtml", model);
-    }
+        TempData["FeedbackSubmitted"] = true;
 
-    [HttpGet]
-    public IActionResult Open()
-    {
-        var model = new FeedbackViewModel { State = FeedbackState.Responding };
+        if (!Url.IsLocalUrl(returnUrl))
+        {
+            returnUrl = "/";
+        }
 
-        return PartialView("~/Features/Feedback/_Feedback.cshtml", model);
-    }
-
-    [HttpGet]
-    public IActionResult Cancel()
-    {
-        var model = new FeedbackViewModel { State = FeedbackState.Initial };
-
-        return PartialView("~/Features/Feedback/_Feedback.cshtml", model);
+        return LocalRedirect(returnUrl + "#feedback-submitted");
     }
 }

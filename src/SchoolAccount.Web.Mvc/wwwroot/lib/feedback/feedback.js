@@ -1,44 +1,37 @@
-async function replaceFeedback(url, options = {}) {
-    const feedback = document.querySelector("#page-feedback");
+(function () {
+    const section = document.getElementById('page-feedback');
+    if (!section) return;
 
-    if (!feedback) {
-        return;
-    }
+    section.classList.add('footer-feedback--js');
 
-    const response = await fetch(url, {
-        ...options,
-        headers: {
-            "X-Requested-With": "XMLHttpRequest",
-            ...(options.headers || {})
+    section.addEventListener('click', (e) => {
+        const opening = e.target.closest('.footer-feedback__primary');
+        const cancelling = e.target.closest('.footer-feedback__cancel');
+        if (!opening && !cancelling) return;
+
+        section.classList.toggle('footer-feedback--open', !!opening);
+        const button = section.querySelector('.footer-feedback__primary');
+        button.setAttribute('aria-expanded', String(!!opening));
+        (opening ? section.querySelector('#feedbackMessage') : button).focus();
+    });
+
+    section.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const form = e.target;
+
+        try {
+            const response = await fetch(form.action, {
+                method: 'POST',
+                body: new FormData(form),
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            });
+            if (!response.ok) throw new Error(response.statusText);
+
+            const doc = new DOMParser().parseFromString(await response.text(), 'text/html');
+            section.replaceWith(doc.getElementById('page-feedback'));
+            document.getElementById('feedback-thanks')?.focus();
+        } catch {
+            form.submit();
         }
     });
-
-    if (!response.ok) {
-        throw new Error("Feedback request failed.");
-    }
-
-    const html = await response.text();
-
-    feedback.outerHTML = html;
-}
-
-document.addEventListener("click", async (event) => {
-    const link = event.target.closest("#open, #cancel");
-    if (!link) return;
-
-    event.preventDefault();
-    await replaceFeedback(link.href);
-});
-
-document.addEventListener("submit", async (event) => {
-    const form = event.target.closest("#tell-us-form");
-    if (!form) return;
-
-    event.preventDefault();
-    form.querySelector('button[type="submit"]').disabled = true;
-
-    await replaceFeedback(form.action, {
-        method: "POST",
-        body: new FormData(form)
-    });
-});
+})();

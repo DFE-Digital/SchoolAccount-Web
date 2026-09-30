@@ -1,11 +1,8 @@
-using Microsoft.AspNetCore.Mvc;
-
 namespace SchoolAccount.Web.Mvc.Features.Feedback;
 
 public enum FeedbackState
 {
     Initial,
-    Responding,
     Submitted,
 }
 
