@@ -18,10 +18,8 @@ public class FeedbackController(
             new FeedbackCommand
             {
                 Message = feedbackMessage,
-                Ukprn = userContext.Organisation?.Ukprn ?? "",
-                Laestab =
-                    userContext.Organisation?.LocalAuthority?.Code
-                    + userContext.Organisation?.EstablishmentNumber,
+                Ukprn = userContext.Organisation?.Ukprn,
+                OrganisationId = userContext.Organisation?.Id ?? string.Empty,
             },
             CancellationToken.None
         );

@@ -8,7 +8,7 @@ namespace SchoolAccount.Infrastructure.Clients.Azure;
 
 public class AzureTableClient(TableClient tableClient) : IAzureTableClient
 {
-    public async Task<Result> SendFeedback(string message, string ukprn, string? laestab)
+    public async Task<Result> SendFeedback(string message, string? ukprn, string organisationId)
     {
         try
         {
@@ -17,9 +17,9 @@ public class AzureTableClient(TableClient tableClient) : IAzureTableClient
             var now = DateTime.UtcNow;
             var feedback = new FeedbackModel
             {
-                PartitionKey = ukprn,
+                PartitionKey = organisationId,
                 RowKey = $"{DateTime.MaxValue.Ticks - now.Ticks:D19}_{Guid.NewGuid():N}",
-                Laestab = laestab,
+                Ukprn = ukprn,
                 Message = message,
                 Timestamp = now,
             };
@@ -41,7 +41,7 @@ public class AzureTableClient(TableClient tableClient) : IAzureTableClient
 public class FeedbackModel : ITableEntity
 {
     public string Message { get; init; }
-    public string? Laestab { get; init; }
+    public string? Ukprn { get; init; }
     public string PartitionKey { get; set; }
     public string RowKey { get; set; }
     public DateTimeOffset? Timestamp { get; set; }

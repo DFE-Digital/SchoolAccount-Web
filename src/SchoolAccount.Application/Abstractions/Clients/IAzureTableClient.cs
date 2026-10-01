@@ -5,5 +5,5 @@ namespace SchoolAccount.Application.Abstractions.Clients;
 
 public interface IAzureTableClient
 {
-    Task<Result> SendFeedback(string message, string ukprn, string? laestab);
+    Task<Result> SendFeedback(string message, string? ukprn, string organisationId);
 }

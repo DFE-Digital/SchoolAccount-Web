@@ -19,7 +19,7 @@ public class FeedbackHandlerTests
         {
             Message = "test-feedback",
             Ukprn = "test-ukprn",
-            Laestab = "test-laestab",
+            OrganisationId = "test-id",
         };
         var handler = new FeedbackHandler(_azureTableClient);
 
@@ -29,7 +29,7 @@ public class FeedbackHandlerTests
         // Assert
         await _azureTableClient
             .Received(1)
-            .SendFeedback(command.Message, command.Ukprn, command.Laestab);
+            .SendFeedback(command.Message, command.Ukprn, command.OrganisationId);
     }
 
     [Fact]
@@ -40,7 +40,7 @@ public class FeedbackHandlerTests
         {
             Message = "test-feedback",
             Ukprn = "test-ukprn",
-            Laestab = "test-laestab",
+            OrganisationId = "test-id",
         };
         _azureTableClient
             .SendFeedback(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
