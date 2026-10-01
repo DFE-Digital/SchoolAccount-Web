@@ -1,21 +1,20 @@
-@using SchoolAccount.Web.Mvc.Features.Feedback
 @model SchoolAccount.Web.Mvc.Features.Feedback.FeedbackViewModel
 
 <section id="page-feedback" class="footer-feedback" aria-label="Page feedback">
     <div class="govuk-width-container">
-        @switch (Model.State)
+        @if (TempData["FeedbackSubmitted"] is null)
         {
-            case FeedbackState.Initial:
-                <div class="footer-feedback__row footer-feedback__prompt">
-                    <h2 class="govuk-heading-s govuk-!-margin-bottom-0">
-                        Give feedback on this page or report a problem
-                    </h2>
-                    <button type="button" class="govuk-button footer-feedback__primary"
-                            aria-expanded="false" aria-controls="tell-us-form">
-                        Give feedback
-                    </button>
-                </div>
+            <div id="feedback-initial" class="footer-feedback__row">
+                <h2 class="govuk-heading-s govuk-!-margin-bottom-0">
+                    Give feedback on this page or report a problem
+                </h2>
+                <button type="button" id="open-feedback" class="govuk-button footer-feedback__primary"
+                        aria-expanded="false" aria-controls="tell-us-form">
+                    Give feedback
+                </button>
+            </div>
 
+            <div id="feedback-form" class="footer-feedback__row footer-feedback__hidden">
                 <form id="tell-us-form" class="footer-feedback__form"
                       asp-controller="Feedback" asp-action="Submit" method="post" novalidate>
                     <input type="hidden" name="returnUrl"
@@ -30,26 +29,26 @@
                             Tell us what you think or describe the problem
                         </div>
                         <textarea class="govuk-textarea" id="feedbackMessage" name="feedbackMessage" rows="5"
-                                  aria-describedby="what-do-you-want-to-tell-us-hint"></textarea>
+                          aria-describedby="what-do-you-want-to-tell-us-hint"></textarea>
                     </div>
                     <div class="govuk-button-group">
                         <button type="submit" class="govuk-button footer-feedback__send">
                             Send feedback
                         </button>
-                        <button type="button" class="govuk-button govuk-button--secondary footer-feedback__cancel">
+                        <button id="cancel-feedback" type="button" class="govuk-button govuk-button--secondary footer-feedback__cancel">
                             Cancel
                         </button>
                     </div>
                 </form>
-                break;
-
-            case FeedbackState.Submitted:
-                <div class="footer-feedback__row footer-feedback__row--submitted">
-                    <h2 id="feedback-thanks" class="govuk-heading-s govuk-!-margin-bottom-0" tabindex="-1">
-                        Thank you for your feedback
-                    </h2>
-                </div>
-                break;
+            </div>
+        }
+        else
+        {
+            <div class="footer-feedback__row footer-feedback__row--submitted">
+                <h2 id="feedback-thanks" class="govuk-heading-s govuk-!-margin-bottom-0">
+                    Thank you for your feedback
+                </h2>
+            </div>
         }
     </div>
 </section>

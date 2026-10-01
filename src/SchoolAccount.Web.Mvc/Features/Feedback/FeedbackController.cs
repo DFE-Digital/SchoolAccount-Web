@@ -26,14 +26,6 @@ public class FeedbackController(
             CancellationToken.None
         );
 
-        if (Request.Headers.XRequestedWith == "XMLHttpRequest")
-        {
-            return PartialView(
-                "~/Features/Feedback/_Feedback.cshtml",
-                new FeedbackViewModel { State = FeedbackState.Submitted }
-            );
-        }
-
         TempData["FeedbackSubmitted"] = true;
 
         if (!Url.IsLocalUrl(returnUrl))
@@ -41,6 +33,6 @@ public class FeedbackController(
             returnUrl = "/";
         }
 
-        return LocalRedirect(returnUrl + "#feedback-submitted");
+        return LocalRedirect(returnUrl + "#feedback-thanks");
     }
 }

@@ -1,37 +1,24 @@
-(function () {
-    const section = document.getElementById('page-feedback');
-    if (!section) return;
+const openButton = document.getElementById('open-feedback');
 
-    section.classList.add('footer-feedback--js');
+openButton.addEventListener('click', () => {
+    const feedbackForm = document.getElementById('feedback-form');
+    const feedbackInitial = document.getElementById('feedback-initial');
+    
+    feedbackForm.classList.toggle('footer-feedback__hidden', false);
+    feedbackForm.classList.add('footer-feedback__row--submitted');
+    
+    feedbackInitial.classList.add('footer-feedback__hidden');
+})
 
-    section.addEventListener('click', (e) => {
-        const opening = e.target.closest('.footer-feedback__primary');
-        const cancelling = e.target.closest('.footer-feedback__cancel');
-        if (!opening && !cancelling) return;
+const cancelButton = document.getElementById('cancel-feedback');
 
-        section.classList.toggle('footer-feedback--open', !!opening);
-        const button = section.querySelector('.footer-feedback__primary');
-        button.setAttribute('aria-expanded', String(!!opening));
-        (opening ? section.querySelector('#feedbackMessage') : button).focus();
-    });
+cancelButton.addEventListener('click', () => {
+    const feedbackForm = document.getElementById('feedback-form');
+    const feedbackInitial = document.getElementById('feedback-initial');
 
-    section.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const form = e.target;
+    feedbackForm.classList.toggle('footer-feedback__hidden', true);
+    feedbackForm.classList.remove('footer-feedback__row--submitted');
 
-        try {
-            const response = await fetch(form.action, {
-                method: 'POST',
-                body: new FormData(form),
-                headers: { 'X-Requested-With': 'XMLHttpRequest' },
-            });
-            if (!response.ok) throw new Error(response.statusText);
+    feedbackInitial.classList.remove('footer-feedback__hidden');
+})
 
-            const doc = new DOMParser().parseFromString(await response.text(), 'text/html');
-            section.replaceWith(doc.getElementById('page-feedback'));
-            document.getElementById('feedback-thanks')?.focus();
-        } catch {
-            form.submit();
-        }
-    });
-})();
