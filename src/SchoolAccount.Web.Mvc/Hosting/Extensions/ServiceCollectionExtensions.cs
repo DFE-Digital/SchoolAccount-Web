@@ -1,6 +1,7 @@
 using Azure.Identity;
 using Azure.Monitor.OpenTelemetry.AspNetCore;
 using Microsoft.AspNetCore.DataProtection;
+using OpenTelemetry.Logs;
 using OpenTelemetry.Resources;
 using SchoolAccount.Web.Mvc.Hosting.Models;
 
@@ -9,37 +10,60 @@ namespace SchoolAccount.Web.Mvc.Hosting.Extensions;
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Sets up OpenTelemetry, exporting traces, metrics and logs to Azure Monitor through its
-    /// distro. Logs arrive via Serilog, which forwards its events to the OpenTelemetry logger provider
-    /// registered here (see <see cref="HostBuilderExtensions.UseConfiguredSerilog"/>).
+    /// Sets up OpenTelemetry. Traces, metrics and logs go to Azure Monitor through its distro when
+    /// a connection string is configured, and logs also go to an OTLP endpoint when one is, which
+    /// is how they reach Rider's OpenTelemetry tool window locally. Logs arrive via Serilog, which
+    /// forwards its events to the OpenTelemetry logger provider registered here (see
+    /// <see cref="HostBuilderExtensions.UseConfiguredSerilog"/>).
     /// </summary>
     /// <remarks>
-    /// Does nothing when no connection string is configured, because the distro throws on
-    /// startup without one. That is what local development and the integration tests run on.
-    /// Outside Container Apps there is no replica name, so the role instance falls back to a
-    /// generated id.
+    /// Does nothing when neither is configured, because the distro throws on startup without a
+    /// connection string. Only logs are sent over OTLP, as there is no trace or metric
+    /// instrumentation without the distro. Outside Container Apps there is no replica name, so
+    /// the role instance falls back to a generated id.
+    /// <para>
+    /// Leave the OTLP protocol at its default of gRPC, which is what Rider's receiver speaks. With
+    /// <c>OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf</c> every log record was exported twice while
+    /// an <c>IHttpClientFactory</c> was registered, as it is for the API clients.
+    /// </para>
     /// </remarks>
     public static IServiceCollection AddConfiguredOpenTelemetry(
         this IServiceCollection services,
         IConfiguration configuration
     )
     {
-        if (!AzureMonitorSettings.IsConfigured(configuration))
+        var useAzureMonitor = AzureMonitorSettings.IsConfigured(configuration);
+        var useOtlp = OpenTelemetrySettings.IsOtlpConfigured(configuration);
+
+        if (!useAzureMonitor && !useOtlp)
         {
             return services;
         }
 
         var replicaName = configuration[OpenTelemetrySettings.ReplicaNameEnvironmentVariable];
 
-        services
+        var builder = services
             .AddOpenTelemetry()
             .ConfigureResource(resource =>
                 resource.AddService(
                     OpenTelemetrySettings.ServiceName,
                     serviceInstanceId: string.IsNullOrWhiteSpace(replicaName) ? null : replicaName
                 )
-            )
-            .UseAzureMonitor();
+            );
+
+        if (useAzureMonitor)
+        {
+            builder.UseAzureMonitor();
+        }
+
+        if (useOtlp)
+        {
+            // Without this the log body is the unrendered template, e.g. "Now listening on: {address}"
+            builder.WithLogging(
+                logging => logging.AddOtlpExporter(),
+                options => options.IncludeFormattedMessage = true
+            );
+        }
 
         return services;
     }

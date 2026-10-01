@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using OpenTelemetry;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Trace;
@@ -12,6 +13,8 @@ namespace SchoolAccount.Web.Mvc.UnitTests.Extensions.ServiceCollection;
 
 public class ServiceCollectionAddConfiguredOpenTelemetryExtensionTests
 {
+    private const string OtlpEndpoint = "http://localhost:4317";
+
     private const string ConnectionString =
         "InstrumentationKey=00000000-0000-0000-0000-000000000000;IngestionEndpoint=https://example.in.applicationinsights.azure.com/";
 
@@ -83,6 +86,97 @@ public class ServiceCollectionAddConfiguredOpenTelemetryExtensionTests
         Guid.TryParse((string?)serviceInstance, out _).ShouldBeTrue();
     }
 
+    [Fact]
+    public void Exports_logs_only_when_an_otlp_endpoint_is_configured()
+    {
+        // Arrange
+        var services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
+
+        using var configuration = BuildConfiguration(
+            (OtlpEndpointEnvironmentVariable, OtlpEndpoint)
+        );
+
+        // Act
+        services.AddConfiguredOpenTelemetry(configuration);
+
+        // Assert - there is no trace or metric instrumentation without the distro
+        services.ShouldContain(descriptor => descriptor.ServiceType == typeof(LoggerProvider));
+        services.ShouldNotContain(descriptor => descriptor.ServiceType == typeof(TracerProvider));
+    }
+
+    [Fact]
+    public void Reports_the_service_name_when_only_an_otlp_endpoint_is_configured()
+    {
+        // Arrange
+        using var configuration = BuildConfiguration(
+            (OtlpEndpointEnvironmentVariable, OtlpEndpoint)
+        );
+
+        // Act
+        var serviceName = GetResourceAttribute(configuration, "service.name");
+
+        // Assert
+        serviceName.ShouldBe(ServiceName);
+    }
+
+    [Fact]
+    public void Includes_the_rendered_message_in_logs_sent_over_otlp()
+    {
+        // Arrange
+        var services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
+
+        using var configuration = BuildConfiguration(
+            (OtlpEndpointEnvironmentVariable, OtlpEndpoint)
+        );
+
+        services.AddSingleton<IConfiguration>(configuration);
+        services.AddLogging();
+        services.AddConfiguredOpenTelemetry(configuration);
+
+        using var provider = services.BuildServiceProvider();
+
+        // Act
+        var options = provider.GetRequiredService<IOptions<OpenTelemetryLoggerOptions>>().Value;
+
+        // Assert - otherwise the body is the template, e.g. "Now listening on: {address}"
+        options.IncludeFormattedMessage.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void Registers_a_single_logger_provider_when_both_destinations_are_configured()
+    {
+        // Arrange
+        var services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
+
+        using var configuration = BuildConfiguration(
+            (ConnectionStringEnvironmentVariable, ConnectionString),
+            (OtlpEndpointEnvironmentVariable, OtlpEndpoint)
+        );
+
+        // Act
+        services.AddConfiguredOpenTelemetry(configuration);
+
+        // Assert - a second one would send every log twice
+        services.Count(descriptor => descriptor.ServiceType == typeof(LoggerProvider)).ShouldBe(1);
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void Leaves_telemetry_alone_when_the_otlp_endpoint_is_blank(string endpoint)
+    {
+        // Arrange
+        var services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
+
+        using var configuration = BuildConfiguration((OtlpEndpointEnvironmentVariable, endpoint));
+
+        // Act
+        services.AddConfiguredOpenTelemetry(configuration);
+
+        // Assert
+        services.ShouldBeEmpty();
+    }
+
     [Theory]
     [InlineData(null)]
     [InlineData("")]
@@ -133,7 +227,7 @@ public class ServiceCollectionAddConfiguredOpenTelemetryExtensionTests
         using var provider = services.BuildServiceProvider();
 
         return provider
-            .GetRequiredService<TracerProvider>()
+            .GetRequiredService<LoggerProvider>()
             .GetResource()
             .Attributes.Single(attribute => attribute.Key == key)
             .Value;
