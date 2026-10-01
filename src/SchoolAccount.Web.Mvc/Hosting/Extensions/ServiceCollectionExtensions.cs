@@ -1,6 +1,7 @@
 using Azure.Identity;
 using Azure.Monitor.OpenTelemetry.AspNetCore;
 using Microsoft.AspNetCore.DataProtection;
+using OpenTelemetry.Resources;
 using SchoolAccount.Web.Mvc.Hosting.Models;
 
 namespace SchoolAccount.Web.Mvc.Hosting.Extensions;
@@ -26,7 +27,10 @@ public static class ServiceCollectionExtensions
             return services;
         }
 
-        services.AddOpenTelemetry().UseAzureMonitor();
+        services
+            .AddOpenTelemetry()
+            .ConfigureResource(resource => resource.AddService(AzureMonitorSettings.ServiceName))
+            .UseAzureMonitor();
 
         return services;
     }

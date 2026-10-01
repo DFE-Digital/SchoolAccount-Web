@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using OpenTelemetry;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Trace;
 using SchoolAccount.Web.Mvc.Hosting.Extensions;
@@ -31,6 +32,19 @@ public class ServiceCollectionAddConfiguredAzureMonitorExtensionTests
         services.ShouldContain(descriptor => descriptor.ServiceType == typeof(LoggerProvider));
     }
 
+    [Fact]
+    public void Reports_telemetry_under_the_service_name()
+    {
+        // Arrange
+        using var configuration = BuildConfiguration((ConnectionStringKey, ConnectionString));
+
+        // Act
+        var serviceName = GetResourceAttribute(configuration, "service.name");
+
+        // Assert
+        serviceName.ShouldBe(ServiceName);
+    }
+
     [Theory]
     [InlineData(null)]
     [InlineData("")]
@@ -51,6 +65,23 @@ public class ServiceCollectionAddConfiguredAzureMonitorExtensionTests
 
         // Assert - nothing registered, because the distro throws on startup without one
         services.ShouldBeEmpty();
+    }
+
+    private static object? GetResourceAttribute(IConfiguration configuration, string key)
+    {
+        var services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
+
+        services.AddSingleton<IConfiguration>(configuration);
+        services.AddLogging();
+        services.AddConfiguredAzureMonitor(configuration);
+
+        using var provider = services.BuildServiceProvider();
+
+        return provider
+            .GetRequiredService<TracerProvider>()
+            .GetResource()
+            .Attributes.Single(attribute => attribute.Key == key)
+            .Value;
     }
 
     private static ConfigurationManager BuildConfiguration(
