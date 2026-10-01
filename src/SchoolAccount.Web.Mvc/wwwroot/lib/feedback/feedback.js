@@ -1,24 +1,38 @@
-const openButton = document.getElementById('open-feedback');
-
-openButton.addEventListener('click', () => {
+function showForm () {
     const feedbackForm = document.getElementById('feedback-form');
     const feedbackInitial = document.getElementById('feedback-initial');
-    
+
     feedbackForm.classList.toggle('footer-feedback__hidden', false);
     feedbackForm.classList.add('footer-feedback__row--submitted');
-    
+    feedbackForm.setAttribute('aria-hidden', 'false');
+
     feedbackInitial.classList.add('footer-feedback__hidden');
-})
+    feedbackInitial.setAttribute('aria-hidden', 'true');
+}
 
-const cancelButton = document.getElementById('cancel-feedback');
-
-cancelButton.addEventListener('click', () => {
+function showInitial () {
     const feedbackForm = document.getElementById('feedback-form');
     const feedbackInitial = document.getElementById('feedback-initial');
 
     feedbackForm.classList.toggle('footer-feedback__hidden', true);
     feedbackForm.classList.remove('footer-feedback__row--submitted');
+    feedbackForm.setAttribute('aria-hidden', 'true');
 
     feedbackInitial.classList.remove('footer-feedback__hidden');
+    feedbackInitial.setAttribute('aria-hidden', 'false');
+}
+
+showInitial();
+
+const openButton = document.getElementById('open-feedback');
+
+openButton.addEventListener('click', () => {
+    showForm();
+})
+
+const cancelButton = document.getElementById('cancel-feedback');
+
+cancelButton.addEventListener('click', () => {
+    showInitial();
 })
 

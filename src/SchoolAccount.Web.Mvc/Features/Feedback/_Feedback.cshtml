@@ -4,7 +4,7 @@
     <div class="govuk-width-container">
         @if (TempData["FeedbackSubmitted"] is null)
         {
-            <div id="feedback-initial" class="footer-feedback__row">
+            <div id="feedback-initial" class="footer-feedback__row footer-feedback__hidden" aria-hidden="true">
                 <h2 class="govuk-heading-s govuk-!-margin-bottom-0">
                     Give feedback on this page or report a problem
                 </h2>
@@ -14,7 +14,7 @@
                 </button>
             </div>
 
-            <div id="feedback-form" class="footer-feedback__row footer-feedback__hidden">
+            <div id="feedback-form" class="footer-feedback__row footer-feedback__row--submitted" aria-hidden="false">
                 <form id="tell-us-form" class="footer-feedback__form"
                       asp-controller="Feedback" asp-action="Submit" method="post" novalidate>
                     <input type="hidden" name="returnUrl"
