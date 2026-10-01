@@ -10,7 +10,7 @@ public static class HostBuilderExtensions
     /// </summary>
     /// <remarks>
     /// Also writes to the other registered logger providers, which is how events reach the
-    /// OpenTelemetry provider added by <c>AddConfiguredAzureMonitor</c>. Without it Serilog
+    /// OpenTelemetry provider added by <c>AddConfiguredOpenTelemetry</c>. Without it Serilog
     /// replaces the providers and nothing is exported.
     /// </remarks>
     public static IHostBuilder UseConfiguredSerilog(this IHostBuilder host) =>

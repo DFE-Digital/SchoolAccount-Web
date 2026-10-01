@@ -9,8 +9,8 @@ namespace SchoolAccount.Web.Mvc.Hosting.Extensions;
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Exports traces, metrics and logs to Azure Monitor through the OpenTelemetry distro. Logs
-    /// arrive via Serilog, which forwards its events to the OpenTelemetry logger provider
+    /// Sets up OpenTelemetry, exporting traces, metrics and logs to Azure Monitor through its
+    /// distro. Logs arrive via Serilog, which forwards its events to the OpenTelemetry logger provider
     /// registered here (see <see cref="HostBuilderExtensions.UseConfiguredSerilog"/>).
     /// </summary>
     /// <remarks>
@@ -19,7 +19,7 @@ public static class ServiceCollectionExtensions
     /// Outside Container Apps there is no replica name, so the role instance falls back to a
     /// generated id.
     /// </remarks>
-    public static IServiceCollection AddConfiguredAzureMonitor(
+    public static IServiceCollection AddConfiguredOpenTelemetry(
         this IServiceCollection services,
         IConfiguration configuration
     )
@@ -29,13 +29,13 @@ public static class ServiceCollectionExtensions
             return services;
         }
 
-        var replicaName = configuration[AzureMonitorSettings.ReplicaNameEnvironmentVariable];
+        var replicaName = configuration[OpenTelemetrySettings.ReplicaNameEnvironmentVariable];
 
         services
             .AddOpenTelemetry()
             .ConfigureResource(resource =>
                 resource.AddService(
-                    AzureMonitorSettings.ServiceName,
+                    OpenTelemetrySettings.ServiceName,
                     serviceInstanceId: string.IsNullOrWhiteSpace(replicaName) ? null : replicaName
                 )
             )

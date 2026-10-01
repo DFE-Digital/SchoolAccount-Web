@@ -6,10 +6,11 @@ using OpenTelemetry.Trace;
 using SchoolAccount.Web.Mvc.Hosting.Extensions;
 using Shouldly;
 using static SchoolAccount.Web.Mvc.Hosting.Models.AzureMonitorSettings;
+using static SchoolAccount.Web.Mvc.Hosting.Models.OpenTelemetrySettings;
 
 namespace SchoolAccount.Web.Mvc.UnitTests.Extensions.ServiceCollection;
 
-public class ServiceCollectionAddConfiguredAzureMonitorExtensionTests
+public class ServiceCollectionAddConfiguredOpenTelemetryExtensionTests
 {
     private const string ConnectionString =
         "InstrumentationKey=00000000-0000-0000-0000-000000000000;IngestionEndpoint=https://example.in.applicationinsights.azure.com/";
@@ -25,7 +26,7 @@ public class ServiceCollectionAddConfiguredAzureMonitorExtensionTests
         );
 
         // Act
-        services.AddConfiguredAzureMonitor(configuration);
+        services.AddConfiguredOpenTelemetry(configuration);
 
         // Assert
         services.ShouldContain(descriptor => descriptor.ServiceType == typeof(TracerProvider));
@@ -98,7 +99,7 @@ public class ServiceCollectionAddConfiguredAzureMonitorExtensionTests
         );
 
         // Act
-        services.AddConfiguredAzureMonitor(configuration);
+        services.AddConfiguredOpenTelemetry(configuration);
 
         // Assert - nothing registered, because the distro throws on startup without one
         services.ShouldBeEmpty();
@@ -115,7 +116,7 @@ public class ServiceCollectionAddConfiguredAzureMonitorExtensionTests
         );
 
         // Act
-        services.AddConfiguredAzureMonitor(configuration);
+        services.AddConfiguredOpenTelemetry(configuration);
 
         // Assert - only the environment variable turns the distro on
         services.ShouldBeEmpty();
@@ -127,7 +128,7 @@ public class ServiceCollectionAddConfiguredAzureMonitorExtensionTests
 
         services.AddSingleton(configuration);
         services.AddLogging();
-        services.AddConfiguredAzureMonitor(configuration);
+        services.AddConfiguredOpenTelemetry(configuration);
 
         using var provider = services.BuildServiceProvider();
 
