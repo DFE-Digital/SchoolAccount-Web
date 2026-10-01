@@ -25,15 +25,10 @@ public static class AzureMonitorSettings
         "APPLICATIONINSIGHTS_CONNECTION_STRING";
 
     /// <summary>
-    /// The configuration key the distro binds its own options from, so the connection string can
-    /// also be set in appsettings, user secrets or Azure App Configuration.
-    /// </summary>
-    public const string ConnectionStringKey = "AzureMonitor:ConnectionString";
-
-    /// <summary>
-    /// True when either of the places the distro reads the connection string from has a value.
+    /// True when the connection string environment variable has a value. Only the environment
+    /// variable is checked, so a connection string set under <c>AzureMonitor:ConnectionString</c>
+    /// on its own does not turn the distro on.
     /// </summary>
     public static bool IsConfigured(IConfiguration configuration) =>
-        !string.IsNullOrWhiteSpace(configuration[ConnectionStringEnvironmentVariable])
-        || !string.IsNullOrWhiteSpace(configuration[ConnectionStringKey]);
+        !string.IsNullOrWhiteSpace(configuration[ConnectionStringEnvironmentVariable]);
 }

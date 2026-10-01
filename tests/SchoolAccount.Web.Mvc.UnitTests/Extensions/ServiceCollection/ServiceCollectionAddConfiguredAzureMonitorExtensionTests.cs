@@ -14,15 +14,15 @@ public class ServiceCollectionAddConfiguredAzureMonitorExtensionTests
     private const string ConnectionString =
         "InstrumentationKey=00000000-0000-0000-0000-000000000000;IngestionEndpoint=https://example.in.applicationinsights.azure.com/";
 
-    [Theory]
-    [InlineData(ConnectionStringEnvironmentVariable)]
-    [InlineData(ConnectionStringKey)]
-    public void Registers_the_distro_when_a_connection_string_is_configured(string key)
+    [Fact]
+    public void Registers_the_distro_when_a_connection_string_is_configured()
     {
         // Arrange
         var services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
 
-        using var configuration = BuildConfiguration((key, ConnectionString));
+        using var configuration = BuildConfiguration(
+            (ConnectionStringEnvironmentVariable, ConnectionString)
+        );
 
         // Act
         services.AddConfiguredAzureMonitor(configuration);
@@ -36,7 +36,9 @@ public class ServiceCollectionAddConfiguredAzureMonitorExtensionTests
     public void Reports_telemetry_under_the_service_name()
     {
         // Arrange
-        using var configuration = BuildConfiguration((ConnectionStringKey, ConnectionString));
+        using var configuration = BuildConfiguration(
+            (ConnectionStringEnvironmentVariable, ConnectionString)
+        );
 
         // Act
         var serviceName = GetResourceAttribute(configuration, "service.name");
@@ -50,7 +52,7 @@ public class ServiceCollectionAddConfiguredAzureMonitorExtensionTests
     {
         // Arrange
         using var configuration = BuildConfiguration(
-            (ConnectionStringKey, ConnectionString),
+            (ConnectionStringEnvironmentVariable, ConnectionString),
             (ReplicaNameEnvironmentVariable, "schoolaccount-web--0000001-abcde")
         );
 
@@ -69,7 +71,7 @@ public class ServiceCollectionAddConfiguredAzureMonitorExtensionTests
     {
         // Arrange
         using var configuration = BuildConfiguration(
-            (ConnectionStringKey, ConnectionString),
+            (ConnectionStringEnvironmentVariable, ConnectionString),
             (ReplicaNameEnvironmentVariable, replicaName)
         );
 
@@ -99,6 +101,23 @@ public class ServiceCollectionAddConfiguredAzureMonitorExtensionTests
         services.AddConfiguredAzureMonitor(configuration);
 
         // Assert - nothing registered, because the distro throws on startup without one
+        services.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void Leaves_telemetry_alone_when_only_the_configuration_section_has_a_connection_string()
+    {
+        // Arrange
+        var services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
+
+        using var configuration = BuildConfiguration(
+            ("AzureMonitor:ConnectionString", ConnectionString)
+        );
+
+        // Act
+        services.AddConfiguredAzureMonitor(configuration);
+
+        // Assert - only the environment variable turns the distro on
         services.ShouldBeEmpty();
     }
 
