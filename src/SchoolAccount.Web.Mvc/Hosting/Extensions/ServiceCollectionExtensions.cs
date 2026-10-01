@@ -8,7 +8,9 @@ namespace SchoolAccount.Web.Mvc.Hosting.Extensions;
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Exports traces, metrics and logs to Azure Monitor through the OpenTelemetry distro.
+    /// Exports traces, metrics and logs to Azure Monitor through the OpenTelemetry distro. Logs
+    /// arrive via Serilog, which forwards its events to the OpenTelemetry logger provider
+    /// registered here (see <see cref="HostBuilderExtensions.UseConfiguredSerilog"/>).
     /// </summary>
     /// <remarks>
     /// Does nothing when no connection string is configured, because the distro throws on
