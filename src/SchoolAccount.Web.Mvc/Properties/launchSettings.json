@@ -8,7 +8,8 @@
       "applicationUrl": "https://127.0.0.1:7041",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "OTEL_SERVICE_NAME": "schoolaccount-web"
+        "OTEL_SERVICE_NAME": "schoolaccount-web",
+        "OTEL_RESOURCE_ATTRIBUTES": "service.instance.id=local"
       }
     }
   }
