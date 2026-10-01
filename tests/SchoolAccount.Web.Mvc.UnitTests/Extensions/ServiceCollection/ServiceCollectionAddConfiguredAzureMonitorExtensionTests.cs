@@ -45,6 +45,41 @@ public class ServiceCollectionAddConfiguredAzureMonitorExtensionTests
         serviceName.ShouldBe(ServiceName);
     }
 
+    [Fact]
+    public void Reports_the_replica_name_as_the_service_instance()
+    {
+        // Arrange
+        using var configuration = BuildConfiguration(
+            (ConnectionStringKey, ConnectionString),
+            (ReplicaNameEnvironmentVariable, "schoolaccount-web--0000001-abcde")
+        );
+
+        // Act
+        var serviceInstance = GetResourceAttribute(configuration, "service.instance.id");
+
+        // Assert
+        serviceInstance.ShouldBe("schoolaccount-web--0000001-abcde");
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void Generates_a_service_instance_when_there_is_no_replica_name(string? replicaName)
+    {
+        // Arrange
+        using var configuration = BuildConfiguration(
+            (ConnectionStringKey, ConnectionString),
+            (ReplicaNameEnvironmentVariable, replicaName)
+        );
+
+        // Act
+        var serviceInstance = GetResourceAttribute(configuration, "service.instance.id");
+
+        // Assert
+        Guid.TryParse((string?)serviceInstance, out _).ShouldBeTrue();
+    }
+
     [Theory]
     [InlineData(null)]
     [InlineData("")]
@@ -71,7 +106,7 @@ public class ServiceCollectionAddConfiguredAzureMonitorExtensionTests
     {
         var services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
 
-        services.AddSingleton<IConfiguration>(configuration);
+        services.AddSingleton(configuration);
         services.AddLogging();
         services.AddConfiguredAzureMonitor(configuration);
 

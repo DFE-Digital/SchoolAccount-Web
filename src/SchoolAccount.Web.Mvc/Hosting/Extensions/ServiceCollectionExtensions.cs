@@ -16,6 +16,8 @@ public static class ServiceCollectionExtensions
     /// <remarks>
     /// Does nothing when no connection string is configured, because the distro throws on
     /// startup without one. That is what local development and the integration tests run on.
+    /// Outside Container Apps there is no replica name, so the role instance falls back to a
+    /// generated id.
     /// </remarks>
     public static IServiceCollection AddConfiguredAzureMonitor(
         this IServiceCollection services,
@@ -27,9 +29,16 @@ public static class ServiceCollectionExtensions
             return services;
         }
 
+        var replicaName = configuration[AzureMonitorSettings.ReplicaNameEnvironmentVariable];
+
         services
             .AddOpenTelemetry()
-            .ConfigureResource(resource => resource.AddService(AzureMonitorSettings.ServiceName))
+            .ConfigureResource(resource =>
+                resource.AddService(
+                    AzureMonitorSettings.ServiceName,
+                    serviceInstanceId: string.IsNullOrWhiteSpace(replicaName) ? null : replicaName
+                )
+            )
             .UseAzureMonitor();
 
         return services;
