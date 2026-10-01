@@ -2,7 +2,6 @@ using Azure.Identity;
 using Azure.Monitor.OpenTelemetry.AspNetCore;
 using Microsoft.AspNetCore.DataProtection;
 using OpenTelemetry.Logs;
-using OpenTelemetry.Resources;
 using SchoolAccount.Web.Mvc.Hosting.Models;
 
 namespace SchoolAccount.Web.Mvc.Hosting.Extensions;
@@ -19,8 +18,13 @@ public static class ServiceCollectionExtensions
     /// <remarks>
     /// Does nothing when neither is configured, because the distro throws on startup without a
     /// connection string. Only logs are sent over OTLP, as there is no trace or metric
-    /// instrumentation without the distro. Outside Container Apps there is no replica name, so
-    /// the role instance falls back to a generated id.
+    /// instrumentation without the distro.
+    /// <para>
+    /// The role name and instance are left to the distro's resource detectors. On Container Apps
+    /// they are the container app name and the replica name, so environments with differently
+    /// named container apps stay apart in Azure Monitor. They are not set here, because anything
+    /// set here is overridden by those detectors or has to override them.
+    /// </para>
     /// <para>
     /// Leave the OTLP protocol at its default of gRPC, which is what Rider's receiver speaks. With
     /// <c>OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf</c> every log record was exported twice while
@@ -40,16 +44,7 @@ public static class ServiceCollectionExtensions
             return services;
         }
 
-        var replicaName = configuration[OpenTelemetrySettings.ReplicaNameEnvironmentVariable];
-
-        var builder = services
-            .AddOpenTelemetry()
-            .ConfigureResource(resource =>
-                resource.AddService(
-                    OpenTelemetrySettings.ServiceName,
-                    serviceInstanceId: string.IsNullOrWhiteSpace(replicaName) ? null : replicaName
-                )
-            );
+        var builder = services.AddOpenTelemetry();
 
         if (useAzureMonitor)
         {

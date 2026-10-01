@@ -37,56 +37,6 @@ public class ServiceCollectionAddConfiguredOpenTelemetryExtensionTests
     }
 
     [Fact]
-    public void Reports_telemetry_under_the_service_name()
-    {
-        // Arrange
-        using var configuration = BuildConfiguration(
-            (ConnectionStringEnvironmentVariable, ConnectionString)
-        );
-
-        // Act
-        var serviceName = GetResourceAttribute(configuration, "service.name");
-
-        // Assert
-        serviceName.ShouldBe(ServiceName);
-    }
-
-    [Fact]
-    public void Reports_the_replica_name_as_the_service_instance()
-    {
-        // Arrange
-        using var configuration = BuildConfiguration(
-            (ConnectionStringEnvironmentVariable, ConnectionString),
-            (ReplicaNameEnvironmentVariable, "schoolaccount-web--0000001-abcde")
-        );
-
-        // Act
-        var serviceInstance = GetResourceAttribute(configuration, "service.instance.id");
-
-        // Assert
-        serviceInstance.ShouldBe("schoolaccount-web--0000001-abcde");
-    }
-
-    [Theory]
-    [InlineData(null)]
-    [InlineData("")]
-    [InlineData("   ")]
-    public void Generates_a_service_instance_when_there_is_no_replica_name(string? replicaName)
-    {
-        // Arrange
-        using var configuration = BuildConfiguration(
-            (ConnectionStringEnvironmentVariable, ConnectionString),
-            (ReplicaNameEnvironmentVariable, replicaName)
-        );
-
-        // Act
-        var serviceInstance = GetResourceAttribute(configuration, "service.instance.id");
-
-        // Assert
-        Guid.TryParse((string?)serviceInstance, out _).ShouldBeTrue();
-    }
-
-    [Fact]
     public void Exports_logs_only_when_an_otlp_endpoint_is_configured()
     {
         // Arrange
@@ -105,18 +55,27 @@ public class ServiceCollectionAddConfiguredOpenTelemetryExtensionTests
     }
 
     [Fact]
-    public void Reports_the_service_name_when_only_an_otlp_endpoint_is_configured()
+    public void Reports_the_container_app_name_as_the_service_name_when_deployed()
     {
-        // Arrange
-        using var configuration = BuildConfiguration(
-            (OtlpEndpointEnvironmentVariable, OtlpEndpoint)
-        );
+        // Arrange - the distro's detector reads this from the environment, as it does when deployed
+        Environment.SetEnvironmentVariable("CONTAINER_APP_NAME", "detected-container-app");
 
-        // Act
-        var serviceName = GetResourceAttribute(configuration, "service.name");
+        try
+        {
+            using var configuration = BuildConfiguration(
+                (ConnectionStringEnvironmentVariable, ConnectionString)
+            );
 
-        // Assert
-        serviceName.ShouldBe(ServiceName);
+            // Act
+            var serviceName = GetResourceAttribute(configuration, "service.name");
+
+            // Assert - nothing here overrides it
+            serviceName.ShouldBe("detected-container-app");
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable("CONTAINER_APP_NAME", null);
+        }
     }
 
     [Fact]
