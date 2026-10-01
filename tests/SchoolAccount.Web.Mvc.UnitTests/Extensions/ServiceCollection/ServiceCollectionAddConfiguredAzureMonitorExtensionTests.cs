@@ -1,0 +1,67 @@
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using OpenTelemetry.Logs;
+using OpenTelemetry.Trace;
+using SchoolAccount.Web.Mvc.Hosting.Extensions;
+using Shouldly;
+using static SchoolAccount.Web.Mvc.Hosting.Models.AzureMonitorSettings;
+
+namespace SchoolAccount.Web.Mvc.UnitTests.Extensions.ServiceCollection;
+
+public class ServiceCollectionAddConfiguredAzureMonitorExtensionTests
+{
+    private const string ConnectionString =
+        "InstrumentationKey=00000000-0000-0000-0000-000000000000;IngestionEndpoint=https://example.in.applicationinsights.azure.com/";
+
+    [Theory]
+    [InlineData(ConnectionStringEnvironmentVariable)]
+    [InlineData(ConnectionStringKey)]
+    public void Registers_the_distro_when_a_connection_string_is_configured(string key)
+    {
+        // Arrange
+        var services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
+
+        using var configuration = BuildConfiguration((key, ConnectionString));
+
+        // Act
+        services.AddConfiguredAzureMonitor(configuration);
+
+        // Assert
+        services.ShouldContain(descriptor => descriptor.ServiceType == typeof(TracerProvider));
+        services.ShouldContain(descriptor => descriptor.ServiceType == typeof(LoggerProvider));
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void Leaves_telemetry_alone_when_no_connection_string_is_configured(
+        string? connectionString
+    )
+    {
+        // Arrange
+        var services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
+
+        using var configuration = BuildConfiguration(
+            (ConnectionStringEnvironmentVariable, connectionString)
+        );
+
+        // Act
+        services.AddConfiguredAzureMonitor(configuration);
+
+        // Assert - nothing registered, because the distro throws on startup without one
+        services.ShouldBeEmpty();
+    }
+
+    private static ConfigurationManager BuildConfiguration(
+        params (string Key, string? Value)[] entries
+    )
+    {
+        var configManager = new ConfigurationManager();
+        configManager.AddInMemoryCollection(
+            entries.ToDictionary(entry => entry.Key, entry => entry.Value)
+        );
+
+        return configManager;
+    }
+}

@@ -1,4 +1,5 @@
 using Azure.Identity;
+using Azure.Monitor.OpenTelemetry.AspNetCore;
 using Microsoft.AspNetCore.DataProtection;
 using SchoolAccount.Web.Mvc.Hosting.Models;
 
@@ -6,6 +7,28 @@ namespace SchoolAccount.Web.Mvc.Hosting.Extensions;
 
 public static class ServiceCollectionExtensions
 {
+    /// <summary>
+    /// Exports traces, metrics and logs to Azure Monitor through the OpenTelemetry distro.
+    /// </summary>
+    /// <remarks>
+    /// Does nothing when no connection string is configured, because the distro throws on
+    /// startup without one. That is what local development and the integration tests run on.
+    /// </remarks>
+    public static IServiceCollection AddConfiguredAzureMonitor(
+        this IServiceCollection services,
+        IConfiguration configuration
+    )
+    {
+        if (!AzureMonitorSettings.IsConfigured(configuration))
+        {
+            return services;
+        }
+
+        services.AddOpenTelemetry().UseAzureMonitor();
+
+        return services;
+    }
+
     /// <summary>
     /// Persists the Data Protection key ring to blob storage, encrypted with a Key Vault key, so
     /// that every instance of the app shares one key ring, and it survives a restart. Without this

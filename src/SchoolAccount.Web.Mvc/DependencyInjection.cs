@@ -18,6 +18,7 @@ public static class DependencyInjection
     )
     {
         services.AddConfiguredDataProtection(configuration);
+        services.AddConfiguredAzureMonitor(configuration);
         services.AddSession();
         services.AddDsiAuthentication(configuration);
         services.AddOrganisationClaimPolicy();
