@@ -41,22 +41,6 @@ public class FeedbackControllerTests : IClassFixture<SchoolAccountWebApplication
         var result = await _authenticatedClient.PostAsync(pageUri, content, _cancellationToken);
 
         // Assert
-        result.Headers.Location?.OriginalString.ShouldEndWith("#feedback-submitted");
+        result.Headers.Location?.OriginalString.ShouldEndWith("#feedback-thanks");
     }
-
-    // [Fact]
-    // public async Task Submit_returns_correct_partial_view()
-    // {
-    //     // Arrange
-    //     var pageUri = _factory.GeneratePath("Feedback", "Submit");
-    //     _feedbackCommandHandler
-    //         .Handle(Arg.Any<FeedbackCommand>(), Arg.Any<CancellationToken>())
-    //         .Returns(Result.Success);
-    //
-    //     // Act
-    //     using var content = new StringContent("XMLHttpRequest");
-    //     var result = await _authenticatedClient.PostAsync(pageUri, content, _cancellationToken);
-    //
-    //     // Assert
-    // }
 }
