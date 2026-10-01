@@ -1,10 +1,7 @@
-using System.Net;
-using System.Net.Http.Headers;
 using NSubstitute;
 using SchoolAccount.Application.Abstractions.Messaging;
 using SchoolAccount.Application.Features.Feedback;
 using SchoolAccount.IntegrationTests.Common;
-using SchoolAccount.IntegrationTests.Common.Pages;
 using SchoolAccount.SharedKernel;
 using Shouldly;
 

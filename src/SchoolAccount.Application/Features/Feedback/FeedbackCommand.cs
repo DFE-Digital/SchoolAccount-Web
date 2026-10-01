@@ -1,6 +1,4 @@
-using Azure;
 using SchoolAccount.Application.Abstractions.Messaging;
-using SchoolAccount.SharedKernel;
 
 namespace SchoolAccount.Application.Features.Feedback;
 

@@ -3,7 +3,6 @@ using Azure.Data.Tables;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using SchoolAccount.Infrastructure.Clients.Azure;
-using SchoolAccount.SharedKernel;
 using Shouldly;
 
 namespace SchoolAccount.Infrastructure.UnitTests.Azure;

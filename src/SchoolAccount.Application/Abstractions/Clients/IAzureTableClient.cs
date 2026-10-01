@@ -1,4 +1,3 @@
-using Azure;
 using SchoolAccount.SharedKernel;
 
 namespace SchoolAccount.Application.Abstractions.Clients;
