@@ -49,7 +49,7 @@ public class ServiceCollectionAddConfiguredOpenTelemetryExtensionTests
         // Act
         services.AddConfiguredOpenTelemetry(configuration);
 
-        // Assert - there is no trace or metric instrumentation without the distro
+        // Assert
         services.ShouldContain(descriptor => descriptor.ServiceType == typeof(LoggerProvider));
         services.ShouldNotContain(descriptor => descriptor.ServiceType == typeof(TracerProvider));
     }
@@ -57,7 +57,7 @@ public class ServiceCollectionAddConfiguredOpenTelemetryExtensionTests
     [Fact]
     public void Reports_the_container_app_name_as_the_service_name_when_deployed()
     {
-        // Arrange - the distro's detector reads this from the environment, as it does when deployed
+        // Arrange
         Environment.SetEnvironmentVariable("CONTAINER_APP_NAME", "detected-container-app");
 
         try
@@ -69,7 +69,7 @@ public class ServiceCollectionAddConfiguredOpenTelemetryExtensionTests
             // Act
             var serviceName = GetResourceAttribute(configuration, "service.name");
 
-            // Assert - nothing here overrides it
+            // Assert
             serviceName.ShouldBe("detected-container-app");
         }
         finally
@@ -97,7 +97,7 @@ public class ServiceCollectionAddConfiguredOpenTelemetryExtensionTests
         // Act
         var options = provider.GetRequiredService<IOptions<OpenTelemetryLoggerOptions>>().Value;
 
-        // Assert - otherwise the body is the template, e.g. "Now listening on: {address}"
+        // Assert
         options.IncludeFormattedMessage.ShouldBeTrue();
     }
 
@@ -115,7 +115,7 @@ public class ServiceCollectionAddConfiguredOpenTelemetryExtensionTests
         // Act
         services.AddConfiguredOpenTelemetry(configuration);
 
-        // Assert - a second one would send every log twice
+        // Assert
         services.Count(descriptor => descriptor.ServiceType == typeof(LoggerProvider)).ShouldBe(1);
     }
 
@@ -154,7 +154,7 @@ public class ServiceCollectionAddConfiguredOpenTelemetryExtensionTests
         // Act
         services.AddConfiguredOpenTelemetry(configuration);
 
-        // Assert - nothing registered, because the distro throws on startup without one
+        // Assert
         services.ShouldBeEmpty();
     }
 
@@ -171,7 +171,7 @@ public class ServiceCollectionAddConfiguredOpenTelemetryExtensionTests
         // Act
         services.AddConfiguredOpenTelemetry(configuration);
 
-        // Assert - only the environment variable turns the distro on
+        // Assert
         services.ShouldBeEmpty();
     }
 
