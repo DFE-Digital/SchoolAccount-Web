@@ -11,7 +11,8 @@ public class FeedbackHandler(IAzureTableClient azureTableClient) : ICommandHandl
         var result = await azureTableClient.SendFeedback(
             command.Message,
             command.Ukprn,
-            command.OrganisationId
+            command.OrganisationId,
+            cancellationToken
         );
 
         return result;

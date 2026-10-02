@@ -8,11 +8,16 @@ namespace SchoolAccount.Infrastructure.Clients.Azure;
 
 public class AzureTableClient(TableClient tableClient) : IAzureTableClient
 {
-    public async Task<Result> SendFeedback(string message, string? ukprn, string organisationId)
+    public async Task<Result> SendFeedback(
+        string message,
+        string? ukprn,
+        string organisationId,
+        CancellationToken cancellationToken
+    )
     {
         try
         {
-            await tableClient.CreateIfNotExistsAsync();
+            await tableClient.CreateIfNotExistsAsync(cancellationToken);
 
             var now = DateTime.UtcNow;
             var feedback = new FeedbackModel
@@ -24,7 +29,7 @@ public class AzureTableClient(TableClient tableClient) : IAzureTableClient
                 Timestamp = now,
             };
 
-            var response = await tableClient.AddEntityAsync(feedback);
+            var response = await tableClient.AddEntityAsync(feedback, cancellationToken);
 
             return Result.Success(response.Status);
         }
