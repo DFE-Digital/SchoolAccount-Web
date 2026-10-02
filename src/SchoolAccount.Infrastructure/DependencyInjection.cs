@@ -74,7 +74,18 @@ public static class DependencyInjection
         IConfiguration configuration
     )
     {
-        var connectionString = configuration.GetSection("Azure")["TableStorageConnectionString"];
+        services
+            .AddOptions<AzureConfig>()
+            .Bind(configuration.GetSection(AzureConfig.SectionName))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
+        var config = services
+            .BuildServiceProvider()
+            .GetRequiredService<IOptions<AzureConfig>>()
+            .Value;
+
+        var connectionString = config.TableStorageConnectionString;
         services.AddSingleton(new TableClient(connectionString, "FeedbackTable"));
 
         services.AddScoped<IAzureTableClient, AzureTableClient>();
