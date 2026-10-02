@@ -18,6 +18,7 @@ public static class DependencyInjection
     )
     {
         services.AddConfiguredDataProtection(configuration);
+        services.AddConfiguredOpenTelemetry(configuration);
         services.AddSession();
         services.AddDsiAuthentication(configuration);
         services.AddOrganisationClaimPolicy();

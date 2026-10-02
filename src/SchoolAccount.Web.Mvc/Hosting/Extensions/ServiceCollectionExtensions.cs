@@ -1,11 +1,74 @@
 using Azure.Identity;
+using Azure.Monitor.OpenTelemetry.AspNetCore;
 using Microsoft.AspNetCore.DataProtection;
+using OpenTelemetry.Logs;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Trace;
 using SchoolAccount.Web.Mvc.Hosting.Models;
 
 namespace SchoolAccount.Web.Mvc.Hosting.Extensions;
 
 public static class ServiceCollectionExtensions
 {
+    /// <summary>
+    /// Sets up OpenTelemetry. Traces, metrics and logs go to Azure Monitor through its distro when
+    /// a connection string is configured, and also to an OTLP endpoint when one is, which is how
+    /// they reach Rider's OpenTelemetry tool window locally. Logs arrive via Serilog, which
+    /// forwards its events to the OpenTelemetry logger provider registered here (see
+    /// <see cref="HostBuilderExtensions.UseConfiguredSerilog"/>).
+    /// </summary>
+    public static IServiceCollection AddConfiguredOpenTelemetry(
+        this IServiceCollection services,
+        IConfiguration configuration
+    )
+    {
+        var useAzureMonitor = AzureMonitorSettings.IsConfigured(configuration);
+        var useOtlp = OpenTelemetrySettings.IsOtlpConfigured(configuration);
+
+        if (!useAzureMonitor && !useOtlp)
+        {
+            return services;
+        }
+
+        var builder = services.AddOpenTelemetry();
+
+        if (useAzureMonitor)
+        {
+            builder.UseAzureMonitor();
+        }
+
+        if (useOtlp)
+        {
+            // Without this the log body is the unrendered template, e.g. "Now listening on: {address}"
+            builder.WithLogging(
+                logging => logging.AddOtlpExporter(),
+                options => options.IncludeFormattedMessage = true
+            );
+
+            builder.WithTracing(tracing =>
+            {
+                if (!useAzureMonitor)
+                {
+                    tracing.AddAspNetCoreInstrumentation().AddHttpClientInstrumentation();
+                }
+
+                tracing.AddOtlpExporter();
+            });
+
+            builder.WithMetrics(metrics =>
+            {
+                if (!useAzureMonitor)
+                {
+                    metrics.AddAspNetCoreInstrumentation().AddHttpClientInstrumentation();
+                }
+
+                metrics.AddOtlpExporter();
+            });
+        }
+
+        return services;
+    }
+
     /// <summary>
     /// Persists the Data Protection key ring to blob storage, encrypted with a Key Vault key, so
     /// that every instance of the app shares one key ring, and it survives a restart. Without this
