@@ -1,0 +1,56 @@
+@model SchoolAccount.Web.Mvc.Features.Feedback.FeedbackViewModel
+
+<section id="page-feedback" class="footer-feedback" aria-label="Page feedback">
+    <div class="govuk-width-container">
+        @if (TempData["FeedbackSubmitted"] is null)
+        {
+            <div id="feedback-initial" class="footer-feedback__row footer-feedback__hidden" aria-hidden="true">
+                <h2 class="govuk-heading-s govuk-!-margin-bottom-0">
+                    Give feedback on this page or report a problem
+                </h2>
+                <button type="button" id="open-feedback" class="govuk-button footer-feedback__primary"
+                        aria-expanded="false" aria-controls="tell-us-form">
+                    Give feedback
+                </button>
+            </div>
+
+            <div id="feedback-form" class="footer-feedback__row footer-feedback__row--submitted" aria-hidden="false">
+                <form id="tell-us-form" class="footer-feedback__form"
+                      asp-controller="Feedback" asp-action="Submit" method="post" novalidate>
+                    <input type="hidden" name="returnUrl"
+                           value="@($"{Context.Request.Path}{Context.Request.QueryString}")"/>
+                    <div class="govuk-form-group">
+                        <h2 class="govuk-label-wrapper">
+                            <label class="govuk-label govuk-label--m" for="feedbackMessage">
+                                Your feedback
+                            </label>
+                        </h2>
+                        <div id="what-do-you-want-to-tell-us-hint" class="govuk-hint">
+                            Tell us what you think or describe the problem
+                        </div>
+                        <textarea class="govuk-textarea" id="feedbackMessage" name="feedbackMessage" rows="5"
+                          aria-describedby="what-do-you-want-to-tell-us-hint"></textarea>
+                    </div>
+                    <div class="govuk-button-group">
+                        <button type="submit" class="govuk-button footer-feedback__send">
+                            Send feedback
+                        </button>
+                        <button id="cancel-feedback" type="button" class="govuk-button govuk-button--secondary footer-feedback__cancel">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        }
+        else
+        {
+            <div class="footer-feedback__row footer-feedback__row--submitted">
+                <h2 id="feedback-thanks" class="govuk-heading-s govuk-!-margin-bottom-0">
+                    Thank you for your feedback
+                </h2>
+            </div>
+        }
+    </div>
+</section>
+
+<script type="text/javascript" src="lib/feedback/feedback.js" asp-append-version="true"></script>

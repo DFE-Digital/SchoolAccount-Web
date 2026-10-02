@@ -1,3 +1,4 @@
+using Azure.Data.Tables;
 using Dfe.TramsDataApi.Client.Extensions;
 using GovUK.Dfe.AcademiesApi.Client;
 using GovUK.Dfe.AcademiesApi.Client.Contracts;
@@ -6,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using SchoolAccount.Application.Abstractions.Clients;
 using SchoolAccount.Infrastructure.Clients.Academies;
+using SchoolAccount.Infrastructure.Clients.Azure;
 using SchoolAccount.Infrastructure.Clients.Collect;
 using SchoolAccount.Infrastructure.Config;
 using SchoolAccount.Infrastructure.Time;
@@ -23,6 +25,7 @@ public static class DependencyInjection
         services.AddServices().AddHealthChecks();
         services.AddCollectApiClient(configuration);
         services.AddAcademiesApi(configuration);
+        services.AddAzureTableClient(configuration);
 
         return services;
     }
@@ -64,5 +67,27 @@ public static class DependencyInjection
         );
         services.AddAcademiesApiClient<ITrustsV4Client, TrustsV4Client>(configuration);
         services.AddScoped<IAcademiesApiClient, AcademiesApiClient>();
+    }
+
+    private static void AddAzureTableClient(
+        this IServiceCollection services,
+        IConfiguration configuration
+    )
+    {
+        services
+            .AddOptions<AzureConfig>()
+            .Bind(configuration.GetSection(AzureConfig.SectionName))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
+        var config = services
+            .BuildServiceProvider()
+            .GetRequiredService<IOptions<AzureConfig>>()
+            .Value;
+
+        var connectionString = config.TableStorageConnectionString;
+        services.AddSingleton(new TableClient(connectionString, "FeedbackTable"));
+
+        services.AddScoped<IAzureTableClient, AzureTableClient>();
     }
 }
