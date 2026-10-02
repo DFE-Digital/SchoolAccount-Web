@@ -21,6 +21,14 @@
     justify-content: space-between;
     gap: 24px;
     padding: govuk-spacing(4) 0;
+
+    // Keep this directly after the base rule: it must be emitted before the
+    // --submitted and __hidden modifiers so they still win on narrow viewports.
+    @media (max-width: 800px) {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
   }
 
   &__row--submitted {
@@ -59,14 +67,6 @@
     &:focus {
       background: govuk-colour("yellow");
       color: govuk-colour("black");
-    }
-  }
-
-  @media (max-width: 800px) {
-    &__row {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 20px;
     }
   }
 }
