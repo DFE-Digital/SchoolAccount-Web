@@ -12,7 +12,11 @@ public class FeedbackController(
 {
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Submit(string feedbackMessage, string? returnUrl)
+    public async Task<IActionResult> Submit(
+        string feedbackMessage,
+        string? returnUrl,
+        CancellationToken cancellationToken
+    )
     {
         await feedbackQueryHandler.Handle(
             new FeedbackCommand
@@ -21,7 +25,7 @@ public class FeedbackController(
                 Ukprn = userContext.Organisation?.Ukprn,
                 OrganisationId = userContext.Organisation?.Id ?? string.Empty,
             },
-            CancellationToken.None
+            cancellationToken
         );
 
         TempData["FeedbackSubmitted"] = true;
