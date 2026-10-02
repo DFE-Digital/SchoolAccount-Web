@@ -56,10 +56,12 @@ jobs:
       - name: Merge coverage reports and enforce threshold
         if: ${{ !cancelled() }}
         uses: danielpalme/ReportGenerator-GitHub-Action@5
+        env:
+          disable.coverage.autogenerate: 'true'
         with:
           reports: "TestResults/*.cobertura.xml"
           targetdir: TestResults/Merged
-          reporttypes: "Cobertura;MarkdownSummaryGithub"
+          reporttypes: "Html;Cobertura;MarkdownSummaryGithub"
           customSettings: "minimumCoverageThresholds:lineCoverage=${{ env.MIN_LINE_COVERAGE }}"
 
       - name: Write coverage job summary
