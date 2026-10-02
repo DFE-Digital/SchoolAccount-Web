@@ -22,7 +22,7 @@ public class AzureTableClientTests
         var client = new AzureTableClient(_tableClient);
 
         // Act
-        var result = await client.SendFeedback(message, ukprn, laestab);
+        var result = await client.SendFeedback(message, ukprn, laestab, CancellationToken.None);
 
         // Assert
         await _tableClient
@@ -45,7 +45,7 @@ public class AzureTableClientTests
         var client = new AzureTableClient(_tableClient);
 
         // Act
-        var result = await client.SendFeedback(message, ukprn, laestab);
+        var result = await client.SendFeedback(message, ukprn, laestab, CancellationToken.None);
 
         // Assert
         await _tableClient

@@ -3,6 +3,7 @@ using SchoolAccount.Application.Abstractions.Clients;
 using SchoolAccount.Application.Features.Feedback;
 using SchoolAccount.SharedKernel;
 using Shouldly;
+using Xunit.Sdk;
 
 namespace SchoolAccount.ApplicationTests.Feedback;
 
@@ -29,7 +30,12 @@ public class FeedbackHandlerTests
         // Assert
         await _azureTableClient
             .Received(1)
-            .SendFeedback(command.Message, command.Ukprn, command.OrganisationId);
+            .SendFeedback(
+                command.Message,
+                command.Ukprn,
+                command.OrganisationId,
+                _cancellationToken
+            );
     }
 
     [Fact]
@@ -43,7 +49,12 @@ public class FeedbackHandlerTests
             OrganisationId = "test-id",
         };
         _azureTableClient
-            .SendFeedback(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+            .SendFeedback(
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<CancellationToken>()
+            )
             .Returns(Result.Success);
         var handler = new FeedbackHandler(_azureTableClient);
 
