@@ -18,7 +18,7 @@ public class AzureTableClient(TableClient tableClient) : IAzureTableClient
             var feedback = new FeedbackModel
             {
                 PartitionKey = organisationId,
-                RowKey = $"{DateTime.MaxValue.Ticks - now.Ticks:D19}_{Guid.NewGuid():N}",
+                RowKey = Guid.NewGuid().ToString(),
                 Ukprn = ukprn,
                 Message = message,
                 Timestamp = now,
