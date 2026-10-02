@@ -32,7 +32,7 @@ public class AzureTableClient(TableClient tableClient) : IAzureTableClient
         {
             Log.Error(ex, "Failed to send feedback");
             return Result.Failure<RequestFailedException>(
-                Error.Failure("Azure Blob Client", "Failed to send feedback")
+                Error.Failure("Azure Table Client", "Failed to send feedback")
             );
         }
     }
