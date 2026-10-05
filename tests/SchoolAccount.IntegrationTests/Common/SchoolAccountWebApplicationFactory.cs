@@ -27,7 +27,7 @@ public class SchoolAccountWebApplicationFactory<TProgram> : WebApplicationFactor
         return CreateClient<MockAuthHandler>(additionalConfigurableServices, options);
     }
 
-    public HttpClient CreateUnauthorisedClient(
+    public HttpClient CreateUnauthenticatedClient(
         Action<IServiceCollection>? additionalConfigurableServices = null,
         ClientOptions? options = null
     )

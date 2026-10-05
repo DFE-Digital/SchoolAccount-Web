@@ -38,7 +38,7 @@ public class LogoutActionTests(SchoolAccountWebApplicationFactory<Program> facto
     public async Task Unauthorised_users_accessing_sign_out_get_redirected_to_start_page()
     {
         // Arrange
-        var client = factory.CreateUnauthorisedClient(options: ClientOptions.AllowRedirects);
+        var client = factory.CreateUnauthenticatedClient(options: ClientOptions.AllowRedirects);
         var requestUri = factory.GeneratePath("Account", "Logout");
 
         // Act
