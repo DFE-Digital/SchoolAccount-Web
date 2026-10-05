@@ -13,7 +13,7 @@ public class ErrorController(ILogger<ErrorController> logger) : Controller
     [SuppressMessage(
         "Security",
         "CA5395:Miss HttpVerb attribute for action methods",
-        Justification = "Status code re-execution preserves the original request method; this action is read-only."
+        Justification = "Status code re-execution preserves the original request method; this action is read-only. This was required as a side effect of introducing ValidateAntiForgery in the application."
     )]
     public IActionResult Error(HttpStatusCode statusCode)
     {
