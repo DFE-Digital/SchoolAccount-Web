@@ -2,6 +2,7 @@ using Azure.Data.Tables;
 using Dfe.TramsDataApi.Client.Extensions;
 using GovUK.Dfe.AcademiesApi.Client;
 using GovUK.Dfe.AcademiesApi.Client.Contracts;
+using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -80,13 +81,20 @@ public static class DependencyInjection
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
-        var config = services
-            .BuildServiceProvider()
-            .GetRequiredService<IOptions<AzureConfig>>()
-            .Value;
+        services.AddAzureClients(clientBuilder =>
+            clientBuilder.AddClient<TableClient, TableClientOptions>(
+                (options, provider) =>
+                {
+                    var config = provider.GetRequiredService<IOptions<AzureConfig>>().Value;
 
-        var connectionString = config.TableStorageConnectionString;
-        services.AddSingleton(new TableClient(connectionString, "FeedbackTable"));
+                    return new TableClient(
+                        config.TableStorageConnectionString,
+                        "FeedbackTable",
+                        options
+                    );
+                }
+            )
+        );
 
         services.AddScoped<IAzureTableClient, AzureTableClient>();
     }
