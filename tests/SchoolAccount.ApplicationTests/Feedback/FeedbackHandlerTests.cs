@@ -10,7 +10,7 @@ namespace SchoolAccount.ApplicationTests.Feedback;
 public class FeedbackHandlerTests
 {
     private readonly CancellationToken _cancellationToken = TestContext.Current.CancellationToken;
-    private readonly IAzureTableClient _azureTableClient = Substitute.For<IAzureTableClient>();
+    private readonly IFeedbackClient _azureTableClient = Substitute.For<IFeedbackClient>();
 
     [Fact]
     public async Task Command_values_are_passed_to_the_client()
