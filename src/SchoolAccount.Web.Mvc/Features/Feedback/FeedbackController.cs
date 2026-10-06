@@ -20,6 +20,8 @@ public class FeedbackController(
         CancellationToken cancellationToken
     )
     {
+        ValidateFeedbackMessage(feedbackMessage);
+
         var result = await feedbackCommandHandler.Handle(
             new FeedbackCommand
             {
@@ -41,5 +43,18 @@ public class FeedbackController(
         }
 
         return LocalRedirect(returnUrl + "#feedback-thanks");
+    }
+
+    private void ValidateFeedbackMessage(string feedbackMessage)
+    {
+        if (string.IsNullOrWhiteSpace(feedbackMessage))
+        {
+            throw new InvalidOperationException("Feedback message cannot be empty");
+        }
+
+        if (feedbackMessage.Length > 32000)
+        {
+            throw new InvalidOperationException("Feedback message cannot exceed 32,000 characters");
+        }
     }
 }
