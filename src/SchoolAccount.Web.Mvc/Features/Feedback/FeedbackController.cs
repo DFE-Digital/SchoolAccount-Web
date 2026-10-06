@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SchoolAccount.Application.Abstractions.Messaging;
 using SchoolAccount.Application.Features.Feedback;
@@ -7,10 +8,11 @@ namespace SchoolAccount.Web.Mvc.Features.Feedback;
 
 public class FeedbackController(
     IUserContext userContext,
-    ICommandHandler<FeedbackCommand> feedbackQueryHandler
+    ICommandHandler<FeedbackCommand> feedbackCommandHandler
 ) : Controller
 {
     [HttpPost]
+    [Authorize]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Submit(
         string feedbackMessage,
@@ -18,7 +20,7 @@ public class FeedbackController(
         CancellationToken cancellationToken
     )
     {
-        await feedbackQueryHandler.Handle(
+        await feedbackCommandHandler.Handle(
             new FeedbackCommand
             {
                 Message = feedbackMessage,
