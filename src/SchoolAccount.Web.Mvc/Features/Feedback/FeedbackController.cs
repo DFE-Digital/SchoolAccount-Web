@@ -20,7 +20,7 @@ public class FeedbackController(
         CancellationToken cancellationToken
     )
     {
-        await feedbackCommandHandler.Handle(
+        var result = await feedbackCommandHandler.Handle(
             new FeedbackCommand
             {
                 Message = feedbackMessage,
@@ -30,7 +30,10 @@ public class FeedbackController(
             cancellationToken
         );
 
-        TempData["FeedbackSubmitted"] = true;
+        if (result.IsSuccess)
+        {
+            TempData["FeedbackSubmitted"] = true;
+        }
 
         if (!Url.IsLocalUrl(returnUrl))
         {
