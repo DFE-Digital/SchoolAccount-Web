@@ -32,10 +32,12 @@ public class FeedbackController(
             cancellationToken
         );
 
-        if (result.IsSuccess)
+        if (!result.IsSuccess)
         {
-            TempData["FeedbackSubmitted"] = true;
+            throw new InvalidOperationException("Feedback submission failed");
         }
+
+        TempData["FeedbackSubmitted"] = true;
 
         if (!Url.IsLocalUrl(returnUrl))
         {

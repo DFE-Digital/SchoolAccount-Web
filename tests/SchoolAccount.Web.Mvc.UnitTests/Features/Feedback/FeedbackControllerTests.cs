@@ -82,7 +82,7 @@ public class FeedbackControllerTests
     }
 
     [Fact]
-    public async Task Submit_does_not_change_tempdata_when_handler_returns_failure()
+    public async Task Submit_throws_when_handler_returns_failure()
     {
         // Arrange
         var message = new string('a', 32000);
@@ -109,10 +109,8 @@ public class FeedbackControllerTests
         controller.Url = new UrlHelper(actionContext);
 
         // Act
-        var result = await controller.Submit(message, "/Submit", _cancellationToken);
-
-        // Assert
-        result.ShouldNotBeNull();
-        controller.TempData["FeedbackSubmitted"].ShouldBeNull();
+        await Should.ThrowAsync<InvalidOperationException>(async () =>
+            await controller.Submit(message, "/Submit", _cancellationToken)
+        );
     }
 }

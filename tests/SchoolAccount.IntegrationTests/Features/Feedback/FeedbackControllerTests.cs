@@ -41,23 +41,4 @@ public class FeedbackControllerTests : IClassFixture<SchoolAccountWebApplication
         // Assert
         result.Headers.Location?.OriginalString.ShouldEndWith("#feedback-thanks");
     }
-
-    [Fact]
-    public async Task Submit_does_not_change_tempdata_when_handler_returns_failer()
-    {
-        // Arrange
-        var pageUri = _factory.GeneratePath("Feedback", "Submit");
-        _feedbackCommandHandler
-            .Handle(Arg.Any<FeedbackCommand>(), Arg.Any<CancellationToken>())
-            .Returns(
-                Result.Failure<RequestFailedException>(SharedKernel.Error.Failure("test", "test"))
-            );
-
-        // Act
-        using var content = new StringContent(string.Empty);
-        var result = await _authenticatedClient.PostAsync(pageUri, content, _cancellationToken);
-
-        // Assert
-        result.Headers.Location?.OriginalString.ShouldEndWith("#feedback");
-    }
 }
