@@ -4,11 +4,11 @@ using SchoolAccount.SharedKernel;
 
 namespace SchoolAccount.Application.Features.Feedback;
 
-public class FeedbackHandler(IAzureTableClient azureTableClient) : ICommandHandler<FeedbackCommand>
+public class FeedbackHandler(IFeedbackClient feedbackClient) : ICommandHandler<FeedbackCommand>
 {
     public async Task<Result> Handle(FeedbackCommand command, CancellationToken cancellationToken)
     {
-        var result = await azureTableClient.SendFeedback(
+        var result = await feedbackClient.SendFeedback(
             command.Message,
             command.Ukprn,
             command.OrganisationId,

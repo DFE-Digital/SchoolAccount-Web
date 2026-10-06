@@ -2,7 +2,7 @@ using SchoolAccount.SharedKernel;
 
 namespace SchoolAccount.Application.Abstractions.Clients;
 
-public interface IAzureTableClient
+public interface IFeedbackClient
 {
     Task<Result> SendFeedback(
         string message,

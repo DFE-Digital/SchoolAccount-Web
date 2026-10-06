@@ -6,7 +6,7 @@ using Serilog;
 
 namespace SchoolAccount.Infrastructure.Clients.Azure;
 
-public class AzureTableClient(TableClient tableClient) : IAzureTableClient
+public class AzureTableClient(TableClient tableClient) : IFeedbackClient
 {
     public async Task<Result> SendFeedback(
         string message,

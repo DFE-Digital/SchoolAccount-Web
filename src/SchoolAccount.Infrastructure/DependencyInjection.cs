@@ -96,6 +96,6 @@ public static class DependencyInjection
             )
         );
 
-        services.AddScoped<IAzureTableClient, AzureTableClient>();
+        services.AddScoped<IFeedbackClient, AzureTableClient>();
     }
 }
