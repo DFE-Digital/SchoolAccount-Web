@@ -9,7 +9,7 @@ public record Error
         ErrorType.Failure
     );
 
-    public Error(string code, string description, ErrorType type)
+    public Error(string code, string description, ErrorType type, string? Property = null)
     {
         Code = code;
         Description = description;
@@ -33,4 +33,7 @@ public record Error
 
     public static Error Conflict(string code, string description) =>
         new(code, description, ErrorType.Conflict);
+
+    public static Error Validation(string code, string description, string? property = null) =>
+        new(code, description, ErrorType.Validation, property);
 }
