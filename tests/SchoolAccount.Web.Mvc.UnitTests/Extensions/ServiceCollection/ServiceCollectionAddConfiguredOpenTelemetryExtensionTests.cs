@@ -14,10 +14,11 @@ namespace SchoolAccount.Web.Mvc.UnitTests.Extensions.ServiceCollection;
 
 public class ServiceCollectionAddConfiguredOpenTelemetryExtensionTests
 {
-    private const string OtlpEndpoint = "http://localhost:4317";
+    private const string _otlpEndpoint = "http://localhost:4317";
 
-    private const string ConnectionString =
-        "InstrumentationKey=00000000-0000-0000-0000-000000000000;IngestionEndpoint=https://example.in.applicationinsights.azure.com/";
+    private const string _connectionString =
+        "InstrumentationKey=00000000-0000-0000-0000-000000000000;IngestionEndpoint=https://example."
+        + "in.applicationinsights.azure.com/";
 
     [Fact]
     public void Registers_the_distro_when_a_connection_string_is_configured()
@@ -26,7 +27,7 @@ public class ServiceCollectionAddConfiguredOpenTelemetryExtensionTests
         var services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
 
         using var configuration = BuildConfiguration(
-            (ConnectionStringEnvironmentVariable, ConnectionString)
+            (ConnectionStringEnvironmentVariable, _connectionString)
         );
 
         // Act
@@ -44,7 +45,7 @@ public class ServiceCollectionAddConfiguredOpenTelemetryExtensionTests
         var services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
 
         using var configuration = BuildConfiguration(
-            (OtlpEndpointEnvironmentVariable, OtlpEndpoint)
+            (OtlpEndpointEnvironmentVariable, _otlpEndpoint)
         );
 
         // Act
@@ -65,7 +66,7 @@ public class ServiceCollectionAddConfiguredOpenTelemetryExtensionTests
         try
         {
             using var configuration = BuildConfiguration(
-                (ConnectionStringEnvironmentVariable, ConnectionString)
+                (ConnectionStringEnvironmentVariable, _connectionString)
             );
 
             // Act
@@ -87,7 +88,7 @@ public class ServiceCollectionAddConfiguredOpenTelemetryExtensionTests
         var services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
 
         using var configuration = BuildConfiguration(
-            (OtlpEndpointEnvironmentVariable, OtlpEndpoint)
+            (OtlpEndpointEnvironmentVariable, _otlpEndpoint)
         );
 
         services.AddSingleton<IConfiguration>(configuration);
@@ -110,8 +111,8 @@ public class ServiceCollectionAddConfiguredOpenTelemetryExtensionTests
         var services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
 
         using var configuration = BuildConfiguration(
-            (ConnectionStringEnvironmentVariable, ConnectionString),
-            (OtlpEndpointEnvironmentVariable, OtlpEndpoint)
+            (ConnectionStringEnvironmentVariable, _connectionString),
+            (OtlpEndpointEnvironmentVariable, _otlpEndpoint)
         );
 
         // Act
@@ -169,7 +170,7 @@ public class ServiceCollectionAddConfiguredOpenTelemetryExtensionTests
         var services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
 
         using var configuration = BuildConfiguration(
-            ("AzureMonitor:ConnectionString", ConnectionString)
+            ("AzureMonitor:ConnectionString", _connectionString)
         );
 
         // Act
