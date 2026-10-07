@@ -34,8 +34,9 @@ public class ServiceCollectionAddConfiguredOpenTelemetryExtensionTests
         services.AddConfiguredOpenTelemetry(configuration);
 
         // Assert
-        services.ShouldContain(descriptor => descriptor.ServiceType == typeof(TracerProvider));
         services.ShouldContain(descriptor => descriptor.ServiceType == typeof(LoggerProvider));
+        services.ShouldContain(descriptor => descriptor.ServiceType == typeof(TracerProvider));
+        services.ShouldContain(descriptor => descriptor.ServiceType == typeof(MeterProvider));
     }
 
     [Fact]
