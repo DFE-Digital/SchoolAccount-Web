@@ -30,12 +30,16 @@ Application Insights as well as logs and traces, which the managed agent can't, 
 
 How it works:
 
+* Telemetry goes to one destination, never both.
 * When `APPLICATIONINSIGHTS_CONNECTION_STRING` is set, the distro sends logs, traces and metrics to Application
-  Insights. When it isn't set nothing is registered, so local runs and the tests are unaffected.
+  Insights.
+* When it isn't set but `OTEL_EXPORTER_OTLP_ENDPOINT` is, which Rider does for runs from the IDE, logs, traces and
+  metrics go to that endpoint over OTLP instead.
+* When both are set, Application Insights wins. The Container Apps agent can inject `OTEL_EXPORTER_OTLP_ENDPOINT` into a
+  deployed app, and that mustn't move production telemetry away from Application Insights.
+* When neither is set nothing is registered, so the tests are unaffected.
 * Serilog forwards its events to the OpenTelemetry logger provider, so logs line up with their traces. The default
   logging providers are cleared so the console isn't printed twice.
-* When `OTEL_EXPORTER_OTLP_ENDPOINT` is set, which Rider does for runs from the IDE, logs, traces and metrics also go to
-  that endpoint over OTLP.
 * The role name and instance come from the distro's Container Apps detector (the container app name and the replica),
   not from our code.
 * Serilog's request logging is off. Application Insights already records the requests.
@@ -46,12 +50,14 @@ How it works:
 * Good, because Serilog stays as it is, and Rider shows all three signals locally.
 * Bad, because forwarding Serilog through the logger provider is fiddly. The default providers have to be cleared, and
   with `OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf` every log is exported twice.
+* Bad, because to see telemetry in Rider the connection string has to be unset locally.
 * Bad, because the distro's default sampling can drop a burst of requests and the logs that go with them.
 
 ### Confirmation
 
-Unit tests cover when the distro and the OTLP export are registered. The first deployment should show telemetry in
-Application Insights with the container app name as the role and the replica as the instance.
+Unit tests cover which destination is registered, including that Application Insights wins when both are configured.
+The first deployment should show telemetry in Application Insights with the container app name as the role and the
+replica as the instance.
 
 ## Pros and Cons of the Options
 
