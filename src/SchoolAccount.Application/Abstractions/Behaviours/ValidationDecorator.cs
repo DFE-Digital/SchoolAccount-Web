@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using FluentValidation;
 using FluentValidation.Results;
 using SchoolAccount.Application.Abstractions.Messaging;
@@ -7,13 +8,14 @@ namespace SchoolAccount.Application.Abstractions.Behaviours;
 
 internal static class ValidationDecorator
 {
-    internal sealed class Command<TCommand, TResponse>(IEnumerable<IValidator<TCommand>> validators)
-        : ICommandPipelineBehavior<TCommand, TResponse>
+    internal sealed class Command<TCommand, TResponse>(
+        ICommandHandler<TCommand, TResponse> next,
+        IEnumerable<IValidator<TCommand>> validators
+    ) : ICommandHandler<TCommand, TResponse>
         where TCommand : ICommand<TResponse>
     {
         public async Task<Result<TResponse>> Handle(
             TCommand command,
-            CommandHandlerDelegate<TResponse> next,
             CancellationToken cancellationToken
         )
         {
@@ -24,19 +26,17 @@ internal static class ValidationDecorator
                 return Result.Failure<TResponse>(CreateValidationError(failures));
             }
 
-            return await next();
+            return await next.Handle(command, cancellationToken);
         }
     }
 
-    internal sealed class Command<TCommand>(IEnumerable<IValidator<TCommand>> validators)
-        : ICommandPipelineBehavior<TCommand>
+    internal sealed class CommandHandler<TCommand>(
+        ICommandHandler<TCommand> next,
+        IEnumerable<IValidator<TCommand>> validators
+    ) : ICommandHandler<TCommand>
         where TCommand : ICommand
     {
-        public async Task<Result> Handle(
-            TCommand command,
-            CommandHandlerDelegate next,
-            CancellationToken cancellationToken
-        )
+        public async Task<Result> Handle(TCommand command, CancellationToken cancellationToken)
         {
             var failures = await ValidateAsync(command, validators);
 
@@ -45,7 +45,7 @@ internal static class ValidationDecorator
                 return Result.Failure(CreateValidationError(failures));
             }
 
-            return await next();
+            return await next.Handle(command, cancellationToken);
         }
     }
 

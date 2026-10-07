@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using FluentValidation;
+using Microsoft.Extensions.DependencyInjection;
 using SchoolAccount.Application.Abstractions.Behaviours;
 using SchoolAccount.Application.Abstractions.Messaging;
 
@@ -30,6 +31,11 @@ public static class DependencyInjection
                 .WithScopedLifetime()
         );
 
+        services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
+        services.TryDecorate(
+            typeof(ICommandHandler<>),
+            typeof(ValidationDecorator.CommandHandler<>)
+        );
         services.TryDecorate(typeof(IQueryHandler<,>), typeof(LoggingDecorator.QueryHandler<,>));
 
         return services;
