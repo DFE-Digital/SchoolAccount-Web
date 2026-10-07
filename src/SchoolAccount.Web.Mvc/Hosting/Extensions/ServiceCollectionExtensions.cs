@@ -1,6 +1,7 @@
 using Azure.Identity;
 using Azure.Monitor.OpenTelemetry.AspNetCore;
 using Microsoft.AspNetCore.DataProtection;
+using OpenTelemetry;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
@@ -39,31 +40,21 @@ public static class ServiceCollectionExtensions
 
         if (useOtlp)
         {
+            builder.UseOtlpExporter();
+
             // Without this the log body is the unrendered template, e.g. "Now listening on: {address}"
-            builder.WithLogging(
-                logging => logging.AddOtlpExporter(),
-                options => options.IncludeFormattedMessage = true
-            );
+            builder.WithLogging(_ => { }, options => options.IncludeFormattedMessage = true);
 
-            builder.WithTracing(tracing =>
+            if (!useAzureMonitor)
             {
-                if (!useAzureMonitor)
-                {
-                    tracing.AddAspNetCoreInstrumentation().AddHttpClientInstrumentation();
-                }
-
-                tracing.AddOtlpExporter();
-            });
-
-            builder.WithMetrics(metrics =>
-            {
-                if (!useAzureMonitor)
-                {
-                    metrics.AddAspNetCoreInstrumentation().AddHttpClientInstrumentation();
-                }
-
-                metrics.AddOtlpExporter();
-            });
+                builder
+                    .WithTracing(tracing =>
+                        tracing.AddAspNetCoreInstrumentation().AddHttpClientInstrumentation()
+                    )
+                    .WithMetrics(metrics =>
+                        metrics.AddAspNetCoreInstrumentation().AddHttpClientInstrumentation()
+                    );
+            }
         }
 
         return services;
