@@ -113,4 +113,36 @@ public class FeedbackControllerTests
             await controller.Submit(message, "/Submit", _cancellationToken)
         );
     }
+
+    [Fact]
+    public async Task Submit_redirects_to_root_when_return_url_is_not_local()
+    {
+        // Arrange
+        var message = new string('a', 32000);
+        _userContext.Organisation?.Id.Returns("test-id");
+        _userContext.Organisation?.Ukprn.Returns("test-ukprn");
+        _feedbackCommandHandler
+            .Handle(Arg.Any<FeedbackCommand>(), Arg.Any<CancellationToken>())
+            .Returns(Result.Success);
+        DefaultHttpContext httpContext = new();
+        ActionContext actionContext = new(
+            httpContext,
+            new RouteData(),
+            new ControllerActionDescriptor()
+        );
+
+        using FeedbackController controller = new(_userContext, _feedbackCommandHandler);
+        controller.ControllerContext = new ControllerContext(actionContext);
+        controller.TempData = new TempDataDictionary(
+            httpContext,
+            Substitute.For<ITempDataProvider>()
+        );
+        controller.Url = new UrlHelper(actionContext);
+
+        // Act
+        var result = await controller.Submit(message, "https://www.google.com", _cancellationToken);
+
+        // Assert
+        result.ShouldBeOfType<LocalRedirectResult>().Url.ShouldBe("/#feedback-thanks");
+    }
 }
