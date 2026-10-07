@@ -12,49 +12,41 @@ namespace SchoolAccount.Web.Mvc.Hosting.Extensions;
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Sets up OpenTelemetry. Traces, metrics and logs go to Azure Monitor through its distro when
-    /// a connection string is configured, and also to an OTLP endpoint when one is, which is how
-    /// they reach Rider's OpenTelemetry tool window locally. Logs arrive via Serilog, which
-    /// forwards its events to the OpenTelemetry logger provider registered here (see
-    /// <see cref="HostBuilderExtensions.UseConfiguredSerilog"/>).
+    /// Sets up OpenTelemetry to send traces, metrics and logs to one destination. Azure Monitor,
+    /// through its distro, when a connection string is configured. Otherwise an OTLP endpoint when
+    /// one is, which is how they reach Rider's OpenTelemetry tool window locally. Azure Monitor
+    /// wins when both are configured, so a deployed app never exports to both. Logs arrive via
+    /// Serilog, which forwards its events to the OpenTelemetry logger provider registered here
+    /// (see <see cref="HostBuilderExtensions.UseConfiguredSerilog"/>).
     /// </summary>
     public static IServiceCollection AddConfiguredOpenTelemetry(
         this IServiceCollection services,
         IConfiguration configuration
     )
     {
-        var useAzureMonitor = AzureMonitorSettings.IsConfigured(configuration);
-        var useOtlp = OpenTelemetrySettings.IsOtlpConfigured(configuration);
-
-        if (!useAzureMonitor && !useOtlp)
+        if (AzureMonitorSettings.IsConfigured(configuration))
         {
+            services.AddOpenTelemetry().UseAzureMonitor();
+
             return services;
         }
 
-        var builder = services.AddOpenTelemetry();
-
-        if (useAzureMonitor)
+        if (OpenTelemetrySettings.IsOtlpConfigured(configuration))
         {
-            builder.UseAzureMonitor();
-        }
+            var builder = services.AddOpenTelemetry();
 
-        if (useOtlp)
-        {
             builder.UseOtlpExporter();
 
             // Without this the log body is the unrendered template, e.g. "Now listening on: {address}"
             builder.WithLogging(_ => { }, options => options.IncludeFormattedMessage = true);
 
-            if (!useAzureMonitor)
-            {
-                builder
-                    .WithTracing(tracing =>
-                        tracing.AddAspNetCoreInstrumentation().AddHttpClientInstrumentation()
-                    )
-                    .WithMetrics(metrics =>
-                        metrics.AddAspNetCoreInstrumentation().AddHttpClientInstrumentation()
-                    );
-            }
+            builder
+                .WithTracing(tracing =>
+                    tracing.AddAspNetCoreInstrumentation().AddHttpClientInstrumentation()
+                )
+                .WithMetrics(metrics =>
+                    metrics.AddAspNetCoreInstrumentation().AddHttpClientInstrumentation()
+                );
         }
 
         return services;

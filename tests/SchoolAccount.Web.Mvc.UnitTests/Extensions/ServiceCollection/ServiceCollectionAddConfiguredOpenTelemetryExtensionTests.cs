@@ -2,6 +2,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OpenTelemetry;
+using OpenTelemetry.Exporter;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
@@ -37,6 +38,9 @@ public class ServiceCollectionAddConfiguredOpenTelemetryExtensionTests
         services.ShouldContain(descriptor => descriptor.ServiceType == typeof(LoggerProvider));
         services.ShouldContain(descriptor => descriptor.ServiceType == typeof(TracerProvider));
         services.ShouldContain(descriptor => descriptor.ServiceType == typeof(MeterProvider));
+        services.ShouldNotContain(descriptor =>
+            descriptor.ServiceType == typeof(IOptionsFactory<OtlpExporterOptions>)
+        );
     }
 
     [Fact]
@@ -56,6 +60,9 @@ public class ServiceCollectionAddConfiguredOpenTelemetryExtensionTests
         services.ShouldContain(descriptor => descriptor.ServiceType == typeof(LoggerProvider));
         services.ShouldContain(descriptor => descriptor.ServiceType == typeof(TracerProvider));
         services.ShouldContain(descriptor => descriptor.ServiceType == typeof(MeterProvider));
+        services.ShouldContain(descriptor =>
+            descriptor.ServiceType == typeof(IOptionsFactory<OtlpExporterOptions>)
+        );
     }
 
     [Fact]
@@ -106,7 +113,7 @@ public class ServiceCollectionAddConfiguredOpenTelemetryExtensionTests
     }
 
     [Fact]
-    public void Registers_a_single_provider_per_signal_when_both_destinations_are_configured()
+    public void Uses_only_azure_monitor_when_both_destinations_are_configured()
     {
         // Arrange
         var services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
@@ -120,6 +127,9 @@ public class ServiceCollectionAddConfiguredOpenTelemetryExtensionTests
         services.AddConfiguredOpenTelemetry(configuration);
 
         // Assert
+        services.ShouldNotContain(descriptor =>
+            descriptor.ServiceType == typeof(IOptionsFactory<OtlpExporterOptions>)
+        );
         services.Count(descriptor => descriptor.ServiceType == typeof(LoggerProvider)).ShouldBe(1);
         services.Count(descriptor => descriptor.ServiceType == typeof(TracerProvider)).ShouldBe(1);
         services.Count(descriptor => descriptor.ServiceType == typeof(MeterProvider)).ShouldBe(1);
