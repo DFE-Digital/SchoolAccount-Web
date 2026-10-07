@@ -1,10 +1,13 @@
 function showForm () {
     const feedbackForm = document.getElementById('feedback-form');
     const feedbackInitial = document.getElementById('feedback-initial');
+    const cancelButton = document.getElementById('cancel-feedback');
 
     feedbackForm.classList.toggle('footer-feedback__hidden', false);
     feedbackForm.classList.add('footer-feedback__row--submitted');
     feedbackForm.setAttribute('aria-hidden', 'false');
+    cancelButton.classList.remove('footer-feedback__hidden');
+    cancelButton.setAttribute('aria-hidden', 'false');
 
     feedbackInitial.classList.add('footer-feedback__hidden');
     feedbackInitial.setAttribute('aria-hidden', 'true');
