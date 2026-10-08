@@ -37,10 +37,8 @@ public static class ServiceCollectionExtensions
 
             builder.UseOtlpExporter();
 
-            // Without this the log body is the unrendered template, e.g. "Now listening on: {address}"
-            builder.WithLogging(_ => { }, options => options.IncludeFormattedMessage = true);
-
             builder
+                .WithLogging(_ => { }, options => options.IncludeFormattedMessage = true)
                 .WithTracing(tracing =>
                     tracing.AddAspNetCoreInstrumentation().AddHttpClientInstrumentation()
                 )
