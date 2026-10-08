@@ -21,12 +21,14 @@ telemetry into Application Insights without replacing Serilog, and how do we see
 ## Considered Options
 
 * The Azure Monitor OpenTelemetry distro, with Serilog forwarding to it
-* `Serilog.Sinks.OpenTelemetry` with the OpenTelemetry endpoints that Container Apps provides
+* Plain OTLP straight to Application Insights' OTLP ingestion
+* `Serilog.Sinks.OpenTelemetry` with the OpenTelemetry endpoints that the Container Apps managed agent provides
 
 ## Decision Outcome
 
 Chosen option: "The Azure Monitor OpenTelemetry distro, with Serilog forwarding to it", because it sends metrics to
-Application Insights as well as logs and traces, which the managed agent can't, and it needs nothing extra to run.
+Application Insights as well as logs and traces, which the managed agent can't, it needs nothing extra to run, and it
+works with our existing Application Insights resources and their connection strings, which OTLP ingestion doesn't.
 
 How it works:
 
@@ -68,7 +70,22 @@ replica as the instance.
 * Good, because it can authenticate with Entra if local authentication is turned off.
 * Bad, because of the Serilog forwarding quirks above.
 
-### `Serilog.Sinks.OpenTelemetry` with the OpenTelemetry endpoints that Container Apps provides
+### Plain OTLP straight to Application Insights' OTLP ingestion
+
+Application Insights can ingest OTLP for logs, traces and metrics when OTLP support is turned on for the resource. The
+app would send OTLP to the resource's endpoint for each signal, authenticated with a Microsoft Entra token.
+
+* Good, because it sends metrics as well as logs and traces.
+* Good, because the app only needs plain OpenTelemetry packages, so local and deployed use the same exporter.
+* Bad, because our Application Insights resources would need OTLP support turned on, and the container app's identity
+  would need the Monitoring Metrics Publisher role on the resource's data collection rule.
+* Bad, because the endpoints only accept a Microsoft Entra token. Microsoft documents this path for an OpenTelemetry
+  Collector, so an app exporting directly needs its own token handling.
+* Bad, because metrics land in an Azure Monitor workspace (a Prometheus store), and logs and traces in Log Analytics
+  using the OpenTelemetry schema, rather than in the classic Application Insights tables.
+* Bad, because we'd lose what the distro adds, such as Live Metrics, profiling and sampling.
+
+### `Serilog.Sinks.OpenTelemetry` with the OpenTelemetry endpoints that the Container Apps managed agent provides
 
 Container Apps can run a managed OpenTelemetry agent in the environment. It injects the agent's OTLP endpoints into each
 app (`OTEL_EXPORTER_OTLP_ENDPOINT`, plus a `CONTAINERAPP_OTEL_*_GRPC_ENDPOINT` variable for each signal). Serilog and the
@@ -82,6 +99,9 @@ OpenTelemetry SDK would send OTLP to those endpoints, and the agent would forwar
 * Bad, because it can't be used if the Application Insights resource has local authentication turned off.
 
 ## More Information
+
+We expect to move to OTLP ingestion in a follow-up, once our Application Insights resources have OTLP support turned on
+and the container app's identity has the role it needs. That change would supersede this decision.
 
 Worth revisiting if the managed agent starts sending metrics to Application Insights, or if the platform team wants us
 on the agent. In that case the distro would be replaced by plain OTLP and `Serilog.Sinks.OpenTelemetry`.
