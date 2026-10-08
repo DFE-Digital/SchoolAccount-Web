@@ -12,6 +12,9 @@ public record CensusAction
 {
     public string Name { get; init; }
     public CensusStatus Status { get; init; }
+    public int? Errors { get; set; }
+    public int? Queries { get; set; }
+    public DateTime? UpdatedAt { get; set; }
 }
 
 public record CensusStatus

@@ -25,6 +25,9 @@ public class ActionApiResponse
 {
     public string Name { get; init; }
     public StatusApiResponse Status { get; init; }
+    public int? Errors { get; set; }
+    public int? Queries { get; set; }
+    public DateTime? UpdatedAt { get; set; }
 }
 
 [DynamicallyAccessedMembers(AllProperties | AllConstructors)]

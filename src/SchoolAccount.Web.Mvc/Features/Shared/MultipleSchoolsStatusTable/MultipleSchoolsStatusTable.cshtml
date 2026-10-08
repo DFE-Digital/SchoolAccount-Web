@@ -7,6 +7,9 @@
         <tr lass="govuk-table__row">
             <th scope="col" class="govuk-table__header" aria-sort="none">Name</th>
             <th scope="col" class="govuk-table__header" aria-sort="descending">Status</th>
+            <th scope="col" class="govuk-table__header" aria-sort="none">Last Changed</th>
+            <th scope="col" class="govuk-table__header" aria-sort="none">Errors</th>
+            <th scope="col" class="govuk-table__header" aria-sort="none">Queries</th>
         </tr>
         </thead>
         <tbody class="govuk-table__body">
@@ -15,6 +18,9 @@
             <tr lass="govuk-table__row">
                 <td class="govuk-table__cell">@schoolStatus.Name</td>
                 <td class="govuk-table__cell">@schoolStatus.Status</td>
+                <td class="govuk-table__cell">@schoolStatus.UpdatedAtMessage</td>
+                <td class="govuk-table__cell">@schoolStatus.Errors</td>
+                <td class="govuk-table__cell">@schoolStatus.Queries</td>
             </tr>
         }
         </tbody>

@@ -60,6 +60,9 @@ public static class JourneyViewModelBuilder
                             {
                                 Name = a.SchoolName,
                                 Status = x.Status.Name,
+                                Errors = x.Errors,
+                                Queries = x.Queries,
+                                UpdatedAt = x.UpdatedAt,
                             })
                         )
                         .ToList(),
