@@ -55,7 +55,7 @@ public class FeedbackControllerTests : IClassFixture<SchoolAccountWebApplication
         var result = await _authenticatedClient.PostAsync(pageUri, content, _cancellationToken);
 
         // Assert
-        result.Headers.Location.ShouldNotBeNull().OriginalString.ShouldEndWith("#page-feedback");
+        result.Headers.Location.ShouldNotBeNull().OriginalString.ShouldBe("/");
         await _feedbackCommandHandler
             .DidNotReceive()
             .Handle(Arg.Any<FeedbackCommand>(), Arg.Any<CancellationToken>());
@@ -84,7 +84,13 @@ public class FeedbackControllerTests : IClassFixture<SchoolAccountWebApplication
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        html.ShouldContain("<title>Error: ");
         html.ShouldContain("govuk-error-summary");
+        html.IndexOf("govuk-error-summary", StringComparison.Ordinal)
+            .ShouldBeInRange(
+                html.IndexOf("<main", StringComparison.Ordinal),
+                html.IndexOf("<h1", StringComparison.Ordinal)
+            );
         html.ShouldContain(
             "<a href=\"#feedbackMessage\">Enter your feedback or describe the problem</a>"
         );

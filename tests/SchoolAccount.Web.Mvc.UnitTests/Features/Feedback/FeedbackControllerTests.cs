@@ -51,7 +51,7 @@ public class FeedbackControllerTests
         var result = await controller.Submit(Form(string.Empty), _cancellationToken);
 
         // Assert
-        result.ShouldBeOfType<LocalRedirectResult>().Url.ShouldBe("/Submit#page-feedback");
+        result.ShouldBeOfType<LocalRedirectResult>().Url.ShouldBe("/Submit");
         controller
             .TempData["FeedbackErrors"]
             .ShouldBeOfType<string[]>()

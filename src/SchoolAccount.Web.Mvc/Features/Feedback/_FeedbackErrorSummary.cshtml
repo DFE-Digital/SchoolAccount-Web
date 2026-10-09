@@ -1,0 +1,13 @@
+@{
+    var feedbackErrors = TempData["FeedbackErrors"] as string[] ?? [];
+}
+
+@if (feedbackErrors.Length > 0)
+{
+    <govuk-error-summary>
+        @foreach (var error in feedbackErrors)
+        {
+            <govuk-error-summary-item href="#feedbackMessage">@error</govuk-error-summary-item>
+        }
+    </govuk-error-summary>
+}

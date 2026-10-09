@@ -22,22 +22,6 @@
                  data-has-errors="@(feedbackErrors.Length > 0 ? "true" : "false")">
                 <form id="tell-us-form" asp-controller="Feedback" asp-action="Submit" 
                       method="post" novalidate>
-                    @if (feedbackErrors.Length > 0)
-                    {
-                        <div class="govuk-error-summary" data-module="govuk-error-summary">
-                            <div role="alert">
-                                <h2 class="govuk-error-summary__title">There is a problem</h2>
-                                <div class="govuk-error-summary__body">
-                                    <ul class="govuk-list govuk-error-summary__list">
-                                        @foreach (var error in feedbackErrors)
-                                        {
-                                            <li><a href="#feedbackMessage">@error</a></li>
-                                        }
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    }
                     <input type="hidden" name="returnUrl"
                            value="@($"{Context.Request.Path}{Context.Request.QueryString}")"/>
                     <div class="govuk-form-group @(messageError is not null ? "govuk-form-group--error" : null)">

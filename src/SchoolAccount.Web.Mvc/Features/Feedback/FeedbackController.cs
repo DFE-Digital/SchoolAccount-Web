@@ -54,6 +54,6 @@ public class FeedbackController(
             .Select(error => error.ErrorMessage)
             .ToArray();
 
-        return LocalRedirect($"{returnUrl}#page-feedback");
+        return LocalRedirect(returnUrl.ToString());
     }
 }
