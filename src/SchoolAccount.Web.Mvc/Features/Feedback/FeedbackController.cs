@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SchoolAccount.Application.Abstractions.Messaging;
 using SchoolAccount.Application.Features.Feedback;
 using SchoolAccount.SharedKernel;
+using SchoolAccount.Web.Mvc.Helpers;
 
 namespace SchoolAccount.Web.Mvc.Features.Feedback;
 
@@ -14,18 +15,19 @@ public class FeedbackController(
     [HttpPost]
     [Authorize]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Submit(
-        string feedbackMessage,
-        string? returnUrl,
-        CancellationToken cancellationToken
-    )
+    public async Task<IActionResult> Submit(FeedbackForm form, CancellationToken cancellationToken)
     {
-        ValidateFeedbackMessage(feedbackMessage);
+        var returnUrl = Url.SafeReturnUrl(form.ReturnUrl);
+
+        if (!ModelState.IsValid)
+        {
+            return RedirectBackWithErrors(returnUrl);
+        }
 
         var result = await feedbackCommandHandler.Handle(
             new FeedbackCommand
             {
-                Message = feedbackMessage,
+                Message = form.FeedbackMessage ?? string.Empty,
                 Ukprn = userContext.Organisation?.Ukprn,
                 OrganisationId = userContext.Organisation?.Id ?? string.Empty,
             },
@@ -39,24 +41,19 @@ public class FeedbackController(
 
         TempData["FeedbackSubmitted"] = true;
 
-        if (!Url.IsLocalUrl(returnUrl))
-        {
-            returnUrl = "/";
-        }
-
-        return LocalRedirect(returnUrl + "#feedback-thanks");
+        return LocalRedirect($"{returnUrl}#feedback-thanks");
     }
 
-    private void ValidateFeedbackMessage(string feedbackMessage)
+    /// <summary>
+    /// The form is on another page, so its errors go back there for the error summary.
+    /// </summary>
+    private LocalRedirectResult RedirectBackWithErrors(Uri returnUrl)
     {
-        if (string.IsNullOrWhiteSpace(feedbackMessage))
-        {
-            throw new InvalidOperationException("Feedback message cannot be empty");
-        }
+        TempData["FeedbackErrors"] = ModelState
+            .Values.SelectMany(entry => entry.Errors)
+            .Select(error => error.ErrorMessage)
+            .ToArray();
 
-        if (feedbackMessage.Length > 32000)
-        {
-            throw new InvalidOperationException("Feedback message cannot exceed 32,000 characters");
-        }
+        return LocalRedirect($"{returnUrl}#page-feedback");
     }
 }

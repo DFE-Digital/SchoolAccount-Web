@@ -25,7 +25,12 @@ function showInitial () {
     feedbackInitial.setAttribute('aria-hidden', 'false');
 }
 
-showInitial();
+// After a submit with errors, keep the form open so its error summary shows
+if (document.getElementById('feedback-form')?.dataset.hasErrors === 'true') {
+    showForm();
+} else {
+    showInitial();
+}
 
 const openButton = document.getElementById('open-feedback');
 

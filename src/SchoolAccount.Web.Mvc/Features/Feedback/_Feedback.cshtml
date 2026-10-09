@@ -1,4 +1,8 @@
 @model SchoolAccount.Web.Mvc.Features.Feedback.FeedbackViewModel
+@{
+    var feedbackErrors = TempData["FeedbackErrors"] as string[] ?? [];
+    var messageError = feedbackErrors.FirstOrDefault();
+}
 
 <section id="page-feedback" class="footer-feedback" aria-label="Page feedback">
     <div class="govuk-width-container">
@@ -14,12 +18,29 @@
                 </button>
             </div>
 
-            <div id="feedback-form" class="footer-feedback__row footer-feedback__row--submitted" aria-hidden="false">
-                <form id="tell-us-form" class="footer-feedback__form"
-                      asp-controller="Feedback" asp-action="Submit" method="post" novalidate>
+            <div id="feedback-form" class="footer-feedback__row footer-feedback__row--submitted" aria-hidden="false"
+                 data-has-errors="@(feedbackErrors.Length > 0 ? "true" : "false")">
+                <form id="tell-us-form" asp-controller="Feedback" asp-action="Submit" 
+                      method="post" novalidate>
+                    @if (feedbackErrors.Length > 0)
+                    {
+                        <div class="govuk-error-summary" data-module="govuk-error-summary">
+                            <div role="alert">
+                                <h2 class="govuk-error-summary__title">There is a problem</h2>
+                                <div class="govuk-error-summary__body">
+                                    <ul class="govuk-list govuk-error-summary__list">
+                                        @foreach (var error in feedbackErrors)
+                                        {
+                                            <li><a href="#feedbackMessage">@error</a></li>
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    }
                     <input type="hidden" name="returnUrl"
                            value="@($"{Context.Request.Path}{Context.Request.QueryString}")"/>
-                    <div class="govuk-form-group">
+                    <div class="govuk-form-group @(messageError is not null ? "govuk-form-group--error" : null)">
                         <h2 class="govuk-label-wrapper">
                             <label class="govuk-label govuk-label--m" for="feedbackMessage">
                                 Your feedback
@@ -28,8 +49,15 @@
                         <div id="what-do-you-want-to-tell-us-hint" class="govuk-hint">
                             Tell us what you think or describe the problem
                         </div>
-                        <textarea class="govuk-textarea" id="feedbackMessage" name="feedbackMessage" rows="5"
-                          aria-describedby="what-do-you-want-to-tell-us-hint"></textarea>
+                        @if (messageError is not null)
+                        {
+                            <p id="feedbackMessage-error" class="govuk-error-message">
+                                <span class="govuk-visually-hidden">Error:</span> @messageError
+                            </p>
+                        }
+                        <textarea class="govuk-textarea @(messageError is not null ? "govuk-textarea--error" : null)"
+                                  id="feedbackMessage" name="feedbackMessage" rows="5"
+                                  aria-describedby="what-do-you-want-to-tell-us-hint @(messageError is not null ? "feedbackMessage-error" : null)"></textarea>
                     </div>
                     <div class="govuk-button-group">
                         <button type="submit" class="govuk-button footer-feedback__send">
