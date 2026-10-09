@@ -32,14 +32,19 @@ works with our existing Application Insights resources and their connection stri
 
 How it works:
 
-* Telemetry goes to one destination, never both.
-* When `APPLICATIONINSIGHTS_CONNECTION_STRING` is set, the distro sends logs, traces and metrics to Application
-  Insights.
-* When it isn't set but `OTEL_EXPORTER_OTLP_ENDPOINT` is, which Rider does for runs from the IDE, logs, traces and
-  metrics go to that endpoint over OTLP instead.
-* When both are set, Application Insights wins. The Container Apps agent can inject `OTEL_EXPORTER_OTLP_ENDPOINT` into a
-  deployed app, and that mustn't move production telemetry away from Application Insights.
-* When neither is set nothing is registered, so the tests are unaffected.
+* Telemetry goes to one destination, never both, chosen explicitly by `Telemetry:Destination` in appsettings:
+  * `AzureMonitor` in `appsettings.json`, so deployed environments use the distro. It sends logs, traces and metrics
+    to Application Insights using `APPLICATIONINSIGHTS_CONNECTION_STRING`, which comes from Azure App Configuration.
+  * `Otlp` in `appsettings.Development.json`, so local runs send logs, traces and metrics over OTLP to
+    `OTEL_EXPORTER_OTLP_ENDPOINT`, which Rider sets for runs from the IDE.
+  * `None` in `appsettings.IntegrationTests.json`, and when the setting is missing, so nothing is registered.
+* Settings for the destination that isn't chosen are ignored. Tools can add both sets of environment variables, such as
+  a Rider plugin that adds a placeholder connection string for local runs, or the Container Apps agent adding
+  `OTEL_EXPORTER_OTLP_ENDPOINT` to a deployed app, and neither moves telemetry somewhere unexpected.
+* If the chosen destination isn't configured the app fails at startup, so a deployed app can't silently lose its
+  telemetry. The exception is OTLP in development, where running without a collector, for example outside Rider, leaves
+  telemetry off and logs a warning.
+* In development the chosen destination and the telemetry settings are logged at startup.
 * Serilog forwards its events to the OpenTelemetry logger provider, so logs line up with their traces. The default
   logging providers are cleared so the console isn't printed twice.
 * The role name and instance come from the distro's Container Apps detector (the container app name and the replica),
@@ -53,12 +58,15 @@ How it works:
 * Good, because Serilog stays as it is, and Rider shows all three signals locally.
 * Bad, because forwarding Serilog through the logger provider is fiddly. The default providers have to be cleared, and
   with `OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf` every log is exported twice.
-* Bad, because to see telemetry in Rider the connection string has to be unset locally.
+* Good, because the destination is explicit per environment, so it can't be changed by environment variables that
+  tools add.
+* Bad, because a new environment has to choose its destination, or it gets none.
 * Bad, because the distro's default sampling can drop a burst of requests and the logs that go with them.
 
 ### Confirmation
 
-Unit tests cover which destination is registered, including that Application Insights wins when both are configured.
+Unit tests cover which destination is registered for each `Telemetry:Destination`, that settings for the other
+destination are ignored, and when startup fails because the chosen destination isn't configured.
 The first deployment should show telemetry in Application Insights with the container app name as the role and the
 replica as the instance.
 

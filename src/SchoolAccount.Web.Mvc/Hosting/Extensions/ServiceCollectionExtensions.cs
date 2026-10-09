@@ -11,39 +11,71 @@ namespace SchoolAccount.Web.Mvc.Hosting.Extensions;
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Sets up OpenTelemetry to send traces, metrics and logs to one destination. Azure Monitor,
-    /// through its distro, when a connection string is configured. Otherwise an OTLP endpoint when
-    /// one is, which is how they reach Rider's OpenTelemetry tool window locally. Azure Monitor
-    /// wins when both are configured, so a deployed app never exports to both. Logs arrive via
-    /// Serilog, which forwards its events to the OpenTelemetry logger provider registered here
-    /// (see <see cref="HostBuilderExtensions.UseConfiguredSerilog"/>).
+    /// Sets up OpenTelemetry to send traces, metrics and logs to the destination chosen by
+    /// <see cref="TelemetrySettings.Destination"/>: Application Insights through the Azure
+    /// Monitor distro, an OTLP endpoint such as Rider's OpenTelemetry tool window, or nowhere.
+    /// Settings for the destination that isn't chosen are ignored. Logs arrive via Serilog, which
+    /// forwards its events to the OpenTelemetry logger provider registered here (see
+    /// <see cref="HostBuilderExtensions.UseConfiguredSerilog"/>).
     /// </summary>
+    /// <remarks>
+    /// Fails at startup if the chosen destination isn't configured, so a deployed app can't
+    /// silently lose its telemetry. The exception is OTLP in development, where running without a
+    /// collector, for example outside Rider, just leaves telemetry off.
+    /// </remarks>
     public static IServiceCollection AddConfiguredOpenTelemetry(
         this IServiceCollection services,
-        IConfiguration configuration
+        IConfiguration configuration,
+        IHostEnvironment environment
     )
     {
-        if (AzureMonitorSettings.IsConfigured(configuration))
+        var destination = TelemetrySettings.From(configuration).Destination;
+
+        switch (destination)
         {
-            services.AddOpenTelemetry().UseAzureMonitor();
+            case TelemetryDestination.AzureMonitor:
+                if (!AzureMonitorSettings.IsConfigured(configuration))
+                {
+                    throw new InvalidOperationException(
+                        $"{TelemetrySettings.SectionName}:{nameof(TelemetrySettings.Destination)} is "
+                            + $"{destination}, but {AzureMonitorSettings.ConnectionStringEnvironmentVariable} "
+                            + "is not set."
+                    );
+                }
 
-            return services;
-        }
+                services.AddOpenTelemetry().UseAzureMonitor();
+                break;
 
-        if (OpenTelemetrySettings.IsOtlpConfigured(configuration))
-        {
-            var builder = services.AddOpenTelemetry();
+            case TelemetryDestination.Otlp:
+                if (!OpenTelemetrySettings.IsOtlpConfigured(configuration))
+                {
+                    if (environment.IsDevelopment())
+                    {
+                        break;
+                    }
 
-            builder.UseOtlpExporter();
+                    throw new InvalidOperationException(
+                        $"{TelemetrySettings.SectionName}:{nameof(TelemetrySettings.Destination)} is "
+                            + $"{destination}, but {OpenTelemetrySettings.OtlpEndpointEnvironmentVariable} "
+                            + "is not set."
+                    );
+                }
 
-            builder
-                .WithLogging(_ => { }, options => options.IncludeFormattedMessage = true)
-                .WithTracing(tracing =>
-                    tracing.AddAspNetCoreInstrumentation().AddHttpClientInstrumentation()
-                )
-                .WithMetrics(metrics =>
-                    metrics.AddAspNetCoreInstrumentation().AddHttpClientInstrumentation()
-                );
+                services
+                    .AddOpenTelemetry()
+                    .UseOtlpExporter()
+                    .WithLogging(_ => { }, options => options.IncludeFormattedMessage = true)
+                    .WithTracing(tracing =>
+                        tracing.AddAspNetCoreInstrumentation().AddHttpClientInstrumentation()
+                    )
+                    .WithMetrics(metrics =>
+                        metrics.AddAspNetCoreInstrumentation().AddHttpClientInstrumentation()
+                    );
+                break;
+
+            case TelemetryDestination.None:
+            default:
+                break;
         }
 
         return services;

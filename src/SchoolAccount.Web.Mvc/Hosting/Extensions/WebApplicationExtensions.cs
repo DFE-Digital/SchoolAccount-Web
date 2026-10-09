@@ -119,15 +119,32 @@ public static class WebApplicationExtensions
     }
 
     /// <summary>
-    /// Logs every <c>OTEL_</c> setting, hiding header values as they can hold API keys, and
-    /// whether an Application Insights connection string is set, with its ingestion endpoint but
-    /// never its key.
+    /// Logs the chosen telemetry destination, warning when it's OTLP with no endpoint so telemetry
+    /// is off, then every <c>OTEL_</c> setting, hiding header values as they can hold API keys,
+    /// and whether an Application Insights connection string is set, with its ingestion endpoint
+    /// but never its key.
     /// </summary>
     public static void LogTelemetryConfiguration(IConfiguration configuration, ILogger logger)
     {
         if (!logger.IsEnabled(LogLevel.Information))
         {
             return;
+        }
+
+        var destination = TelemetrySettings.From(configuration).Destination;
+
+        logger.LogInformation("Telemetry destination is {Destination}", destination);
+
+        if (
+            destination == TelemetryDestination.Otlp
+            && !OpenTelemetrySettings.IsOtlpConfigured(configuration)
+        )
+        {
+            logger.LogWarning(
+                "Telemetry destination is {Destination} but {Setting} is not set, so telemetry is off",
+                destination,
+                OpenTelemetrySettings.OtlpEndpointEnvironmentVariable
+            );
         }
 
         var otelSettings = configuration

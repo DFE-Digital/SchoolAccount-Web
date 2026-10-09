@@ -3,8 +3,9 @@ namespace SchoolAccount.Web.Mvc.Hosting.Models;
 public static class AzureMonitorSettings
 {
     /// <summary>
-    /// The environment variable Azure Monitor documents for the connection string, which is how
-    /// the Container App is expected to supply it.
+    /// The environment variable Azure Monitor documents for the connection string. Deployed, it
+    /// comes from Azure App Configuration. Only used when <see cref="TelemetrySettings.Destination"/>
+    /// is <see cref="TelemetryDestination.AzureMonitor"/>.
     /// </summary>
     public const string ConnectionStringEnvironmentVariable =
         "APPLICATIONINSIGHTS_CONNECTION_STRING";

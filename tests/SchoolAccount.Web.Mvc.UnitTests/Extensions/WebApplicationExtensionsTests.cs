@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Testing;
 using SchoolAccount.Web.Mvc.Hosting.Extensions;
 using Shouldly;
@@ -74,7 +75,42 @@ public class WebApplicationExtensionsTests
 
         // Assert
         Messages()
-            .ShouldBe(["Telemetry setting APPLICATIONINSIGHTS_CONNECTION_STRING is not set"]);
+            .ShouldBe([
+                "Telemetry destination is None",
+                "Telemetry setting APPLICATIONINSIGHTS_CONNECTION_STRING is not set",
+            ]);
+    }
+
+    [Fact]
+    public void Logs_the_destination()
+    {
+        // Arrange
+        var configuration = BuildConfiguration(("Telemetry:Destination", "AzureMonitor"));
+
+        // Act
+        WebApplicationExtensions.LogTelemetryConfiguration(configuration, _logger);
+
+        // Assert
+        Messages().ShouldContain("Telemetry destination is AzureMonitor");
+    }
+
+    [Fact]
+    public void Warns_when_the_destination_is_otlp_without_an_endpoint()
+    {
+        // Arrange
+        var configuration = BuildConfiguration(("Telemetry:Destination", "Otlp"));
+
+        // Act
+        WebApplicationExtensions.LogTelemetryConfiguration(configuration, _logger);
+
+        // Assert
+        _logger
+            .Collector.GetSnapshot()
+            .Where(record => record.Level == LogLevel.Warning)
+            .ShouldHaveSingleItem()
+            .Message.ShouldBe(
+                "Telemetry destination is Otlp but OTEL_EXPORTER_OTLP_ENDPOINT is not set, so telemetry is off"
+            );
     }
 
     private string[] Messages() =>

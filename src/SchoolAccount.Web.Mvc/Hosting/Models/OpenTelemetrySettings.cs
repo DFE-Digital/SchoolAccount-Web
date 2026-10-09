@@ -5,7 +5,8 @@ public static class OpenTelemetrySettings
     /// <summary>
     /// The standard OpenTelemetry variable naming the OTLP endpoint to send telemetry to. Rider's
     /// OpenTelemetry tool window sets it for anything run from the IDE, so it is not set by hand.
-    /// It is left unset in deployed environments, which send to Azure Monitor instead.
+    /// Only used when <see cref="TelemetrySettings.Destination"/> is
+    /// <see cref="TelemetryDestination.Otlp"/>.
     /// </summary>
     public const string OtlpEndpointEnvironmentVariable = "OTEL_EXPORTER_OTLP_ENDPOINT";
 
