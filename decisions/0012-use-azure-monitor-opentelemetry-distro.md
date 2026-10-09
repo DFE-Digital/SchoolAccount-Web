@@ -43,8 +43,7 @@ How it works:
   `OTEL_EXPORTER_OTLP_ENDPOINT` to a deployed app, and neither moves telemetry somewhere unexpected.
 * If the chosen destination isn't configured the app fails at startup, so a deployed app can't silently lose its
   telemetry. The exception is OTLP in development, where running without a collector, for example outside Rider, leaves
-  telemetry off and logs a warning.
-* In development the chosen destination and the telemetry settings are logged at startup.
+  telemetry off.
 * Serilog forwards its events to the OpenTelemetry logger provider, so logs line up with their traces. The default
   logging providers are cleared so the console isn't printed twice.
 * The role name and instance come from the distro's Container Apps detector (the container app name and the replica),
