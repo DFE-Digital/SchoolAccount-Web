@@ -71,6 +71,10 @@ public static class ServiceCollectionExtensions
                     .WithMetrics(metrics =>
                         metrics.AddAspNetCoreInstrumentation().AddHttpClientInstrumentation()
                     );
+
+                // The OTLP log exporter's HttpClient logging makes Serilog build its logger factory
+                // twice, which exports every log twice.
+                services.AddHttpClient("OtlpLogExporter").RemoveAllLoggers();
                 break;
 
             case TelemetryDestination.None:
