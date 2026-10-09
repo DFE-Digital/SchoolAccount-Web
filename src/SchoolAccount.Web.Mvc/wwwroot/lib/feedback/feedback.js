@@ -13,22 +13,17 @@ function showInitial () {
     setHidden('feedback-initial', false);
 }
 
-// After a submit with errors, keep the form open so its error summary shows
-if (document.getElementById('feedback-form')?.dataset.hasErrors === 'true') {
-    showForm();
-} else {
-    showInitial();
+const feedbackForm = document.getElementById('feedback-form');
+
+// The thank-you message replaces the form, so there's nothing to set up
+if (feedbackForm) {
+    // After a submit with errors, keep the form open so its error summary shows
+    if (feedbackForm.dataset.hasErrors === 'true') {
+        showForm();
+    } else {
+        showInitial();
+    }
+
+    document.getElementById('open-feedback').addEventListener('click', showForm);
+    document.getElementById('cancel-feedback').addEventListener('click', showInitial);
 }
-
-const openButton = document.getElementById('open-feedback');
-
-openButton.addEventListener('click', () => {
-    showForm();
-})
-
-const cancelButton = document.getElementById('cancel-feedback');
-
-cancelButton.addEventListener('click', () => {
-    showInitial();
-})
-
