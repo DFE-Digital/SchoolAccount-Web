@@ -270,10 +270,13 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
                 .WithSchoolStatuses(
                     ACensusStatusResponse()
                         .WithName("Test School 1")
-                        .WithAction("Autumn Census 2026", "Not Started"),
-                    ACensusStatusResponse()
-                        .WithName("Test School 2")
-                        .WithAction("Autumn Census 2026", "Submitted")
+                        .WithAction(
+                            "Autumn Census 2026",
+                            "Not Started",
+                            1,
+                            2,
+                            new DateTime(2026, 10, 1, 9, 0, 0, DateTimeKind.Utc)
+                        )
                 )
                 .AsSuccess()
         );
@@ -336,10 +339,16 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
                 .WithSchoolStatuses(
                     ACensusStatusResponse()
                         .WithName("Test School 1")
-                        .WithAction("Autumn Census 2026", "Not Started"),
+                        .WithAction("Autumn Census 2026", "Unknown"),
                     ACensusStatusResponse()
                         .WithName("Test School 2")
-                        .WithAction("Autumn Census 2026", "Submitted")
+                        .WithAction(
+                            "Autumn Census 2026",
+                            "Submitted",
+                            1,
+                            2,
+                            new DateTime(2026, 10, 1, 9, 0, 0, DateTimeKind.Utc)
+                        )
                 )
                 .AsSuccess()
         );
@@ -355,6 +364,9 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         tableHeadings.ShouldNotBeNull();
         tableHeadings[0].ShouldBe("Name");
         tableHeadings[1].ShouldBe("Status");
+        tableHeadings[2].ShouldBe("Last Changed");
+        tableHeadings[3].ShouldBe("Errors");
+        tableHeadings[4].ShouldBe("Queries");
 
         var tableRows = page.GetTableRows();
         tableRows.ShouldNotBeNull();
@@ -362,13 +374,23 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
 
         var schoolStatus = page.GetTableCellByHeader();
         schoolStatus.ShouldNotBeNull();
-        schoolStatus.ShouldSatisfyAllConditions(
-            () => schoolStatus.Count.ShouldBe(2),
-            () => schoolStatus[0]["Name"].ShouldBe("Test School 1"),
-            () => schoolStatus[0]["Status"].ShouldBe("Not Started"),
-            () => schoolStatus[1]["Name"].ShouldBe("Test School 2"),
-            () => schoolStatus[1]["Status"].ShouldBe("Submitted")
-        );
+        schoolStatus.Count.ShouldBe(2);
+        schoolStatus[0]
+            .ShouldSatisfyAllConditions(
+                s => s["Name"].ShouldBe("Test School 1"),
+                s => s["Status"].ShouldBe("Unknown"),
+                s => s["Last Changed"].ShouldBe(""),
+                s => s["Errors"].ShouldBe(""),
+                s => s["Queries"].ShouldBe("")
+            );
+        schoolStatus[1]
+            .ShouldSatisfyAllConditions(
+                s => s["Name"].ShouldBe("Test School 2"),
+                s => s["Status"].ShouldBe("Submitted"),
+                s => s["Last Changed"].ShouldContain("days ago"),
+                s => s["Errors"].ShouldBe("1"),
+                s => s["Queries"].ShouldBe("2")
+            );
     }
 
     [Fact]
