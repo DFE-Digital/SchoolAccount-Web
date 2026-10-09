@@ -1,28 +1,16 @@
+function setHidden (id, hidden) {
+    document.getElementById(id).classList.toggle('govuk-!-display-none', hidden);
+}
+
 function showForm () {
-    const feedbackForm = document.getElementById('feedback-form');
-    const feedbackInitial = document.getElementById('feedback-initial');
-    const cancelButton = document.getElementById('cancel-feedback');
-
-    feedbackForm.classList.toggle('footer-feedback__hidden', false);
-    feedbackForm.classList.add('footer-feedback__row--submitted');
-    feedbackForm.setAttribute('aria-hidden', 'false');
-    cancelButton.classList.remove('footer-feedback__hidden');
-    cancelButton.setAttribute('aria-hidden', 'false');
-
-    feedbackInitial.classList.add('footer-feedback__hidden');
-    feedbackInitial.setAttribute('aria-hidden', 'true');
+    setHidden('feedback-form', false);
+    setHidden('cancel-feedback', false);
+    setHidden('feedback-initial', true);
 }
 
 function showInitial () {
-    const feedbackForm = document.getElementById('feedback-form');
-    const feedbackInitial = document.getElementById('feedback-initial');
-
-    feedbackForm.classList.toggle('footer-feedback__hidden', true);
-    feedbackForm.classList.remove('footer-feedback__row--submitted');
-    feedbackForm.setAttribute('aria-hidden', 'true');
-
-    feedbackInitial.classList.remove('footer-feedback__hidden');
-    feedbackInitial.setAttribute('aria-hidden', 'false');
+    setHidden('feedback-form', true);
+    setHidden('feedback-initial', false);
 }
 
 // After a submit with errors, keep the form open so its error summary shows
