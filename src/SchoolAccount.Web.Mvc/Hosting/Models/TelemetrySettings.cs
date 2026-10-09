@@ -1,8 +1,7 @@
 namespace SchoolAccount.Web.Mvc.Hosting.Models;
 
 /// <summary>
-/// Where the app sends its traces, metrics and logs. Chosen per environment in appsettings, so
-/// the destination doesn't depend on which environment variables happen to be present.
+/// Where the app sends its traces, metrics and logs, chosen per environment in appsettings.
 /// </summary>
 public enum TelemetryDestination
 {

@@ -11,17 +11,10 @@ namespace SchoolAccount.Web.Mvc.Hosting.Extensions;
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Sets up OpenTelemetry to send traces, metrics and logs to the destination chosen by
-    /// <see cref="TelemetrySettings.Destination"/>: Application Insights through the Azure
-    /// Monitor distro, an OTLP endpoint such as Rider's OpenTelemetry tool window, or nowhere.
-    /// Settings for the destination that isn't chosen are ignored. Logs arrive via Serilog, which
-    /// forwards its events to the OpenTelemetry logger provider registered here (see
-    /// <see cref="HostBuilderExtensions.UseConfiguredSerilog"/>).
+    /// Sends traces, metrics and logs to the <see cref="TelemetrySettings.Destination"/>.
     /// </summary>
     /// <remarks>
-    /// Fails at startup if the chosen destination isn't configured, so a deployed app can't
-    /// silently lose its telemetry. The exception is OTLP in development, where running without a
-    /// collector, for example outside Rider, just leaves telemetry off.
+    /// Throws if the destination isn't configured, except OTLP in development.
     /// </remarks>
     public static IServiceCollection AddConfiguredOpenTelemetry(
         this IServiceCollection services,
@@ -72,8 +65,7 @@ public static class ServiceCollectionExtensions
                         metrics.AddAspNetCoreInstrumentation().AddHttpClientInstrumentation()
                     );
 
-                // The OTLP log exporter's HttpClient logging makes Serilog build its logger factory
-                // twice, which exports every log twice.
+                // Stops Serilog exporting every log twice over http/protobuf.
                 services.AddHttpClient("OtlpLogExporter").RemoveAllLoggers();
                 break;
 
