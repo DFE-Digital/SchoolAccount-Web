@@ -329,7 +329,10 @@ public class ServiceCollectionExtensionsTests
         // Arrange
         var services = new ServiceCollection();
 
-        using var configuration = BuildDataProtectionConfiguration(keyRingBlobUri, keyEncryptionKeyUri);
+        using var configuration = BuildDataProtectionConfiguration(
+            keyRingBlobUri,
+            keyEncryptionKeyUri
+        );
 
         // Act
         services.AddConfiguredDataProtection(configuration);
