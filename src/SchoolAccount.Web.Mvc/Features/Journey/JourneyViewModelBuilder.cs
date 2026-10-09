@@ -1,15 +1,19 @@
 using System.Globalization;
 using SchoolAccount.Application.Features.Collect.GetCensusJourney.Responses;
+using SchoolAccount.SharedKernel;
 using SchoolAccount.SharedKernel.Authentication;
 using SchoolAccount.Web.Mvc.Features.Shared.MultipleSchoolsStatusTable;
 using SchoolAccount.Web.Mvc.Features.Shared.StepByStep;
+using SchoolAccount.Web.Mvc.Helpers;
 using static SchoolAccount.Web.Mvc.Features.Shared.MultipleSchoolsStatusTable.MultipleSchoolsStatusTableViewModel;
 
 namespace SchoolAccount.Web.Mvc.Features.Journey;
 
-public static class JourneyViewModelBuilder
+public class JourneyViewModelBuilder(IDateTimeProvider dateTimeProvider)
 {
-    public static JourneyViewModel Build(
+    private readonly DateFormatter dateFormatter = new(dateTimeProvider);
+
+    public JourneyViewModel Build(
         string? user,
         GetCensusJourneyResponse getCensusJourneyResponse,
         Organisation organisation
@@ -27,7 +31,7 @@ public static class JourneyViewModelBuilder
                 .Select(date => new ImportantDate
                 {
                     Label = date.Label,
-                    FormattedDate = date.Date.ToString("d MMMM yyyy", CultureInfo.InvariantCulture),
+                    FormattedDate = dateFormatter.ToDayMonthNameAndYear(date.Date),
                 })
                 .ToList(),
             UnderstandStatuses = getCensusJourneyResponse
@@ -60,12 +64,16 @@ public static class JourneyViewModelBuilder
                             {
                                 Name = a.SchoolName,
                                 Status = x.Status.Name,
+                                Errors = x.Errors,
+                                Queries = x.Queries,
+                                UpdatedAt = x.UpdatedAt is null
+                                    ? string.Empty
+                                    : dateFormatter.ToDaysAgo(x.UpdatedAt.Value),
                             })
                         )
                         .ToList(),
                 }
                 : null,
-            //.RememberSteps(),
         };
     }
 }
