@@ -12,6 +12,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Azure.Data.Tables" />
+    <PackageReference Include="Azure.Storage.Blobs" />
     <PackageReference Include="GovUK.Dfe.AcademiesApi.Client" />
+    <PackageReference Include="Microsoft.Extensions.Azure" />
   </ItemGroup>
 </Project>

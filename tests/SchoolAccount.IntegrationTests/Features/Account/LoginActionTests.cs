@@ -11,7 +11,7 @@ public class LoginActionTests(SchoolAccountWebApplicationFactory<Program> factor
     public async Task Unauthorised_users_are_redirected_to_DSI()
     {
         // Arrange
-        var client = factory.CreateUnauthorisedClient();
+        var client = factory.CreateUnauthenticatedClient();
         var requestUri = factory.GeneratePath("Account", "Login");
 
         // Act

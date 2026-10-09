@@ -1,0 +1,71 @@
+@using SchoolAccount.Web.Mvc.Features.Feedback
+@model FeedbackViewModel
+@{
+    var errors = TempData["ErrorSummary"] as IDictionary<string, string> ?? new Dictionary<string, string>();
+    var messageError = errors.TryGetValue(nameof(FeedbackForm.FeedbackMessage), out var error) ? error : null;
+}
+
+<section id="page-feedback" class="footer-feedback govuk-!-padding-top-4 govuk-!-padding-bottom-4" aria-label="Page feedback">
+    <div class="govuk-width-container">
+        @if (TempData["FeedbackSubmitted"] is null)
+        {
+            <div id="feedback-initial" class="govuk-grid-row govuk-!-display-none">
+                <div class="govuk-grid-column-two-thirds">
+                    <h2 class="govuk-heading-s">
+                        Give feedback on this page or report a problem
+                    </h2>
+                </div>
+                <div class="govuk-grid-column-one-third">
+                    <button type="button" id="open-feedback" class="govuk-button govuk-button--secondary govuk-!-margin-bottom-0"
+                            aria-expanded="false" aria-controls="tell-us-form">
+                        Give feedback
+                    </button>
+                </div>
+            </div>
+
+            <div id="feedback-form"
+                 data-has-errors="@(messageError is not null ? "true" : "false")">
+                <form id="tell-us-form" asp-controller="Feedback" asp-action="Submit" 
+                      method="post" novalidate>
+                    <input type="hidden" name="returnUrl"
+                           value="@($"{Context.Request.Path}{Context.Request.QueryString}")"/>
+                    <div class="govuk-form-group @(messageError is not null ? "govuk-form-group--error" : null)">
+                        <h2 class="govuk-label-wrapper">
+                            <label class="govuk-label govuk-label--m" for="FeedbackMessage">
+                                Your feedback
+                            </label>
+                        </h2>
+                        <div id="what-do-you-want-to-tell-us-hint" class="govuk-hint">
+                            Tell us what you think or describe the problem
+                        </div>
+                        @if (messageError is not null)
+                        {
+                            <p id="FeedbackMessage-error" class="govuk-error-message">
+                                <span class="govuk-visually-hidden">Error:</span> @messageError
+                            </p>
+                        }
+                        <textarea class="govuk-textarea @(messageError is not null ? "govuk-textarea--error" : null)"
+                                  id="FeedbackMessage" name="FeedbackMessage" rows="5"
+                                  aria-describedby="what-do-you-want-to-tell-us-hint @(messageError is not null ? "FeedbackMessage-error" : null)"></textarea>
+                    </div>
+                    <div class="govuk-button-group">
+                        <button type="submit" class="govuk-button">
+                            Send feedback
+                        </button>
+                        <button id="cancel-feedback" type="button" class="govuk-button govuk-button--secondary govuk-!-display-none">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        }
+        else
+        {
+            <h2 id="feedback-thanks" class="govuk-heading-s govuk-!-margin-bottom-0">
+                Thank you for your feedback
+            </h2>
+        }
+    </div>
+</section>
+
+<script type="text/javascript" src="~/lib/feedback/feedback.js" asp-append-version="true"></script>

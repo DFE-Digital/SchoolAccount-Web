@@ -12,7 +12,7 @@ public class StartControllerTests : IClassFixture<SchoolAccountWebApplicationFac
     public StartControllerTests(SchoolAccountWebApplicationFactory<Program> factory)
     {
         _factory = factory;
-        _client = factory.CreateUnauthorisedClient();
+        _client = factory.CreateUnauthenticatedClient();
     }
 
     [Fact]

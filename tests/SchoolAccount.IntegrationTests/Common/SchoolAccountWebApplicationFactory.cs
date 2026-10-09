@@ -1,4 +1,5 @@
 using JetBrains.Annotations;
+using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using SchoolAccount.TestCommon.Fakes;
 
 namespace SchoolAccount.IntegrationTests.Common;
 
@@ -25,7 +27,7 @@ public class SchoolAccountWebApplicationFactory<TProgram> : WebApplicationFactor
         return CreateClient<MockAuthHandler>(additionalConfigurableServices, options);
     }
 
-    public HttpClient CreateUnauthorisedClient(
+    public HttpClient CreateUnauthenticatedClient(
         Action<IServiceCollection>? additionalConfigurableServices = null,
         ClientOptions? options = null
     )
@@ -62,6 +64,9 @@ public class SchoolAccountWebApplicationFactory<TProgram> : WebApplicationFactor
                     services.RemoveAll<IPostConfigureOptions<OpenIdConnectOptions>>();
                     services.RemoveAll<IConfigureOptions<CookieAuthenticationOptions>>();
                     services.RemoveAll<IConfigureOptions<AuthenticationOptions>>();
+                    services.Replace(
+                        ServiceDescriptor.Singleton<IAntiforgery, DisabledAntiforgery>()
+                    );
 
                     services
                         .AddAuthentication(authenticationOptions =>

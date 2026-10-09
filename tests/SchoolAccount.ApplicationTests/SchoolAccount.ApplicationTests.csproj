@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="FluentValidation" />
     <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage" />
     <PackageReference Include="Microsoft.Testing.Extensions.GitHubActionsReport" />
     <PackageReference Include="Microsoft.Testing.Extensions.TrxReport" />
