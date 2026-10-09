@@ -1,6 +1,9 @@
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NSubstitute;
 using OpenTelemetry;
@@ -14,9 +17,9 @@ using Shouldly;
 using static SchoolAccount.Web.Mvc.Hosting.Models.AzureMonitorSettings;
 using static SchoolAccount.Web.Mvc.Hosting.Models.OpenTelemetrySettings;
 
-namespace SchoolAccount.Web.Mvc.UnitTests.Extensions.ServiceCollection;
+namespace SchoolAccount.Web.Mvc.UnitTests.Hosting.Extensions;
 
-public class ServiceCollectionAddConfiguredOpenTelemetryExtensionTests
+public class ServiceCollectionExtensionsTests
 {
     private const string _destination = "Telemetry:Destination";
 
@@ -30,7 +33,7 @@ public class ServiceCollectionAddConfiguredOpenTelemetryExtensionTests
     public void Registers_the_distro_when_the_destination_is_azure_monitor()
     {
         // Arrange
-        var services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
+        var services = new ServiceCollection();
 
         using var configuration = BuildConfiguration(
             (_destination, nameof(TelemetryDestination.AzureMonitor)),
@@ -53,7 +56,7 @@ public class ServiceCollectionAddConfiguredOpenTelemetryExtensionTests
     public void Exports_logs_traces_and_metrics_over_otlp_when_the_destination_is_otlp()
     {
         // Arrange
-        var services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
+        var services = new ServiceCollection();
 
         using var configuration = BuildConfiguration(
             (_destination, nameof(TelemetryDestination.Otlp)),
@@ -76,7 +79,7 @@ public class ServiceCollectionAddConfiguredOpenTelemetryExtensionTests
     public void Ignores_a_connection_string_when_the_destination_is_otlp()
     {
         // Arrange
-        var services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
+        var services = new ServiceCollection();
 
         using var configuration = BuildConfiguration(
             (_destination, nameof(TelemetryDestination.Otlp)),
@@ -100,7 +103,7 @@ public class ServiceCollectionAddConfiguredOpenTelemetryExtensionTests
     public void Ignores_an_otlp_endpoint_when_the_destination_is_azure_monitor()
     {
         // Arrange
-        var services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
+        var services = new ServiceCollection();
 
         using var configuration = BuildConfiguration(
             (_destination, nameof(TelemetryDestination.AzureMonitor)),
@@ -146,7 +149,7 @@ public class ServiceCollectionAddConfiguredOpenTelemetryExtensionTests
     public void Includes_the_rendered_message_in_logs_sent_over_otlp()
     {
         // Arrange
-        var services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
+        var services = new ServiceCollection();
 
         using var configuration = BuildConfiguration(
             (_destination, nameof(TelemetryDestination.Otlp)),
@@ -172,7 +175,7 @@ public class ServiceCollectionAddConfiguredOpenTelemetryExtensionTests
     public void Leaves_telemetry_off_when_the_destination_is_none_or_not_set(string? destination)
     {
         // Arrange
-        var services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
+        var services = new ServiceCollection();
 
         using var configuration = BuildConfiguration(
             (_destination, destination),
@@ -196,7 +199,7 @@ public class ServiceCollectionAddConfiguredOpenTelemetryExtensionTests
     )
     {
         // Arrange
-        var services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
+        var services = new ServiceCollection();
 
         using var configuration = BuildConfiguration(
             (_destination, nameof(TelemetryDestination.AzureMonitor)),
@@ -215,7 +218,7 @@ public class ServiceCollectionAddConfiguredOpenTelemetryExtensionTests
     public void Fails_when_the_destination_is_otlp_without_an_endpoint_outside_development()
     {
         // Arrange
-        var services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
+        var services = new ServiceCollection();
 
         using var configuration = BuildConfiguration(
             (_destination, nameof(TelemetryDestination.Otlp))
@@ -238,7 +241,7 @@ public class ServiceCollectionAddConfiguredOpenTelemetryExtensionTests
     )
     {
         // Arrange
-        var services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
+        var services = new ServiceCollection();
 
         using var configuration = BuildConfiguration(
             (_destination, nameof(TelemetryDestination.Otlp)),
@@ -252,9 +255,92 @@ public class ServiceCollectionAddConfiguredOpenTelemetryExtensionTests
         services.ShouldBeEmpty();
     }
 
+    [Fact]
+    public async Task Serilog_writes_each_log_to_each_provider_once_when_exporting_over_otlp_http()
+    {
+        // Arrange
+        var builder = WebApplication.CreateBuilder(
+            new WebApplicationOptions { EnvironmentName = "Development" }
+        );
+
+        builder.Configuration.AddInMemoryCollection(
+            new Dictionary<string, string?>
+            {
+                [_destination] = nameof(TelemetryDestination.Otlp),
+                [OtlpEndpointEnvironmentVariable] = "http://localhost:4318",
+                ["OTEL_EXPORTER_OTLP_PROTOCOL"] = "http/protobuf",
+            }
+        );
+
+        builder.Logging.ClearProviders();
+        builder.Host.UseConfiguredSerilog();
+
+        using var countingProvider = new CountingLoggerProvider();
+        builder.Services.AddSingleton<ILoggerProvider>(countingProvider);
+        builder.Services.AddHttpClient();
+        builder.Services.AddConfiguredOpenTelemetry(builder.Configuration, builder.Environment);
+
+        await using var app = builder.Build();
+
+        // Act
+        app.Services.GetRequiredService<ILoggerFactory>()
+            .CreateLogger("Test")
+            .LogInformation("Logged once");
+
+        // Assert
+        countingProvider.Count("Logged once").ShouldBe(1);
+    }
+
+    [Fact]
+    public void Persists_the_key_ring_to_blob_storage_when_configured()
+    {
+        // Arrange
+        var services = new ServiceCollection();
+
+        using var configuration = BuildDataProtectionConfiguration(
+            "https://example.blob.core.windows.net/keys/schoolaccount.xml",
+            "https://example.vault.azure.net/keys/data-protection"
+        );
+
+        services.AddConfiguredDataProtection(configuration);
+
+        var provider = services.BuildServiceProvider();
+
+        // Act
+        var options = provider.GetRequiredService<IOptions<KeyManagementOptions>>().Value;
+
+        // Assert
+        options.XmlRepository.ShouldNotBeNull();
+        options.XmlRepository.GetType().Name.ShouldBe("AzureBlobXmlRepository");
+        options.XmlEncryptor.ShouldNotBeNull();
+        options.XmlEncryptor.GetType().Name.ShouldBe("AzureKeyVaultXmlEncryptor");
+    }
+
+    [Theory]
+    [InlineData(null, null)]
+    [InlineData("https://example.blob.core.windows.net/keys/schoolaccount.xml", null)]
+    [InlineData(null, "https://example.vault.azure.net/keys/data-protection")]
+    [InlineData("", "")]
+    public void Leaves_the_key_ring_alone_when_the_blob_or_key_is_missing(
+        string? keyRingBlobUri,
+        string? keyEncryptionKeyUri
+    )
+    {
+        // Arrange
+        var services = new ServiceCollection();
+
+        using var configuration = BuildDataProtectionConfiguration(keyRingBlobUri, keyEncryptionKeyUri);
+
+        // Act
+        services.AddConfiguredDataProtection(configuration);
+
+        // Assert - nothing registered, so the framework's own defaults apply
+        services.ShouldBeEmpty();
+    }
+
     private static object? GetResourceAttribute(IConfiguration configuration, string key)
     {
-        var services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
+        var services = new ServiceCollection();
 
         services.AddSingleton(configuration);
         services.AddLogging();
@@ -277,6 +363,15 @@ public class ServiceCollectionAddConfiguredOpenTelemetryExtensionTests
         return environment;
     }
 
+    private static ConfigurationManager BuildDataProtectionConfiguration(
+        string? keyRingBlobUri,
+        string? keyEncryptionKeyUri
+    ) =>
+        BuildConfiguration(
+            ($"{DataProtectionSettings.SectionName}:KeyRingBlobUri", keyRingBlobUri),
+            ($"{DataProtectionSettings.SectionName}:KeyEncryptionKeyUri", keyEncryptionKeyUri)
+        );
+
     private static ConfigurationManager BuildConfiguration(
         params (string Key, string? Value)[] entries
     )
@@ -287,5 +382,44 @@ public class ServiceCollectionAddConfiguredOpenTelemetryExtensionTests
         );
 
         return configManager;
+    }
+
+    private sealed class CountingLoggerProvider : ILoggerProvider
+    {
+        private readonly List<string> _messages = [];
+
+        public int Count(string message)
+        {
+            lock (_messages)
+            {
+                return _messages.Count(logged => logged == message);
+            }
+        }
+
+        public ILogger CreateLogger(string categoryName) => new CountingLogger(_messages);
+
+        public void Dispose() { }
+
+        private sealed class CountingLogger(List<string> messages) : ILogger
+        {
+            public IDisposable? BeginScope<TState>(TState state)
+                where TState : notnull => null;
+
+            public bool IsEnabled(LogLevel logLevel) => true;
+
+            public void Log<TState>(
+                LogLevel logLevel,
+                EventId eventId,
+                TState state,
+                Exception? exception,
+                Func<TState, Exception?, string> formatter
+            )
+            {
+                lock (messages)
+                {
+                    messages.Add(formatter(state, exception));
+                }
+            }
+        }
     }
 }
