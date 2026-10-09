@@ -22,6 +22,7 @@ builder
 
 var app = builder.Build();
 
+app.LogTelemetryConfiguration();
 app.UseForwardedHeadersDiagnostics(app.Environment);
 app.UseConfiguredForwardedHeaders(app.Configuration);
 app.UseStatusCodePagesWithReExecute("/error/{0}");

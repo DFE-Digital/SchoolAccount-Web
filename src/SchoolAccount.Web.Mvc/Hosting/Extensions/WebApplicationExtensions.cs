@@ -7,6 +7,7 @@ namespace SchoolAccount.Web.Mvc.Hosting.Extensions;
 public static class WebApplicationExtensions
 {
     private const string _diagnosticsLoggerCategory = "ForwardedHeaders.Diagnostics";
+    private const string _telemetryLoggerCategory = "OpenTelemetry.Diagnostics";
 
     /// <summary>
     /// Trusts the reverse proxy's X-Forwarded-For/X-Forwarded-Proto headers, so the app sees
@@ -95,6 +96,81 @@ public static class WebApplicationExtensions
                     }
                 }
             }
+        );
+    }
+
+    /// <summary>
+    /// Logs the OpenTelemetry settings the app starts with, so it's clear where telemetry is
+    /// going when running locally. Tools such as Rider's plugins add these settings when they
+    /// launch the app, so they don't appear in the run configuration. Development only.
+    /// </summary>
+    public static void LogTelemetryConfiguration(this WebApplication app)
+    {
+        if (!app.Environment.IsDevelopment())
+        {
+            return;
+        }
+
+        var logger = app
+            .Services.GetRequiredService<ILoggerFactory>()
+            .CreateLogger(_telemetryLoggerCategory);
+
+        LogTelemetryConfiguration(app.Configuration, logger);
+    }
+
+    /// <summary>
+    /// Logs every <c>OTEL_</c> setting, hiding header values as they can hold API keys, and
+    /// whether an Application Insights connection string is set, with its ingestion endpoint but
+    /// never its key.
+    /// </summary>
+    public static void LogTelemetryConfiguration(IConfiguration configuration, ILogger logger)
+    {
+        if (!logger.IsEnabled(LogLevel.Information))
+        {
+            return;
+        }
+
+        var otelSettings = configuration
+            .AsEnumerable()
+            .Where(setting =>
+                setting.Key.StartsWith("OTEL_", StringComparison.OrdinalIgnoreCase)
+                && setting.Value is not null
+            )
+            .OrderBy(setting => setting.Key, StringComparer.OrdinalIgnoreCase);
+
+        foreach (var (name, value) in otelSettings)
+        {
+            logger.LogInformation(
+                "Telemetry setting {Name}={Value}",
+                name,
+                name.EndsWith("_HEADERS", StringComparison.OrdinalIgnoreCase) ? "(hidden)" : value
+            );
+        }
+
+        var connectionString = configuration[
+            AzureMonitorSettings.ConnectionStringEnvironmentVariable
+        ];
+
+        if (string.IsNullOrWhiteSpace(connectionString))
+        {
+            logger.LogInformation(
+                "Telemetry setting {Name} is not set",
+                AzureMonitorSettings.ConnectionStringEnvironmentVariable
+            );
+            return;
+        }
+
+        var ingestionEndpoint = connectionString
+            .Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .FirstOrDefault(part =>
+                part.StartsWith("IngestionEndpoint=", StringComparison.OrdinalIgnoreCase)
+            )
+            ?["IngestionEndpoint=".Length..];
+
+        logger.LogInformation(
+            "Telemetry setting {Name} is set, with ingestion endpoint {IngestionEndpoint}",
+            AzureMonitorSettings.ConnectionStringEnvironmentVariable,
+            ingestionEndpoint ?? "(none)"
         );
     }
 }
