@@ -53,10 +53,15 @@ public class FeedbackControllerTests
         // Assert
         result.ShouldBeOfType<LocalRedirectResult>().Url.ShouldBe("/Submit");
         controller
-            .TempData["FeedbackErrors"]
-            .ShouldBeOfType<string[]>()
-            .ShouldHaveSingleItem()
-            .ShouldBe("Enter your feedback or describe the problem");
+            .TempData["ErrorSummary"]
+            .ShouldBeOfType<Dictionary<string, string>>()
+            .ShouldBe(
+                new Dictionary<string, string>
+                {
+                    [nameof(FeedbackForm.FeedbackMessage)] =
+                        "Enter your feedback or describe the problem",
+                }
+            );
         controller.TempData["FeedbackSubmitted"].ShouldBeNull();
         await _feedbackCommandHandler
             .DidNotReceive()

@@ -49,10 +49,9 @@ public class FeedbackController(
     /// </summary>
     private LocalRedirectResult RedirectBackWithErrors(Uri returnUrl)
     {
-        TempData["FeedbackErrors"] = ModelState
-            .Values.SelectMany(entry => entry.Errors)
-            .Select(error => error.ErrorMessage)
-            .ToArray();
+        TempData["ErrorSummary"] = ModelState
+            .Where(entry => entry.Value?.Errors.Count > 0)
+            .ToDictionary(entry => entry.Key, entry => entry.Value!.Errors[0].ErrorMessage);
 
         return LocalRedirect(returnUrl.ToString());
     }

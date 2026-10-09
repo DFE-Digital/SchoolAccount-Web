@@ -92,14 +92,14 @@ public class FeedbackControllerTests : IClassFixture<SchoolAccountWebApplication
                 html.IndexOf("<h1", StringComparison.Ordinal)
             );
         html.ShouldContain(
-            "<a href=\"#feedbackMessage\">Enter your feedback or describe the problem</a>"
+            "<a href=\"#FeedbackMessage\">Enter your feedback or describe the problem</a>"
         );
         html.ShouldContain("data-has-errors=\"true\"");
         html.ShouldContain("govuk-form-group--error");
         html.ShouldContain("govuk-textarea--error");
-        html.ShouldContain("id=\"feedbackMessage-error\"");
+        html.ShouldContain("id=\"FeedbackMessage-error\"");
         html.ShouldContain(
-            "aria-describedby=\"what-do-you-want-to-tell-us-hint feedbackMessage-error\""
+            "aria-describedby=\"what-do-you-want-to-tell-us-hint FeedbackMessage-error\""
         );
     }
 

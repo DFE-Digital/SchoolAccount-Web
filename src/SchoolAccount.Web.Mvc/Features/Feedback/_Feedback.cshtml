@@ -1,7 +1,8 @@
-@model SchoolAccount.Web.Mvc.Features.Feedback.FeedbackViewModel
+@using SchoolAccount.Web.Mvc.Features.Feedback
+@model FeedbackViewModel
 @{
-    var feedbackErrors = TempData["FeedbackErrors"] as string[] ?? [];
-    var messageError = feedbackErrors.FirstOrDefault();
+    var errors = TempData["ErrorSummary"] as IDictionary<string, string> ?? new Dictionary<string, string>();
+    var messageError = errors.TryGetValue(nameof(FeedbackForm.FeedbackMessage), out var error) ? error : null;
 }
 
 <section id="page-feedback" class="footer-feedback" aria-label="Page feedback">
@@ -19,14 +20,14 @@
             </div>
 
             <div id="feedback-form" class="footer-feedback__row footer-feedback__row--submitted" aria-hidden="false"
-                 data-has-errors="@(feedbackErrors.Length > 0 ? "true" : "false")">
+                 data-has-errors="@(messageError is not null ? "true" : "false")">
                 <form id="tell-us-form" asp-controller="Feedback" asp-action="Submit" 
                       method="post" novalidate>
                     <input type="hidden" name="returnUrl"
                            value="@($"{Context.Request.Path}{Context.Request.QueryString}")"/>
                     <div class="govuk-form-group @(messageError is not null ? "govuk-form-group--error" : null)">
                         <h2 class="govuk-label-wrapper">
-                            <label class="govuk-label govuk-label--m" for="feedbackMessage">
+                            <label class="govuk-label govuk-label--m" for="FeedbackMessage">
                                 Your feedback
                             </label>
                         </h2>
@@ -35,13 +36,13 @@
                         </div>
                         @if (messageError is not null)
                         {
-                            <p id="feedbackMessage-error" class="govuk-error-message">
+                            <p id="FeedbackMessage-error" class="govuk-error-message">
                                 <span class="govuk-visually-hidden">Error:</span> @messageError
                             </p>
                         }
                         <textarea class="govuk-textarea @(messageError is not null ? "govuk-textarea--error" : null)"
-                                  id="feedbackMessage" name="feedbackMessage" rows="5"
-                                  aria-describedby="what-do-you-want-to-tell-us-hint @(messageError is not null ? "feedbackMessage-error" : null)"></textarea>
+                                  id="FeedbackMessage" name="FeedbackMessage" rows="5"
+                                  aria-describedby="what-do-you-want-to-tell-us-hint @(messageError is not null ? "FeedbackMessage-error" : null)"></textarea>
                     </div>
                     <div class="govuk-button-group">
                         <button type="submit" class="govuk-button footer-feedback__send">
