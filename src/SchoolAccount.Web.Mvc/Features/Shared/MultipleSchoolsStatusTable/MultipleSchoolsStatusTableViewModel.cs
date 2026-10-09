@@ -12,10 +12,10 @@ public class MultipleSchoolsStatusTableViewModel
 
         public string Status { get; init; }
 
-        public int? Errors { get; set; }
+        public int? Errors { get; init; }
 
-        public int? Queries { get; set; }
+        public int? Queries { get; init; }
 
-        public string UpdatedAt { get; set; }
+        public string UpdatedAt { get; init; }
     }
 }
