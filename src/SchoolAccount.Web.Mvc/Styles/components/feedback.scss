@@ -9,4 +9,5 @@
 
 .footer-feedback {
   background: govuk-colour("blue", $variant: "tint-95");
+  border-top: 1px solid govuk-colour("blue", $variant: "tint-50");
 }
