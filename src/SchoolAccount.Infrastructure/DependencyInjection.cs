@@ -89,7 +89,7 @@ public static class DependencyInjection
 
                     return new TableClient(
                         config.TableStorageConnectionString,
-                        "FeedbackTable",
+                        "SchoolAccountFeedback",
                         options
                     );
                 }
