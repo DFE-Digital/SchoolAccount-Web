@@ -16,11 +16,6 @@ public class MultipleSchoolsStatusTableViewModel
 
         public int? Queries { get; set; }
 
-        public DateTime? UpdatedAt { get; set; }
-
-        public string UpdatedAtMessage =>
-            UpdatedAt.HasValue
-                ? $"{Math.Floor((DateTime.UtcNow - UpdatedAt.Value).TotalDays)} days ago"
-                : string.Empty;
+        public string UpdatedAt { get; set; }
     }
 }
