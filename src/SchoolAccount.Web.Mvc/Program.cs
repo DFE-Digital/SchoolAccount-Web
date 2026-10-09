@@ -12,6 +12,7 @@ if (builder.Configuration.GetValue<bool>("AzureAppConfiguration:Enabled"))
     builder.Configuration.AddAzureAppConfiguration();
 }
 
+builder.Logging.ClearProviders();
 builder.Host.UseConfiguredSerilog();
 
 builder

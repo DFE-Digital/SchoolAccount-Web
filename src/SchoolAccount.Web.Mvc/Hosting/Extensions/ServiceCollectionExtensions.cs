@@ -1,11 +1,82 @@
 using Azure.Identity;
+using Azure.Monitor.OpenTelemetry.AspNetCore;
 using Microsoft.AspNetCore.DataProtection;
+using OpenTelemetry;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Trace;
 using SchoolAccount.Web.Mvc.Hosting.Models;
 
 namespace SchoolAccount.Web.Mvc.Hosting.Extensions;
 
 public static class ServiceCollectionExtensions
 {
+    /// <summary>
+    /// Sends traces, metrics and logs to the <see cref="TelemetrySettings.Destination"/>.
+    /// </summary>
+    /// <remarks>
+    /// Throws if the destination isn't configured, except OTLP in development.
+    /// </remarks>
+    public static IServiceCollection AddConfiguredOpenTelemetry(
+        this IServiceCollection services,
+        IConfiguration configuration,
+        IHostEnvironment environment
+    )
+    {
+        var destination = TelemetrySettings.From(configuration).Destination;
+
+        switch (destination)
+        {
+            case TelemetryDestination.AzureMonitor:
+                if (!AzureMonitorSettings.IsConfigured(configuration))
+                {
+                    throw new InvalidOperationException(
+                        $"{TelemetrySettings.SectionName}:{nameof(TelemetrySettings.Destination)} is "
+                            + $"{destination}, but {AzureMonitorSettings.ConnectionStringEnvironmentVariable} "
+                            + "is not set."
+                    );
+                }
+
+                services.AddOpenTelemetry().UseAzureMonitor();
+                break;
+
+            case TelemetryDestination.Otlp:
+                if (!OpenTelemetrySettings.IsOtlpConfigured(configuration))
+                {
+                    if (environment.IsDevelopment())
+                    {
+                        break;
+                    }
+
+                    throw new InvalidOperationException(
+                        $"{TelemetrySettings.SectionName}:{nameof(TelemetrySettings.Destination)} is "
+                            + $"{destination}, but {OpenTelemetrySettings.OtlpEndpointEnvironmentVariable} "
+                            + "is not set."
+                    );
+                }
+
+                services
+                    .AddOpenTelemetry()
+                    .UseOtlpExporter()
+                    .WithLogging(_ => { }, options => options.IncludeFormattedMessage = true)
+                    .WithTracing(tracing =>
+                        tracing.AddAspNetCoreInstrumentation().AddHttpClientInstrumentation()
+                    )
+                    .WithMetrics(metrics =>
+                        metrics.AddAspNetCoreInstrumentation().AddHttpClientInstrumentation()
+                    );
+
+                // Stops Serilog exporting every log twice over http/protobuf.
+                services.AddHttpClient("OtlpLogExporter").RemoveAllLoggers();
+                break;
+
+            case TelemetryDestination.None:
+            default:
+                break;
+        }
+
+        return services;
+    }
+
     /// <summary>
     /// Persists the Data Protection key ring to blob storage, encrypted with a Key Vault key, so
     /// that every instance of the app shares one key ring, and it survives a restart. Without this
