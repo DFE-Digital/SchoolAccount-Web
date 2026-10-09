@@ -17,8 +17,6 @@ public class AzureTableClient(TableClient tableClient) : IFeedbackClient
     {
         try
         {
-            await tableClient.CreateIfNotExistsAsync(cancellationToken);
-
             var now = DateTime.UtcNow;
             var feedback = new FeedbackModel
             {
