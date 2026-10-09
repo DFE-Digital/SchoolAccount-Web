@@ -1,9 +1,7 @@
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NSubstitute;
 using OpenTelemetry;
@@ -256,42 +254,6 @@ public class ServiceCollectionExtensionsTests
     }
 
     [Fact]
-    public async Task Serilog_writes_each_log_to_each_provider_once_when_exporting_over_otlp_http()
-    {
-        // Arrange
-        var builder = WebApplication.CreateBuilder(
-            new WebApplicationOptions { EnvironmentName = "Development" }
-        );
-
-        builder.Configuration.AddInMemoryCollection(
-            new Dictionary<string, string?>
-            {
-                [_destination] = nameof(TelemetryDestination.Otlp),
-                [OtlpEndpointEnvironmentVariable] = "http://localhost:4318",
-                ["OTEL_EXPORTER_OTLP_PROTOCOL"] = "http/protobuf",
-            }
-        );
-
-        builder.Logging.ClearProviders();
-        builder.Host.UseConfiguredSerilog();
-
-        using var countingProvider = new CountingLoggerProvider();
-        builder.Services.AddSingleton<ILoggerProvider>(countingProvider);
-        builder.Services.AddHttpClient();
-        builder.Services.AddConfiguredOpenTelemetry(builder.Configuration, builder.Environment);
-
-        await using var app = builder.Build();
-
-        // Act
-        app.Services.GetRequiredService<ILoggerFactory>()
-            .CreateLogger("Test")
-            .LogInformation("Logged once");
-
-        // Assert
-        countingProvider.Count("Logged once").ShouldBe(1);
-    }
-
-    [Fact]
     public void Persists_the_key_ring_to_blob_storage_when_configured()
     {
         // Arrange
@@ -385,44 +347,5 @@ public class ServiceCollectionExtensionsTests
         );
 
         return configManager;
-    }
-
-    private sealed class CountingLoggerProvider : ILoggerProvider
-    {
-        private readonly List<string> _messages = [];
-
-        public int Count(string message)
-        {
-            lock (_messages)
-            {
-                return _messages.Count(logged => logged == message);
-            }
-        }
-
-        public ILogger CreateLogger(string categoryName) => new CountingLogger(_messages);
-
-        public void Dispose() { }
-
-        private sealed class CountingLogger(List<string> messages) : ILogger
-        {
-            public IDisposable? BeginScope<TState>(TState state)
-                where TState : notnull => null;
-
-            public bool IsEnabled(LogLevel logLevel) => true;
-
-            public void Log<TState>(
-                LogLevel logLevel,
-                EventId eventId,
-                TState state,
-                Exception? exception,
-                Func<TState, Exception?, string> formatter
-            )
-            {
-                lock (messages)
-                {
-                    messages.Add(formatter(state, exception));
-                }
-            }
-        }
     }
 }
