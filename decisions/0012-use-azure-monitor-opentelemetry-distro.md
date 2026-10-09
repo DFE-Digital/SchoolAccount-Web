@@ -57,7 +57,8 @@ How it works:
 * Good, because logs, traces and metrics reach Application Insights from one in-process pipeline.
 * Good, because Serilog stays as it is, and Rider shows all three signals locally.
 * Bad, because forwarding Serilog through the logger provider is fiddly. The default providers have to be cleared, and
-  with `OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf` every log is exported twice.
+  logging has to be turned off on the OTLP log exporter's `HttpClient`, or every log is exported twice over
+  `http/protobuf`.
 * Good, because the destination is explicit per environment, so it can't be changed by environment variables that
   tools add.
 * Bad, because a new environment has to choose its destination, or it gets none.
