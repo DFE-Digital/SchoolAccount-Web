@@ -8,7 +8,7 @@ namespace SchoolAccount.IntegrationTests.Features.CrossCutting;
 public class UnauthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<Program> factory)
     : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
 {
-    private readonly HttpClient _client = factory.CreateUnauthorisedClient();
+    private readonly HttpClient _client = factory.CreateUnauthenticatedClient();
 
     [Fact]
     public async Task Ensure_that_the_dashboard_controller_redirects_for_unauthorised_users()
