@@ -1,29 +1,18 @@
-function setHidden (id, hidden) {
-    document.getElementById(id).classList.toggle('govuk-!-display-none', hidden);
-}
-
-function showForm () {
-    setHidden('feedback-form', false);
-    setHidden('cancel-feedback', false);
-    setHidden('feedback-initial', true);
-}
-
-function showInitial () {
-    setHidden('feedback-form', true);
-    setHidden('feedback-initial', false);
-}
-
 const feedbackForm = document.getElementById('feedback-form');
 
-// The thank-you message replaces the form, so there's nothing to set up
 if (feedbackForm) {
-    // After a submit with errors, keep the form open so its error summary shows
-    if (feedbackForm.dataset.hasErrors === 'true') {
-        showForm();
-    } else {
-        showInitial();
-    }
+    const initial = document.getElementById('feedback-initial');
+    const cancel = document.getElementById('cancel-feedback');
 
-    document.getElementById('open-feedback').addEventListener('click', showForm);
-    document.getElementById('cancel-feedback').addEventListener('click', showInitial);
+    const showForm = (open) => {
+        feedbackForm.classList.toggle('govuk-!-display-none', !open);
+        initial.classList.toggle('govuk-!-display-none', open);
+    };
+
+    cancel.classList.remove('govuk-!-display-none');
+
+    showForm(feedbackForm.dataset.hasErrors === 'true');
+
+    document.getElementById('open-feedback').addEventListener('click', () => showForm(true));
+    cancel.addEventListener('click', () => showForm(false));
 }
