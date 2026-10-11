@@ -19,7 +19,7 @@ internal static class ValidationDecorator
             CancellationToken cancellationToken
         )
         {
-            var failures = await ValidateAsync(command, validators);
+            var failures = await ValidateAsync(command, validators, cancellationToken);
 
             if (failures.Length > 0)
             {
@@ -38,7 +38,7 @@ internal static class ValidationDecorator
     {
         public async Task<Result> Handle(TCommand command, CancellationToken cancellationToken)
         {
-            var failures = await ValidateAsync(command, validators);
+            var failures = await ValidateAsync(command, validators, cancellationToken);
 
             if (failures.Length > 0)
             {
@@ -51,7 +51,8 @@ internal static class ValidationDecorator
 
     private static async Task<ValidationFailure[]> ValidateAsync<TCommand>(
         TCommand command,
-        IEnumerable<IValidator<TCommand>> validators
+        IEnumerable<IValidator<TCommand>> validators,
+        CancellationToken cancellationToken
     )
     {
         var validatorsArray = validators as IValidator<TCommand>[] ?? validators.ToArray();
@@ -64,7 +65,7 @@ internal static class ValidationDecorator
         var context = new ValidationContext<TCommand>(command);
 
         var validationResults = await Task.WhenAll(
-            validatorsArray.Select(v => v.ValidateAsync(context))
+            validatorsArray.Select(v => v.ValidateAsync(context, cancellationToken))
         );
 
         return validationResults.Where(r => !r.IsValid).SelectMany(r => r.Errors).ToArray();

@@ -1,4 +1,5 @@
 using FluentValidation;
+using FluentValidation.Results;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using SchoolAccount.Application;
@@ -37,6 +38,40 @@ public class ValidationDecoratorTests
         result.IsFailure.ShouldBeTrue();
         result.Error.ShouldBeOfType<ValidationError>();
         await handler.DidNotReceive().Handle(Arg.Any<TestCommand>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Validators_receive_the_cancellation_token()
+    {
+        // Arrange
+        using var cancellation = new CancellationTokenSource();
+        var handler = Substitute.For<ICommandHandler<TestCommand, int>>();
+        handler
+            .Handle(Arg.Any<TestCommand>(), Arg.Any<CancellationToken>())
+            .Returns(Result.Success(1));
+        var validator = Substitute.For<IValidator<TestCommand>>();
+        validator
+            .ValidateAsync(Arg.Any<IValidationContext>(), Arg.Any<CancellationToken>())
+            .Returns(new ValidationResult());
+        var services = new ServiceCollection();
+        services.AddScoped(_ => handler);
+        services.AddScoped(_ => validator);
+        services.AddLogging();
+        services.AddApplication();
+        var provider = services.BuildServiceProvider();
+        using var scope = provider.CreateScope();
+
+        var decorated = scope.ServiceProvider.GetRequiredService<
+            ICommandHandler<TestCommand, int>
+        >();
+
+        // Act
+        await decorated.Handle(new TestCommand { Name = "test-name" }, cancellation.Token);
+
+        // Assert
+        await validator
+            .Received(1)
+            .ValidateAsync(Arg.Any<IValidationContext>(), cancellation.Token);
     }
 
     public sealed record TestCommand : ICommand<int>
