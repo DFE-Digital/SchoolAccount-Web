@@ -21,6 +21,7 @@ public class FeedbackCommandValidatorTests
     {
         // Arrange
         var services = new ServiceCollection();
+        services.AddLogging();
         services.AddApplication();
         var provider = services.BuildServiceProvider();
 
@@ -38,6 +39,7 @@ public class FeedbackCommandValidatorTests
         // Arrange
         var client = Substitute.For<IFeedbackClient>();
         var services = new ServiceCollection();
+        services.AddLogging();
         services.AddApplication();
         services.AddSingleton(client);
         var provider = services.BuildServiceProvider();
@@ -76,6 +78,7 @@ public class FeedbackCommandValidatorTests
             )
             .Returns(Result.Success);
         var services = new ServiceCollection();
+        services.AddLogging();
         services.AddApplication();
         services.AddSingleton(client);
         var provider = services.BuildServiceProvider();

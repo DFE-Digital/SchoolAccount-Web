@@ -18,6 +18,7 @@ public class ValidationDecoratorTests
         var services = new ServiceCollection();
         services.AddScoped(_ => handler);
         services.AddScoped<IValidator<TestCommand>, TestCommandValidator>();
+        services.AddLogging();
         services.AddApplication();
         var provider = services.BuildServiceProvider();
         using var scope = provider.CreateScope();
@@ -35,9 +36,7 @@ public class ValidationDecoratorTests
         // Assert
         result.IsFailure.ShouldBeTrue();
         result.Error.ShouldBeOfType<ValidationError>();
-        await handler
-            .DidNotReceive()
-            .Handle(Arg.Any<TestCommand>(), Arg.Any<CancellationToken>());
+        await handler.DidNotReceive().Handle(Arg.Any<TestCommand>(), Arg.Any<CancellationToken>());
     }
 
     public sealed record TestCommand : ICommand<int>
