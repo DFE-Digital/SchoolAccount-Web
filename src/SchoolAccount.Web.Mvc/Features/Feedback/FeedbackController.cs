@@ -36,7 +36,12 @@ public class FeedbackController(
 
         if (!result.IsSuccess)
         {
-            throw new InvalidOperationException("Feedback submission failed");
+            ModelState.AddModelError(
+                nameof(FeedbackForm.FeedbackMessage),
+                "Sorry, there is a problem sending your feedback. Try again later"
+            );
+
+            return RedirectBackWithErrors(returnUrl);
         }
 
         TempData["FeedbackSubmitted"] = true;

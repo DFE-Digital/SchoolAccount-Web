@@ -92,16 +92,28 @@ public class FeedbackControllerTests
     }
 
     [Fact]
-    public async Task Submit_throws_when_handler_returns_failure()
+    public async Task Submit_redirects_back_to_the_form_with_an_error_when_the_handler_fails()
     {
         // Arrange
         HandlerReturns(Result.Failure(SharedKernel.Error.Failure("test", "test")));
         using var controller = CreateController();
 
-        // Act & Assert
-        await Should.ThrowAsync<InvalidOperationException>(async () =>
-            await controller.Submit(Form("test-feedback"), _cancellationToken)
-        );
+        // Act
+        var result = await controller.Submit(Form("test-feedback"), _cancellationToken);
+
+        // Assert
+        result.ShouldBeOfType<LocalRedirectResult>().Url.ShouldBe("/Submit");
+        controller
+            .TempData["ErrorSummary"]
+            .ShouldBeOfType<Dictionary<string, string>>()
+            .ShouldBe(
+                new Dictionary<string, string>
+                {
+                    [nameof(FeedbackForm.FeedbackMessage)] =
+                        "Sorry, there is a problem sending your feedback. Try again later",
+                }
+            );
+        controller.TempData["FeedbackSubmitted"].ShouldBeNull();
     }
 
     [Fact]
