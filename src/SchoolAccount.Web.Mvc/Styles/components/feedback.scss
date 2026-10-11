@@ -10,4 +10,20 @@
 .footer-feedback {
   background: govuk-colour("blue", $variant: "tint-95");
   border-top: 1px solid govuk-colour("blue", $variant: "tint-50");
+  
+  &__row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    row-gap: govuk-spacing(3);
+  }
+
+  &__button {
+    background-color: #003a69;
+    box-shadow: 0 2px 0 #002d18;
+
+    &:hover {
+      background-color: #00294a;
+    }
+  }
 }
