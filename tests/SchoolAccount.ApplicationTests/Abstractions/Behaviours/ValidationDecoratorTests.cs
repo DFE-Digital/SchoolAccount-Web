@@ -41,6 +41,38 @@ public class ValidationDecoratorTests
     }
 
     [Fact]
+    public async Task Valid_command_with_a_response_reaches_its_handler_and_returns_its_value()
+    {
+        // Arrange
+        var handler = Substitute.For<ICommandHandler<TestCommand, int>>();
+        handler
+            .Handle(Arg.Any<TestCommand>(), Arg.Any<CancellationToken>())
+            .Returns(Result.Success(42));
+        var services = new ServiceCollection();
+        services.AddScoped(_ => handler);
+        services.AddScoped<IValidator<TestCommand>, TestCommandValidator>();
+        services.AddLogging();
+        services.AddApplication();
+        var provider = services.BuildServiceProvider();
+        using var scope = provider.CreateScope();
+
+        var decorated = scope.ServiceProvider.GetRequiredService<
+            ICommandHandler<TestCommand, int>
+        >();
+
+        // Act
+        var result = await decorated.Handle(
+            new TestCommand { Name = "test-name" },
+            CancellationToken.None
+        );
+
+        // Assert
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.ShouldBe(42);
+        await handler.Received(1).Handle(Arg.Any<TestCommand>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
     public async Task Validators_receive_the_cancellation_token()
     {
         // Arrange
