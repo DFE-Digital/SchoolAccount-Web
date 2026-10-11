@@ -16,14 +16,12 @@ public class AzureTableClient(TableClient tableClient) : IFeedbackClient
     {
         try
         {
-            var now = DateTime.UtcNow;
             var feedback = new FeedbackModel
             {
                 PartitionKey = organisationId,
                 RowKey = Guid.NewGuid().ToString(),
                 Ukprn = ukprn,
                 Message = message,
-                Timestamp = now,
             };
 
             await tableClient.AddEntityAsync(feedback, cancellationToken);
