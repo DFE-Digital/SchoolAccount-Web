@@ -1,13 +1,11 @@
 using Azure;
 using Azure.Data.Tables;
-using Microsoft.Extensions.Logging;
 using SchoolAccount.Application.Abstractions.Clients;
 using SchoolAccount.SharedKernel;
 
 namespace SchoolAccount.Infrastructure.Clients.Azure;
 
-public class AzureTableClient(TableClient tableClient, ILogger<AzureTableClient> logger)
-    : IFeedbackClient
+public class AzureTableClient(TableClient tableClient) : IFeedbackClient
 {
     public async Task<Result> SendFeedback(
         string message,
@@ -34,9 +32,8 @@ public class AzureTableClient(TableClient tableClient, ILogger<AzureTableClient>
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Failed to send feedback");
             return Result.Failure<RequestFailedException>(
-                Error.Failure("Azure Table Client", "Failed to send feedback")
+                Error.Failure("Azure Table Client", $"Failed to send feedback: {ex.Message}")
             );
         }
     }
