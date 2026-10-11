@@ -1,5 +1,6 @@
 using Azure;
 using Azure.Data.Tables;
+using Microsoft.Extensions.Logging.Testing;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using SchoolAccount.Infrastructure.Clients.Azure;
@@ -10,6 +11,7 @@ namespace SchoolAccount.Infrastructure.UnitTests.Azure;
 public class AzureTableClientTests
 {
     private readonly TableClient _tableClient = Substitute.For<TableClient>();
+    private readonly FakeLogger<AzureTableClient> _logger = new();
 
     [Fact]
     public async Task A_table_is_added_by_the_client_successfully()
@@ -19,7 +21,7 @@ public class AzureTableClientTests
         var ukprn = "test-ukprn";
         var laestab = "test-laestab";
 
-        var client = new AzureTableClient(_tableClient);
+        var client = new AzureTableClient(_tableClient, _logger);
 
         // Act
         var result = await client.SendFeedback(message, ukprn, laestab, CancellationToken.None);
@@ -42,7 +44,7 @@ public class AzureTableClientTests
         _tableClient
             .AddEntityAsync(Arg.Any<FeedbackModel>(), Arg.Any<CancellationToken>())
             .ThrowsAsync(new RequestFailedException(""));
-        var client = new AzureTableClient(_tableClient);
+        var client = new AzureTableClient(_tableClient, _logger);
 
         // Act
         var result = await client.SendFeedback(message, ukprn, laestab, CancellationToken.None);
