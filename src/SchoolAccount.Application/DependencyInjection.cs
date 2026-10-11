@@ -32,22 +32,27 @@ public static class DependencyInjection
         );
 
         services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
+
         services.TryDecorate(
             typeof(ICommandHandler<>),
             typeof(ValidationDecorator.CommandBaseHandler<>)
         );
+
         services.TryDecorate(
             typeof(ICommandHandler<,>),
             typeof(ValidationDecorator.CommandHandler<,>)
         );
+
         services.TryDecorate(
             typeof(ICommandHandler<>),
             typeof(LoggingDecorator.CommandBaseHandler<>)
         );
+
         services.TryDecorate(
             typeof(ICommandHandler<,>),
             typeof(LoggingDecorator.CommandHandler<,>)
         );
+
         services.TryDecorate(typeof(IQueryHandler<,>), typeof(LoggingDecorator.QueryHandler<,>));
 
         return services;
