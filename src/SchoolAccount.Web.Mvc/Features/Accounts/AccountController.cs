@@ -35,6 +35,7 @@ public class AccountController(IUserContext userContext) : Controller
     }
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public IActionResult Logout()
     {
         if (!userContext.IsAuthenticated)
