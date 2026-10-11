@@ -26,13 +26,13 @@ public class AzureTableClient(TableClient tableClient) : IFeedbackClient
                 Timestamp = now,
             };
 
-            var response = await tableClient.AddEntityAsync(feedback, cancellationToken);
+            await tableClient.AddEntityAsync(feedback, cancellationToken);
 
-            return Result.Success(response.Status);
+            return Result.Success();
         }
         catch (Exception ex)
         {
-            return Result.Failure<RequestFailedException>(
+            return Result.Failure(
                 Error.Failure("Azure Table Client", $"Failed to send feedback: {ex.Message}")
             );
         }
