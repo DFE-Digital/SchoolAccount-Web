@@ -8,7 +8,7 @@ namespace SchoolAccount.Application.Abstractions.Behaviours;
 
 internal static class ValidationDecorator
 {
-    internal sealed class Command<TCommand, TResponse>(
+    internal sealed class CommandHandler<TCommand, TResponse>(
         ICommandHandler<TCommand, TResponse> next,
         IEnumerable<IValidator<TCommand>> validators
     ) : ICommandHandler<TCommand, TResponse>
@@ -30,7 +30,7 @@ internal static class ValidationDecorator
         }
     }
 
-    internal sealed class CommandHandler<TCommand>(
+    internal sealed class CommandBaseHandler<TCommand>(
         ICommandHandler<TCommand> next,
         IEnumerable<IValidator<TCommand>> validators
     ) : ICommandHandler<TCommand>
