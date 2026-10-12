@@ -1,6 +1,5 @@
 using System.Net;
 using System.Security.Claims;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using NSubstitute;
 using SchoolAccount.IntegrationTests.Common;
 using SchoolAccount.IntegrationTests.Common.Extensions;
@@ -23,7 +22,6 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     private readonly SchoolAccountWebApplicationFactory<Program> _factory;
     private readonly StubCensusJourneyHandler _getCensusJourneyHandler = new();
     private readonly Uri _testUri = new("https://www.gov.uk/");
-    private readonly IDateTimeProvider _dateTimeProvider = Substitute.For<IDateTimeProvider>();
 
     public JourneyControllerTests(SchoolAccountWebApplicationFactory<Program> factory)
     {
@@ -322,10 +320,11 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
             }
             """;
 
-        _dateTimeProvider.UtcNow.Returns(octoberFourth2026);
+        var dateTimeProvider = Substitute.For<IDateTimeProvider>();
+        dateTimeProvider.UtcNow.Returns(octoberFourth2026);
         var client = _factory.CreateAuthorisedClient(services =>
         {
-            services.AddSingleton(_dateTimeProvider);
+            services.AddSingleton(dateTimeProvider);
             services.StubQueryHandler(_getCensusJourneyHandler);
             services.AddSingleton(
                 new MockAuthClaimsOptions
