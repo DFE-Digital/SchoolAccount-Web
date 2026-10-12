@@ -11,7 +11,7 @@ public class LoggedOutActionTests(SchoolAccountWebApplicationFactory<Program> fa
     public async Task Ensure_an_authenticated_user_accessing_LoggedOut_are_redirected_to_the_start_page()
     {
         // Arrange
-        var client = factory.CreateUnauthorisedClient();
+        var client = factory.CreateUnauthenticatedClient();
         var requestUri = factory.GeneratePath("Account", "LoggedOut");
 
         // Act
