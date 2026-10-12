@@ -1,4 +1,3 @@
-using System.Globalization;
 using SchoolAccount.Application.Features.Collect.GetCensusJourney.Responses;
 using SchoolAccount.SharedKernel;
 using SchoolAccount.SharedKernel.Authentication;
