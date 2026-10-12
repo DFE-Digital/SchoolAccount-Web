@@ -24,13 +24,16 @@ public class CensusStatusMapperTests
     public void Every_action_is_mapped_with_its_status()
     {
         // Arrange
+        var octoberThird2026 = new DateTime(2026, 10, 03, 2, 0, 0, DateTimeKind.Utc);
+        var octoberFirst2026 = new DateTime(2026, 10, 01, 2, 0, 0, DateTimeKind.Utc);
         var organisation = new OrganisationResponse
         {
             Id = "123",
             Actions =
             [
-                Action("Autumn School Census", "Not Started"),
-                Action("Spring School Census", "Complete"),
+                Action("Autumn School Census", "Unavailable"),
+                Action("Autumn School Census", "Not Started", 1, 2, octoberThird2026),
+                Action("Spring School Census", "Complete", 3, 4, octoberFirst2026),
             ],
         };
 
@@ -38,11 +41,22 @@ public class CensusStatusMapperTests
         var censusStatus = CensusStatusMapper.ToResponse(organisation);
 
         // Assert
-        censusStatus.Actions.Count.ShouldBe(2);
+        censusStatus.Actions.Count.ShouldBe(3);
         censusStatus.Actions[0].Name.ShouldBe("Autumn School Census");
-        censusStatus.Actions[0].Status.Name.ShouldBe("Not Started");
-        censusStatus.Actions[1].Name.ShouldBe("Spring School Census");
-        censusStatus.Actions[1].Status.Name.ShouldBe("Complete");
+        censusStatus.Actions[0].Status.Name.ShouldBe("Unavailable");
+        censusStatus.Actions[0].Errors.ShouldBeNull();
+        censusStatus.Actions[0].Queries.ShouldBeNull();
+        censusStatus.Actions[0].UpdatedAt.ShouldBeNull();
+        censusStatus.Actions[1].Name.ShouldBe("Autumn School Census");
+        censusStatus.Actions[1].Status.Name.ShouldBe("Not Started");
+        censusStatus.Actions[1].Errors.ShouldBe(1);
+        censusStatus.Actions[1].Queries.ShouldBe(2);
+        censusStatus.Actions[1].UpdatedAt.ShouldBe(octoberThird2026);
+        censusStatus.Actions[2].Name.ShouldBe("Spring School Census");
+        censusStatus.Actions[2].Status.Name.ShouldBe("Complete");
+        censusStatus.Actions[2].Errors.ShouldBe(3);
+        censusStatus.Actions[2].Queries.ShouldBe(4);
+        censusStatus.Actions[2].UpdatedAt.ShouldBe(octoberFirst2026);
     }
 
     [Fact]
@@ -89,10 +103,19 @@ public class CensusStatusMapperTests
         request.Email.ShouldBe("test-user@example.com");
     }
 
-    private static ActionApiResponse Action(string name, string status) =>
+    private static ActionApiResponse Action(
+        string name,
+        string status,
+        int? errors = null,
+        int? queries = null,
+        DateTime? updatedAt = null
+    ) =>
         new()
         {
             Name = name,
             Status = new StatusApiResponse { Name = status },
+            Errors = errors,
+            Queries = queries,
+            UpdatedAt = updatedAt,
         };
 }

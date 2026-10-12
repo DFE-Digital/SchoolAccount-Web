@@ -28,6 +28,9 @@ public static class CensusStatusMapper
                 {
                     Name = action.Name,
                     Status = new CensusStatus { Name = action.Status.Name },
+                    Errors = action.Errors,
+                    Queries = action.Queries,
+                    UpdatedAt = action.UpdatedAt,
                 })
                 .ToList(),
         };
