@@ -10,10 +10,10 @@ public class DateFormatter(IDateTimeProvider dateTimeProvider)
         return date.ToString("d MMMM yyyy", CultureInfo.InvariantCulture);
     }
 
-    public string ToDaysAgo(DateTime date)
+    public string ToDaysAgo(DateTime date, int offsetDays = 0)
     {
-        var daysAgo = (int)Math.Ceiling((dateTimeProvider.UtcNow - date).TotalDays);
+        var daysAgo = (int)Math.Floor((dateTimeProvider.UtcNow - date).TotalDays) + offsetDays;
         var dayText = daysAgo == 1 ? "day" : "days";
-        return daysAgo == 0 ? "today" : $"{daysAgo} {dayText} ago";
+        return daysAgo == 0 ? "Today" : $"{daysAgo} {dayText} ago";
     }
 }

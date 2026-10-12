@@ -11,6 +11,7 @@ namespace SchoolAccount.Web.Mvc.Features.Journey;
 public class JourneyViewModelBuilder(IDateTimeProvider dateTimeProvider)
 {
     private readonly DateFormatter dateFormatter = new(dateTimeProvider);
+    private const int OneDayLag = 1;
 
     public JourneyViewModel Build(
         string? user,
@@ -67,7 +68,7 @@ public class JourneyViewModelBuilder(IDateTimeProvider dateTimeProvider)
                                 Queries = x.Queries,
                                 UpdatedAt = x.UpdatedAt is null
                                     ? string.Empty
-                                    : dateFormatter.ToDaysAgo(x.UpdatedAt.Value),
+                                    : dateFormatter.ToDaysAgo(x.UpdatedAt.Value, OneDayLag),
                             })
                         )
                         .ToList(),

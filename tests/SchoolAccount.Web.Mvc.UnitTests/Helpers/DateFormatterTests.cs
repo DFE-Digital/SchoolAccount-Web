@@ -8,24 +8,41 @@ namespace SchoolAccount.Web.Mvc.UnitTests.Helpers;
 public class DateFormatterTests
 {
     [Fact]
+    public void ToDaysAgo_returns_today_for_same_day()
+    {
+        // Arrange
+        var dateTimeProvider = Substitute.For<IDateTimeProvider>();
+        var twoAmSeptember14 = new DateTime(2026, 9, 14, 2, 0, 0, DateTimeKind.Utc);
+        var nineAmSeptember14 = new DateTime(2026, 9, 14, 9, 0, 0, DateTimeKind.Utc);
+        dateTimeProvider.UtcNow.Returns(nineAmSeptember14);
+        var dateFormatter = new DateFormatter(dateTimeProvider);
+
+        // Act
+        var result = dateFormatter.ToDaysAgo(twoAmSeptember14);
+
+        // Assert
+        result.ShouldBe("Today");
+    }
+
+    [Fact]
     public void ToDaysAgo_returns_day_singular_for_one_day_ago()
     {
         // Arrange
         var dateTimeProvider = Substitute.For<IDateTimeProvider>();
-        var tenAmSeptember14 = new DateTime(2026, 9, 14, 10, 0, 0, DateTimeKind.Utc);
+        var twoAmSeptember14 = new DateTime(2026, 9, 14, 2, 0, 0, DateTimeKind.Utc);
         var nineAmSeptember15 = new DateTime(2026, 9, 15, 9, 0, 0, DateTimeKind.Utc);
         dateTimeProvider.UtcNow.Returns(nineAmSeptember15);
         var dateFormatter = new DateFormatter(dateTimeProvider);
 
         // Act
-        var result = dateFormatter.ToDaysAgo(tenAmSeptember14);
+        var result = dateFormatter.ToDaysAgo(twoAmSeptember14);
 
         // Assert
         result.ShouldBe("1 day ago");
     }
 
     [Fact]
-    public void ToDaysAgo_rounds_up_to_latest_day()
+    public void ToDaysAgo_applies_offset_days()
     {
         // Arrange
         var dateTimeProvider = Substitute.For<IDateTimeProvider>();
@@ -35,7 +52,7 @@ public class DateFormatterTests
         var dateFormatter = new DateFormatter(dateTimeProvider);
 
         // Act
-        var result = dateFormatter.ToDaysAgo(twoAmSeptember15);
+        var result = dateFormatter.ToDaysAgo(twoAmSeptember15, 1);
 
         // Assert
         result.ShouldBe("1 day ago");
@@ -47,8 +64,8 @@ public class DateFormatterTests
         // Arrange
         var dateTimeProvider = Substitute.For<IDateTimeProvider>();
         var twoAmSeptember15 = new DateTime(2026, 9, 15, 02, 0, 0, DateTimeKind.Utc);
-        var nineAmSeptember16 = new DateTime(2026, 9, 16, 9, 0, 0, DateTimeKind.Utc);
-        dateTimeProvider.UtcNow.Returns(nineAmSeptember16);
+        var nineAmSeptember17 = new DateTime(2026, 9, 17, 9, 0, 0, DateTimeKind.Utc);
+        dateTimeProvider.UtcNow.Returns(nineAmSeptember17);
         var dateFormatter = new DateFormatter(dateTimeProvider);
 
         // Act
