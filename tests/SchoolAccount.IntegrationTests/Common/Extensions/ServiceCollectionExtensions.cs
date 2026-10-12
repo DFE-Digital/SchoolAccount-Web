@@ -16,7 +16,6 @@ public static class ServiceCollectionExtensions
     )
         where TQuery : IQuery<TResponse>
     {
-        services.RemoveAll<IQueryHandler<TQuery, TResponse>>();
         return services.AddScoped<IQueryHandler<TQuery, TResponse>>(_ => handler);
     }
 }

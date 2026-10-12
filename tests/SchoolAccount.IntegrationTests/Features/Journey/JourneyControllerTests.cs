@@ -1,8 +1,11 @@
 using System.Net;
 using System.Security.Claims;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using NSubstitute;
 using SchoolAccount.IntegrationTests.Common;
 using SchoolAccount.IntegrationTests.Common.Extensions;
 using SchoolAccount.IntegrationTests.Common.Pages;
+using SchoolAccount.SharedKernel;
 using SchoolAccount.TestCommon.Stubs;
 using Shouldly;
 using static SchoolAccount.TestCommon.Builders.CensusStatusesResponseBuilder;
@@ -20,6 +23,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     private readonly SchoolAccountWebApplicationFactory<Program> _factory;
     private readonly StubCensusJourneyHandler _getCensusJourneyHandler = new();
     private readonly Uri _testUri = new("https://www.gov.uk/");
+    private readonly IDateTimeProvider _dateTimeProvider = Substitute.For<IDateTimeProvider>();
 
     public JourneyControllerTests(SchoolAccountWebApplicationFactory<Program> factory)
     {
@@ -275,7 +279,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
                             "Not Started",
                             1,
                             2,
-                            new DateTime(2026, 10, 1, 9, 0, 0, DateTimeKind.Utc)
+                            new DateTime(2026, 10, 3, 9, 0, 0, DateTimeKind.Utc)
                         )
                 )
                 .AsSuccess()
@@ -300,6 +304,8 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     public async Task School_statuses_are_displayed_for_multi_academy_trust()
     {
         // Arrange
+        var octoberFirst2026 = new DateTime(2026, 10, 1, 2, 0, 0, DateTimeKind.Utc);
+        var octoberFourth2026 = new DateTime(2026, 10, 4, 9, 0, 0, DateTimeKind.Utc);
         var token = TestContext.Current.CancellationToken;
         var pageUri = _factory.GeneratePath("Journey", "Journey");
 
@@ -316,8 +322,10 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
             }
             """;
 
+        _dateTimeProvider.UtcNow.Returns(octoberFourth2026);
         var client = _factory.CreateAuthorisedClient(services =>
         {
+            services.AddSingleton(_dateTimeProvider);
             services.StubQueryHandler(_getCensusJourneyHandler);
             services.AddSingleton(
                 new MockAuthClaimsOptions
@@ -342,13 +350,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
                         .WithAction("Autumn Census 2026", "Unknown"),
                     ACensusStatusResponse()
                         .WithName("Test School 2")
-                        .WithAction(
-                            "Autumn Census 2026",
-                            "Submitted",
-                            1,
-                            2,
-                            new DateTime(2026, 10, 1, 9, 0, 0, DateTimeKind.Utc)
-                        )
+                        .WithAction("Autumn Census 2026", "Submitted", 1, 2, octoberFirst2026)
                 )
                 .AsSuccess()
         );
@@ -387,7 +389,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
             .ShouldSatisfyAllConditions(
                 s => s["Name"].ShouldBe("Test School 2"),
                 s => s["Status"].ShouldBe("Submitted"),
-                s => s["Last Changed"].ShouldContain("days ago"),
+                s => s["Last Changed"].ShouldBe("4 days ago"),
                 s => s["Errors"].ShouldBe("1"),
                 s => s["Queries"].ShouldBe("2")
             );
