@@ -29,6 +29,7 @@
                 {
                     <span class="header-navigation__school">@HeaderContentProvider.OrganisationName</span>
 
+                    @Html.AntiForgeryToken()
                     @using (Html.BeginForm("Logout", "Account", FormMethod.Post))
                     {
                         <button type="submit" class="header-navigation__link">
@@ -48,9 +49,15 @@
     </govuk-service-navigation>
 }
 
+<partial name="_ErrorSummary" />
+
 @RenderBody()
 
 @section GovUkFooter {
+    @if (HeaderContentProvider.IsAuthenticated)
+    {
+        <partial name="~/Features/Feedback/_Feedback.cshtml" />
+    }
     <govuk-footer>
         <govuk-footer-meta>
             <govuk-footer-meta-items>
@@ -73,6 +80,7 @@
 
     <script type="module">
         import * as MOJFrontend from "/lib/moj/moj-frontend-11.0.1.min.js";
+
         MOJFrontend.initAll()
     </script>
 }
