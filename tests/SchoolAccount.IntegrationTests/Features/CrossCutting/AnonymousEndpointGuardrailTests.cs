@@ -5,7 +5,7 @@ using Shouldly;
 namespace SchoolAccount.IntegrationTests.Features.CrossCutting;
 
 public class AnonymousEndpointGuardrailTests(SchoolAccountWebApplicationFactory<Program> factory)
-    : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
+    : IntegrationTest(factory)
 {
     private static readonly string[] _staticAssetFileExtensions =
     {
@@ -41,7 +41,7 @@ public class AnonymousEndpointGuardrailTests(SchoolAccountWebApplicationFactory<
     public void Endpoints_marked_as_AllowAnonymous_should_only_be_the_ones_on_the_allowlist()
     {
         // Arrange
-        using var scope = factory.Services.CreateScope();
+        using var scope = Factory.Services.CreateScope();
         var endpointDataSource = scope.ServiceProvider.GetRequiredService<EndpointDataSource>();
 
         var anonymousRoutes = endpointDataSource

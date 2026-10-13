@@ -3,28 +3,24 @@ using NSubstitute;
 using SchoolAccount.Application.Abstractions.Messaging;
 using SchoolAccount.Application.Features.Feedback;
 using SchoolAccount.IntegrationTests.Common;
-using SchoolAccount.IntegrationTests.Common.Extensions;
 using SchoolAccount.SharedKernel;
-using SchoolAccount.TestCommon.Stubs;
 using Shouldly;
 
 namespace SchoolAccount.IntegrationTests.Features.Feedback;
 
-public class FeedbackControllerTests : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
+public class FeedbackControllerTests : IntegrationTest
 {
     private readonly CancellationToken _cancellationToken = TestContext.Current.CancellationToken;
     private readonly SchoolAccountWebApplicationFactory<Program> _factory;
     private readonly HttpClient _authenticatedClient;
-    private readonly ICommandHandler<FeedbackCommand> _feedbackCommandHandler = Substitute.For<
-        ICommandHandler<FeedbackCommand>
-    >();
+    private readonly ICommandHandler<FeedbackCommand> _feedbackCommandHandler;
 
     public FeedbackControllerTests(SchoolAccountWebApplicationFactory<Program> factory)
+        : base(factory)
     {
         _factory = factory;
-        _authenticatedClient = factory.CreateAuthorisedClient(services =>
-            services.AddScoped<ICommandHandler<FeedbackCommand>>(_ => _feedbackCommandHandler)
-        );
+        _feedbackCommandHandler = TestDoubles.Feedback;
+        _authenticatedClient = factory.CreateAuthorisedClient();
     }
 
     [Fact]
@@ -65,10 +61,7 @@ public class FeedbackControllerTests : IClassFixture<SchoolAccountWebApplication
     public async Task The_page_shows_an_error_summary_and_message_when_the_message_is_empty()
     {
         // Arrange
-        var client = _factory.CreateAuthorisedClient(
-            services => services.StubQueryHandler(StubCensusStatusesHandler.Succeeding()),
-            ClientOptions.AllowRedirects
-        );
+        using var client = _factory.CreateAuthorisedClient(ClientOptions.AllowRedirects);
 
         // Act
         using var content = FeedbackForm(

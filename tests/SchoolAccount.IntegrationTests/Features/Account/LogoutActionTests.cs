@@ -1,24 +1,22 @@
 using System.Net;
 using System.Text.RegularExpressions;
 using SchoolAccount.IntegrationTests.Common;
-using SchoolAccount.IntegrationTests.Common.Extensions;
 using SchoolAccount.IntegrationTests.Common.Pages;
-using SchoolAccount.TestCommon.Stubs;
 using Shouldly;
 
 namespace SchoolAccount.IntegrationTests.Features.Account;
 
 public class LogoutActionTests(SchoolAccountWebApplicationFactory<Program> factory)
-    : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
+    : IntegrationTest(factory)
 {
     [Fact]
     public async Task Authorised_users_can_sign_out()
     {
         // Arrange
         var cancellationToken = TestContext.Current.CancellationToken;
-        var client = factory.CreateAuthorisedClient();
+        using var client = Factory.CreateAuthorisedClient();
         var token = await GetAntiforgeryTokenAsync(client, "/", cancellationToken);
-        var requestUri = factory.GeneratePath("Account", "Logout");
+        var requestUri = Factory.GeneratePath("Account", "Logout");
 
         using var content = new FormUrlEncodedContent(
             new Dictionary<string, string> { ["__RequestVerificationToken"] = token }
@@ -38,8 +36,8 @@ public class LogoutActionTests(SchoolAccountWebApplicationFactory<Program> facto
     public async Task Unauthorised_users_accessing_sign_out_get_redirected_to_start_page()
     {
         // Arrange
-        var client = factory.CreateUnauthenticatedClient(options: ClientOptions.AllowRedirects);
-        var requestUri = factory.GeneratePath("Account", "Logout");
+        using var client = Factory.CreateUnauthenticatedClient(options: ClientOptions.AllowRedirects);
+        var requestUri = Factory.GeneratePath("Account", "Logout");
 
         // Act
         using var content = new StringContent(string.Empty);
@@ -52,7 +50,7 @@ public class LogoutActionTests(SchoolAccountWebApplicationFactory<Program> facto
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
         response.Headers.Location?.OriginalString.ShouldEndWith(
-            factory.GeneratePath("Start", "Start")
+            Factory.GeneratePath("Start", "Start")
         );
     }
 
@@ -60,11 +58,8 @@ public class LogoutActionTests(SchoolAccountWebApplicationFactory<Program> facto
     public async Task Authenticated_pages_display_the_sign_out_link_for_authorised_users()
     {
         // Arrange
-        var client = factory.CreateAuthorisedClient(
-            services => services.StubQueryHandler(StubCensusStatusesHandler.Succeeding()),
-            ClientOptions.AllowRedirects
-        );
-        var pageUri = factory.GeneratePath("Dashboard", "Dashboard");
+        using var client = Factory.CreateAuthorisedClient(ClientOptions.AllowRedirects);
+        var pageUri = Factory.GeneratePath("Dashboard", "Dashboard");
 
         // Act
         var response = await client.GetAsync(pageUri, TestContext.Current.CancellationToken);

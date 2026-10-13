@@ -5,14 +5,14 @@ using Shouldly;
 namespace SchoolAccount.IntegrationTests.Features.Account;
 
 public class LoggedOutActionTests(SchoolAccountWebApplicationFactory<Program> factory)
-    : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
+    : IntegrationTest(factory)
 {
     [Fact]
     public async Task Ensure_an_authenticated_user_accessing_LoggedOut_are_redirected_to_the_start_page()
     {
         // Arrange
-        var client = factory.CreateUnauthenticatedClient();
-        var requestUri = factory.GeneratePath("Account", "LoggedOut");
+        using var client = Factory.CreateUnauthenticatedClient();
+        var requestUri = Factory.GeneratePath("Account", "LoggedOut");
 
         // Act
         var response = await client.GetAsync(requestUri, TestContext.Current.CancellationToken);
@@ -20,7 +20,7 @@ public class LoggedOutActionTests(SchoolAccountWebApplicationFactory<Program> fa
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
         response.Headers.Location?.OriginalString.ShouldStartWith(
-            factory.GeneratePath("Start", "Start")
+            Factory.GeneratePath("Start", "Start")
         );
     }
 }

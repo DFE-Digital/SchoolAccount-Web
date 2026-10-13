@@ -5,14 +5,14 @@ using Shouldly;
 namespace SchoolAccount.IntegrationTests.Features.Account;
 
 public class LoginActionTests(SchoolAccountWebApplicationFactory<Program> factory)
-    : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
+    : IntegrationTest(factory)
 {
     [Fact]
     public async Task Unauthorised_users_are_redirected_to_DSI()
     {
         // Arrange
-        var client = factory.CreateUnauthenticatedClient();
-        var requestUri = factory.GeneratePath("Account", "Login");
+        using var client = Factory.CreateUnauthenticatedClient();
+        var requestUri = Factory.GeneratePath("Account", "Login");
 
         // Act
         var response = await client.GetAsync(requestUri, TestContext.Current.CancellationToken);
@@ -28,8 +28,8 @@ public class LoginActionTests(SchoolAccountWebApplicationFactory<Program> factor
     public async Task Authorised_users_are_redirected_to_the_journey_page()
     {
         // Arrange
-        var client = factory.CreateAuthorisedClient();
-        var requestUri = factory.GeneratePath("Account", "Login");
+        using var client = Factory.CreateAuthorisedClient();
+        var requestUri = Factory.GeneratePath("Account", "Login");
 
         // Act
         var response = await client.GetAsync(requestUri, TestContext.Current.CancellationToken);
@@ -37,7 +37,7 @@ public class LoginActionTests(SchoolAccountWebApplicationFactory<Program> factor
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
         response.Headers.Location?.OriginalString.ShouldEndWith(
-            $"{factory.GeneratePath("Journey", "Journey")}"
+            $"{Factory.GeneratePath("Journey", "Journey")}"
         );
     }
 
@@ -45,8 +45,8 @@ public class LoginActionTests(SchoolAccountWebApplicationFactory<Program> factor
     public async Task Non_local_urls_returns_problem_response()
     {
         // Arrange
-        var client = factory.CreateAuthorisedClient();
-        var requestUri = factory.GeneratePath(
+        using var client = Factory.CreateAuthorisedClient();
+        var requestUri = Factory.GeneratePath(
             "Account",
             "Login",
             new { returnUrl = "https://www.google.com" }
@@ -63,11 +63,11 @@ public class LoginActionTests(SchoolAccountWebApplicationFactory<Program> factor
     public async Task Local_urls_returns_success_response()
     {
         // Arrange
-        var client = factory.CreateAuthorisedClient();
-        var requestUri = factory.GeneratePath(
+        using var client = Factory.CreateAuthorisedClient();
+        var requestUri = Factory.GeneratePath(
             "Account",
             "Login",
-            new { returnUrl = factory.GeneratePath("Dashboard", "Dashboard") }
+            new { returnUrl = Factory.GeneratePath("Dashboard", "Dashboard") }
         );
 
         // Act

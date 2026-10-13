@@ -1,8 +1,6 @@
 ﻿using System.Net;
 using System.Security.Claims;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using SchoolAccount.IntegrationTests.Common;
-using SchoolAccount.IntegrationTests.Common.Extensions;
 using SchoolAccount.IntegrationTests.Common.Pages;
 using SchoolAccount.TestCommon.Builders;
 using SchoolAccount.TestCommon.Stubs;
@@ -12,18 +10,18 @@ using static SchoolAccount.Web.Mvc.Authentication.ClaimConstants;
 
 namespace SchoolAccount.IntegrationTests.Features.Dashboard;
 
-public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
+public class DashboardControllerTests : IntegrationTest
 {
     private readonly SchoolAccountWebApplicationFactory<Program> _factory;
     private readonly HttpClient _client;
-    private readonly StubCensusStatusesHandler _getCensusStatusesHandler = new();
+    private readonly StubCensusStatusesHandler _getCensusStatusesHandler;
 
     public DashboardControllerTests(SchoolAccountWebApplicationFactory<Program> factory)
+        : base(factory)
     {
         _factory = factory;
-        _client = factory.CreateAuthorisedClient(services =>
-            services.StubQueryHandler(_getCensusStatusesHandler)
-        );
+        _getCensusStatusesHandler = TestDoubles.CensusStatuses;
+        _client = factory.CreateAuthorisedClient();
     }
 
     [Fact]
@@ -123,7 +121,7 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
         // Arrange
         var token = TestContext.Current.CancellationToken;
         var pageUri = _factory.GeneratePath("Dashboard", "Dashboard");
-        var client = CreateClientWithoutUserDetails();
+        using var client = CreateClientWithoutUserDetails();
 
         _getCensusStatusesHandler.Returns(
             CensusStatusesResponseBuilder.ACensusStatusResponse().AsSuccess()
@@ -140,11 +138,8 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
     {
         List<Claim> claims = [new(Organisation, """{"id": 12345}""")];
 
-        return _factory.CreateAuthorisedClient(services =>
-        {
-            services.RemoveAll<MockAuthClaimsOptions>();
-            services.AddSingleton(new MockAuthClaimsOptions { Claims = claims });
-            services.StubQueryHandler(_getCensusStatusesHandler);
-        });
+        TestDoubles.Claims = claims;
+
+        return _factory.CreateAuthorisedClient();
     }
 }

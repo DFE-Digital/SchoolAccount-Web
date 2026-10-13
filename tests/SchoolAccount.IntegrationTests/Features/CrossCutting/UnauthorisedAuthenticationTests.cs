@@ -6,7 +6,7 @@ using Shouldly;
 namespace SchoolAccount.IntegrationTests.Features.CrossCutting;
 
 public class UnauthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<Program> factory)
-    : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
+    : IntegrationTest(factory)
 {
     private readonly HttpClient _client = factory.CreateUnauthenticatedClient();
 
@@ -14,7 +14,7 @@ public class UnauthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<
     public async Task Ensure_that_the_dashboard_controller_redirects_for_unauthorised_users()
     {
         // Arrange
-        var dashboardUri = factory.GeneratePath("Dashboard", "Dashboard");
+        var dashboardUri = Factory.GeneratePath("Dashboard", "Dashboard");
 
         // Act
         var response = await _client.GetAsync(dashboardUri, TestContext.Current.CancellationToken);
@@ -22,7 +22,7 @@ public class UnauthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
         response.Headers.Location?.OriginalString.ShouldBeEquivalentTo(
-            factory.GeneratePath("Start", "Start", new { ReturnUrl = dashboardUri })
+            Factory.GeneratePath("Start", "Start", new { ReturnUrl = dashboardUri })
         );
     }
 

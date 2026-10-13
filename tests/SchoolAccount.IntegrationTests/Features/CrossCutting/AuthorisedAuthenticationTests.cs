@@ -1,18 +1,14 @@
 ﻿using System.Net;
 using SchoolAccount.IntegrationTests.Common;
-using SchoolAccount.IntegrationTests.Common.Extensions;
 using SchoolAccount.IntegrationTests.Common.Pages;
-using SchoolAccount.TestCommon.Stubs;
 using Shouldly;
 
 namespace SchoolAccount.IntegrationTests.Features.CrossCutting;
 
 public class AuthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<Program> factory)
-    : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
+    : IntegrationTest(factory)
 {
-    private readonly HttpClient _client = factory.CreateAuthorisedClient(services =>
-        services.StubQueryHandler(StubCensusStatusesHandler.Succeeding())
-    );
+    private readonly HttpClient _client = factory.CreateAuthorisedClient();
 
     [Theory]
     [InlineData("/")]
@@ -31,7 +27,7 @@ public class AuthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<Pr
     public async Task Authenticated_pages_display_the_sign_out_for_authorised_users()
     {
         // Arrange
-        var pageUri = factory.GeneratePath("Dashboard", "Dashboard");
+        var pageUri = Factory.GeneratePath("Dashboard", "Dashboard");
 
         // Act
         var response = await _client.GetAsync(pageUri, TestContext.Current.CancellationToken);
@@ -53,7 +49,7 @@ public class AuthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<Pr
     public async Task Authenticated_pages_display_the_organisation_name_link_for_authorised_users()
     {
         // Arrange
-        var pageUri = factory.GeneratePath("Dashboard", "Dashboard");
+        var pageUri = Factory.GeneratePath("Dashboard", "Dashboard");
 
         // Act
         var response = await _client.GetAsync(pageUri, TestContext.Current.CancellationToken);

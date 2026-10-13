@@ -1,18 +1,14 @@
 using System.Net;
 using SchoolAccount.IntegrationTests.Common;
-using SchoolAccount.IntegrationTests.Common.Extensions;
 using SchoolAccount.IntegrationTests.Common.Pages;
-using SchoolAccount.TestCommon.Stubs;
 using Shouldly;
 
 namespace SchoolAccount.IntegrationTests.Features.Footer;
 
 public class FooterTests(SchoolAccountWebApplicationFactory<Program> factory)
-    : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
+    : IntegrationTest(factory)
 {
-    private readonly HttpClient _client = factory.CreateAuthorisedClient(services =>
-        services.StubQueryHandler(StubCensusStatusesHandler.Succeeding())
-    );
+    private readonly HttpClient _client = factory.CreateAuthorisedClient();
 
     [Theory]
     [InlineData("Dashboard", "Dashboard")]
@@ -23,7 +19,7 @@ public class FooterTests(SchoolAccountWebApplicationFactory<Program> factory)
     )
     {
         // Arrange
-        var pageUri = factory.GeneratePath(controller, action);
+        var pageUri = Factory.GeneratePath(controller, action);
 
         // Act
         var response = await _client.GetAsync(pageUri, TestContext.Current.CancellationToken);
@@ -48,7 +44,7 @@ public class FooterTests(SchoolAccountWebApplicationFactory<Program> factory)
     public async Task Footer_displays_the_expected_links(string expectedHref, string expectedText)
     {
         // Arrange
-        var pageUri = factory.GeneratePath("Dashboard", "Dashboard");
+        var pageUri = Factory.GeneratePath("Dashboard", "Dashboard");
 
         // Act
         var response = await _client.GetAsync(pageUri, TestContext.Current.CancellationToken);

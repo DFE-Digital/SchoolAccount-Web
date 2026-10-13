@@ -1,10 +1,7 @@
 using System.Net;
 using System.Security.Claims;
-using NSubstitute;
 using SchoolAccount.IntegrationTests.Common;
-using SchoolAccount.IntegrationTests.Common.Extensions;
 using SchoolAccount.IntegrationTests.Common.Pages;
-using SchoolAccount.SharedKernel;
 using SchoolAccount.TestCommon.Stubs;
 using Shouldly;
 using static SchoolAccount.TestCommon.Builders.CensusStatusesResponseBuilder;
@@ -16,19 +13,19 @@ using static SchoolAccount.Web.Mvc.Authentication.ClaimConstants;
 
 namespace SchoolAccount.IntegrationTests.Features.Journey;
 
-public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
+public class JourneyControllerTests : IntegrationTest
 {
     private readonly HttpClient _client;
     private readonly SchoolAccountWebApplicationFactory<Program> _factory;
-    private readonly StubCensusJourneyHandler _getCensusJourneyHandler = new();
+    private readonly StubCensusJourneyHandler _getCensusJourneyHandler;
     private readonly Uri _testUri = new("https://www.gov.uk/");
 
     public JourneyControllerTests(SchoolAccountWebApplicationFactory<Program> factory)
+        : base(factory)
     {
         _factory = factory;
-        _client = factory.CreateAuthorisedClient(services =>
-            services.StubQueryHandler(_getCensusJourneyHandler)
-        );
+        _getCensusJourneyHandler = TestDoubles.CensusJourney;
+        _client = factory.CreateAuthorisedClient();
     }
 
     [Fact]
@@ -320,26 +317,15 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
             }
             """;
 
-        var dateTimeProvider = Substitute.For<IDateTimeProvider>();
-        dateTimeProvider.UtcNow.Returns(octoberFourth2026);
-        var client = _factory.CreateAuthorisedClient(services =>
-        {
-            services.AddSingleton(dateTimeProvider);
-            services.StubQueryHandler(_getCensusJourneyHandler);
-            services.AddSingleton(
-                new MockAuthClaimsOptions
-                {
-                    Claims =
-                    [
-                        new Claim(GivenName, MockAuthHandler.FakeGivenName),
-                        new Claim(FamilyName, MockAuthHandler.FakeFamilyName),
-                        new Claim(Sub, "1159ee82-d515-4d34-b28d-ac138cb1506b"),
-                        new Claim(Email, "test@example.com"),
-                        new Claim(Organisation, trustJson),
-                    ],
-                }
-            );
-        });
+        TestDoubles.DateTimeProvider.UtcNow = octoberFourth2026;
+        TestDoubles.Claims =
+        [
+            new Claim(GivenName, MockAuthHandler.FakeGivenName),
+            new Claim(FamilyName, MockAuthHandler.FakeFamilyName),
+            new Claim(Sub, "1159ee82-d515-4d34-b28d-ac138cb1506b"),
+            new Claim(Email, "test@example.com"),
+            new Claim(Organisation, trustJson),
+        ];
 
         _getCensusJourneyHandler.Returns(
             AGetCensusJourneyResponse()
@@ -355,7 +341,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         );
 
         // Act
-        var message = await client.GetAsync(pageUri, token);
+        var message = await _client.GetAsync(pageUri, token);
         var page = await AngleSharpPage.FromResponseAsync<JourneyPage>(message, token);
 
         // Assert
@@ -477,23 +463,14 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
             }
             """;
 
-        var client = _factory.CreateAuthorisedClient(services =>
-        {
-            services.StubQueryHandler(_getCensusJourneyHandler);
-            services.AddSingleton(
-                new MockAuthClaimsOptions
-                {
-                    Claims =
-                    [
-                        new Claim(GivenName, MockAuthHandler.FakeGivenName),
-                        new Claim(FamilyName, MockAuthHandler.FakeFamilyName),
-                        new Claim(Sub, "1159ee82-d515-4d34-b28d-ac138cb1506b"),
-                        new Claim(Email, "test@example.com"),
-                        new Claim(Organisation, trustJson),
-                    ],
-                }
-            );
-        });
+        TestDoubles.Claims =
+        [
+            new Claim(GivenName, MockAuthHandler.FakeGivenName),
+            new Claim(FamilyName, MockAuthHandler.FakeFamilyName),
+            new Claim(Sub, "1159ee82-d515-4d34-b28d-ac138cb1506b"),
+            new Claim(Email, "test@example.com"),
+            new Claim(Organisation, trustJson),
+        ];
 
         _getCensusJourneyHandler.Returns(
             AGetCensusJourneyResponse()
@@ -509,7 +486,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         );
 
         // Act
-        var message = await client.GetAsync(pageUri, token);
+        var message = await _client.GetAsync(pageUri, token);
         var page = await AngleSharpPage.FromResponseAsync<JourneyPage>(message, token);
 
         // Assert

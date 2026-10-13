@@ -1,16 +1,13 @@
 using System.Net;
 using System.Security.Claims;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using SchoolAccount.IntegrationTests.Common;
-using SchoolAccount.IntegrationTests.Common.Extensions;
-using SchoolAccount.TestCommon.Stubs;
 using Shouldly;
 using static SchoolAccount.Web.Mvc.Authentication.ClaimConstants;
 
 namespace SchoolAccount.IntegrationTests.Features.CrossCutting;
 
 public class OrganisationPolicyTests(SchoolAccountWebApplicationFactory<Program> factory)
-    : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
+    : IntegrationTest(factory)
 {
     private HttpClient CreateClientOrganisationClaims(string? organisationValue)
     {
@@ -24,14 +21,9 @@ public class OrganisationPolicyTests(SchoolAccountWebApplicationFactory<Program>
             claims.Add(new Claim(Organisation, organisationValue));
         }
 
-        return factory.CreateAuthorisedClient(
-            services =>
-            {
-                services.RemoveAll<MockAuthClaimsOptions>();
-                services.AddSingleton(new MockAuthClaimsOptions { Claims = claims });
-            },
-            new ClientOptions { AllowAutoRedirect = false }
-        );
+        TestDoubles.Claims = claims;
+
+        return Factory.CreateAuthorisedClient(new ClientOptions { AllowAutoRedirect = false });
     }
 
     [Theory]
@@ -41,10 +33,10 @@ public class OrganisationPolicyTests(SchoolAccountWebApplicationFactory<Program>
     [InlineData(null)]
     public async Task User_is_Forbidden_when_Organisation_Claim_is_empty(string? value)
     {
-        var client = CreateClientOrganisationClaims(value);
+        using var client = CreateClientOrganisationClaims(value);
 
         var response = await client.GetAsync(
-            factory.GeneratePath("Dashboard", "Dashboard"),
+            Factory.GeneratePath("Dashboard", "Dashboard"),
             TestContext.Current.CancellationToken
         );
 
@@ -54,12 +46,10 @@ public class OrganisationPolicyTests(SchoolAccountWebApplicationFactory<Program>
     [Fact]
     public async Task User_is_accepted_when_organisation_is_not_empty()
     {
-        var client = factory.CreateAuthorisedClient(services =>
-            services.StubQueryHandler(StubCensusStatusesHandler.Succeeding())
-        );
+        using var client = Factory.CreateAuthorisedClient();
 
         var response = await client.GetAsync(
-            factory.GeneratePath("Dashboard", "Dashboard"),
+            Factory.GeneratePath("Dashboard", "Dashboard"),
             TestContext.Current.CancellationToken
         );
 
