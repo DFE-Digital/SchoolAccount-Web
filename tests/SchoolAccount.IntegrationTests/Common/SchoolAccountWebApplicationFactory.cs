@@ -17,6 +17,7 @@ public class SchoolAccountWebApplicationFactory<TProgram> : WebApplicationFactor
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseEnvironment("IntegrationTests");
+        HostCounter.Increment();
     }
 
     public HttpClient CreateAuthorisedClient(
