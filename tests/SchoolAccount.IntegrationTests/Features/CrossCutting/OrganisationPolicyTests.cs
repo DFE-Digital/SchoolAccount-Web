@@ -21,9 +21,9 @@ public class OrganisationPolicyTests(SchoolAccountWebApplicationFactory<Program>
             claims.Add(new Claim(Organisation, organisationValue));
         }
 
-        TestDoubles.Claims = claims;
-
-        return Factory.CreateAuthorisedClient(new ClientOptions { AllowAutoRedirect = false });
+        return Factory
+            .CreateAuthorisedClient(new ClientOptions { AllowAutoRedirect = false })
+            .WithClaims(claims);
     }
 
     [Theory]

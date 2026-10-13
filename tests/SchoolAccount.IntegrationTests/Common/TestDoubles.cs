@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using NSubstitute;
 using SchoolAccount.Application.Abstractions.Messaging;
 using SchoolAccount.Application.Features.Feedback;
@@ -21,11 +20,6 @@ public sealed class TestDoubles
         Substitute.For<ICommandHandler<FeedbackCommand>>();
 
     public FakeDateTimeProvider DateTimeProvider { get; } = new();
-
-    /// <summary>
-    /// The signed-in user's claims. Null uses the default user from <see cref="MockAuthHandler"/>.
-    /// </summary>
-    public IReadOnlyList<Claim>? Claims { get; set; }
 }
 
 public sealed class FakeDateTimeProvider : IDateTimeProvider

@@ -1,5 +1,4 @@
 using System.Net;
-using System.Security.Claims;
 using SchoolAccount.IntegrationTests.Common;
 using SchoolAccount.IntegrationTests.Common.Pages;
 using SchoolAccount.TestCommon.Stubs;
@@ -9,7 +8,6 @@ using static SchoolAccount.TestCommon.Builders.GetCensusJourney.GetCensusJourney
 using static SchoolAccount.TestCommon.Builders.GetCensusJourney.GetCensusJourneyResponseBuilder;
 using static SchoolAccount.TestCommon.Builders.GetCensusJourney.GetCensusJourneyResponseImportantDateBuilder;
 using static SchoolAccount.TestCommon.Builders.GetCensusJourney.GetCensusJourneyResponseUnderstandStatusBuilder;
-using static SchoolAccount.Web.Mvc.Authentication.ClaimConstants;
 
 namespace SchoolAccount.IntegrationTests.Features.Journey;
 
@@ -318,14 +316,7 @@ public class JourneyControllerTests : IntegrationTest
             """;
 
         TestDoubles.DateTimeProvider.UtcNow = octoberFourth2026;
-        TestDoubles.Claims =
-        [
-            new Claim(GivenName, MockAuthHandler.FakeGivenName),
-            new Claim(FamilyName, MockAuthHandler.FakeFamilyName),
-            new Claim(Sub, "1159ee82-d515-4d34-b28d-ac138cb1506b"),
-            new Claim(Email, "test@example.com"),
-            new Claim(Organisation, trustJson),
-        ];
+        using var trustClient = _factory.CreateAuthorisedClient().WithOrganisation(trustJson);
 
         _getCensusJourneyHandler.Returns(
             AGetCensusJourneyResponse()
@@ -341,7 +332,7 @@ public class JourneyControllerTests : IntegrationTest
         );
 
         // Act
-        var message = await _client.GetAsync(pageUri, token);
+        var message = await trustClient.GetAsync(pageUri, token);
         var page = await AngleSharpPage.FromResponseAsync<JourneyPage>(message, token);
 
         // Assert
@@ -463,14 +454,7 @@ public class JourneyControllerTests : IntegrationTest
             }
             """;
 
-        TestDoubles.Claims =
-        [
-            new Claim(GivenName, MockAuthHandler.FakeGivenName),
-            new Claim(FamilyName, MockAuthHandler.FakeFamilyName),
-            new Claim(Sub, "1159ee82-d515-4d34-b28d-ac138cb1506b"),
-            new Claim(Email, "test@example.com"),
-            new Claim(Organisation, trustJson),
-        ];
+        using var trustClient = _factory.CreateAuthorisedClient().WithOrganisation(trustJson);
 
         _getCensusJourneyHandler.Returns(
             AGetCensusJourneyResponse()
@@ -486,7 +470,7 @@ public class JourneyControllerTests : IntegrationTest
         );
 
         // Act
-        var message = await _client.GetAsync(pageUri, token);
+        var message = await trustClient.GetAsync(pageUri, token);
         var page = await AngleSharpPage.FromResponseAsync<JourneyPage>(message, token);
 
         // Assert

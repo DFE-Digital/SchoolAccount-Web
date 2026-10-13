@@ -65,7 +65,6 @@ public class SchoolAccountWebApplicationFactory<TProgram> : WebApplicationFactor
             services.AddScoped(_ => _testDoubles.Feedback);
             services.RemoveAll<IDateTimeProvider>();
             services.AddScoped<IDateTimeProvider>(_ => _testDoubles.DateTimeProvider);
-            services.AddTransient(_ => new MockAuthClaimsOptions { Claims = _testDoubles.Claims });
         });
     }
 

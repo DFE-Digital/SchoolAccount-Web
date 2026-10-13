@@ -138,8 +138,6 @@ public class DashboardControllerTests : IntegrationTest
     {
         List<Claim> claims = [new(Organisation, """{"id": 12345}""")];
 
-        TestDoubles.Claims = claims;
-
-        return _factory.CreateAuthorisedClient();
+        return _factory.CreateAuthorisedClient().WithClaims(claims);
     }
 }
