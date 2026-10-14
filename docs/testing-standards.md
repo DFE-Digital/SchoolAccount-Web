@@ -29,47 +29,10 @@ public void Organisation_is_closed_at_exact_closing_time_on_a_weekday()
 public void Organisation_takes_into_account_daylight_savings_for_open_on_a_weekday()
 ```
 
-A good name answers: *what does the system do, and when?*
-
-### Rules
-
-- **Write for a domain expert.** Describe the scenario as you would to a business analyst or someone who knows the
-  domain but not the code. If they could read the name and understand what the system does, other developers can too.
-- **Describe behaviour, not code.** Leave the method under test out of the name. Tests verify behaviour, and renaming a
-  method shouldn't force you to rename its tests. The exception is utility code with no business meaning, such as
-  `DateFormatter`, where the method name *is* the behaviour (`ToDaysAgo_returns_today_for_same_day`).
-- **State a fact, don't use "should".** A test asserts something that is true, so say it directly:
-  `Organisation_is_closed`, not `Organisation_should_be_closed`.
-- **Be specific about the condition.** Name the condition that matters, not a vague category: `past date`, not
-  `invalid date`.
-- **Separate words with underscores** and write in sentence case, starting with a capital letter.
-- **Use correct grammar, including articles.** `An_establishment_without_a_ukprn_throws` reads better than
-  `Establishment_without_ukprn_throws`.
-- **Don't force a template.** Patterns like `Method_Scenario_ExpectedResult` can't describe complex behaviour well. Use
-  whatever words describe the behaviour most clearly.
-
 Avoid names that describe the test mechanics (`Test_GetOpenStatus_1`) or that are so generic they provide no signal
 when they fail (`Returns_correct_result`).
 
-### From a template to a statement
-
-Each step below fixes one problem with the previous name:
-
-| Name                                                     | Problem fixed                       |
-|----------------------------------------------------------|-------------------------------------|
-| `IsOpen_ClosingTime_ReturnsFalse`                        | Starting point: a rigid template    |
-| `Organisation_should_be_closed_at_closing_time`          | Describes behaviour, not the method |
-| `Organisation_should_be_closed_at_exact_closing_time`    | Specific about the condition        |
-| `Organisation_is_closed_at_exact_closing_time`           | States a fact instead of "should"   |
-| `Organisation_is_closed_at_exact_closing_time_on_a_weekday` | Names the full condition, with grammar |
-
-### Test classes
-
-`[ClassName]Tests` is a starting point for finding tests, not a limit on what they cover. A unit of behaviour can span
-several classes, and its tests can too.
-
-Further reading: [You are naming your tests wrong](https://enterprisecraftsmanship.com/posts/you-naming-tests-wrong/)
-by Vladimir Khorikov.
+A good name answers: *what does the system do, and when?*
 
 ---
 
