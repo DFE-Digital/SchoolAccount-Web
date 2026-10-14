@@ -1,30 +1,22 @@
 using System.Net;
 using NSubstitute;
-using SchoolAccount.Application.Abstractions.Messaging;
 using SchoolAccount.Application.Features.Feedback;
 using SchoolAccount.IntegrationTests.Common;
-using SchoolAccount.IntegrationTests.Common.Extensions;
 using SchoolAccount.SharedKernel;
-using SchoolAccount.TestCommon.Stubs;
 using Shouldly;
 
 namespace SchoolAccount.IntegrationTests.Features.Feedback;
 
-public class FeedbackControllerTests : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
+public class FeedbackControllerTests : IClassFixture<AuthorisedWebApplicationFactory>
 {
     private readonly CancellationToken _cancellationToken = TestContext.Current.CancellationToken;
-    private readonly SchoolAccountWebApplicationFactory<Program> _factory;
+    private readonly AuthorisedWebApplicationFactory _factory;
     private readonly HttpClient _authenticatedClient;
-    private readonly ICommandHandler<FeedbackCommand> _feedbackCommandHandler = Substitute.For<
-        ICommandHandler<FeedbackCommand>
-    >();
 
-    public FeedbackControllerTests(SchoolAccountWebApplicationFactory<Program> factory)
+    public FeedbackControllerTests(AuthorisedWebApplicationFactory factory)
     {
         _factory = factory;
-        _authenticatedClient = factory.CreateAuthorisedClient(services =>
-            services.AddScoped<ICommandHandler<FeedbackCommand>>(_ => _feedbackCommandHandler)
-        );
+        _authenticatedClient = factory.CreateClientWithDefaults();
     }
 
     [Fact]
@@ -32,8 +24,8 @@ public class FeedbackControllerTests : IClassFixture<SchoolAccountWebApplication
     {
         // Arrange
         var pageUri = _factory.GeneratePath("Feedback", "Submit");
-        _feedbackCommandHandler
-            .Handle(Arg.Any<FeedbackCommand>(), Arg.Any<CancellationToken>())
+        _factory
+            .Feedback.Handle(Arg.Any<FeedbackCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success());
 
         // Act
@@ -56,8 +48,8 @@ public class FeedbackControllerTests : IClassFixture<SchoolAccountWebApplication
 
         // Assert
         result.Headers.Location.ShouldNotBeNull().OriginalString.ShouldBe("/");
-        await _feedbackCommandHandler
-            .DidNotReceive()
+        await _factory
+            .Feedback.DidNotReceive()
             .Handle(Arg.Any<FeedbackCommand>(), Arg.Any<CancellationToken>());
     }
 
@@ -65,10 +57,7 @@ public class FeedbackControllerTests : IClassFixture<SchoolAccountWebApplication
     public async Task The_page_shows_an_error_summary_and_message_when_the_message_is_empty()
     {
         // Arrange
-        var client = _factory.CreateAuthorisedClient(
-            services => services.StubQueryHandler(StubCensusStatusesHandler.Succeeding()),
-            ClientOptions.AllowRedirects
-        );
+        var client = _factory.CreateClientWithDefaults(ClientOptions.AllowRedirects);
 
         // Act
         using var content = FeedbackForm(

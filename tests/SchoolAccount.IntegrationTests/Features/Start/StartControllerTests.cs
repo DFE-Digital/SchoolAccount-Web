@@ -4,15 +4,15 @@ using Shouldly;
 
 namespace SchoolAccount.IntegrationTests.Features.Start;
 
-public class StartControllerTests : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
+public class StartControllerTests : IClassFixture<UnauthenticatedWebApplicationFactory>
 {
     private readonly HttpClient _client;
-    private readonly SchoolAccountWebApplicationFactory<Program> _factory;
+    private readonly UnauthenticatedWebApplicationFactory _factory;
 
-    public StartControllerTests(SchoolAccountWebApplicationFactory<Program> factory)
+    public StartControllerTests(UnauthenticatedWebApplicationFactory factory)
     {
         _factory = factory;
-        _client = factory.CreateUnauthenticatedClient();
+        _client = factory.CreateClientWithDefaults();
     }
 
     [Fact]

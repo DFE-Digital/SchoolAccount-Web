@@ -5,10 +5,10 @@ using Shouldly;
 
 namespace SchoolAccount.IntegrationTests.Features.CrossCutting;
 
-public class UnauthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<Program> factory)
-    : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
+public class UnauthorisedAuthenticationTests(UnauthenticatedWebApplicationFactory factory)
+    : IClassFixture<UnauthenticatedWebApplicationFactory>
 {
-    private readonly HttpClient _client = factory.CreateUnauthenticatedClient();
+    private readonly HttpClient _client = factory.CreateClientWithDefaults();
 
     [Fact]
     public async Task Ensure_that_the_dashboard_controller_redirects_for_unauthorised_users()

@@ -1,18 +1,14 @@
 ﻿using System.Net;
 using SchoolAccount.IntegrationTests.Common;
-using SchoolAccount.IntegrationTests.Common.Extensions;
 using SchoolAccount.IntegrationTests.Common.Pages;
-using SchoolAccount.TestCommon.Stubs;
 using Shouldly;
 
 namespace SchoolAccount.IntegrationTests.Features.CrossCutting;
 
-public class AuthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<Program> factory)
-    : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
+public class AuthorisedAuthenticationTests(AuthorisedWebApplicationFactory factory)
+    : IClassFixture<AuthorisedWebApplicationFactory>
 {
-    private readonly HttpClient _client = factory.CreateAuthorisedClient(services =>
-        services.StubQueryHandler(StubCensusStatusesHandler.Succeeding())
-    );
+    private readonly HttpClient _client = factory.CreateClientWithDefaults();
 
     [Theory]
     [InlineData("/")]

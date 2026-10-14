@@ -4,14 +4,14 @@ using Shouldly;
 
 namespace SchoolAccount.IntegrationTests.Features.Account;
 
-public class LoggedOutActionTests(SchoolAccountWebApplicationFactory<Program> factory)
-    : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
+public class LoggedOutActionTests(UnauthenticatedWebApplicationFactory factory)
+    : IClassFixture<UnauthenticatedWebApplicationFactory>
 {
     [Fact]
     public async Task Ensure_an_authenticated_user_accessing_LoggedOut_are_redirected_to_the_start_page()
     {
         // Arrange
-        var client = factory.CreateUnauthenticatedClient();
+        var client = factory.CreateClientWithDefaults();
         var requestUri = factory.GeneratePath("Account", "LoggedOut");
 
         // Act

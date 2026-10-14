@@ -4,76 +4,95 @@ using Shouldly;
 
 namespace SchoolAccount.IntegrationTests.Features.Account;
 
-public class LoginActionTests(SchoolAccountWebApplicationFactory<Program> factory)
-    : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
+public static class LoginActionTests
 {
-    [Fact]
-    public async Task Unauthorised_users_are_redirected_to_DSI()
+    public class SignedOut(UnauthenticatedWebApplicationFactory factory)
+        : IClassFixture<UnauthenticatedWebApplicationFactory>
     {
-        // Arrange
-        var client = factory.CreateUnauthenticatedClient();
-        var requestUri = factory.GeneratePath("Account", "Login");
+        private readonly HttpClient _client = factory.CreateClientWithDefaults();
 
-        // Act
-        var response = await client.GetAsync(requestUri, TestContext.Current.CancellationToken);
+        [Fact]
+        public async Task Unauthorised_users_are_redirected_to_DSI()
+        {
+            // Arrange
+            var requestUri = factory.GeneratePath("Account", "Login");
 
-        // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
-        response.Headers.Location?.OriginalString.ShouldStartWith(
-            MockOidcHandler.AuthoriserRedirectUrl
-        );
+            // Act
+            var response = await _client.GetAsync(
+                requestUri,
+                TestContext.Current.CancellationToken
+            );
+
+            // Assert
+            response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
+            response.Headers.Location?.OriginalString.ShouldStartWith(
+                MockOidcHandler.AuthoriserRedirectUrl
+            );
+        }
     }
 
-    [Fact]
-    public async Task Authorised_users_are_redirected_to_the_journey_page()
+    public class SignedIn(AuthorisedWebApplicationFactory factory)
+        : IClassFixture<AuthorisedWebApplicationFactory>
     {
-        // Arrange
-        var client = factory.CreateAuthorisedClient();
-        var requestUri = factory.GeneratePath("Account", "Login");
+        private readonly HttpClient _client = factory.CreateClientWithDefaults();
 
-        // Act
-        var response = await client.GetAsync(requestUri, TestContext.Current.CancellationToken);
+        [Fact]
+        public async Task Authorised_users_are_redirected_to_the_journey_page()
+        {
+            // Arrange
+            var requestUri = factory.GeneratePath("Account", "Login");
 
-        // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
-        response.Headers.Location?.OriginalString.ShouldEndWith(
-            $"{factory.GeneratePath("Journey", "Journey")}"
-        );
-    }
+            // Act
+            var response = await _client.GetAsync(
+                requestUri,
+                TestContext.Current.CancellationToken
+            );
 
-    [Fact]
-    public async Task Non_local_urls_returns_problem_response()
-    {
-        // Arrange
-        var client = factory.CreateAuthorisedClient();
-        var requestUri = factory.GeneratePath(
-            "Account",
-            "Login",
-            new { returnUrl = "https://www.google.com" }
-        );
+            // Assert
+            response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
+            response.Headers.Location?.OriginalString.ShouldEndWith(
+                $"{factory.GeneratePath("Journey", "Journey")}"
+            );
+        }
 
-        // Act
-        var response = await client.GetAsync(requestUri, TestContext.Current.CancellationToken);
+        [Fact]
+        public async Task Non_local_urls_returns_problem_response()
+        {
+            // Arrange
+            var requestUri = factory.GeneratePath(
+                "Account",
+                "Login",
+                new { returnUrl = "https://www.google.com" }
+            );
 
-        // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
-    }
+            // Act
+            var response = await _client.GetAsync(
+                requestUri,
+                TestContext.Current.CancellationToken
+            );
 
-    [Fact]
-    public async Task Local_urls_returns_success_response()
-    {
-        // Arrange
-        var client = factory.CreateAuthorisedClient();
-        var requestUri = factory.GeneratePath(
-            "Account",
-            "Login",
-            new { returnUrl = factory.GeneratePath("Dashboard", "Dashboard") }
-        );
+            // Assert
+            response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        }
 
-        // Act
-        var response = await client.GetAsync(requestUri, TestContext.Current.CancellationToken);
+        [Fact]
+        public async Task Local_urls_returns_success_response()
+        {
+            // Arrange
+            var requestUri = factory.GeneratePath(
+                "Account",
+                "Login",
+                new { returnUrl = factory.GeneratePath("Dashboard", "Dashboard") }
+            );
 
-        // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.Found);
+            // Act
+            var response = await _client.GetAsync(
+                requestUri,
+                TestContext.Current.CancellationToken
+            );
+
+            // Assert
+            response.StatusCode.ShouldBe(HttpStatusCode.Found);
+        }
     }
 }

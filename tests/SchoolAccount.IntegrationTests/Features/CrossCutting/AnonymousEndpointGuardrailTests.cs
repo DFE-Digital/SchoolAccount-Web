@@ -4,8 +4,8 @@ using Shouldly;
 
 namespace SchoolAccount.IntegrationTests.Features.CrossCutting;
 
-public class AnonymousEndpointGuardrailTests(SchoolAccountWebApplicationFactory<Program> factory)
-    : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
+public class AnonymousEndpointGuardrailTests(AuthorisedWebApplicationFactory factory)
+    : IClassFixture<AuthorisedWebApplicationFactory>
 {
     private static readonly string[] _staticAssetFileExtensions =
     {

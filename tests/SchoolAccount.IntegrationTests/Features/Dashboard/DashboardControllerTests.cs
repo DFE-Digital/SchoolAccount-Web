@@ -1,29 +1,23 @@
 ﻿using System.Net;
 using System.Security.Claims;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using SchoolAccount.IntegrationTests.Common;
-using SchoolAccount.IntegrationTests.Common.Extensions;
 using SchoolAccount.IntegrationTests.Common.Pages;
 using SchoolAccount.TestCommon.Builders;
-using SchoolAccount.TestCommon.Stubs;
 using Shouldly;
 using static SchoolAccount.IntegrationTests.Common.MockAuthHandler;
 using static SchoolAccount.Web.Mvc.Authentication.ClaimConstants;
 
 namespace SchoolAccount.IntegrationTests.Features.Dashboard;
 
-public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
+public class DashboardControllerTests : IClassFixture<AuthorisedWebApplicationFactory>
 {
-    private readonly SchoolAccountWebApplicationFactory<Program> _factory;
+    private readonly AuthorisedWebApplicationFactory _factory;
     private readonly HttpClient _client;
-    private readonly StubCensusStatusesHandler _getCensusStatusesHandler = new();
 
-    public DashboardControllerTests(SchoolAccountWebApplicationFactory<Program> factory)
+    public DashboardControllerTests(AuthorisedWebApplicationFactory factory)
     {
         _factory = factory;
-        _client = factory.CreateAuthorisedClient(services =>
-            services.StubQueryHandler(_getCensusStatusesHandler)
-        );
+        _client = factory.CreateClientWithDefaults();
     }
 
     [Fact]
@@ -33,7 +27,7 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
         var token = TestContext.Current.CancellationToken;
         var pageUri = _factory.GeneratePath("Dashboard", "Dashboard");
 
-        _getCensusStatusesHandler.Returns(
+        _factory.CensusStatuses.Returns(
             CensusStatusesResponseBuilder.ACensusStatusResponse().AsSuccess()
         );
 
@@ -56,7 +50,7 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
         var token = TestContext.Current.CancellationToken;
         var pageUri = _factory.GeneratePath("Dashboard", "Dashboard");
 
-        _getCensusStatusesHandler.Returns(
+        _factory.CensusStatuses.Returns(
             CensusStatusesResponseBuilder.ACensusStatusResponse().AsSuccess()
         );
 
@@ -82,7 +76,7 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
             .ACensusStatusResponse()
             .WithAction("Test Action", "Test Status");
 
-        _getCensusStatusesHandler.Returns(response.AsSuccess());
+        _factory.CensusStatuses.Returns(response.AsSuccess());
 
         // Act
         var message = await _client.GetAsync(pageUri, token);
@@ -103,7 +97,7 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
         // Arrange
         var token = TestContext.Current.CancellationToken;
         var pageUri = _factory.GeneratePath("Dashboard", "Dashboard");
-        _getCensusStatusesHandler.Returns(CensusStatusesResponseBuilder.AsFailure());
+        _factory.CensusStatuses.Returns(CensusStatusesResponseBuilder.AsFailure());
 
         // Act
         var message = await _client.GetAsync(pageUri, token);
@@ -123,28 +117,12 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
         // Arrange
         var token = TestContext.Current.CancellationToken;
         var pageUri = _factory.GeneratePath("Dashboard", "Dashboard");
-        var client = CreateClientWithoutUserDetails();
-
-        _getCensusStatusesHandler.Returns(
-            CensusStatusesResponseBuilder.ACensusStatusResponse().AsSuccess()
-        );
+        _factory.SignedInUser.Claims = [new Claim(Organisation, """{"id": 12345}""")];
 
         // Act
-        var message = await client.GetAsync(pageUri, token);
+        var message = await _client.GetAsync(pageUri, token);
 
         // Assert
         message.StatusCode.ShouldBe(HttpStatusCode.InternalServerError);
-    }
-
-    private HttpClient CreateClientWithoutUserDetails()
-    {
-        List<Claim> claims = [new(Organisation, """{"id": 12345}""")];
-
-        return _factory.CreateAuthorisedClient(services =>
-        {
-            services.RemoveAll<MockAuthClaimsOptions>();
-            services.AddSingleton(new MockAuthClaimsOptions { Claims = claims });
-            services.StubQueryHandler(_getCensusStatusesHandler);
-        });
     }
 }
