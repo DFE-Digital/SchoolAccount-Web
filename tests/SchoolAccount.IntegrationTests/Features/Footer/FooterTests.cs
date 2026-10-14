@@ -36,7 +36,7 @@ public class FooterTests(SchoolAccountWebApplicationFactory<Program> factory)
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
         page.ShouldNotBeNull();
-        page.GetFooter().ShouldNotBeNull();
+        page.Footer.ShouldNotBeNull();
     }
 
     [Theory]
@@ -62,7 +62,7 @@ public class FooterTests(SchoolAccountWebApplicationFactory<Program> factory)
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
         page.ShouldNotBeNull();
 
-        var footerLink = page.GetFooterLink(expectedHref);
+        var footerLink = page.FooterLink(expectedHref);
 
         footerLink.ShouldNotBeNull();
         footerLink.TextContent.ShouldContainWithoutWhitespace(expectedText);

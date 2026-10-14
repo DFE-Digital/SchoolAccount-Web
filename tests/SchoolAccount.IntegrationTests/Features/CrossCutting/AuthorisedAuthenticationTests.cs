@@ -44,7 +44,7 @@ public class AuthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<Pr
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
         page.ShouldNotBeNull();
 
-        var pageSignOutLink = page.GetSignOutLink();
+        var pageSignOutLink = page.SignOutButtonText;
         pageSignOutLink.ShouldNotBeNull();
         pageSignOutLink.ShouldContainWithoutWhitespace("Sign out");
     }
@@ -66,7 +66,7 @@ public class AuthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<Pr
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
         page.ShouldNotBeNull();
 
-        var pageOrganisationName = page.GetOrganisationName();
+        var pageOrganisationName = page.OrganisationName;
         pageOrganisationName.ShouldNotBeNull();
         pageOrganisationName.ShouldContainWithoutWhitespace(MockAuthHandler.FakeOrganisationName);
     }

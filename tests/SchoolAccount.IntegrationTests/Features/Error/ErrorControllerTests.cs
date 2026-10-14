@@ -42,15 +42,15 @@ public class ErrorControllerTests : IClassFixture<SchoolAccountWebApplicationFac
             requestUri,
             TestContext.Current.CancellationToken
         );
-        var page = await AngleSharpPage.FromResponseAsync<ErrorPage>(
+        var page = await AngleSharpPage.FromResponseAsync<CommonPage>(
             response,
             TestContext.Current.CancellationToken
         );
 
         // Assert
         page.ShouldNotBeNull();
-        page.IsNotFoundPageTitle().ShouldBeTrue();
-        page.IsNotFoundPageHeading().ShouldBeTrue();
+        page.Title.ShouldBe(ErrorViewModel.NotFoundTitle);
+        page.Heading.ShouldBe("Page not found");
         response.IsSuccessStatusCode.ShouldBeFalse();
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
@@ -66,14 +66,14 @@ public class ErrorControllerTests : IClassFixture<SchoolAccountWebApplicationFac
             requestUri,
             TestContext.Current.CancellationToken
         );
-        var page = await AngleSharpPage.FromResponseAsync<ErrorPage>(
+        var page = await AngleSharpPage.FromResponseAsync<CommonPage>(
             response,
             TestContext.Current.CancellationToken
         );
 
         // Assert
         page.ShouldNotBeNull();
-        page.IsServerErrorPageTitle().ShouldBeTrue();
+        page.Title.ShouldBe(ErrorViewModel.ErrorTitle);
         response.IsSuccessStatusCode.ShouldBeFalse();
         response.StatusCode.ShouldBe(HttpStatusCode.InternalServerError);
     }
@@ -89,15 +89,15 @@ public class ErrorControllerTests : IClassFixture<SchoolAccountWebApplicationFac
             requestUri,
             TestContext.Current.CancellationToken
         );
-        var page = await AngleSharpPage.FromResponseAsync<ErrorPage>(
+        var page = await AngleSharpPage.FromResponseAsync<CommonPage>(
             response,
             TestContext.Current.CancellationToken
         );
 
         // Assert
         page.ShouldNotBeNull();
-        page.IsNotFoundPageTitle().ShouldBeTrue();
-        page.IsNotFoundPageHeading().ShouldBeTrue();
+        page.Title.ShouldBe(ErrorViewModel.NotFoundTitle);
+        page.Heading.ShouldBe("Page not found");
         response.IsSuccessStatusCode.ShouldBeFalse();
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
@@ -125,7 +125,7 @@ public class ErrorControllerTests : IClassFixture<SchoolAccountWebApplicationFac
         // Assert
         page.ShouldNotBeNull();
 
-        var pageTitle = page.GetTitle();
+        var pageTitle = page.Title;
         pageTitle.ShouldNotBeNull();
         pageTitle.ShouldBeEquivalentTo(ErrorViewModel.ErrorTitle);
 
@@ -146,14 +146,14 @@ public class ErrorControllerTests : IClassFixture<SchoolAccountWebApplicationFac
             TestContext.Current.CancellationToken
         );
 
-        var page = await AngleSharpPage.FromResponseAsync<ErrorPage>(
+        var page = await AngleSharpPage.FromResponseAsync<CommonPage>(
             response,
             TestContext.Current.CancellationToken
         );
 
         // Assert
         page.ShouldNotBeNull();
-        page.IsServerErrorPageTitle().ShouldBeTrue();
+        page.Title.ShouldBe(ErrorViewModel.ErrorTitle);
         response.StatusCode.ShouldBe(HttpStatusCode.InternalServerError);
     }
 
@@ -170,14 +170,14 @@ public class ErrorControllerTests : IClassFixture<SchoolAccountWebApplicationFac
             TestContext.Current.CancellationToken
         );
 
-        var page = await AngleSharpPage.FromResponseAsync<ErrorPage>(
+        var page = await AngleSharpPage.FromResponseAsync<CommonPage>(
             response,
             TestContext.Current.CancellationToken
         );
 
         // Assert
         page.ShouldNotBeNull();
-        page.IsServerErrorPageTitle().ShouldBeTrue();
+        page.Title.ShouldBe(ErrorViewModel.ErrorTitle);
         response.IsSuccessStatusCode.ShouldBeFalse();
     }
 }

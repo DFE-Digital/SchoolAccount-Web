@@ -77,7 +77,7 @@ public class LogoutActionTests(SchoolAccountWebApplicationFactory<Program> facto
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
         page.ShouldNotBeNull();
 
-        var pageSignOutLink = page.GetSignOutLink();
+        var pageSignOutLink = page.SignOutButtonText;
         pageSignOutLink.ShouldNotBeNull();
         pageSignOutLink.ShouldContainWithoutWhitespace("Sign out");
     }

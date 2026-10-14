@@ -32,11 +32,11 @@ public class StartControllerTests : IClassFixture<SchoolAccountWebApplicationFac
         response.IsSuccessStatusCode.ShouldBeTrue();
         page.ShouldNotBeNull();
 
-        var pageTitle = page.GetTitle();
+        var pageTitle = page.Title;
         pageTitle.ShouldNotBeNull();
         pageTitle.ShouldBeEquivalentTo("Home Page");
 
-        var bodyElement = page.GetFirstBody();
+        var bodyElement = page.BodyText;
         bodyElement.ShouldNotBeNull();
         bodyElement.ShouldContainWithoutWhitespace("Sign in to School Account");
         bodyElement.ShouldContainWithoutWhitespace(

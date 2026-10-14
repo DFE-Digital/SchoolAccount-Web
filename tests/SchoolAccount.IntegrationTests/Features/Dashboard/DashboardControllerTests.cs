@@ -6,6 +6,7 @@ using SchoolAccount.IntegrationTests.Common.Extensions;
 using SchoolAccount.IntegrationTests.Common.Pages;
 using SchoolAccount.TestCommon.Builders;
 using SchoolAccount.TestCommon.Stubs;
+using SchoolAccount.Web.Mvc.Features.Error;
 using Shouldly;
 using static SchoolAccount.IntegrationTests.Common.MockAuthHandler;
 using static SchoolAccount.Web.Mvc.Authentication.ClaimConstants;
@@ -44,7 +45,7 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
         // Assert
         message.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-        var headingElement = page.GetFirstHeading();
+        var headingElement = page.Heading;
         headingElement.ShouldNotBeNull();
         headingElement.ShouldBeEquivalentTo($"Hello {FakeGivenName} {FakeFamilyName}");
     }
@@ -67,7 +68,7 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
         // Assert
         message.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-        var pageTitle = page.GetTitle();
+        var pageTitle = page.Title;
         pageTitle.ShouldNotBeNull();
         pageTitle.ShouldBeEquivalentTo("Dashboard");
     }
@@ -92,7 +93,7 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
         message.StatusCode.ShouldBe(HttpStatusCode.OK);
         page.ShouldNotBeNull();
 
-        var bodyElement = page.GetFirstBody();
+        var bodyElement = page.BodyText;
         bodyElement.ShouldNotBeNull();
         bodyElement.ShouldContain("Test Action, Test Status");
     }
@@ -107,13 +108,13 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
 
         // Act
         var message = await _client.GetAsync(pageUri, token);
-        var page = await AngleSharpPage.FromResponseAsync<ErrorPage>(message, token);
+        var page = await AngleSharpPage.FromResponseAsync<CommonPage>(message, token);
         var body = await message.Content.ReadAsStringAsync(token);
 
         // Assert
         message.StatusCode.ShouldBe(HttpStatusCode.InternalServerError);
-        page.IsServerErrorPageTitle().ShouldBeTrue();
-        page.GetFirstHeading().ShouldBe("Sorry, there is a problem with the service");
+        page.Title.ShouldBe(ErrorViewModel.ErrorTitle);
+        page.Heading.ShouldBe("Sorry, there is a problem with the service");
         body.ShouldNotContain(CensusStatusesResponseBuilder.FetchFailed.Description);
     }
 

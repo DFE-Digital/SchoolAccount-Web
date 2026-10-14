@@ -51,7 +51,7 @@ public class UnauthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
         page.ShouldNotBeNull();
 
-        var pageSignOutLink = page.GetSignOutLink();
+        var pageSignOutLink = page.SignOutButtonText;
         pageSignOutLink.ShouldBeNull();
     }
 
@@ -69,7 +69,7 @@ public class UnauthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
         page.ShouldNotBeNull();
 
-        var pageOrganisationName = page.GetOrganisationName();
+        var pageOrganisationName = page.OrganisationName;
         pageOrganisationName.ShouldBeNull();
     }
 }
