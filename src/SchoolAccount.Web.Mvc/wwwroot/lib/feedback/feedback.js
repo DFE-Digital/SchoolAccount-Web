@@ -15,4 +15,8 @@ if (feedbackForm) {
 
     document.getElementById('open-feedback').addEventListener('click', () => showForm(true));
     cancel.addEventListener('click', () => showForm(false));
+    const textarea = document.getElementById('FeedbackMessage');
+    cancel.addEventListener('click', () =>  {
+        textarea.value = '';
+    });
 }
