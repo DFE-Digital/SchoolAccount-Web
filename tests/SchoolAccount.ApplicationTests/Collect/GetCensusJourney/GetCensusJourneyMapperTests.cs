@@ -1,3 +1,4 @@
+using SchoolAccount.Application.Features.Collect.CensusStatuses;
 using SchoolAccount.SharedKernel.Authentication;
 using Shouldly;
 using static SchoolAccount.Application.Features.Collect.GetCensusJourney.GetCensusJourneyMapper;
@@ -13,38 +14,45 @@ public static class GetCensusJourneyMapperTests
     public class CreateGetCensusJourneyResponseTests
     {
         [Fact]
-        public void The_content_is_mapped_onto_the_response()
+        public void The_content_and_status_are_mapped_onto_the_response()
         {
             // Arrange
-            var content = ACensusJourneyContentResponse();
+            var content = ACensusJourneyContentResponse().Build();
+            var statuses = new List<GetCensusStatusesResponse> { ACensusStatusResponse().Build() };
 
             // Act
-            var result = AGetCensusJourneyResponse().WithContent(content).Build();
+            var result = CreateGetCensusJourneyResponse(content, statuses);
 
             // Assert
-            result.Content.ShouldBeEquivalentTo(content.Build());
+            result.Content.ShouldBe(content);
+            result.SchoolStatuses.ShouldBe(statuses);
         }
 
         [Fact]
         public void The_statuses_are_mapped_onto_the_response()
         {
             // Arrange
-            var first = ACensusStatusResponse();
-            var second = ACensusStatusResponse();
+            var content = ACensusJourneyContentResponse().Build();
+            var first = ACensusStatusResponse().Build();
+            var second = ACensusStatusResponse().Build();
+            var statuses = new List<GetCensusStatusesResponse> { first, second };
 
             // Act
-            var result = AGetCensusJourneyResponse().WithSchoolStatuses(first, second).Build();
+            var result = CreateGetCensusJourneyResponse(content, statuses);
 
             // Assert
-            result.SchoolStatuses[0].ShouldBe(first.Build());
-            result.SchoolStatuses[1].ShouldBe(second.Build());
+            result.SchoolStatuses[0].ShouldBe(first);
+            result.SchoolStatuses[1].ShouldBe(second);
         }
 
         [Fact]
         public void An_empty_status_list_is_mapped_onto_the_response()
         {
+            // Arrange
+            var content = ACensusJourneyContentResponse().Build();
+
             // Act
-            var result = AGetCensusJourneyResponse().Build();
+            var result = CreateGetCensusJourneyResponse(content, []);
 
             // Assert
             result.SchoolStatuses.ShouldBeEmpty();
