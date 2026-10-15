@@ -11,6 +11,7 @@
     <PackageVersion Include="Azure.Core" Version="1.62.0" />
     <PackageVersion Include="Azure.Data.Tables" Version="12.13.0" />
     <PackageVersion Include="Azure.Identity" Version="1.21.0" />
+    <PackageVersion Include="Azure.Monitor.OpenTelemetry.AspNetCore" Version="1.6.0" />
     <PackageVersion Include="FluentValidation" Version="12.1.1" />
     <PackageVersion Include="GovUK.Dfe.AcademiesApi.Client" Version="0.0.7" />
     <PackageVersion Include="Azure.Storage.Blobs" Version="12.29.2" />
@@ -22,6 +23,9 @@
     <PackageVersion Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.23.0" />
     <PackageVersion Include="Microsoft.Extensions.Azure" Version="1.14.1" />
     <PackageVersion Include="NSubstitute" Version="6.2.0" />
+    <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.15.3" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.15.2" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.15.1" />
     <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.35.0.4138" />
     <PackageVersion Include="RichardSzalay.MockHttp" Version="7.1.0" />
     <!-- Application -->
