@@ -204,19 +204,30 @@ docker rm web
 
 ## Dependency Updates
 
-[Dependabot](.github/dependabot.yml) checks NuGet packages and GitHub Actions weekly, and groups NuGet updates to
-keep the number of pull requests down. A package goes in the first group it matches:
+[Dependabot](.github/dependabot.yml) checks NuGet packages and GitHub Actions weekly, and groups updates to keep the
+number of pull requests down. A NuGet package goes in the first group it matches:
 
-| Group             | What's in it                                                          |
-|-------------------|-----------------------------------------------------------------------|
-| `test-tooling`    | Packages matching its `patterns` list, for all update types           |
-| `minor-and-patch` | Minor and patch updates to every other package                        |
-| _(no group)_      | Major updates to non-test packages, one pull request each             |
+| Group              | What's in it                                                                         | Update types |
+|--------------------|--------------------------------------------------------------------------------------|--------------|
+| `test-tooling`     | Test libraries                                                                       | All          |
+| `dotnet`           | Packages released with each version of .NET, such as `Microsoft.AspNetCore.*`        | All          |
+| `azure`            | Azure SDK packages, which all build on `Azure.Core`                                  | All          |
+| `serilog`          | Serilog and its sinks                                                                | All          |
+| `fluentvalidation` | FluentValidation and its DI extensions                                               | All          |
+| `minor-and-patch`  | Every other package, except `SonarAnalyzer.CSharp`                                   | Minor, patch |
+| _(no group)_       | Major updates to other packages, and every `SonarAnalyzer.CSharp` update             | One PR each  |
 
-When you add a test library, add it to the `test-tooling` `patterns` list in
-[dependabot.yml](.github/dependabot.yml). Otherwise its major updates arrive as separate pull requests. Use the exact
-package name for a single package (for example `"Shouldly"`), or end it with `*` to match a family of packages (for
-example `"Microsoft.Testing.*"`). Other packages don't need adding, because `minor-and-patch` covers them.
+`SonarAnalyzer.CSharp` gets its own pull requests because a new release can add rules that fail the build, which would
+hold up every other update in a group. GitHub Actions minor and patch updates arrive together in one pull request.
+
+When you add a package, check which group it falls into:
+
+- **A test library:** add it to the `test-tooling` `patterns` list in [dependabot.yml](.github/dependabot.yml).
+- **Part of a family above:** add it to that group's `patterns` list, unless an existing pattern already matches it.
+- **Anything else:** no change needed, because `minor-and-patch` covers it.
+
+Use the exact package name for a single package (for example `"Shouldly"`), or end it with `*` to match a family of
+packages (for example `"Microsoft.Testing.*"`).
 
 ## Contributing
 
