@@ -1,9 +1,5 @@
 using System.Net;
-using System.Text.RegularExpressions;
 using SchoolAccount.IntegrationTests.Common;
-using SchoolAccount.IntegrationTests.Common.Extensions;
-using SchoolAccount.IntegrationTests.Common.Pages;
-using SchoolAccount.TestCommon.Stubs;
 using Shouldly;
 
 namespace SchoolAccount.IntegrationTests.Features.Account;
@@ -26,16 +22,13 @@ public class LogoutActionTests(SchoolAccountWebApplicationFactory<Program> facto
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
-        response.Headers.Location?.OriginalString.ShouldStartWith(
-            MockOidcHandler.AuthoriserRedirectUrl
-        );
     }
 
     [Fact]
     public async Task Unauthorised_users_accessing_sign_out_get_redirected_to_start_page()
     {
         // Arrange
-        var client = factory.CreateUnauthenticatedClient(options: ClientOptions.AllowRedirects);
+        var client = factory.CreateUnauthenticatedClient();
         var requestUri = factory.GeneratePath("Account", "Logout");
 
         // Act
@@ -47,9 +40,9 @@ public class LogoutActionTests(SchoolAccountWebApplicationFactory<Program> facto
         );
 
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.OK);
-        response.Headers.Location?.OriginalString.ShouldEndWith(
-            factory.GeneratePath("Start", "Start")
-        );
+        response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
+        response
+            .Headers.Location.ShouldNotBeNull()
+            .OriginalString.ShouldEndWith(factory.GeneratePath("Start", "Start"));
     }
 }
