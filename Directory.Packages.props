@@ -46,4 +46,16 @@
     <PackageVersion Include="Microsoft.Testing.Extensions.GitHubActionsReport" Version="2.4.1" />
     <PackageVersion Include="Microsoft.Testing.Extensions.TrxReport" Version="2.4.1" />
   </ItemGroup>
+
+  <!-- Security pins. These packages are not referenced directly; they come in
+       through Microsoft.AspNetCore.DataProtection (Xml, which brings in Pkcs),
+       whose current version still asks for a vulnerable release (GHSA
+       advisories published 13 October 2026). With transitive pinning, these
+       versions override that. Remove them once the ASP.NET Core packages
+       depend on these versions or later. -->
+  <ItemGroup Label="Security pins">
+    <PackageVersion Include="System.Security.Cryptography.Pkcs" Version="10.0.13" />
+    <PackageVersion Include="System.Security.Cryptography.Xml" Version="10.0.13" />
+  </ItemGroup>
+
 </Project>
