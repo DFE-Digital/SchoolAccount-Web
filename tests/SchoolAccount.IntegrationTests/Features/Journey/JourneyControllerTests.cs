@@ -67,9 +67,6 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         page.GetFirstBodyParagraph().ShouldBe("This is a test overview");
         page.GetFirstCaption().ShouldBe("This is a test caption");
         page.GetFirstTag().ShouldBe("Test Status");
-        page.GetFirstCaption().ShouldBe("This is a test caption");
-        page.GetFirstTag().ShouldBe("Test Status");
-        page.GetFirstTag().ShouldBe("Test Status");
         page.GetComponentByContent(".govuk-heading-m", "Test Support Service")
             .ShouldBe("Test Support Service");
 
