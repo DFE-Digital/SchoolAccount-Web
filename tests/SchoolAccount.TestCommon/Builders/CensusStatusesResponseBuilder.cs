@@ -6,17 +6,11 @@ namespace SchoolAccount.TestCommon.Builders;
 public class CensusStatusesResponseBuilder
 {
     private readonly List<CensusAction> _actions = [];
-    private string _id = "Test-id";
+    private readonly string _id = "Test-id";
     private string _name = "Test School";
-    private bool _interesting = true;
+    private readonly bool _interesting = true;
 
     public static CensusStatusesResponseBuilder ACensusStatusResponse() => new();
-
-    public CensusStatusesResponseBuilder WithId(string id)
-    {
-        _id = id;
-        return this;
-    }
 
     public CensusStatusesResponseBuilder WithName(string name)
     {
@@ -24,19 +18,22 @@ public class CensusStatusesResponseBuilder
         return this;
     }
 
-    public CensusStatusesResponseBuilder NotInteresting()
-    {
-        _interesting = false;
-        return this;
-    }
-
-    public CensusStatusesResponseBuilder WithAction(string name, string status)
+    public CensusStatusesResponseBuilder WithAction(
+        string name,
+        string status,
+        int? errors = null,
+        int? queries = null,
+        DateTime? updatedAt = null
+    )
     {
         _actions.Add(
             new CensusAction
             {
                 Name = name,
                 Status = new CensusStatus { Name = status },
+                Errors = errors,
+                Queries = queries,
+                UpdatedAt = updatedAt,
             }
         );
         return this;
