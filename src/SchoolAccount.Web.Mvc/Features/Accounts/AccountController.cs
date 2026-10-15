@@ -50,12 +50,4 @@ public class AccountController(IUserContext userContext) : Controller
             CookieAuthenticationDefaults.AuthenticationScheme
         );
     }
-
-    [HttpGet]
-    public IActionResult LoggedOut()
-    {
-        HttpContext.Session.Clear();
-
-        return RedirectToAction("Start", "Start");
-    }
 }
