@@ -1,7 +1,7 @@
 @model SchoolAccount.Web.Mvc.Features.Shared.MultipleSchoolsStatusTable.MultipleSchoolsStatusTableViewModel
 
 <div>
-    <table class="govuk-table" data-module="moj-sortable-table">
+    <table class="govuk-table govuk-table__break-word" data-module="moj-sortable-table">
         <caption class="govuk-table__caption govuk-table__caption--m">@Model.Title</caption>
         <thead class="govuk-table__head">
         <tr class="govuk-table__row">
@@ -17,7 +17,7 @@
         {
             <tr class="govuk-table__row">
                 <td class="govuk-table__cell">@schoolStatus.Name</td>
-                <td class="govuk-table__cell">@schoolStatus.Status</td>
+                <td class="govuk-table__cell ">@schoolStatus.Status</td>
                 <td class="govuk-table__cell">@schoolStatus.UpdatedAt</td>
                 <td class="govuk-table__cell">@schoolStatus.Errors</td>
                 <td class="govuk-table__cell">@schoolStatus.Queries</td>
