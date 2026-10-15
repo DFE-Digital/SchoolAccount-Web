@@ -12,6 +12,9 @@ if (builder.Configuration.GetValue<bool>("AzureAppConfiguration:Enabled"))
     builder.Configuration.AddAzureAppConfiguration();
 }
 
+// Serilog writes to the registered logger providers, so drop the framework's defaults (console,
+// debug, event source) to avoid duplicate output; only OpenTelemetry's provider is added back.
+builder.Logging.ClearProviders();
 builder.Host.UseConfiguredSerilog();
 
 builder

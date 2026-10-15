@@ -6,7 +6,8 @@ public static class HostBuilderExtensions
 {
     /// <summary>
     /// Takes Serilog's sinks and levels from configuration rather than code, so they can be set
-    /// per environment, and reads enrichers registered in the container.
+    /// per environment, and reads enrichers registered in the container. Also writes to the
+    /// registered logger providers, so OpenTelemetry's provider exports logs over OTLP.
     /// </summary>
     public static IHostBuilder UseConfiguredSerilog(this IHostBuilder host) =>
         host.UseSerilog(
@@ -14,6 +15,7 @@ public static class HostBuilderExtensions
                 loggerConfiguration
                     .ReadFrom.Configuration(context.Configuration)
                     .ReadFrom.Services(services)
-                    .Enrich.FromLogContext()
+                    .Enrich.FromLogContext(),
+            writeToProviders: true
         );
 }
