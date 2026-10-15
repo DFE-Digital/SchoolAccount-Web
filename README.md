@@ -202,6 +202,22 @@ docker stop web
 docker rm web
 ```
 
+## Dependency Updates
+
+[Dependabot](.github/dependabot.yml) checks NuGet packages and GitHub Actions weekly, and groups NuGet updates to
+keep the number of pull requests down. A package goes in the first group it matches:
+
+| Group             | What's in it                                                          |
+|-------------------|-----------------------------------------------------------------------|
+| `test-tooling`    | Packages matching its `patterns` list, for all update types           |
+| `minor-and-patch` | Minor and patch updates to every other package                        |
+| _(no group)_      | Major updates to non-test packages, one pull request each             |
+
+When you add a test library, add it to the `test-tooling` `patterns` list in
+[dependabot.yml](.github/dependabot.yml). Otherwise its major updates arrive as separate pull requests. Use the exact
+package name for a single package (for example `"Shouldly"`), or end it with `*` to match a family of packages (for
+example `"Microsoft.Testing.*"`). Other packages don't need adding, because `minor-and-patch` covers them.
+
 ## Contributing
 
 1. Branch from `main` using the convention `task/<short-description>` or `feature/<short-description>`.
