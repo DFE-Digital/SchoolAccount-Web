@@ -3,6 +3,7 @@ const feedbackForm = document.getElementById('feedback-form');
 if (feedbackForm) {
     const initial = document.getElementById('feedback-initial');
     const cancel = document.getElementById('cancel-feedback');
+    const openFeedback = document.getElementById('open-feedback');
 
     const showForm = (open) => {
         feedbackForm.classList.toggle('govuk-!-display-none', !open);
@@ -15,4 +16,5 @@ if (feedbackForm) {
 
     document.getElementById('open-feedback').addEventListener('click', () => showForm(true));
     cancel.addEventListener('click', () => showForm(false));
+    cancel.addEventListener('click', () => openFeedback.focus())
 }
