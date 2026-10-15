@@ -21,9 +21,11 @@ public class UnauthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
-        response.Headers.Location?.OriginalString.ShouldBeEquivalentTo(
-            factory.GeneratePath("Start", "Start", new { ReturnUrl = dashboardUri })
-        );
+        response
+            .Headers.Location.ShouldNotBeNull()
+            .OriginalString.ShouldBeEquivalentTo(
+                factory.GeneratePath("Start", "Start", new { ReturnUrl = dashboardUri })
+            );
     }
 
     [Fact]
