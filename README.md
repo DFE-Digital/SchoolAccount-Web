@@ -220,11 +220,12 @@ number of pull requests down. A NuGet package goes in the first group it matches
 `SonarAnalyzer.CSharp` gets its own pull requests because a new release can add rules that fail the build, which would
 hold up every other update in a group. GitHub Actions minor and patch updates arrive together in one pull request.
 
-When you add a package, check which group it falls into:
+[Directory.Packages.props](Directory.Packages.props) has one labelled `ItemGroup` per group, so the grouping is visible
+where versions are set. When you add a package:
 
-- **A test library:** add it to the `test-tooling` `patterns` list in [dependabot.yml](.github/dependabot.yml).
-- **Part of a family above:** add it to that group's `patterns` list, unless an existing pattern already matches it.
-- **Anything else:** no change needed, because `minor-and-patch` covers it.
+1. Add its version to the `ItemGroup` for its group, or to `other` if none fits.
+2. If it went into a named group, check that a pattern in that group in [dependabot.yml](.github/dependabot.yml)
+   matches its name, and add one if not. Packages in `other` need no change, because `minor-and-patch` covers them.
 
 Use the exact package name for a single package (for example `"Shouldly"`), or end it with `*` to match a family of
 packages (for example `"Microsoft.Testing.*"`).
