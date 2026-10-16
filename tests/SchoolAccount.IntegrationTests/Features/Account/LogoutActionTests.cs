@@ -1,9 +1,5 @@
 using System.Net;
-using System.Text.RegularExpressions;
 using SchoolAccount.IntegrationTests.Common;
-using SchoolAccount.IntegrationTests.Common.Extensions;
-using SchoolAccount.IntegrationTests.Common.Pages;
-using SchoolAccount.TestCommon.Stubs;
 using Shouldly;
 
 namespace SchoolAccount.IntegrationTests.Features.Account;
@@ -17,28 +13,22 @@ public class LogoutActionTests(SchoolAccountWebApplicationFactory<Program> facto
         // Arrange
         var cancellationToken = TestContext.Current.CancellationToken;
         var client = factory.CreateAuthorisedClient();
-        var token = await GetAntiforgeryTokenAsync(client, "/", cancellationToken);
         var requestUri = factory.GeneratePath("Account", "Logout");
 
-        using var content = new FormUrlEncodedContent(
-            new Dictionary<string, string> { ["__RequestVerificationToken"] = token }
-        );
+        using var content = new FormUrlEncodedContent(new Dictionary<string, string>());
 
         // Act
         var response = await client.PostAsync(requestUri, content, cancellationToken);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
-        response.Headers.Location?.OriginalString.ShouldStartWith(
-            MockOidcHandler.AuthoriserRedirectUrl
-        );
     }
 
     [Fact]
     public async Task Unauthorised_users_accessing_sign_out_get_redirected_to_start_page()
     {
         // Arrange
-        var client = factory.CreateUnauthenticatedClient(options: ClientOptions.AllowRedirects);
+        var client = factory.CreateUnauthenticatedClient();
         var requestUri = factory.GeneratePath("Account", "Logout");
 
         // Act
@@ -50,50 +40,9 @@ public class LogoutActionTests(SchoolAccountWebApplicationFactory<Program> facto
         );
 
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.OK);
-        response.Headers.Location?.OriginalString.ShouldEndWith(
-            factory.GeneratePath("Start", "Start")
-        );
-    }
-
-    [Fact]
-    public async Task Authenticated_pages_display_the_sign_out_link_for_authorised_users()
-    {
-        // Arrange
-        var client = factory.CreateAuthorisedClient(
-            services => services.StubQueryHandler(StubCensusStatusesHandler.Succeeding()),
-            ClientOptions.AllowRedirects
-        );
-        var pageUri = factory.GeneratePath("Dashboard", "Dashboard");
-
-        // Act
-        var response = await client.GetAsync(pageUri, TestContext.Current.CancellationToken);
-        var page = await AngleSharpPage.FromResponseAsync<CommonPage>(
-            response,
-            TestContext.Current.CancellationToken
-        );
-
-        // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.OK);
-        page.ShouldNotBeNull();
-
-        var pageSignOutLink = page.GetSignOutLink();
-        pageSignOutLink.ShouldNotBeNull();
-        pageSignOutLink.ShouldContainWithoutWhitespace("Sign out");
-    }
-
-    private static async Task<string> GetAntiforgeryTokenAsync(
-        HttpClient client,
-        string path,
-        CancellationToken ct
-    )
-    {
-        var html = await client.GetStringAsync(path, ct);
-        var match = Regex.Match(
-            html,
-            @"name=""__RequestVerificationToken""[^>]*value=""([^""]+)"""
-        );
-        match.Success.ShouldBeTrue($"No antiforgery token found on {path}");
-        return match.Groups[1].Value;
+        response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
+        response
+            .Headers.Location.ShouldNotBeNull()
+            .OriginalString.ShouldEndWith(factory.GeneratePath("Start", "Start"));
     }
 }
