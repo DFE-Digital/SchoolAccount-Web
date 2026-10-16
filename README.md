@@ -25,6 +25,7 @@ Architecture decisions are recorded as ADRs in the [decisions](decisions) folder
 - [Authentication using DSI](decisions/0009-authenticate-using-dsi.md) - why we authenticate with DfE Sign-In
 - [Use containerisation to publish code](decisions/0010-use-containerisation-to-publish-code.md) - why we have chosen to use containerisation and push to the github container registry
 - [Integrate with the Academies API](decisions/0011-use-academies-api.md) - why we have used the Academies API
+- [Use the Azure Monitor OpenTelemetry distro for telemetry](decisions/0012-use-azure-monitor-opentelemetry-distro.md) - how logs, traces and metrics reach Azure Monitor and Rider
 
 New decisions should follow the [ADR template](decisions/0000-adr-template.md).
 
@@ -201,6 +202,35 @@ To stop and delete the container, you can run:
 docker stop web
 docker rm web
 ```
+
+## Dependency Updates
+
+[Dependabot](.github/dependabot.yml) checks NuGet packages and GitHub Actions weekly, and groups updates to keep the
+number of pull requests down. A NuGet package goes in the first group it matches:
+
+| Group              | What's in it                                                                         | Update types |
+|--------------------|--------------------------------------------------------------------------------------|--------------|
+| `test-tooling`     | Test libraries                                                                       | All          |
+| `dotnet`           | Packages released with each version of .NET, such as `Microsoft.AspNetCore.*`        | All          |
+| `azure`            | Azure SDK packages, which all build on `Azure.Core`                                  | All          |
+| `serilog`          | Serilog and its sinks                                                                | All          |
+| `fluentvalidation` | FluentValidation and its DI extensions                                               | All          |
+| `opentelemetry`    | OpenTelemetry exporters and instrumentation                                          | All          |
+| `minor-and-patch`  | Every other package, except `SonarAnalyzer.CSharp`                                   | Minor, patch |
+| _(no group)_       | Major updates to other packages, and every `SonarAnalyzer.CSharp` update             | One PR each  |
+
+`SonarAnalyzer.CSharp` gets its own pull requests because a new release can add rules that fail the build, which would
+hold up every other update in a group. GitHub Actions minor and patch updates arrive together in one pull request.
+
+[Directory.Packages.props](Directory.Packages.props) has one labelled `ItemGroup` per group, so the grouping is visible
+where versions are set. When you add a package:
+
+1. Add its version to the `ItemGroup` for its group, or to `other` if none fits.
+2. If it went into a named group, check that a pattern in that group in [dependabot.yml](.github/dependabot.yml)
+   matches its name, and add one if not. Packages in `other` need no change, because `minor-and-patch` covers them.
+
+Use the exact package name for a single package (for example `"Shouldly"`), or end it with `*` to match a family of
+packages (for example `"Microsoft.Testing.*"`).
 
 ## Contributing
 
