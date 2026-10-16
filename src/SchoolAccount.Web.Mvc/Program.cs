@@ -15,6 +15,11 @@ if (builder.Configuration.GetValue<bool>("AzureAppConfiguration:Enabled"))
 builder.Logging.ClearProviders();
 builder.Host.UseConfiguredSerilog();
 
+if (builder.Configuration.GetValue<bool>("AzureAppConfiguration:Enabled"))
+{
+    builder.Services.AddAzureAppConfiguration();
+}
+
 builder
     .Services.AddApplication()
     .AddPresentation(builder.Environment, builder.Configuration)
@@ -27,6 +32,11 @@ app.UseConfiguredForwardedHeaders(app.Configuration);
 app.UseStatusCodePagesWithReExecute("/error/{0}");
 app.UseExceptionHandler("/error/500");
 app.UseSerilogRequestLogging();
+
+if (app.Configuration.GetValue<bool>("AzureAppConfiguration:Enabled"))
+{
+    app.UseAzureAppConfiguration();
+}
 
 if (!app.Environment.IsDevelopment())
 {

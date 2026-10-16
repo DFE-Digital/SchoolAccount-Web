@@ -25,6 +25,7 @@ public static class DependencyInjection
         services.AddOrganisationClaimPolicy();
         services.AddControllersWithFeatureViews();
         services.AddGovUkFrontend();
+        services.AddFeatureManagement();
         services.AddScoped<IHeaderContentProvider, HeaderContentProvider>();
         services.AddFeatureManagement(configuration);
 
