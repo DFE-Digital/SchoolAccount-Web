@@ -7,18 +7,10 @@ using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
-if (builder.Configuration.GetValue<bool>("AzureAppConfiguration:Enabled"))
-{
-    builder.Configuration.AddAzureAppConfiguration();
-}
+builder.AddConfiguredAzureAppConfiguration();
 
 builder.Logging.ClearProviders();
 builder.Host.UseConfiguredSerilog();
-
-if (builder.Configuration.GetValue<bool>("AzureAppConfiguration:Enabled"))
-{
-    builder.Services.AddAzureAppConfiguration();
-}
 
 builder
     .Services.AddApplication()
@@ -32,11 +24,7 @@ app.UseConfiguredForwardedHeaders(app.Configuration);
 app.UseStatusCodePagesWithReExecute("/error/{0}");
 app.UseExceptionHandler("/error/500");
 app.UseSerilogRequestLogging();
-
-if (app.Configuration.GetValue<bool>("AzureAppConfiguration:Enabled"))
-{
-    app.UseAzureAppConfiguration();
-}
+app.UseConfiguredAzureAppConfiguration();
 
 if (!app.Environment.IsDevelopment())
 {
