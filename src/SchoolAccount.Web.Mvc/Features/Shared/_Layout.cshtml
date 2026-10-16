@@ -1,5 +1,6 @@
 ﻿@using GovUk.Frontend.AspNetCore
 @using SchoolAccount.Web.Mvc.Features.Header
+@using SchoolAccount.Web.Mvc.Infrastructure
 @inject IHeaderContentProvider HeaderContentProvider
 
 @* ReSharper disable Razor.LayoutNotResolved *@
@@ -56,7 +57,9 @@
 @section GovUkFooter {
     @if (HeaderContentProvider.IsAuthenticated)
     {
-        <partial name="~/Features/Feedback/_Feedback.cshtml" />
+        <feature name="@FeatureFlags.Feedback">
+            <partial name="~/Features/Feedback/_Feedback.cshtml" />
+        </feature>
     }
     <govuk-footer>
         <govuk-footer-meta>

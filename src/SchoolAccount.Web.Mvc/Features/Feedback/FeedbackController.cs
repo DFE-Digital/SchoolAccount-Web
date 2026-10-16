@@ -1,12 +1,15 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.FeatureManagement.Mvc;
 using SchoolAccount.Application.Abstractions.Messaging;
 using SchoolAccount.Application.Features.Feedback;
 using SchoolAccount.SharedKernel;
 using SchoolAccount.Web.Mvc.Helpers;
+using SchoolAccount.Web.Mvc.Infrastructure;
 
 namespace SchoolAccount.Web.Mvc.Features.Feedback;
 
+[FeatureGate(FeatureFlags.Feedback)]
 public class FeedbackController(
     IUserContext userContext,
     ICommandHandler<FeedbackCommand> feedbackCommandHandler
