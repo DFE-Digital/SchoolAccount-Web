@@ -1,4 +1,6 @@
 using System.Net;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.FeatureManagement;
 using NSubstitute;
 using SchoolAccount.Application.Abstractions.Messaging;
 using SchoolAccount.Application.Features.Feedback;
@@ -6,6 +8,7 @@ using SchoolAccount.IntegrationTests.Common;
 using SchoolAccount.IntegrationTests.Common.Extensions;
 using SchoolAccount.SharedKernel;
 using SchoolAccount.TestCommon.Stubs;
+using SchoolAccount.Web.Mvc.Infrastructure;
 using Shouldly;
 
 namespace SchoolAccount.IntegrationTests.Features.Feedback;
@@ -103,6 +106,69 @@ public class FeedbackControllerTests : IClassFixture<SchoolAccountWebApplication
         );
     }
 
+    [Fact]
+    public async Task The_feedback_section_is_shown_when_the_feature_flag_is_enabled()
+    {
+        // Arrange
+        var client = _factory.CreateAuthorisedClient(services =>
+            services.StubQueryHandler(StubCensusStatusesHandler.Succeeding())
+        );
+
+        // Act
+        var html = await client.GetStringAsync(
+            _factory.GeneratePath("Dashboard", "Dashboard"),
+            _cancellationToken
+        );
+
+        // Assert
+        html.ShouldContain("id=\"page-feedback\"");
+    }
+
+    [Fact]
+    public async Task The_feedback_section_is_hidden_when_the_feature_flag_is_disabled()
+    {
+        // Arrange
+        var client = _factory.CreateAuthorisedClient(services =>
+        {
+            services.StubQueryHandler(StubCensusStatusesHandler.Succeeding());
+            services.DisableFeedbackFeature();
+        });
+
+        // Act
+        var html = await client.GetStringAsync(
+            _factory.GeneratePath("Dashboard", "Dashboard"),
+            _cancellationToken
+        );
+
+        // Assert
+        html.ShouldNotContain("id=\"page-feedback\"");
+    }
+
+    [Fact]
+    public async Task Submit_returns_not_found_when_the_feature_flag_is_disabled()
+    {
+        // Arrange
+        var client = _factory.CreateAuthorisedClient(services =>
+        {
+            services.AddScoped<ICommandHandler<FeedbackCommand>>(_ => _feedbackCommandHandler);
+            services.DisableFeedbackFeature();
+        });
+
+        // Act
+        using var content = FeedbackForm("test-feedback");
+        var result = await client.PostAsync(
+            _factory.GeneratePath("Feedback", "Submit"),
+            content,
+            _cancellationToken
+        );
+
+        // Assert
+        result.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+        await _feedbackCommandHandler
+            .DidNotReceive()
+            .Handle(Arg.Any<FeedbackCommand>(), Arg.Any<CancellationToken>());
+    }
+
     private static FormUrlEncodedContent FeedbackForm(string message, string? returnUrl = null)
     {
         var fields = new Dictionary<string, string> { ["feedbackMessage"] = message };
@@ -113,5 +179,28 @@ public class FeedbackControllerTests : IClassFixture<SchoolAccountWebApplication
         }
 
         return new FormUrlEncodedContent(fields);
+    }
+}
+
+file static class FeedbackFeatureServiceCollectionExtensions
+{
+    public static void DisableFeedbackFeature(this IServiceCollection services)
+    {
+        services.Replace(
+            ServiceDescriptor.Singleton<IFeatureDefinitionProvider>(
+                _ => new ConfigurationFeatureDefinitionProvider(
+                    new ConfigurationBuilder()
+                        .AddInMemoryCollection(
+                            new Dictionary<string, string?>
+                            {
+                                ["feature_management:feature_flags:0:id"] =
+                                    FeatureFlags.FeedbackFooter,
+                                ["feature_management:feature_flags:0:enabled"] = "false",
+                            }
+                        )
+                        .Build()
+                )
+            )
+        );
     }
 }
