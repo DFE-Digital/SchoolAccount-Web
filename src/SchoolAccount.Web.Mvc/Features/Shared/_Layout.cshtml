@@ -1,8 +1,7 @@
 ﻿@using GovUk.Frontend.AspNetCore
-@using Microsoft.FeatureManagement
 @using SchoolAccount.Web.Mvc.Features.Header
+@using SchoolAccount.Web.Mvc.Infrastructure
 @inject IHeaderContentProvider HeaderContentProvider
-@inject IFeatureManager FeatureManager
 
 @* ReSharper disable Razor.LayoutNotResolved *@
 @* ReSharper disable Razor.SectionNotResolved *@
@@ -58,11 +57,9 @@
 @section GovUkFooter {
     @if (HeaderContentProvider.IsAuthenticated)
     {
-        var showFeedbackFooter = await FeatureManager.IsEnabledAsync("FeedbackFooter");
-        @if (showFeedbackFooter)
-        {
+        <feature name="@FeatureFlags.FeedbackFooter">
             <partial name="~/Features/Feedback/_Feedback.cshtml" />
-        }
+        </feature>
     }
     <govuk-footer>
         <govuk-footer-meta>
