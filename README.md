@@ -215,6 +215,7 @@ number of pull requests down. A NuGet package goes in the first group it matches
 | `azure`            | Azure SDK packages, which all build on `Azure.Core`                                  | All          |
 | `serilog`          | Serilog and its sinks                                                                | All          |
 | `fluentvalidation` | FluentValidation and its DI extensions                                               | All          |
+| `opentelemetry`    | OpenTelemetry exporters and instrumentation                                          | All          |
 | `minor-and-patch`  | Every other package, except `SonarAnalyzer.CSharp`                                   | Minor, patch |
 | _(no group)_       | Major updates to other packages, and every `SonarAnalyzer.CSharp` update             | One PR each  |
 

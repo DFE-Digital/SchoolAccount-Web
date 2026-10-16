@@ -34,6 +34,9 @@ updates:
       fluentvalidation:
         patterns:
           - "FluentValidation*"
+      opentelemetry:
+        patterns:
+          - "OpenTelemetry.*"
       minor-and-patch:
         patterns:
           - "*"
