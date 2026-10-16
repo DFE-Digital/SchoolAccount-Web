@@ -25,6 +25,7 @@ Architecture decisions are recorded as ADRs in the [decisions](decisions) folder
 - [Authentication using DSI](decisions/0009-authenticate-using-dsi.md) - why we authenticate with DfE Sign-In
 - [Use containerisation to publish code](decisions/0010-use-containerisation-to-publish-code.md) - why we have chosen to use containerisation and push to the github container registry
 - [Integrate with the Academies API](decisions/0011-use-academies-api.md) - why we have used the Academies API
+- [Use the Azure Monitor OpenTelemetry distro for telemetry](decisions/0012-use-azure-monitor-opentelemetry-distro.md) - how logs, traces and metrics reach Azure Monitor and Rider
 
 New decisions should follow the [ADR template](decisions/0000-adr-template.md).
 

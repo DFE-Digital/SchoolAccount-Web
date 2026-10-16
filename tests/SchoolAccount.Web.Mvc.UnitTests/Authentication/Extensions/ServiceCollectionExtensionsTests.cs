@@ -11,9 +11,9 @@ using SchoolAccount.Web.Mvc.Authentication.Extensions;
 using SchoolAccount.Web.Mvc.Authentication.Models;
 using Shouldly;
 
-namespace SchoolAccount.Web.Mvc.UnitTests.Extensions.ServiceCollection;
+namespace SchoolAccount.Web.Mvc.UnitTests.Authentication.Extensions;
 
-public class ServiceCollectionAddDsiAuthenticationExtensionTests
+public class ServiceCollectionExtensionsTests
 {
     private static ConfigurationManager BuildConfiguration()
     {
@@ -35,7 +35,7 @@ public class ServiceCollectionAddDsiAuthenticationExtensionTests
     public void Configures_oidc_options_from_settings()
     {
         // Arrange
-        var services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
+        var services = new ServiceCollection();
 
         using var configuration = BuildConfiguration();
         services.AddDsiAuthentication(configuration);
@@ -61,7 +61,7 @@ public class ServiceCollectionAddDsiAuthenticationExtensionTests
     public void Falls_back_to_default_paths_when_not_configured()
     {
         // Arrange
-        var services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
+        var services = new ServiceCollection();
 
         using var configuration = BuildConfiguration();
         services.AddDsiAuthentication(configuration);
