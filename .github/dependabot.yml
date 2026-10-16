@@ -7,4 +7,54 @@ updates:
       day: "monday"
     cooldown:
       default-days: 3
- 
+    groups:
+      test-tooling:
+        patterns:
+          - "Microsoft.Testing.*"
+          - "Microsoft.Extensions.Diagnostics.Testing"
+          - "xunit*"
+          - "NSubstitute"
+          - "Shouldly"
+          - "NetArchTest.Rules"
+          - "RichardSzalay.MockHttp"
+      dotnet:
+        patterns:
+          - "Microsoft.AspNetCore.*"
+          - "Microsoft.Extensions.Diagnostics.HealthChecks"
+          - "Microsoft.Extensions.Logging.Abstractions"
+          - "System.Security.Cryptography.*"
+      azure:
+        patterns:
+          - "Azure.*"
+          - "Microsoft.Azure.*"
+          - "Microsoft.Extensions.Azure"
+      serilog:
+        patterns:
+          - "Serilog*"
+      fluentvalidation:
+        patterns:
+          - "FluentValidation*"
+      opentelemetry:
+        patterns:
+          - "OpenTelemetry.*"
+      minor-and-patch:
+        patterns:
+          - "*"
+        exclude-patterns:
+          - "SonarAnalyzer.CSharp"
+        update-types:
+          - "minor"
+          - "patch"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    cooldown:
+      default-days: 3
+    groups:
+      minor-and-patch:
+        update-types:
+          - "minor"
+          - "patch"
