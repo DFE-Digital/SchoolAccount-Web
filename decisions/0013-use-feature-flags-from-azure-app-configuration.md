@@ -48,7 +48,7 @@ How it works:
   shortly after the next request, without a restart.
 * Views are gated with the `<feature>` tag helper, and controllers or actions with `[FeatureGate]`. A gated endpoint
   returns 404 when its flag is off.
-* `services.AddFeatureManagement()` in `DependencyInjection.cs` registers the feature manager.
+* `services.AddFeatureManagement(configuration)` in `DependencyInjection.cs` registers the feature manager.
 
 See [Feature flags](../docs/feature-flags.md) for how to add, test and remove a flag.
 
