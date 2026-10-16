@@ -1,6 +1,7 @@
 using System.Text.Json;
 using GovUk.Frontend.AspNetCore;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.FeatureManagement;
 using SchoolAccount.Web.Mvc.Authentication;
 using SchoolAccount.Web.Mvc.Authentication.Extensions;
 using SchoolAccount.Web.Mvc.Features.Header;
@@ -24,6 +25,7 @@ public static class DependencyInjection
         services.AddOrganisationClaimPolicy();
         services.AddControllersWithFeatureViews();
         services.AddGovUkFrontend();
+        services.AddFeatureManagement();
         services.AddScoped<IHeaderContentProvider, HeaderContentProvider>();
 
         if (env.IsDevelopment())
