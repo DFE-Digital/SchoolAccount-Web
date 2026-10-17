@@ -1,6 +1,4 @@
 using System.Net;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.FeatureManagement;
 using NSubstitute;
 using SchoolAccount.Application.Abstractions.Messaging;
 using SchoolAccount.Application.Features.Feedback;
@@ -131,7 +129,7 @@ public class FeedbackControllerTests : IClassFixture<SchoolAccountWebApplication
         var client = _factory.CreateAuthorisedClient(services =>
         {
             services.StubQueryHandler(StubCensusStatusesHandler.Succeeding());
-            services.DisableFeedbackFeature();
+            services.DisableFeature(FeatureFlags.FeedbackFooter);
         });
 
         // Act
@@ -151,7 +149,7 @@ public class FeedbackControllerTests : IClassFixture<SchoolAccountWebApplication
         var client = _factory.CreateAuthorisedClient(services =>
         {
             services.AddScoped<ICommandHandler<FeedbackCommand>>(_ => _feedbackCommandHandler);
-            services.DisableFeedbackFeature();
+            services.DisableFeature(FeatureFlags.FeedbackFooter);
         });
 
         // Act
@@ -179,28 +177,5 @@ public class FeedbackControllerTests : IClassFixture<SchoolAccountWebApplication
         }
 
         return new FormUrlEncodedContent(fields);
-    }
-}
-
-file static class FeedbackFeatureServiceCollectionExtensions
-{
-    public static void DisableFeedbackFeature(this IServiceCollection services)
-    {
-        services.Replace(
-            ServiceDescriptor.Singleton<IFeatureDefinitionProvider>(
-                _ => new ConfigurationFeatureDefinitionProvider(
-                    new ConfigurationBuilder()
-                        .AddInMemoryCollection(
-                            new Dictionary<string, string?>
-                            {
-                                ["feature_management:feature_flags:0:id"] =
-                                    FeatureFlags.FeedbackFooter,
-                                ["feature_management:feature_flags:0:enabled"] = "false",
-                            }
-                        )
-                        .Build()
-                )
-            )
-        );
     }
 }
