@@ -52,36 +52,15 @@ public class SchoolAccountWebApplicationFactory<TProgram> : WebApplicationFactor
     )
         where THandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
-        const string schemeName = CookieAuthenticationDefaults.AuthenticationScheme;
         options ??= new ClientOptions();
 
         return WithWebHostBuilder(builder =>
                 builder.ConfigureTestServices(services =>
                 {
-                    services.RemoveAll<IConfigureOptions<AuthenticationOptions>>();
-                    services.RemoveAll<IAuthenticationSchemeProvider>();
-                    services.RemoveAll<IConfigureOptions<OpenIdConnectOptions>>();
-                    services.RemoveAll<IPostConfigureOptions<OpenIdConnectOptions>>();
-                    services.RemoveAll<IConfigureOptions<CookieAuthenticationOptions>>();
-                    services.RemoveAll<IConfigureOptions<AuthenticationOptions>>();
+                    TestAuthentication.Use<THandler>(services);
                     services.Replace(
                         ServiceDescriptor.Singleton<IAntiforgery, DisabledAntiforgery>()
                     );
-
-                    services
-                        .AddAuthentication(authenticationOptions =>
-                        {
-                            authenticationOptions.DefaultScheme = schemeName;
-                            authenticationOptions.DefaultAuthenticateScheme = schemeName;
-                            authenticationOptions.DefaultChallengeScheme = schemeName;
-                            authenticationOptions.DefaultSignInScheme = schemeName;
-                            authenticationOptions.DefaultSignOutScheme = schemeName;
-                        })
-                        .AddScheme<AuthenticationSchemeOptions, THandler>(schemeName, _ => { })
-                        .AddScheme<AuthenticationSchemeOptions, THandler>(
-                            OpenIdConnectDefaults.AuthenticationScheme,
-                            _ => { }
-                        );
                     services.TryAddSingleton(new MockAuthClaimsOptions());
                     additionalConfigurableServices?.Invoke(services);
                 })
