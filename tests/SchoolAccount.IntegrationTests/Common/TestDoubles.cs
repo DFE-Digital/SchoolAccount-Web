@@ -1,3 +1,6 @@
+using SchoolAccount.Application.Features.Collect.CensusStatuses;
+using SchoolAccount.Application.Features.Collect.GetCensusJourney;
+using SchoolAccount.Application.Features.Collect.GetCensusJourney.Responses;
 using SchoolAccount.SharedKernel;
 using SchoolAccount.TestCommon.Stubs;
 
@@ -9,10 +12,17 @@ namespace SchoolAccount.IntegrationTests.Common;
 /// </summary>
 public sealed class TestDoubles
 {
-    public StubCensusStatusesHandler CensusStatuses { get; } =
-        StubCensusStatusesHandler.Succeeding();
+    // No default results: every test sets what these return, and a test that forgets fails with
+    // "No result configured".
+    public StubQueryHandler<
+        GetCensusStatusesQuery,
+        List<GetCensusStatusesResponse>
+    > CensusStatuses { get; } = new();
 
-    public StubCensusJourneyHandler CensusJourney { get; } = StubCensusJourneyHandler.Succeeding();
+    public StubQueryHandler<
+        GetCensusJourneyQuery,
+        GetCensusJourneyResponse
+    > CensusJourney { get; } = new();
 
     public FakeDateTimeProvider DateTimeProvider { get; } = new();
 }
