@@ -1,11 +1,7 @@
 using System.Net;
 using System.Security.Claims;
-using NSubstitute;
 using SchoolAccount.IntegrationTests.Common;
-using SchoolAccount.IntegrationTests.Common.Extensions;
 using SchoolAccount.IntegrationTests.Common.Pages;
-using SchoolAccount.SharedKernel;
-using SchoolAccount.TestCommon.Stubs;
 using Shouldly;
 using static SchoolAccount.TestCommon.Builders.CensusStatusesResponseBuilder;
 using static SchoolAccount.TestCommon.Builders.GetCensusJourney.GetCensusJourneyContentResponseBuilder;
@@ -16,27 +12,16 @@ using static SchoolAccount.Web.Mvc.Authentication.ClaimConstants;
 
 namespace SchoolAccount.IntegrationTests.Features.Journey;
 
-public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
+public class JourneyControllerTests(SharedTestHost host) : SharedHostTest(host)
 {
-    private readonly HttpClient _client;
-    private readonly SchoolAccountWebApplicationFactory<Program> _factory;
-    private readonly StubCensusJourneyHandler _getCensusJourneyHandler = new();
     private readonly Uri _testUri = new("https://www.gov.uk/");
-
-    public JourneyControllerTests(SchoolAccountWebApplicationFactory<Program> factory)
-    {
-        _factory = factory;
-        _client = factory.CreateAuthorisedClient(services =>
-            services.StubQueryHandler(_getCensusJourneyHandler)
-        );
-    }
 
     [Fact]
     public async Task Page_content_successfully_renders()
     {
         // Arrange
         var token = TestContext.Current.CancellationToken;
-        var pageUri = _factory.GeneratePath("Journey", "Journey");
+        var pageUri = Host.GeneratePath("Journey", "Journey");
 
         var journeyResult = AGetCensusJourneyResponse()
             .WithContent(
@@ -54,10 +39,10 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
             )
             .AsSuccess();
 
-        _getCensusJourneyHandler.Returns(journeyResult);
+        TestDoubles.CensusJourney.Returns(journeyResult);
 
         // Act
-        var message = await _client.GetAsync(pageUri, token);
+        var message = await Client.GetAsync(pageUri, token);
         var page = await AngleSharpPage.FromResponseAsync<CommonPage>(message, token);
 
         // Assert
@@ -93,16 +78,16 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     {
         // Arrange
         var token = TestContext.Current.CancellationToken;
-        var pageUri = _factory.GeneratePath("Journey", "Journey");
+        var pageUri = Host.GeneratePath("Journey", "Journey");
 
         var journeyResult = AGetCensusJourneyResponse()
             .WithContent(ACensusJourneyContentResponse().WithOverview(overview))
             .AsSuccess();
 
-        _getCensusJourneyHandler.Returns(journeyResult);
+        TestDoubles.CensusJourney.Returns(journeyResult);
 
         // Act
-        var message = await _client.GetAsync(pageUri, token);
+        var message = await Client.GetAsync(pageUri, token);
         var page = await AngleSharpPage.FromResponseAsync<CommonPage>(message, token);
 
         // Assert
@@ -117,16 +102,16 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     {
         // Arrange
         var token = TestContext.Current.CancellationToken;
-        var pageUri = _factory.GeneratePath("Journey", "Journey");
+        var pageUri = Host.GeneratePath("Journey", "Journey");
 
         var journeyResult = AGetCensusJourneyResponse()
             .WithContent(ACensusJourneyContentResponse())
             .AsSuccess();
 
-        _getCensusJourneyHandler.Returns(journeyResult);
+        TestDoubles.CensusJourney.Returns(journeyResult);
 
         // Act
-        var message = await _client.GetAsync(pageUri, token);
+        var message = await Client.GetAsync(pageUri, token);
         var page = await AngleSharpPage.FromResponseAsync<CommonPage>(message, token);
 
         // Assert
@@ -141,7 +126,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     {
         // Arrange
         var token = TestContext.Current.CancellationToken;
-        var pageUri = _factory.GeneratePath("Journey", "Journey");
+        var pageUri = Host.GeneratePath("Journey", "Journey");
 
         var journeyResult = AGetCensusJourneyResponse()
             .WithContent(
@@ -153,10 +138,10 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
             )
             .AsSuccess();
 
-        _getCensusJourneyHandler.Returns(journeyResult);
+        TestDoubles.CensusJourney.Returns(journeyResult);
 
         // Act
-        var message = await _client.GetAsync(pageUri, token);
+        var message = await Client.GetAsync(pageUri, token);
         var page = await AngleSharpPage.FromResponseAsync<CommonPage>(message, token);
 
         // Assert
@@ -177,7 +162,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     {
         // Arrange
         var token = TestContext.Current.CancellationToken;
-        var pageUri = _factory.GeneratePath("Journey", "Journey");
+        var pageUri = Host.GeneratePath("Journey", "Journey");
 
         var journeyResult = AGetCensusJourneyResponse()
             .WithContent(
@@ -189,10 +174,10 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
             )
             .AsSuccess();
 
-        _getCensusJourneyHandler.Returns(journeyResult);
+        TestDoubles.CensusJourney.Returns(journeyResult);
 
         // Act
-        var message = await _client.GetAsync(pageUri, token);
+        var message = await Client.GetAsync(pageUri, token);
         var page = await AngleSharpPage.FromResponseAsync<CommonPage>(message, token);
 
         // Assert
@@ -209,11 +194,11 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     {
         // Arrange
         var token = TestContext.Current.CancellationToken;
-        var pageUri = _factory.GeneratePath("Journey", "Journey");
-        _getCensusJourneyHandler.Returns(AGetCensusJourneyResponse().AsSuccess());
+        var pageUri = Host.GeneratePath("Journey", "Journey");
+        TestDoubles.CensusJourney.Returns(AGetCensusJourneyResponse().AsSuccess());
 
         // Act
-        var message = await _client.GetAsync(pageUri, token);
+        var message = await Client.GetAsync(pageUri, token);
         var page = await AngleSharpPage.FromResponseAsync<CommonPage>(message, token);
 
         // Assert
@@ -235,15 +220,15 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     public async Task There_are_steps_on_the_page_by_default()
     {
         // Arrange
-        var pageUri = _factory.GeneratePath("Journey", "Journey");
-        _getCensusJourneyHandler.Returns(
+        var pageUri = Host.GeneratePath("Journey", "Journey");
+        TestDoubles.CensusJourney.Returns(
             AGetCensusJourneyResponse()
                 .WithContent(ACensusJourneyContentResponse().WithSteps())
                 .AsSuccess()
         );
 
         // Act
-        var message = await _client.GetAsync(pageUri, TestContext.Current.CancellationToken);
+        var message = await Client.GetAsync(pageUri, TestContext.Current.CancellationToken);
         var page = await AngleSharpPage.FromResponseAsync<JourneyPage>(
             message,
             TestContext.Current.CancellationToken
@@ -266,8 +251,8 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     public async Task School_status_table_not_displayed_when_not_a_mat()
     {
         // Arrange
-        var pageUri = _factory.GeneratePath("Journey", "Journey");
-        _getCensusJourneyHandler.Returns(
+        var pageUri = Host.GeneratePath("Journey", "Journey");
+        TestDoubles.CensusJourney.Returns(
             AGetCensusJourneyResponse()
                 .WithSchoolStatuses(
                     ACensusStatusResponse()
@@ -284,7 +269,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         );
 
         // Act
-        var message = await _client.GetAsync(pageUri, TestContext.Current.CancellationToken);
+        var message = await Client.GetAsync(pageUri, TestContext.Current.CancellationToken);
         var page = await AngleSharpPage.FromResponseAsync<JourneyPage>(
             message,
             TestContext.Current.CancellationToken
@@ -305,7 +290,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         var octoberFirst2026 = new DateTime(2026, 10, 1, 2, 0, 0, DateTimeKind.Utc);
         var octoberFourth2026 = new DateTime(2026, 10, 4, 9, 0, 0, DateTimeKind.Utc);
         var token = TestContext.Current.CancellationToken;
-        var pageUri = _factory.GeneratePath("Journey", "Journey");
+        var pageUri = Host.GeneratePath("Journey", "Journey");
 
         var trustJson = """
             {
@@ -320,28 +305,10 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
             }
             """;
 
-        var dateTimeProvider = Substitute.For<IDateTimeProvider>();
-        dateTimeProvider.UtcNow.Returns(octoberFourth2026);
-        var client = _factory.CreateAuthorisedClient(services =>
-        {
-            services.AddSingleton(dateTimeProvider);
-            services.StubQueryHandler(_getCensusJourneyHandler);
-            services.AddSingleton(
-                new MockAuthClaimsOptions
-                {
-                    Claims =
-                    [
-                        new Claim(GivenName, MockAuthHandler.FakeGivenName),
-                        new Claim(FamilyName, MockAuthHandler.FakeFamilyName),
-                        new Claim(Sub, "1159ee82-d515-4d34-b28d-ac138cb1506b"),
-                        new Claim(Email, "test@example.com"),
-                        new Claim(Organisation, trustJson),
-                    ],
-                }
-            );
-        });
+        TestDoubles.DateTimeProvider.UtcNow = octoberFourth2026;
+        TestDoubles.Claims = TrustUserClaims(trustJson);
 
-        _getCensusJourneyHandler.Returns(
+        TestDoubles.CensusJourney.Returns(
             AGetCensusJourneyResponse()
                 .WithSchoolStatuses(
                     ACensusStatusResponse()
@@ -355,7 +322,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         );
 
         // Act
-        var message = await client.GetAsync(pageUri, token);
+        var message = await Client.GetAsync(pageUri, token);
         var page = await AngleSharpPage.FromResponseAsync<JourneyPage>(message, token);
 
         // Assert
@@ -398,8 +365,8 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     public async Task Understand_statuses_list_is_displayed_when_status_is_not_unavailable()
     {
         // Arrange
-        var pageUri = _factory.GeneratePath("Journey", "Journey");
-        _getCensusJourneyHandler.Returns(
+        var pageUri = Host.GeneratePath("Journey", "Journey");
+        TestDoubles.CensusJourney.Returns(
             AGetCensusJourneyResponse()
                 .WithContent(
                     ACensusJourneyContentResponse()
@@ -414,7 +381,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         );
 
         // Act
-        var message = await _client.GetAsync(pageUri, TestContext.Current.CancellationToken);
+        var message = await Client.GetAsync(pageUri, TestContext.Current.CancellationToken);
         var page = await AngleSharpPage.FromResponseAsync<JourneyPage>(
             message,
             TestContext.Current.CancellationToken
@@ -430,8 +397,8 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     public async Task Understand_statuses_list_is_not_displayed_when_status_is_unavailable()
     {
         // Arrange
-        var pageUri = _factory.GeneratePath("Journey", "Journey");
-        _getCensusJourneyHandler.Returns(
+        var pageUri = Host.GeneratePath("Journey", "Journey");
+        TestDoubles.CensusJourney.Returns(
             AGetCensusJourneyResponse()
                 .WithContent(
                     ACensusJourneyContentResponse()
@@ -446,7 +413,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         );
 
         // Act
-        var message = await _client.GetAsync(pageUri, TestContext.Current.CancellationToken);
+        var message = await Client.GetAsync(pageUri, TestContext.Current.CancellationToken);
         var page = await AngleSharpPage.FromResponseAsync<JourneyPage>(
             message,
             TestContext.Current.CancellationToken
@@ -462,7 +429,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     {
         // Arrange
         var token = TestContext.Current.CancellationToken;
-        var pageUri = _factory.GeneratePath("Journey", "Journey");
+        var pageUri = Host.GeneratePath("Journey", "Journey");
 
         var trustJson = """
             {
@@ -477,25 +444,9 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
             }
             """;
 
-        var client = _factory.CreateAuthorisedClient(services =>
-        {
-            services.StubQueryHandler(_getCensusJourneyHandler);
-            services.AddSingleton(
-                new MockAuthClaimsOptions
-                {
-                    Claims =
-                    [
-                        new Claim(GivenName, MockAuthHandler.FakeGivenName),
-                        new Claim(FamilyName, MockAuthHandler.FakeFamilyName),
-                        new Claim(Sub, "1159ee82-d515-4d34-b28d-ac138cb1506b"),
-                        new Claim(Email, "test@example.com"),
-                        new Claim(Organisation, trustJson),
-                    ],
-                }
-            );
-        });
+        TestDoubles.Claims = TrustUserClaims(trustJson);
 
-        _getCensusJourneyHandler.Returns(
+        TestDoubles.CensusJourney.Returns(
             AGetCensusJourneyResponse()
                 .WithContent(
                     ACensusJourneyContentResponse()
@@ -509,7 +460,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         );
 
         // Act
-        var message = await client.GetAsync(pageUri, token);
+        var message = await Client.GetAsync(pageUri, token);
         var page = await AngleSharpPage.FromResponseAsync<JourneyPage>(message, token);
 
         // Assert
@@ -517,4 +468,13 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         page.GetComponentByContent("li", "Test Status")
             .ShouldBe("Test Status: Test status description.");
     }
+
+    private static List<Claim> TrustUserClaims(string trustJson) =>
+        [
+            new(GivenName, MockAuthHandler.FakeGivenName),
+            new(FamilyName, MockAuthHandler.FakeFamilyName),
+            new(Sub, "1159ee82-d515-4d34-b28d-ac138cb1506b"),
+            new(Email, "test@example.com"),
+            new(Organisation, trustJson),
+        ];
 }
