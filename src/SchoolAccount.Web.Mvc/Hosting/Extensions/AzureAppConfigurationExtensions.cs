@@ -12,13 +12,11 @@ public static class AzureAppConfigurationExtensions
         this WebApplicationBuilder builder
     )
     {
-        if (!builder.Configuration.GetValue<bool>(_enabledKey))
+        if (builder.Configuration.GetValue<bool>(_enabledKey))
         {
-            return builder;
+            builder.Configuration.AddAzureAppConfiguration();
+            builder.Services.AddAzureAppConfiguration();
         }
-
-        builder.Configuration.AddAzureAppConfiguration();
-        builder.Services.AddAzureAppConfiguration();
 
         return builder;
     }
