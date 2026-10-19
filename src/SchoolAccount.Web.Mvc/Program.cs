@@ -3,6 +3,7 @@ using SchoolAccount.Application;
 using SchoolAccount.Infrastructure;
 using SchoolAccount.Web.Mvc;
 using SchoolAccount.Web.Mvc.Hosting.Extensions;
+using SchoolAccount.Web.Mvc.Infrastructure;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -35,6 +36,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
+app.UseMiddleware<TrackingCookieMiddleware>();
 app.UseSession();
 app.UseGovUkFrontend();
 
