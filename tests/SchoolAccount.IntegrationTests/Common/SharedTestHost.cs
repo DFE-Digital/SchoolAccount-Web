@@ -55,7 +55,8 @@ public sealed class SharedTestHost : WebApplicationFactory<Program>
             services.Replace(
                 ServiceDescriptor.Scoped<IDateTimeProvider>(_ => _testDoubles.DateTimeProvider)
             );
-            services.AddTransient(_ => new MockAuthClaimsOptions { Claims = _testDoubles.Claims });
+            // The signed-in user comes from each client's claims header instead.
+            services.AddSingleton(new MockAuthClaimsOptions());
         });
     }
 }

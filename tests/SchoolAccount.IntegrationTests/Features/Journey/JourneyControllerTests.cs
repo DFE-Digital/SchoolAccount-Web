@@ -1,5 +1,4 @@
 using System.Net;
-using System.Security.Claims;
 using SchoolAccount.IntegrationTests.Common;
 using SchoolAccount.IntegrationTests.Common.Pages;
 using Shouldly;
@@ -8,7 +7,6 @@ using static SchoolAccount.TestCommon.Builders.GetCensusJourney.GetCensusJourney
 using static SchoolAccount.TestCommon.Builders.GetCensusJourney.GetCensusJourneyResponseBuilder;
 using static SchoolAccount.TestCommon.Builders.GetCensusJourney.GetCensusJourneyResponseImportantDateBuilder;
 using static SchoolAccount.TestCommon.Builders.GetCensusJourney.GetCensusJourneyResponseUnderstandStatusBuilder;
-using static SchoolAccount.Web.Mvc.Authentication.ClaimConstants;
 
 namespace SchoolAccount.IntegrationTests.Features.Journey;
 
@@ -306,7 +304,7 @@ public class JourneyControllerTests(SharedTestHost host) : SharedHostTest(host)
             """;
 
         TestDoubles.DateTimeProvider.UtcNow = octoberFourth2026;
-        TestDoubles.Claims = TrustUserClaims(trustJson);
+        Client.WithOrganisation(trustJson);
 
         TestDoubles.CensusJourney.Returns(
             AGetCensusJourneyResponse()
@@ -444,7 +442,7 @@ public class JourneyControllerTests(SharedTestHost host) : SharedHostTest(host)
             }
             """;
 
-        TestDoubles.Claims = TrustUserClaims(trustJson);
+        Client.WithOrganisation(trustJson);
 
         TestDoubles.CensusJourney.Returns(
             AGetCensusJourneyResponse()
@@ -468,13 +466,4 @@ public class JourneyControllerTests(SharedTestHost host) : SharedHostTest(host)
         page.GetComponentByContent("li", "Test Status")
             .ShouldBe("Test Status: Test status description.");
     }
-
-    private static List<Claim> TrustUserClaims(string trustJson) =>
-        [
-            new(GivenName, MockAuthHandler.FakeGivenName),
-            new(FamilyName, MockAuthHandler.FakeFamilyName),
-            new(Sub, "1159ee82-d515-4d34-b28d-ac138cb1506b"),
-            new(Email, "test@example.com"),
-            new(Organisation, trustJson),
-        ];
 }

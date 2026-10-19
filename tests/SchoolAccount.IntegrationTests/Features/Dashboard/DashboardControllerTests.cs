@@ -108,7 +108,7 @@ public class DashboardControllerTests(SharedTestHost host) : SharedHostTest(host
         // Arrange
         var token = TestContext.Current.CancellationToken;
         var pageUri = Host.GeneratePath("Dashboard", "Dashboard");
-        TestDoubles.Claims = [new Claim(Organisation, """{"id": 12345}""")];
+        Client.WithClaims([new Claim(Organisation, """{"id": 12345}""")]);
 
         TestDoubles.CensusStatuses.Returns(
             CensusStatusesResponseBuilder.ACensusStatusResponse().AsSuccess()
