@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Security.Claims;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using SchoolAccount.Application.Features.Collect.CensusStatuses;
 using SchoolAccount.IntegrationTests.Common;
 using SchoolAccount.IntegrationTests.Common.Extensions;
 using SchoolAccount.IntegrationTests.Common.Pages;
@@ -16,7 +17,13 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
 {
     private readonly SchoolAccountWebApplicationFactory<Program> _factory;
     private readonly HttpClient _client;
-    private readonly StubCensusStatusesHandler _getCensusStatusesHandler = new();
+
+    // No default result: every test sets what this returns, and a test that forgets fails
+    // with "No result configured".
+    private readonly StubQueryHandler<
+        GetCensusStatusesQuery,
+        List<GetCensusStatusesResponse>
+    > _getCensusStatusesHandler = new();
 
     public DashboardControllerTests(SchoolAccountWebApplicationFactory<Program> factory)
     {

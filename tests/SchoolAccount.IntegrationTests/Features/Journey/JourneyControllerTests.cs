@@ -1,6 +1,8 @@
 using System.Net;
 using System.Security.Claims;
 using NSubstitute;
+using SchoolAccount.Application.Features.Collect.GetCensusJourney;
+using SchoolAccount.Application.Features.Collect.GetCensusJourney.Responses;
 using SchoolAccount.IntegrationTests.Common;
 using SchoolAccount.IntegrationTests.Common.Extensions;
 using SchoolAccount.IntegrationTests.Common.Pages;
@@ -20,7 +22,13 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
 {
     private readonly HttpClient _client;
     private readonly SchoolAccountWebApplicationFactory<Program> _factory;
-    private readonly StubCensusJourneyHandler _getCensusJourneyHandler = new();
+
+    // No default result: every test sets what this returns, and a test that forgets fails
+    // with "No result configured".
+    private readonly StubQueryHandler<
+        GetCensusJourneyQuery,
+        GetCensusJourneyResponse
+    > _getCensusJourneyHandler = new();
     private readonly Uri _testUri = new("https://www.gov.uk/");
 
     public JourneyControllerTests(SchoolAccountWebApplicationFactory<Program> factory)
