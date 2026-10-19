@@ -21,14 +21,20 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     private readonly HttpClient _client;
     private readonly SchoolAccountWebApplicationFactory<Program> _factory;
     private readonly StubCensusJourneyHandler _getCensusJourneyHandler = new();
+    private readonly IDateTimeProvider _dateTimeProvider = Substitute.For<IDateTimeProvider>();
+    private readonly MockAuthClaimsOptions _signedInUser = new();
     private readonly Uri _testUri = new("https://www.gov.uk/");
 
     public JourneyControllerTests(SchoolAccountWebApplicationFactory<Program> factory)
     {
         _factory = factory;
+        _dateTimeProvider.UtcNow.Returns(_ => DateTime.UtcNow);
         _client = factory.CreateAuthorisedClient(services =>
-            services.StubQueryHandler(_getCensusJourneyHandler)
-        );
+        {
+            services.StubQueryHandler(_getCensusJourneyHandler);
+            services.AddSingleton(_dateTimeProvider);
+            services.AddSingleton(_signedInUser);
+        });
     }
 
     [Fact]
@@ -320,26 +326,8 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
             }
             """;
 
-        var dateTimeProvider = Substitute.For<IDateTimeProvider>();
-        dateTimeProvider.UtcNow.Returns(octoberFourth2026);
-        var client = _factory.CreateAuthorisedClient(services =>
-        {
-            services.AddSingleton(dateTimeProvider);
-            services.StubQueryHandler(_getCensusJourneyHandler);
-            services.AddSingleton(
-                new MockAuthClaimsOptions
-                {
-                    Claims =
-                    [
-                        new Claim(GivenName, MockAuthHandler.FakeGivenName),
-                        new Claim(FamilyName, MockAuthHandler.FakeFamilyName),
-                        new Claim(Sub, "1159ee82-d515-4d34-b28d-ac138cb1506b"),
-                        new Claim(Email, "test@example.com"),
-                        new Claim(Organisation, trustJson),
-                    ],
-                }
-            );
-        });
+        _dateTimeProvider.UtcNow.Returns(octoberFourth2026);
+        _signedInUser.Claims = TrustUserClaims(trustJson);
 
         _getCensusJourneyHandler.Returns(
             AGetCensusJourneyResponse()
@@ -355,7 +343,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         );
 
         // Act
-        var message = await client.GetAsync(pageUri, token);
+        var message = await _client.GetAsync(pageUri, token);
         var page = await AngleSharpPage.FromResponseAsync<JourneyPage>(message, token);
 
         // Assert
@@ -477,23 +465,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
             }
             """;
 
-        var client = _factory.CreateAuthorisedClient(services =>
-        {
-            services.StubQueryHandler(_getCensusJourneyHandler);
-            services.AddSingleton(
-                new MockAuthClaimsOptions
-                {
-                    Claims =
-                    [
-                        new Claim(GivenName, MockAuthHandler.FakeGivenName),
-                        new Claim(FamilyName, MockAuthHandler.FakeFamilyName),
-                        new Claim(Sub, "1159ee82-d515-4d34-b28d-ac138cb1506b"),
-                        new Claim(Email, "test@example.com"),
-                        new Claim(Organisation, trustJson),
-                    ],
-                }
-            );
-        });
+        _signedInUser.Claims = TrustUserClaims(trustJson);
 
         _getCensusJourneyHandler.Returns(
             AGetCensusJourneyResponse()
@@ -509,7 +481,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         );
 
         // Act
-        var message = await client.GetAsync(pageUri, token);
+        var message = await _client.GetAsync(pageUri, token);
         var page = await AngleSharpPage.FromResponseAsync<JourneyPage>(message, token);
 
         // Assert
@@ -517,4 +489,13 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         page.GetComponentByContent("li", "Test Status")
             .ShouldBe("Test Status: Test status description.");
     }
+
+    private static List<Claim> TrustUserClaims(string trustJson) =>
+        [
+            new(GivenName, MockAuthHandler.FakeGivenName),
+            new(FamilyName, MockAuthHandler.FakeFamilyName),
+            new(Sub, "1159ee82-d515-4d34-b28d-ac138cb1506b"),
+            new(Email, "test@example.com"),
+            new(Organisation, trustJson),
+        ];
 }
