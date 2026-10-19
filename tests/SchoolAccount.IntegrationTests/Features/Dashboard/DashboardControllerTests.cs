@@ -1,6 +1,5 @@
 ﻿using System.Net;
 using System.Security.Claims;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using SchoolAccount.IntegrationTests.Common;
 using SchoolAccount.IntegrationTests.Common.Extensions;
 using SchoolAccount.IntegrationTests.Common.Pages;
@@ -123,28 +122,16 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
         // Arrange
         var token = TestContext.Current.CancellationToken;
         var pageUri = _factory.GeneratePath("Dashboard", "Dashboard");
-        var client = CreateClientWithoutUserDetails();
+        _client.WithClaims([new Claim(Organisation, """{"id": 12345}""")]);
 
         _getCensusStatusesHandler.Returns(
             CensusStatusesResponseBuilder.ACensusStatusResponse().AsSuccess()
         );
 
         // Act
-        var message = await client.GetAsync(pageUri, token);
+        var message = await _client.GetAsync(pageUri, token);
 
         // Assert
         message.StatusCode.ShouldBe(HttpStatusCode.InternalServerError);
-    }
-
-    private HttpClient CreateClientWithoutUserDetails()
-    {
-        List<Claim> claims = [new(Organisation, """{"id": 12345}""")];
-
-        return _factory.CreateAuthorisedClient(services =>
-        {
-            services.RemoveAll<MockAuthClaimsOptions>();
-            services.AddSingleton(new MockAuthClaimsOptions { Claims = claims });
-            services.StubQueryHandler(_getCensusStatusesHandler);
-        });
     }
 }
