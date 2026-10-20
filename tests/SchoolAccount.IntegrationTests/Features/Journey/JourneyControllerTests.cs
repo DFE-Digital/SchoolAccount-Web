@@ -58,7 +58,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
 
         // Act
         var message = await _client.GetAsync(pageUri, token);
-        var page = await AngleSharpPage.FromResponseAsync<CommonPage>(message, token);
+        var page = await AngleSharpPage.FromResponseAsync<JourneyPage>(message, token);
 
         // Assert
         message.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -67,13 +67,10 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         page.GetFirstBodyParagraph().ShouldBe("This is a test overview");
         page.GetFirstCaption().ShouldBe("This is a test caption");
         page.GetFirstTag().ShouldBe("Test Status");
-        page.GetFirstCaption().ShouldBe("This is a test caption");
-        page.GetFirstTag().ShouldBe("Test Status");
-        page.GetFirstTag().ShouldBe("Test Status");
         page.GetComponentByContent(".govuk-heading-m", "Test Support Service")
             .ShouldBe("Test Support Service");
 
-        var pageImportantDates = page.GetSummaryListPairs();
+        var pageImportantDates = page.GetImportantDateSummaryListPairs();
         pageImportantDates.ShouldNotBeNull();
         pageImportantDates.Count.ShouldBe(1);
         pageImportantDates.ShouldContainKeyAndValue<string, string>(
@@ -103,7 +100,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
 
         // Act
         var message = await _client.GetAsync(pageUri, token);
-        var page = await AngleSharpPage.FromResponseAsync<CommonPage>(message, token);
+        var page = await AngleSharpPage.FromResponseAsync<JourneyPage>(message, token);
 
         // Assert
         message.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -127,12 +124,12 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
 
         // Act
         var message = await _client.GetAsync(pageUri, token);
-        var page = await AngleSharpPage.FromResponseAsync<CommonPage>(message, token);
+        var page = await AngleSharpPage.FromResponseAsync<JourneyPage>(message, token);
 
         // Assert
         message.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-        var pageImportantDates = page.GetSummaryListPairs();
+        var pageImportantDates = page.GetImportantDateSummaryListPairs();
         pageImportantDates.ShouldNotBeNull();
     }
 
@@ -157,12 +154,12 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
 
         // Act
         var message = await _client.GetAsync(pageUri, token);
-        var page = await AngleSharpPage.FromResponseAsync<CommonPage>(message, token);
+        var page = await AngleSharpPage.FromResponseAsync<JourneyPage>(message, token);
 
         // Assert
         message.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-        var pageImportantDates = page.GetSummaryListPairs();
+        var pageImportantDates = page.GetImportantDateSummaryListPairs();
         pageImportantDates.ShouldNotBeNull();
         pageImportantDates.Count.ShouldBe(2);
         pageImportantDates.ShouldContainKeyAndValue<string, string>("Census due", "1 October 2026");
@@ -193,12 +190,12 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
 
         // Act
         var message = await _client.GetAsync(pageUri, token);
-        var page = await AngleSharpPage.FromResponseAsync<CommonPage>(message, token);
+        var page = await AngleSharpPage.FromResponseAsync<JourneyPage>(message, token);
 
         // Assert
         message.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-        var importantDateRows = page.GetSummaryListRows();
+        var importantDateRows = page.GetImportantDateSummaryListRows();
         importantDateRows.ShouldNotBeNull();
         importantDateRows[0].ShouldBe(("Earlier", "1 October 2026"));
         importantDateRows[1].ShouldBe(("Later", "15 November 2026"));
@@ -214,7 +211,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
 
         // Act
         var message = await _client.GetAsync(pageUri, token);
-        var page = await AngleSharpPage.FromResponseAsync<CommonPage>(message, token);
+        var page = await AngleSharpPage.FromResponseAsync<JourneyPage>(message, token);
 
         // Assert
         message.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -293,9 +290,9 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         // Assert
         message.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-        page.GetTableHeaders().ShouldBeEmpty();
-        page.GetTableRows().ShouldBeEmpty();
-        page.GetTableCellByHeader().ShouldBeEmpty();
+        page.GetSchoolStatusTableHeaders().ShouldBeEmpty();
+        page.GetSchoolStatusTableRows().ShouldBeEmpty();
+        page.GetSchoolStatusTableCellByHeader().ShouldBeEmpty();
     }
 
     [Fact]
@@ -361,7 +358,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         // Assert
         message.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-        var tableHeadings = page.GetTableHeaders();
+        var tableHeadings = page.GetSchoolStatusTableHeaders();
         tableHeadings.ShouldNotBeNull();
         tableHeadings[0].ShouldBe("Name");
         tableHeadings[1].ShouldBe("Status");
@@ -369,11 +366,11 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         tableHeadings[3].ShouldBe("Errors");
         tableHeadings[4].ShouldBe("Queries");
 
-        var tableRows = page.GetTableRows();
+        var tableRows = page.GetSchoolStatusTableRows();
         tableRows.ShouldNotBeNull();
         tableRows.Count.ShouldBe(2);
 
-        var schoolStatus = page.GetTableCellByHeader();
+        var schoolStatus = page.GetSchoolStatusTableCellByHeader();
         schoolStatus.ShouldNotBeNull();
         schoolStatus.Count.ShouldBe(2);
         schoolStatus[0]

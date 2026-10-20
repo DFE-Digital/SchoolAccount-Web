@@ -39,7 +39,7 @@ public abstract class AngleSharpPage
     public virtual string? GetComponentByContent(string componentClass, string content)
     {
         var component = Page.QuerySelectorAll(componentClass)
-            .FirstOrDefault(h => h.TextContent?.Contains(content) ?? false);
+            .FirstOrDefault(h => h.TextContent.Contains(content));
 
         return component?.TextContent;
     }
@@ -74,43 +74,10 @@ public abstract class AngleSharpPage
         return captionElement?.TextContent;
     }
 
-    public virtual string? GetSignOutLink()
-    {
-        var signOutElement = Page.QuerySelector("button");
-        return signOutElement?.TextContent;
-    }
-
     public virtual string? GetOrganisationName()
     {
         var organisationNameElement = Page.QuerySelector(".header-navigation__school");
         return organisationNameElement?.TextContent;
-    }
-
-    public virtual string GetFirstTag()
-    {
-        var tagElement = Page.QuerySelector(".govuk-tag");
-        return tagElement?.TextContent;
-    }
-
-    public virtual IReadOnlyDictionary<string, string> GetSummaryListPairs()
-    {
-        return Page.QuerySelectorAll("dl.govuk-summary-list div.govuk-summary-list__row")
-            .ToDictionary(
-                row => row.QuerySelector(".govuk-summary-list__key")!.TextContent.Trim(),
-                row => row.QuerySelector(".govuk-summary-list__value")!.TextContent.Trim()
-            );
-    }
-
-    public virtual IReadOnlyList<(string Key, string Value)> GetSummaryListRows()
-    {
-        return Page.QuerySelectorAll("dl.govuk-summary-list div.govuk-summary-list__row")
-            .Select(row =>
-                (
-                    Key: row.QuerySelector(".govuk-summary-list__key")!.TextContent.Trim(),
-                    Value: row.QuerySelector(".govuk-summary-list__value")!.TextContent.Trim()
-                )
-            )
-            .ToList();
     }
 
     public virtual IElement? GetFooterLink(string href)
@@ -126,45 +93,5 @@ public abstract class AngleSharpPage
     public virtual IElement? GetButtonByLink(string href)
     {
         return Page.QuerySelector($"a.govuk-button[href='{href}']");
-    }
-
-    public virtual IReadOnlyList<string> GetTableHeaders()
-    {
-        return Page.QuerySelectorAll("table.govuk-table thead th.govuk-table__header")
-            .Select(header => header.TextContent.Trim())
-            .ToList();
-    }
-
-    public virtual IReadOnlyList<IReadOnlyList<string>> GetTableRows()
-    {
-        return Page.QuerySelectorAll("table.govuk-table tbody tr")
-            .Select(row =>
-                (IReadOnlyList<string>)
-                    row.QuerySelectorAll("td.govuk-table__cell")
-                        .Select(cell => cell.TextContent.Trim())
-                        .ToList()
-            )
-            .ToList();
-    }
-
-    public virtual IReadOnlyList<IReadOnlyDictionary<string, string>> GetTableCellByHeader()
-    {
-        var headers = GetTableHeaders();
-
-        return Page.QuerySelectorAll("table.govuk-table tbody tr")
-            .Select(row =>
-                (IReadOnlyDictionary<string, string>)
-                    row.QuerySelectorAll("td.govuk-table__cell")
-                        .Select(
-                            (cell, index) =>
-                                new
-                                {
-                                    Key = index < headers.Count ? headers[index] : $"Column{index}",
-                                    Value = cell.TextContent.Trim(),
-                                }
-                        )
-                        .ToDictionary(cell => cell.Key, cell => cell.Value)
-            )
-            .ToList();
     }
 }
