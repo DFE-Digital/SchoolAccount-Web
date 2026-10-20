@@ -39,7 +39,7 @@ public class OrganisationPolicyTests(SchoolAccountWebApplicationFactory<Program>
     [InlineData("[]")]
     [InlineData("")]
     [InlineData(null)]
-    public async Task User_is_Forbidden_when_Organisation_Claim_is_empty(string? value)
+    public async Task User_is_forbidden_with_no_organisations(string? value)
     {
         var client = CreateClientOrganisationClaims(value);
 
