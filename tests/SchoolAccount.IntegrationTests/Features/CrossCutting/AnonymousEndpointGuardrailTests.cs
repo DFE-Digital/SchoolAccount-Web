@@ -38,7 +38,7 @@ public class AnonymousEndpointGuardrailTests(SchoolAccountWebApplicationFactory<
     ];
 
     [Fact]
-    public void Endpoints_marked_as_AllowAnonymous_should_only_be_the_ones_on_the_allowlist()
+    public void Only_allowlisted_endpoints_can_be_used_without_signing_in()
     {
         // Arrange
         using var scope = factory.Services.CreateScope();
