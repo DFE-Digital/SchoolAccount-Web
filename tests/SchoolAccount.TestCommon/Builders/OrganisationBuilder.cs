@@ -55,6 +55,12 @@ public class OrganisationBuilder
         return this;
     }
 
+    /// <summary>
+    /// Lets a builder be passed wherever an <see cref="Organisation"/> is expected, without
+    /// calling <see cref="Build"/>.
+    /// </summary>
+    public static implicit operator Organisation(OrganisationBuilder builder) => builder.Build();
+
     public Organisation Build()
     {
         return new Organisation
