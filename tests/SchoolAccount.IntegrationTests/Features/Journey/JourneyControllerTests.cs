@@ -308,7 +308,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         var token = TestContext.Current.CancellationToken;
         var pageUri = _factory.GeneratePath("Journey", "Journey");
 
-        var trust = AnOrganisation().AsTrust().WithName("Test Multi Academy Trust");
+        var trust = ATrust().WithName("Test Multi Academy Trust");
 
         var dateTimeProvider = Substitute.For<IDateTimeProvider>();
         dateTimeProvider.UtcNow.Returns(octoberFourth2026);
@@ -444,7 +444,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         var token = TestContext.Current.CancellationToken;
         var pageUri = _factory.GeneratePath("Journey", "Journey");
 
-        var trust = AnOrganisation().AsTrust().WithName("Test Multi Academy Trust");
+        var trust = ATrust().WithName("Test Multi Academy Trust");
 
         _client.WithOrganisation(trust);
 

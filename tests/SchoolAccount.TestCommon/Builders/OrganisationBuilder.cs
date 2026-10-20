@@ -4,27 +4,55 @@ namespace SchoolAccount.TestCommon.Builders;
 
 /// <summary>
 /// Builds the organisation a test user belongs to, using the same type the app reads from the
-/// organisation claim. Defaults to a single school.
+/// organisation claim. Start from <see cref="ASingleSchool"/> or <see cref="ATrust"/>, so every
+/// test says which kind of organisation it uses.
 /// </summary>
 public class OrganisationBuilder
 {
     private string _id = "2E774B32-E4DB-445B-B915-736C777FF5A4";
-    private string _name = "Test School";
-    private Category _category = new()
-    {
-        Id = Organisation.EstablishmentCategoryId,
-        Name = "Establishment",
-    };
+    private string _name;
     private string? _ukprn = "10037611";
-    private string? _establishmentNumber = "2091";
-    private LocalAuthority? _localAuthority = new()
-    {
-        Id = "502EF2E9-2CA6-4905-9BF7-E80695BD5717",
-        Name = "SUNDERLAND CITY METROPOLITAN BOROUGH COUNCIL",
-        Code = "394",
-    };
+    private readonly Category _category;
+    private readonly string? _establishmentNumber;
+    private readonly LocalAuthority? _localAuthority;
 
-    public static OrganisationBuilder AnOrganisation() => new();
+    private OrganisationBuilder(
+        string name,
+        Category category,
+        string? establishmentNumber,
+        LocalAuthority? localAuthority
+    )
+    {
+        _name = name;
+        _category = category;
+        _establishmentNumber = establishmentNumber;
+        _localAuthority = localAuthority;
+    }
+
+    /// <summary>A single school, the same as the default test user's organisation.</summary>
+    public static OrganisationBuilder ASingleSchool() =>
+        new(
+            "Test School",
+            new Category { Id = Organisation.EstablishmentCategoryId, Name = "Establishment" },
+            "2091",
+            new LocalAuthority
+            {
+                Id = "502EF2E9-2CA6-4905-9BF7-E80695BD5717",
+                Name = "SUNDERLAND CITY METROPOLITAN BOROUGH COUNCIL",
+                Code = "394",
+            }
+        );
+
+    /// <summary>
+    /// A multi-academy trust. Its schools come from the Academies API, not from the claim.
+    /// </summary>
+    public static OrganisationBuilder ATrust() =>
+        new(
+            "Test Multi Academy Trust",
+            new Category { Id = "010", Name = "Multi Academy Trust" },
+            establishmentNumber: null,
+            localAuthority: null
+        );
 
     public OrganisationBuilder WithId(string id)
     {
@@ -41,17 +69,6 @@ public class OrganisationBuilder
     public OrganisationBuilder WithUkprn(string? ukprn)
     {
         _ukprn = ukprn;
-        return this;
-    }
-
-    /// <summary>
-    /// A multi-academy trust. Its schools come from the Academies API, not from the claim.
-    /// </summary>
-    public OrganisationBuilder AsTrust()
-    {
-        _category = new Category { Id = "010", Name = "Multi Academy Trust" };
-        _establishmentNumber = null;
-        _localAuthority = null;
         return this;
     }
 
