@@ -12,6 +12,7 @@ using static SchoolAccount.TestCommon.Builders.GetCensusJourney.GetCensusJourney
 using static SchoolAccount.TestCommon.Builders.GetCensusJourney.GetCensusJourneyResponseBuilder;
 using static SchoolAccount.TestCommon.Builders.GetCensusJourney.GetCensusJourneyResponseImportantDateBuilder;
 using static SchoolAccount.TestCommon.Builders.GetCensusJourney.GetCensusJourneyResponseUnderstandStatusBuilder;
+using static SchoolAccount.TestCommon.Builders.OrganisationBuilder;
 using static SchoolAccount.Web.Mvc.Authentication.ClaimConstants;
 
 namespace SchoolAccount.IntegrationTests.Features.Journey;
@@ -307,18 +308,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         var token = TestContext.Current.CancellationToken;
         var pageUri = _factory.GeneratePath("Journey", "Journey");
 
-        var trustJson = """
-            {
-             "id": "2E774B32-E4DB-445B-B915-736C777FF5A4",
-             "name": "Test Multi Academy Trust",
-             "category": { "id": "010", "name": "Multi Academy Trust" },
-             "ukprn": "10037611",
-             "establishments": [
-                 { "urn": "100001", "name": "Test School 1" },
-                 { "urn": "100002", "name": "Test School 2" }
-             ]
-            }
-            """;
+        var trust = AnOrganisation().AsTrust().WithName("Test Multi Academy Trust").Build();
 
         var dateTimeProvider = Substitute.For<IDateTimeProvider>();
         dateTimeProvider.UtcNow.Returns(octoberFourth2026);
@@ -329,7 +319,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
                 services.AddSingleton(dateTimeProvider);
                 services.StubQueryHandler(_getCensusJourneyHandler);
             })
-            .WithOrganisation(trustJson);
+            .WithOrganisation(trust);
 
         _getCensusJourneyHandler.Returns(
             AGetCensusJourneyResponse()
@@ -454,20 +444,9 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         var token = TestContext.Current.CancellationToken;
         var pageUri = _factory.GeneratePath("Journey", "Journey");
 
-        var trustJson = """
-            {
-             "id": "2E774B32-E4DB-445B-B915-736C777FF5A4",
-             "name": "Test Multi Academy Trust",
-             "category": { "id": "010", "name": "Multi Academy Trust" },
-             "ukprn": "10037611",
-             "establishments": [
-                 { "urn": "100001", "name": "Test School 1" },
-                 { "urn": "100002", "name": "Test School 2" }
-             ]
-            }
-            """;
+        var trust = AnOrganisation().AsTrust().WithName("Test Multi Academy Trust").Build();
 
-        _client.WithOrganisation(trustJson);
+        _client.WithOrganisation(trust);
 
         _getCensusJourneyHandler.Returns(
             AGetCensusJourneyResponse()

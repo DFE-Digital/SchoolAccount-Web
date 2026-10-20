@@ -122,6 +122,7 @@ public class DashboardControllerTests : IClassFixture<SchoolAccountWebApplicatio
         // Arrange
         var token = TestContext.Current.CancellationToken;
         var pageUri = _factory.GeneratePath("Dashboard", "Dashboard");
+        // Deliberately invalid: no name, id or email, and an organisation id the app can't read.
         _client.WithClaims([new Claim(Organisation, """{"id": 12345}""")]);
 
         _getCensusStatusesHandler.Returns(

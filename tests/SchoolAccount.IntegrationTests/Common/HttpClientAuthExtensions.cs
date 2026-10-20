@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using System.Text.Json;
+using SchoolAccount.SharedKernel.Authentication;
 
 namespace SchoolAccount.IntegrationTests.Common;
 
@@ -9,6 +10,10 @@ namespace SchoolAccount.IntegrationTests.Common;
 /// </summary>
 public static class HttpClientAuthExtensions
 {
+    private static readonly JsonSerializerOptions OrganisationJsonOptions = new(
+        JsonSerializerDefaults.Web
+    );
+
     /// <summary>
     /// Signs in as exactly these claims, replacing the default test user.
     /// </summary>
@@ -26,7 +31,22 @@ public static class HttpClientAuthExtensions
     /// <summary>
     /// Signs in as the default test user, belonging to a different organisation.
     /// </summary>
-    public static HttpClient WithOrganisation(this HttpClient client, string organisationJson)
+    public static HttpClient WithOrganisation(this HttpClient client, Organisation organisation)
+    {
+        return client.WithRawOrganisationClaim(
+            JsonSerializer.Serialize(organisation, OrganisationJsonOptions)
+        );
+    }
+
+    /// <summary>
+    /// Signs in as the default test user with this exact organisation claim. Only for tests about
+    /// claims the app can't read, such as empty or malformed JSON; use
+    /// <see cref="WithOrganisation"/> otherwise.
+    /// </summary>
+    public static HttpClient WithRawOrganisationClaim(
+        this HttpClient client,
+        string organisationJson
+    )
     {
         return client.WithClaims(MockAuthHandler.DefaultClaims(organisationJson));
     }
