@@ -75,11 +75,7 @@ public class LogoutActionTests(SchoolAccountWebApplicationFactory<Program> facto
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
-        page.ShouldNotBeNull();
-
-        var pageSignOutLink = page.GetSignOutLink();
-        pageSignOutLink.ShouldNotBeNull();
-        pageSignOutLink.ShouldContainWithoutWhitespace("Sign out");
+        page.GetComponentByContent("button", "Sign out").ShouldNotBeNull();
     }
 
     private static async Task<string> GetAntiforgeryTokenAsync(
