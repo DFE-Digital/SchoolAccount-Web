@@ -458,7 +458,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     }
 
     [Fact]
-    public async Task Understand_statuses_list_is_displayed_for_multi_academy_trust()
+    public async Task Status_explanations_are_shown_for_a_multi_academy_trust()
     {
         // Arrange
         var token = TestContext.Current.CancellationToken;
