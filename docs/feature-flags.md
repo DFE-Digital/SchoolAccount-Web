@@ -85,17 +85,29 @@ where they fit.
 Write integration tests for both states. Flags are on in `appsettings.IntegrationTests.json`, so tests for the
 on state need nothing extra.
 
-For the off state, call `DisableFeature` from `Common/Extensions/ServiceCollectionExtensions.cs` when creating the
-client:
+For the off state, replace `IFeatureDefinitionProvider` in the test's services with one that reads an in-memory
+configuration where the flag is off. `FeedbackControllerTests` does this with its `DisableFeedbackFeature` helper:
 
 ```csharp
-var client = _factory.CreateAuthorisedClient(services =>
-    services.DisableFeature(FeatureFlags.FeedbackFooter)
+var disabledFooter = new Dictionary<string, string?>
+{
+    ["feature_management:feature_flags:0:id"] = FeatureFlags.FeedbackFooter,
+    ["feature_management:feature_flags:0:enabled"] = "false",
+};
+
+var configurationRoot = new ConfigurationBuilder()
+    .AddInMemoryCollection(disabledFooter)
+    .Build();
+
+services.Replace(
+    ServiceDescriptor.Singleton<IFeatureDefinitionProvider>(
+        _ => new ConfigurationFeatureDefinitionProvider(configurationRoot)
+    )
 );
 ```
 
-It turns off only the named flag. Other flags keep the state the appsettings give them, and calls can be chained to
-turn off more than one.
+Use the factory overload (`_ => new ...`) so the container disposes the provider. Passing an instance fails the build
+with CA2000.
 
 If the feature has an endpoint gated with `[FeatureGate]`, test that it returns 404 when the flag is off.
 

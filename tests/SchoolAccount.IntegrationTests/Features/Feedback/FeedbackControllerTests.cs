@@ -1,4 +1,6 @@
 using System.Net;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.FeatureManagement;
 using NSubstitute;
 using SchoolAccount.Application.Abstractions.Messaging;
 using SchoolAccount.Application.Features.Feedback;
@@ -129,7 +131,7 @@ public class FeedbackControllerTests : IClassFixture<SchoolAccountWebApplication
         var client = _factory.CreateAuthorisedClient(services =>
         {
             services.StubQueryHandler(StubCensusStatusesHandler.Succeeding());
-            services.DisableFeature(FeatureFlags.FeedbackFooter);
+            services.DisableFeedbackFeature();
         });
 
         // Act
@@ -149,7 +151,7 @@ public class FeedbackControllerTests : IClassFixture<SchoolAccountWebApplication
         var client = _factory.CreateAuthorisedClient(services =>
         {
             services.AddScoped<ICommandHandler<FeedbackCommand>>(_ => _feedbackCommandHandler);
-            services.DisableFeature(FeatureFlags.FeedbackFooter);
+            services.DisableFeedbackFeature();
         });
 
         // Act
@@ -177,5 +179,27 @@ public class FeedbackControllerTests : IClassFixture<SchoolAccountWebApplication
         }
 
         return new FormUrlEncodedContent(fields);
+    }
+}
+
+file static class FeedbackFeatureServiceCollectionExtensions
+{
+    public static void DisableFeedbackFeature(this IServiceCollection services)
+    {
+        var disabledFooter = new Dictionary<string, string?>
+        {
+            ["feature_management:feature_flags:0:id"] = FeatureFlags.FeedbackFooter,
+            ["feature_management:feature_flags:0:enabled"] = "false",
+        };
+
+        var configurationRoot = new ConfigurationBuilder()
+            .AddInMemoryCollection(disabledFooter)
+            .Build();
+
+        services.Replace(
+            ServiceDescriptor.Singleton<IFeatureDefinitionProvider>(
+                _ => new ConfigurationFeatureDefinitionProvider(configurationRoot)
+            )
+        );
     }
 }
