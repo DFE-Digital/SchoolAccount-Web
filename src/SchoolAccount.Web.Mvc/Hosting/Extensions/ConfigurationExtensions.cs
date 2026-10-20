@@ -21,6 +21,7 @@ public static class ConfigurationExtensions
             options
                 .Connect(new Uri(endpoint), credentials)
                 .ConfigureKeyVault(kv => kv.SetCredential(credentials))
+                .UseFeatureFlags()
         );
 
         return configurationBuilder;
