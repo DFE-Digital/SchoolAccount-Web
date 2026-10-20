@@ -1,7 +1,7 @@
 @model SchoolAccount.Web.Mvc.Features.Shared.StepByStep.StepByStepViewModelCollection
 
 <div data-module="appstepnav" id="@Model.DetermineWrapperIdentifier()"
-     data-id="@Model.Identifier" @(Model.RememberOpenedSteps ? "data-remember-state=\"true\"" : "")
+     data-id="@Model.Identifier" @Html.Raw(Model.RememberOpenedSteps ? "data-remember-state=\"true\"" : "")
      class="app-step-nav js-hidden app-step-nav--large app-step-nav--tags" data-show-text="Show" data-hide-text="Hide"
      data-show-all-text="Show all steps" data-hide-all-text="Hide all steps">
   
@@ -9,7 +9,7 @@
     
     @foreach (var step in Model.Steps)
     {
-      <li class="app-step-nav__step js-step" id="@Model.DetermineStepIdentifier(step.Index)">
+      <li class="app-step-nav__step js-step" id="@Model.DetermineStepIdentifier(step.Index)" @Html.Raw(step.IsOpen ? "data-show" : "")>
         
         @* Title *@
         <div class="app-step-nav__header js-toggle-panel" data-position="@step.Index">

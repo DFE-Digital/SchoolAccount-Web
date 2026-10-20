@@ -16,6 +16,7 @@
   <Folder Name="/docs/">
     <File Path="docs\clean-architecture.md" />
     <File Path="docs\coding-standards.md" />
+    <File Path="docs\component-testing.md" />
     <File Path="docs\contributing.md" />
     <File Path="docs\integration-testing.md" />
     <File Path="docs\testing-standards.md" />
@@ -41,6 +42,7 @@
     <Project Path="tests\SchoolAccount.Application.UnitTests\SchoolAccount.Application.UnitTests.csproj" />
     <Project Path="tests\SchoolAccount.ArchitectureTests\SchoolAccount.ArchitectureTests.csproj" />
     <Project Path="tests\SchoolAccount.IntegrationTests\SchoolAccount.IntegrationTests.csproj" />
+    <Project Path="tests\SchoolAccount.Web.Mvc.ComponentTests\SchoolAccount.Web.Mvc.ComponentTests.csproj" />
     <Project Path="tests\SchoolAccount.TestCommon\SchoolAccount.TestCommon.csproj" />
   </Folder>
 </Solution>
