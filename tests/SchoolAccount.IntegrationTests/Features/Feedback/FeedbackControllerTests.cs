@@ -28,7 +28,7 @@ public class FeedbackControllerTests : IClassFixture<SchoolAccountWebApplication
     }
 
     [Fact]
-    public async Task Submit_redirects_to_the_thank_you_message_when_feedback_is_sent()
+    public async Task Sending_feedback_shows_the_thank_you_message()
     {
         // Arrange
         var pageUri = _factory.GeneratePath("Feedback", "Submit");
@@ -45,7 +45,7 @@ public class FeedbackControllerTests : IClassFixture<SchoolAccountWebApplication
     }
 
     [Fact]
-    public async Task Submit_redirects_back_to_the_form_when_the_message_is_empty()
+    public async Task Empty_feedback_returns_the_user_to_the_form()
     {
         // Arrange
         var pageUri = _factory.GeneratePath("Feedback", "Submit");
