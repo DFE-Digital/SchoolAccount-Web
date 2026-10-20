@@ -39,7 +39,7 @@ public class FeedbackHandlerTests
     }
 
     [Fact]
-    public async Task Client_action_returns_success()
+    public async Task Feedback_is_sent_successfully_when_the_client_succeeds()
     {
         // Arrange
         var command = new FeedbackCommand
