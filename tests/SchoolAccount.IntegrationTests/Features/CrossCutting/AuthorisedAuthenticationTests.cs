@@ -17,7 +17,7 @@ public class AuthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<Pr
     [Theory]
     [InlineData("/")]
     [InlineData("Dashboard")]
-    public async Task Authorised_users_can_access_a_page(string path)
+    public async Task Signed_in_users_can_access_a_page(string path)
     {
         // Arrange & Act
         var response = await _client.GetAsync(path, TestContext.Current.CancellationToken);
@@ -28,7 +28,7 @@ public class AuthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<Pr
     }
 
     [Fact]
-    public async Task Authenticated_pages_display_the_sign_out_for_authorised_users()
+    public async Task Authenticated_pages_display_the_sign_out_for_signed_in_users()
     {
         // Arrange
         var pageUri = factory.GeneratePath("Dashboard", "Dashboard");
@@ -50,7 +50,7 @@ public class AuthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<Pr
     }
 
     [Fact]
-    public async Task Authenticated_pages_display_the_organisation_name_link_for_authorised_users()
+    public async Task Authenticated_pages_display_the_organisation_name_link_for_signed_in_users()
     {
         // Arrange
         var pageUri = factory.GeneratePath("Dashboard", "Dashboard");
