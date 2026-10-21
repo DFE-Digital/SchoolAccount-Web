@@ -29,6 +29,7 @@
     <PackageReference Include="GovUk.Frontend.AspNetCore" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" />
     <PackageReference Include="Microsoft.Azure.AppConfiguration.AspNetCore" />
+    <PackageReference Include="Microsoft.FeatureManagement.AspNetCore" />
     <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" />
     <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" />
     <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" />

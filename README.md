@@ -11,6 +11,7 @@ architecture tests.
 - [Contributing](docs/contributing.md) - guidance on repository branching strategies
 - [Testing Standards](docs/testing-standards.md) - conventions and practices for writing tests
 - [Integration Testing](docs/integration-testing.md) - guidance on integration testing of the controller endpoints
+- [Feature Flags](docs/feature-flags.md) - adding, gating, testing, switching and removing feature flags
 
 Architecture decisions are recorded as ADRs in the [decisions](decisions) folder:
 
@@ -26,6 +27,7 @@ Architecture decisions are recorded as ADRs in the [decisions](decisions) folder
 - [Use containerisation to publish code](decisions/0010-use-containerisation-to-publish-code.md) - why we have chosen to use containerisation and push to the github container registry
 - [Integrate with the Academies API](decisions/0011-use-academies-api.md) - why we have used the Academies API
 - [Use the Azure Monitor OpenTelemetry distro for telemetry](decisions/0012-use-azure-monitor-opentelemetry-distro.md) - how logs, traces and metrics reach Azure Monitor and Rider
+- [Use feature flags from Azure App Configuration](decisions/0013-use-feature-flags-from-azure-app-configuration.md) - how features are switched on and off per environment without a release
 
 New decisions should follow the [ADR template](decisions/0000-adr-template.md).
 

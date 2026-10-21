@@ -1,4 +1,3 @@
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using SchoolAccount.Application.Abstractions.Messaging;
 using SchoolAccount.TestCommon.Stubs;
 
