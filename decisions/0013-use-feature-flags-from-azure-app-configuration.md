@@ -36,8 +36,8 @@ How it works:
 
 * Flag names are constants in `FeatureFlags` (`Infrastructure/FeatureFlags.cs`), so views, controllers and tests use
   the same name.
-* `appsettings.{Environment}.json` holds the default for each flag under `feature_management:feature_flags`, using the
-  same schema App Configuration uses:
+* `appsettings.{Environment}.json` holds the default for each flag under `FeatureManagement`, the same section App
+  Configuration loads flags into, so the value in App Configuration overrides it:
   * `appsettings.json` turns new features off, so a deployed environment only gets a feature when it's switched on in
     App Configuration.
   * `appsettings.Development.json` and `appsettings.IntegrationTests.json` turn them on, so they can be worked on and

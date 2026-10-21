@@ -33,18 +33,20 @@ App Configuration is only used when `AzureAppConfiguration:Enabled` is true. The
    }
    ```
 
-3. Add a default to each appsettings file under `feature_management:feature_flags`:
+3. Add a default to each appsettings file under `FeatureManagement`:
    * `appsettings.json`: `false`, so deployed environments stay off until someone switches the flag on.
    * `appsettings.Development.json` and `appsettings.IntegrationTests.json`: `true`, so the feature can be worked on
      and tested.
 
    ```json
-   "feature_management": {
-     "feature_flags": [
-       { "id": "FeedbackFooter", "enabled": false }
-     ]
+   "FeatureManagement": {
+     "FeedbackFooter": false
    }
    ```
+
+   Use `FeatureManagement`, not `feature_management:feature_flags`. App Configuration loads flags under
+   `FeatureManagement`, so a default there is overridden by the value in App Configuration. A default under
+   `feature_management` takes precedence over `FeatureManagement`, so App Configuration could never change it.
 
 4. Gate the feature (see below).
 5. Test it on and off (see below).
@@ -91,8 +93,7 @@ configuration where the flag is off. `FeedbackControllerTests` does this with it
 ```csharp
 var disabledFooter = new Dictionary<string, string?>
 {
-    ["feature_management:feature_flags:0:id"] = FeatureFlags.FeedbackFooter,
-    ["feature_management:feature_flags:0:enabled"] = "false",
+    [$"FeatureManagement:{FeatureFlags.FeedbackFooter}"] = "false",
 };
 
 var configurationRoot = new ConfigurationBuilder()
