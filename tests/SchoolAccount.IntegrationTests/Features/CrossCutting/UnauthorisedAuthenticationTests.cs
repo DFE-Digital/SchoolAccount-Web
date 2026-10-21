@@ -49,7 +49,7 @@ public class UnauthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
-        page.GetComponentByContent("button", "Sign out").ShouldBeNull();
+        page.GetSelectorByContent("button", "Sign out").ShouldBeNull();
     }
 
     [Fact]

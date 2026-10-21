@@ -36,9 +36,9 @@ public abstract class AngleSharpPage
         return page;
     }
 
-    public virtual string? GetComponentByContent(string componentClass, string content)
+    public virtual string? GetSelectorByContent(string selector, string content)
     {
-        var component = Page.QuerySelectorAll(componentClass)
+        var component = Page.QuerySelectorAll(selector)
             .FirstOrDefault(h => h.TextContent.Contains(content));
 
         return component?.TextContent;
