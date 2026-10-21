@@ -188,8 +188,7 @@ file static class FeedbackFeatureServiceCollectionExtensions
     {
         var disabledFooter = new Dictionary<string, string?>
         {
-            ["feature_management:feature_flags:0:id"] = FeatureFlags.FeedbackFooter,
-            ["feature_management:feature_flags:0:enabled"] = "false",
+            [$"FeatureManagement:{FeatureFlags.FeedbackFooter}"] = "false",
         };
 
         var configurationRoot = new ConfigurationBuilder()
