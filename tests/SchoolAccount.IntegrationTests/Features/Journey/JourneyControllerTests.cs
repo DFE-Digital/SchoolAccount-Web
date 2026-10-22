@@ -67,9 +67,6 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         page.GetFirstBodyParagraph().ShouldBe("This is a test overview");
         page.GetFirstCaption().ShouldBe("This is a test caption");
         page.GetFirstTag().ShouldBe("Test Status");
-        page.GetFirstCaption().ShouldBe("This is a test caption");
-        page.GetFirstTag().ShouldBe("Test Status");
-        page.GetFirstTag().ShouldBe("Test Status");
         page.GetComponentByContent(".govuk-heading-m", "Test Support Service")
             .ShouldBe("Test Support Service");
 
@@ -113,7 +110,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     }
 
     [Fact]
-    public async Task ImportantDates_does_not_render_when_null_or_empty()
+    public async Task ImportantDates_does_not_render_when_empty()
     {
         // Arrange
         var token = TestContext.Current.CancellationToken;
@@ -133,7 +130,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         message.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         var pageImportantDates = page.GetSummaryListPairs();
-        pageImportantDates.ShouldNotBeNull();
+        pageImportantDates.ShouldBeEmpty();
     }
 
     [Fact]

@@ -21,9 +21,11 @@ public class UnauthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
-        response.Headers.Location?.OriginalString.ShouldBeEquivalentTo(
-            factory.GeneratePath("Start", "Start", new { ReturnUrl = dashboardUri })
-        );
+        response
+            .Headers.Location.ShouldNotBeNull()
+            .OriginalString.ShouldBeEquivalentTo(
+                factory.GeneratePath("Start", "Start", new { ReturnUrl = dashboardUri })
+            );
     }
 
     [Fact]
@@ -38,7 +40,7 @@ public class UnauthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<
     }
 
     [Fact]
-    public async Task Unauthenticated_pages_do_not_display_the_organisation_name_for_authorised_users()
+    public async Task Unauthenticated_pages_do_not_display_the_sign_out_link()
     {
         // Arrange & Act
         var response = await _client.GetAsync("/", TestContext.Current.CancellationToken);
@@ -56,7 +58,7 @@ public class UnauthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<
     }
 
     [Fact]
-    public async Task Unauthenticated_pages_do_not_display_the_sign_out_link_for_authorised_users()
+    public async Task Unauthenticated_pages_do_not_display_the_organisation_name()
     {
         // Arrange & Act
         var response = await _client.GetAsync("/", TestContext.Current.CancellationToken);
