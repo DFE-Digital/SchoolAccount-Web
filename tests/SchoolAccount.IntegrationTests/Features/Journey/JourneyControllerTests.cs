@@ -130,7 +130,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         message.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         var pageImportantDates = page.GetSummaryListPairs();
-        pageImportantDates.ShouldNotBeNull();
+        pageImportantDates.ShouldBeEmpty();
     }
 
     [Fact]
