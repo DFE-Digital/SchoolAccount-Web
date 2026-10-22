@@ -5,90 +5,94 @@ using Shouldly;
 
 namespace SchoolAccount.Web.Mvc.UnitTests.Helpers;
 
-public class DateFormatterTests
+// One nested class per method. The trait uses nameof, so renaming a method either updates the
+// trait or breaks the build. Filter with: dotnet test --filter-trait "Method=ToDaysAgo"
+public static class DateFormatterTests
 {
-    [Fact]
-    public void ToDaysAgo_returns_today_for_same_day()
+    [Trait("Method", nameof(DateFormatter.ToDaysAgo))]
+    public class ToDaysAgo
     {
-        // Arrange
-        var dateTimeProvider = Substitute.For<IDateTimeProvider>();
-        var twoAmSeptember14 = new DateTime(2026, 9, 14, 2, 0, 0, DateTimeKind.Utc);
-        var nineAmSeptember14 = new DateTime(2026, 9, 14, 9, 0, 0, DateTimeKind.Utc);
-        dateTimeProvider.UtcNow.Returns(nineAmSeptember14);
-        var dateFormatter = new DateFormatter(dateTimeProvider);
+        private readonly IDateTimeProvider _dateTimeProvider = Substitute.For<IDateTimeProvider>();
+        private readonly DateFormatter _dateFormatter;
 
-        // Act
-        var result = dateFormatter.ToDaysAgo(twoAmSeptember14);
+        public ToDaysAgo()
+        {
+            _dateFormatter = new DateFormatter(_dateTimeProvider);
+        }
 
-        // Assert
-        result.ShouldBe("Today");
+        [Fact]
+        public void A_date_earlier_today_is_shown_as_today()
+        {
+            // Arrange
+            var twoAmSeptember14 = new DateTime(2026, 9, 14, 2, 0, 0, DateTimeKind.Utc);
+            _dateTimeProvider.UtcNow.Returns(new DateTime(2026, 9, 14, 9, 0, 0, DateTimeKind.Utc));
+
+            // Act
+            var result = _dateFormatter.ToDaysAgo(twoAmSeptember14);
+
+            // Assert
+            result.ShouldBe("Today");
+        }
+
+        [Fact]
+        public void One_day_ago_uses_the_singular()
+        {
+            // Arrange
+            var twoAmSeptember14 = new DateTime(2026, 9, 14, 2, 0, 0, DateTimeKind.Utc);
+            _dateTimeProvider.UtcNow.Returns(new DateTime(2026, 9, 15, 9, 0, 0, DateTimeKind.Utc));
+
+            // Act
+            var result = _dateFormatter.ToDaysAgo(twoAmSeptember14);
+
+            // Assert
+            result.ShouldBe("1 day ago");
+        }
+
+        [Fact]
+        public void More_than_one_day_ago_uses_the_plural()
+        {
+            // Arrange
+            var twoAmSeptember15 = new DateTime(2026, 9, 15, 2, 0, 0, DateTimeKind.Utc);
+            _dateTimeProvider.UtcNow.Returns(new DateTime(2026, 9, 17, 9, 0, 0, DateTimeKind.Utc));
+
+            // Act
+            var result = _dateFormatter.ToDaysAgo(twoAmSeptember15);
+
+            // Assert
+            result.ShouldBe("2 days ago");
+        }
+
+        [Fact]
+        public void An_offset_adds_days_to_the_count()
+        {
+            // Arrange
+            var twoAmSeptember15 = new DateTime(2026, 9, 15, 2, 0, 0, DateTimeKind.Utc);
+            _dateTimeProvider.UtcNow.Returns(new DateTime(2026, 9, 15, 9, 0, 0, DateTimeKind.Utc));
+
+            // Act
+            var result = _dateFormatter.ToDaysAgo(twoAmSeptember15, offsetDays: 1);
+
+            // Assert
+            result.ShouldBe("1 day ago");
+        }
     }
 
-    [Fact]
-    public void ToDaysAgo_returns_day_singular_for_one_day_ago()
+    [Trait("Method", nameof(DateFormatter.ToDayMonthNameAndYear))]
+    public class ToDayMonthNameAndYear
     {
-        // Arrange
-        var dateTimeProvider = Substitute.For<IDateTimeProvider>();
-        var twoAmSeptember14 = new DateTime(2026, 9, 14, 2, 0, 0, DateTimeKind.Utc);
-        var nineAmSeptember15 = new DateTime(2026, 9, 15, 9, 0, 0, DateTimeKind.Utc);
-        dateTimeProvider.UtcNow.Returns(nineAmSeptember15);
-        var dateFormatter = new DateFormatter(dateTimeProvider);
+        private readonly DateFormatter _dateFormatter = new(Substitute.For<IDateTimeProvider>());
 
-        // Act
-        var result = dateFormatter.ToDaysAgo(twoAmSeptember14);
+        [Fact]
+        public void The_month_is_written_in_full_and_the_day_and_year_as_numbers()
+        {
+            // Arrange
+            var halloween2026 = new DateOnly(2026, 10, 31);
 
-        // Assert
-        result.ShouldBe("1 day ago");
-    }
+            // Act
+            var result = _dateFormatter.ToDayMonthNameAndYear(halloween2026);
 
-    [Fact]
-    public void ToDaysAgo_applies_offset_days()
-    {
-        // Arrange
-        var dateTimeProvider = Substitute.For<IDateTimeProvider>();
-        var twoAmSeptember15 = new DateTime(2026, 9, 15, 02, 0, 0, DateTimeKind.Utc);
-        var nineAmSeptember15 = new DateTime(2026, 9, 15, 9, 0, 0, DateTimeKind.Utc);
-        dateTimeProvider.UtcNow.Returns(nineAmSeptember15);
-        var dateFormatter = new DateFormatter(dateTimeProvider);
-
-        // Act
-        var result = dateFormatter.ToDaysAgo(twoAmSeptember15, 1);
-
-        // Assert
-        result.ShouldBe("1 day ago");
-    }
-
-    [Fact]
-    public void ToDaysAgo_returns_days_plural_for_more_than_one_day_ago()
-    {
-        // Arrange
-        var dateTimeProvider = Substitute.For<IDateTimeProvider>();
-        var twoAmSeptember15 = new DateTime(2026, 9, 15, 02, 0, 0, DateTimeKind.Utc);
-        var nineAmSeptember17 = new DateTime(2026, 9, 17, 9, 0, 0, DateTimeKind.Utc);
-        dateTimeProvider.UtcNow.Returns(nineAmSeptember17);
-        var dateFormatter = new DateFormatter(dateTimeProvider);
-
-        // Act
-        var result = dateFormatter.ToDaysAgo(twoAmSeptember15);
-
-        // Assert
-        result.ShouldBe("2 days ago");
-    }
-
-    [Fact]
-    public void ToDaysMonthNameAndYear_returns_month_as_full_name_and_day_and_year_as_numbers()
-    {
-        // Arrange
-        var dateTimeProvider = Substitute.For<IDateTimeProvider>();
-        var halloween2026 = DateOnly.FromDateTime(
-            new DateTime(2026, 10, 31, 0, 0, 0, DateTimeKind.Utc)
-        );
-        var dateFormatter = new DateFormatter(dateTimeProvider);
-
-        // Act
-        var result = dateFormatter.ToDayMonthNameAndYear(halloween2026);
-
-        // Assert
-        result.ShouldBe("31 October 2026");
+            // Assert
+            result.ShouldBe("31 October 2026");
+        }
     }
 }
