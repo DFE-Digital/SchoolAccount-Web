@@ -5,10 +5,12 @@ using Shouldly;
 
 namespace SchoolAccount.Web.Mvc.UnitTests.Helpers;
 
-// One nested class per behaviour. No method names appear in class or
-// test names, so renaming a method never leaves a name out of date.
+// One nested class per behaviour, each labelled with the method it covers. Method names only
+// appear inside nameof, so a rename either updates the trait or breaks the build, and class and
+// test names never go out of date. Filter with: dotnet test --filter-trait "Method=ToDaysAgo"
 public static class DateFormatterTests
 {
+    [Trait("Method", nameof(DateFormatter.ToDaysAgo))]
     public class ShowingHowLongAgo
     {
         private static readonly DateTime TwoAmSeptember14 = new(
@@ -59,6 +61,7 @@ public static class DateFormatterTests
         }
     }
 
+    [Trait("Method", nameof(DateFormatter.ToDayMonthNameAndYear))]
     public class ShowingAFullDate
     {
         private readonly DateFormatter _dateFormatter = new(Substitute.For<IDateTimeProvider>());
