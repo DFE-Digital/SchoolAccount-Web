@@ -1,6 +1,7 @@
 using System.Text.Json;
 using GovUk.Frontend.AspNetCore;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.FeatureManagement;
 using SchoolAccount.Web.Mvc.Authentication;
 using SchoolAccount.Web.Mvc.Authentication.Extensions;
 using SchoolAccount.Web.Mvc.Features.Header;
@@ -18,12 +19,14 @@ public static class DependencyInjection
     )
     {
         services.AddConfiguredDataProtection(configuration);
+        services.AddConfiguredOpenTelemetry(configuration, env);
         services.AddSession();
         services.AddDsiAuthentication(configuration);
         services.AddOrganisationClaimPolicy();
         services.AddControllersWithFeatureViews();
         services.AddGovUkFrontend();
         services.AddScoped<IHeaderContentProvider, HeaderContentProvider>();
+        services.AddFeatureManagement(configuration);
 
         if (env.IsDevelopment())
         {
