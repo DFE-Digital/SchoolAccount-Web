@@ -4,29 +4,24 @@ namespace SchoolAccount.IntegrationTests.Common.Pages;
 
 public class JourneyPage : AngleSharpPage
 {
-    public virtual JourneyStepsElement GetStepsComponent()
+    public JourneyStepsElement GetStepsComponent()
     {
         return new JourneyStepsElement(
             Page.QuerySelector("div.app-step-nav[data-module='appstepnav']")
         );
     }
 
-    public virtual string GetFirstTag()
+    public string? GetFirstTag()
     {
-        var tagElement = Page.QuerySelector(".govuk-tag");
-        return tagElement?.TextContent;
+        return GetText(".govuk-tag");
     }
 
-    public virtual IReadOnlyDictionary<string, string> GetImportantDateSummaryListPairs()
+    public string? GetFirstCaption()
     {
-        return Page.QuerySelectorAll("dl.govuk-summary-list div.govuk-summary-list__row")
-            .ToDictionary(
-                row => row.QuerySelector(".govuk-summary-list__key")!.TextContent.Trim(),
-                row => row.QuerySelector(".govuk-summary-list__value")!.TextContent.Trim()
-            );
+        return GetText("span.govuk-caption-xl");
     }
 
-    public virtual IReadOnlyList<(string Key, string Value)> GetImportantDateSummaryListRows()
+    public IReadOnlyList<(string Key, string Value)> GetImportantDateSummaryListRows()
     {
         return Page.QuerySelectorAll("dl.govuk-summary-list div.govuk-summary-list__row")
             .Select(row =>
@@ -38,42 +33,44 @@ public class JourneyPage : AngleSharpPage
             .ToList();
     }
 
-    public virtual IReadOnlyList<string> GetSchoolStatusTableHeaders()
+    public IReadOnlyDictionary<string, string> GetImportantDateSummaryListPairs()
+    {
+        return GetImportantDateSummaryListRows().ToDictionary(row => row.Key, row => row.Value);
+    }
+
+    public IReadOnlyList<string> GetSchoolStatusTableHeaders()
     {
         return Page.QuerySelectorAll("table.govuk-table thead th.govuk-table__header")
-            .Select(header => header.TextContent.Trim())
+            .Select(header => Normalise(header.TextContent))
             .ToList();
     }
 
-    public virtual IReadOnlyList<IReadOnlyList<string>> GetSchoolStatusTableRows()
+    public IReadOnlyList<IReadOnlyList<string>> GetSchoolStatusTableRows()
     {
         return Page.QuerySelectorAll("table.govuk-table tbody tr")
             .Select(row =>
                 (IReadOnlyList<string>)
                     row.QuerySelectorAll("td.govuk-table__cell")
-                        .Select(cell => cell.TextContent.Trim())
+                        .Select(cell => Normalise(cell.TextContent))
                         .ToList()
             )
             .ToList();
     }
 
-    public virtual IReadOnlyList<
-        IReadOnlyDictionary<string, string>
-    > GetSchoolStatusTableCellByHeader()
+    public IReadOnlyList<IReadOnlyDictionary<string, string>> GetSchoolStatusTableCellByHeader()
     {
         var headers = GetSchoolStatusTableHeaders();
 
-        return Page.QuerySelectorAll("table.govuk-table tbody tr")
-            .Select(row =>
+        return GetSchoolStatusTableRows()
+            .Select(cells =>
                 (IReadOnlyDictionary<string, string>)
-                    row.QuerySelectorAll("td.govuk-table__cell")
+                    cells
                         .Select(
-                            (cell, index) =>
-                                new
-                                {
-                                    Key = index < headers.Count ? headers[index] : $"Column{index}",
-                                    Value = cell.TextContent.Trim(),
-                                }
+                            (value, index) =>
+                                (
+                                    Key: index < headers.Count ? headers[index] : $"Column{index}",
+                                    Value: value
+                                )
                         )
                         .ToDictionary(cell => cell.Key, cell => cell.Value)
             )
@@ -84,9 +81,9 @@ public class JourneyPage : AngleSharpPage
     {
         public bool IsPresent => wrapper is not null;
 
-        public List<JourneyStepElement> GetSteps()
+        public IReadOnlyList<JourneyStepElement> GetSteps()
         {
-            return wrapper?.QuerySelectorAll("li").Select(x => new JourneyStepElement(x)).ToList()
+            return wrapper?.QuerySelectorAll("li").Select(li => new JourneyStepElement(li)).ToList()
                 ?? [];
         }
 
@@ -94,7 +91,7 @@ public class JourneyPage : AngleSharpPage
         {
             public string? GetTitle()
             {
-                return element.QuerySelector("span.js-step-title")?.TextContent;
+                return TextOf(element.QuerySelector("span.js-step-title"));
             }
         }
     }

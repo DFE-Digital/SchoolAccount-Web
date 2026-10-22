@@ -43,7 +43,7 @@ public class AuthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<Pr
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
         page.ShouldNotBeNull();
-        page.GetSelectorByContent("button", "Sign out").ShouldNotBeNull();
+        page.GetSelectorByText("button", "Sign out").ShouldNotBeNull();
     }
 
     [Fact]

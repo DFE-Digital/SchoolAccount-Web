@@ -11,12 +11,15 @@ public class FooterTests(SchoolAccountWebApplicationFactory<Program> factory)
     : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
 {
     private readonly HttpClient _client = factory.CreateAuthorisedClient(services =>
-        services.StubQueryHandler(StubCensusStatusesHandler.Succeeding())
-    );
+    {
+        services.StubQueryHandler(StubCensusStatusesHandler.Succeeding());
+        services.StubQueryHandler(StubCensusJourneyHandler.Succeeding());
+    });
 
     [Theory]
     [InlineData("Dashboard", "Dashboard")]
     [InlineData("Start", "Start")]
+    [InlineData("Journey", "Journey")]
     public async Task Footer_is_displayed_on_pages_across_the_service(
         string controller,
         string action
@@ -60,11 +63,9 @@ public class FooterTests(SchoolAccountWebApplicationFactory<Program> factory)
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
-        page.ShouldNotBeNull();
 
-        var footerLink = page.GetFooterLink(expectedHref);
-
+        var footerLink = page.GetElementByLink(".govuk-footer a", expectedHref);
         footerLink.ShouldNotBeNull();
-        footerLink.TextContent.ShouldContainWithoutWhitespace(expectedText);
+        page.GetTextOf(footerLink).ShouldBe(expectedText);
     }
 }

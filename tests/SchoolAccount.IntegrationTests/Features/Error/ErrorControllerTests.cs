@@ -12,8 +12,9 @@ namespace SchoolAccount.IntegrationTests.Features.Error;
 
 public class ErrorControllerTests : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
 {
-    private readonly SchoolAccountWebApplicationFactory<Program> _factory;
     private readonly HttpClient _authenticatedClient;
+    private readonly SchoolAccountWebApplicationFactory<Program> _factory;
+
     private readonly IQueryHandler<
         GetCensusStatusesQuery,
         List<GetCensusStatusesResponse>
@@ -142,7 +143,7 @@ public class ErrorControllerTests : IClassFixture<SchoolAccountWebApplicationFac
         // Act
         var response = await _authenticatedClient.PostAsync(
             requestUri,
-            content: null,
+            null,
             TestContext.Current.CancellationToken
         );
 
@@ -166,7 +167,7 @@ public class ErrorControllerTests : IClassFixture<SchoolAccountWebApplicationFac
         // Act
         var response = await _authenticatedClient.PostAsync(
             requestUri,
-            content: null,
+            null,
             TestContext.Current.CancellationToken
         );
 

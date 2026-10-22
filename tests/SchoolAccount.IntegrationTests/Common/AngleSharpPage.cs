@@ -1,11 +1,12 @@
-﻿using AngleSharp;
+﻿using System.Text.RegularExpressions;
 using AngleSharp.Dom;
+using AngleSharp.Html.Parser;
 
 namespace SchoolAccount.IntegrationTests.Common;
 
 public abstract class AngleSharpPage
 {
-    protected IDocument Page;
+    protected IDocument Page = null!;
 
     protected AngleSharpPage() { }
 
@@ -14,12 +15,19 @@ public abstract class AngleSharpPage
         Initialise(pageContent);
     }
 
-    protected void Initialise(string pageContent)
+    protected string? GetText(string selector)
     {
-        var context = BrowsingContext.New(Configuration.Default);
-        Page = context
-            .OpenAsync(req => req.Content(pageContent), TestContext.Current.CancellationToken)
-            .Result;
+        return TextOf(Page.QuerySelector(selector));
+    }
+
+    protected static string Normalise(string text)
+    {
+        return Regex.Replace(text, @"\s+", " ").Trim();
+    }
+
+    protected static string? TextOf(IElement? element)
+    {
+        return element is null ? null : Normalise(element.TextContent);
     }
 
     public static async Task<T> FromResponseAsync<T>(
@@ -36,62 +44,60 @@ public abstract class AngleSharpPage
         return page;
     }
 
-    public virtual string? GetSelectorByContent(string selector, string content)
+    public string? GetSelectorByText(string selector, string text)
     {
-        var component = Page.QuerySelectorAll(selector)
-            .FirstOrDefault(h => h.TextContent.Contains(content));
-
-        return component?.TextContent;
+        return Page.QuerySelectorAll(selector)
+            .Select(TextOf)
+            .FirstOrDefault(content => content!.Contains(text));
     }
 
-    public virtual string? GetTitle()
+    public IElement? GetElementByLink(string selector, string href)
     {
-        var pageTitle = Page.QuerySelector("title");
-        return pageTitle?.TextContent;
+        return Page.QuerySelectorAll(selector).FirstOrDefault(e => e.GetAttribute("href") == href);
     }
 
-    public virtual string? GetFirstHeading()
+    public string? GetTitle()
     {
-        var headingElement = Page.QuerySelector("h1.govuk-heading-l");
-        return headingElement?.TextContent;
+        return GetText("title");
     }
 
-    public virtual string? GetFirstBody()
+    public string? GetFirstHeading()
     {
-        var bodyElement = Page.QuerySelector("body");
-        return bodyElement?.TextContent;
+        return GetText("h1.govuk-heading-l");
     }
 
-    public virtual string? GetFirstBodyParagraph()
+    public string? GetFirstBody()
     {
-        var bodyElement = Page.QuerySelector("p.govuk-body");
-        return bodyElement?.TextContent;
+        return GetText("body");
     }
 
-    public virtual string? GetFirstCaption()
+    public string? GetFirstBodyParagraph()
     {
-        var captionElement = Page.QuerySelector("span.govuk-caption-xl");
-        return captionElement?.TextContent;
+        return GetText("p.govuk-body");
     }
 
-    public virtual string? GetOrganisationName()
+    public string? GetOrganisationName()
     {
-        var organisationNameElement = Page.QuerySelector(".header-navigation__school");
-        return organisationNameElement?.TextContent;
+        return GetText(".header-navigation__school");
     }
 
-    public virtual IElement? GetFooterLink(string href)
-    {
-        return Page.QuerySelector($".govuk-footer a[href='{href}']");
-    }
-
-    public virtual IElement? GetFooter()
+    public IElement? GetFooter()
     {
         return Page.QuerySelector(".govuk-footer");
     }
 
-    public virtual IElement? GetButtonByLink(string href)
+    public string? GetHiddenTextOnElement(IElement? element)
     {
-        return Page.QuerySelector($"a.govuk-button[href='{href}']");
+        return TextOf(element?.QuerySelector(".govuk-visually-hidden"));
+    }
+
+    public string? GetTextOf(IElement? element)
+    {
+        return TextOf(element);
+    }
+
+    private void Initialise(string pageContent)
+    {
+        Page = new HtmlParser().ParseDocument(pageContent);
     }
 }
