@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
     <OutputType>Exe</OutputType>
+    <RootNamespace>SchoolAccount.ApplicationTests</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
