@@ -23,7 +23,7 @@ public class FeedbackControllerTests
     private readonly IUserContext _userContext = Substitute.For<IUserContext>();
 
     [Fact]
-    public async Task Submit_redirects_to_the_thank_you_message_when_feedback_is_sent()
+    public async Task Sending_feedback_redirects_to_the_thank_you_message()
     {
         // Arrange
         HandlerReturns(Result.Success());
@@ -38,7 +38,7 @@ public class FeedbackControllerTests
     }
 
     [Fact]
-    public async Task Submit_redirects_back_to_the_form_with_its_errors_when_the_form_is_invalid()
+    public async Task Errors_are_displayed_on_the_form_after_an_invalid_submission()
     {
         // Arrange
         using var controller = CreateController();
@@ -69,7 +69,7 @@ public class FeedbackControllerTests
     }
 
     [Fact]
-    public async Task Submit_sends_the_message_and_organisation_to_the_handler()
+    public async Task Valid_feedback_is_successfully_submitted()
     {
         // Arrange
         HandlerReturns(Result.Success());
@@ -92,7 +92,7 @@ public class FeedbackControllerTests
     }
 
     [Fact]
-    public async Task Submit_redirects_back_to_the_form_with_an_error_when_the_handler_fails()
+    public async Task Error_is_displayed_on_the_form_when_the_handler_fails()
     {
         // Arrange
         HandlerReturns(Result.Failure(SharedKernel.Error.Failure("test", "test")));
@@ -117,7 +117,7 @@ public class FeedbackControllerTests
     }
 
     [Fact]
-    public async Task Submit_redirects_to_root_when_return_url_is_not_local()
+    public async Task Default_url_is_returned_with_external_return_url()
     {
         // Arrange
         HandlerReturns(Result.Success());
