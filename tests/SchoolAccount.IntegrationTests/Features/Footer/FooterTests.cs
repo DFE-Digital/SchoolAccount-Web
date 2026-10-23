@@ -56,7 +56,6 @@ public class FooterTests(SchoolAccountWebApplicationFactory<Program> factory)
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
-        page.ShouldNotBeNull();
 
         var accessibilityLink =
             page.GetComponentByContent(".govuk-footer__link", "Accessibility statement")
@@ -85,7 +84,6 @@ public class FooterTests(SchoolAccountWebApplicationFactory<Program> factory)
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
-        page.ShouldNotBeNull();
 
         var privacyNoticeLink =
             page.GetComponentByContent(".govuk-footer__link", "Privacy notice")
