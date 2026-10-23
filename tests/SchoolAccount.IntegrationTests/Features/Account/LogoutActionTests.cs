@@ -57,7 +57,7 @@ public class LogoutActionTests(SchoolAccountWebApplicationFactory<Program> facto
     }
 
     [Fact]
-    public async Task Authenticated_pages_display_the_sign_out_link_for_authorised_users()
+    public async Task Signed_in_users_see_the_sign_out_link()
     {
         // Arrange
         var client = factory.CreateAuthorisedClient(
