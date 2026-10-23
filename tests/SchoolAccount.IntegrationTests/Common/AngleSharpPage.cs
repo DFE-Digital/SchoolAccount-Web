@@ -36,12 +36,15 @@ public abstract class AngleSharpPage
         return page;
     }
 
-    public virtual string? GetComponentByContent(string componentClass, string content)
+    public virtual string? GetComponentTextByContent(string componentClass, string content)
     {
-        var component = Page.QuerySelectorAll(componentClass)
-            .FirstOrDefault(h => h.TextContent?.Contains(content) ?? false);
+        return GetComponentByContent(componentClass, content)?.TextContent;
+    }
 
-        return component?.TextContent;
+    public virtual IElement? GetComponentByContent(string componentClass, string content)
+    {
+        return Page.QuerySelectorAll(componentClass)
+            .FirstOrDefault(h => h.TextContent?.Contains(content) ?? false);
     }
 
     public virtual string? GetTitle()
@@ -111,11 +114,6 @@ public abstract class AngleSharpPage
                 )
             )
             .ToList();
-    }
-
-    public virtual IElement? GetFooterLink(string href)
-    {
-        return Page.QuerySelector($".govuk-footer a[href='{href}']");
     }
 
     public virtual IElement? GetFooter()

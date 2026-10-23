@@ -1,4 +1,5 @@
 using System.Net;
+using AngleSharp.Html.Dom;
 using SchoolAccount.IntegrationTests.Common;
 using SchoolAccount.IntegrationTests.Common.Extensions;
 using SchoolAccount.IntegrationTests.Common.Pages;
@@ -39,13 +40,8 @@ public class FooterTests(SchoolAccountWebApplicationFactory<Program> factory)
         page.GetFooter().ShouldNotBeNull();
     }
 
-    [Theory]
-    [InlineData("#", "Accessibility statement")]
-    [InlineData(
-        "https://www.gov.uk/government/publications/privacy-information-education-providers-workforce-including-teachers/privacy-information-education-providers-workforce-including-teachers",
-        "Privacy notice"
-    )]
-    public async Task Footer_displays_the_expected_links(string expectedHref, string expectedText)
+    [Fact]
+    public async Task Footer_includes_an_accessibility_statement()
     {
         // Arrange
         var pageUri = factory.GeneratePath("Journey", "Journey");
@@ -62,9 +58,43 @@ public class FooterTests(SchoolAccountWebApplicationFactory<Program> factory)
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
         page.ShouldNotBeNull();
 
-        var footerLink = page.GetFooterLink(expectedHref);
+        var accessibilityLink =
+            page.GetComponentByContent(".govuk-footer__link", "Accessibility statement")
+            as IHtmlAnchorElement;
 
-        footerLink.ShouldNotBeNull();
-        footerLink.TextContent.ShouldContainWithoutWhitespace(expectedText);
+        accessibilityLink.ShouldNotBeNull();
+
+        accessibilityLink.Href.ShouldBe(
+            "https://accessibility-statements.education.gov.uk/statement/12"
+        );
+    }
+
+    [Fact]
+    public async Task Footer_includes_a_privacy_notice()
+    {
+        // Arrange
+        var pageUri = factory.GeneratePath("Journey", "Journey");
+
+        // Act
+        var response = await _client.GetAsync(pageUri, TestContext.Current.CancellationToken);
+
+        var page = await AngleSharpPage.FromResponseAsync<CommonPage>(
+            response,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        page.ShouldNotBeNull();
+
+        var privacyNoticeLink =
+            page.GetComponentByContent(".govuk-footer__link", "Privacy notice")
+            as IHtmlAnchorElement;
+
+        privacyNoticeLink.ShouldNotBeNull();
+
+        privacyNoticeLink.Href.ShouldBe(
+            "https://www.gov.uk/government/publications/privacy-information-education-providers-workforce-including-teachers/privacy-information-education-providers-workforce-including-teachers"
+        );
     }
 }
