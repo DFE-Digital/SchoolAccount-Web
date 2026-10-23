@@ -11,11 +11,11 @@ public class FooterTests(SchoolAccountWebApplicationFactory<Program> factory)
     : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
 {
     private readonly HttpClient _client = factory.CreateAuthorisedClient(services =>
-        services.StubQueryHandler(StubCensusStatusesHandler.Succeeding())
+        services.StubQueryHandler(StubCensusJourneyHandler.Succeeding())
     );
 
     [Theory]
-    [InlineData("Dashboard", "Dashboard")]
+    [InlineData("Journey", "Journey")]
     [InlineData("Start", "Start")]
     public async Task Footer_is_displayed_on_pages_across_the_service(
         string controller,
@@ -48,7 +48,7 @@ public class FooterTests(SchoolAccountWebApplicationFactory<Program> factory)
     public async Task Footer_displays_the_expected_links(string expectedHref, string expectedText)
     {
         // Arrange
-        var pageUri = factory.GeneratePath("Dashboard", "Dashboard");
+        var pageUri = factory.GeneratePath("Journey", "Journey");
 
         // Act
         var response = await _client.GetAsync(pageUri, TestContext.Current.CancellationToken);

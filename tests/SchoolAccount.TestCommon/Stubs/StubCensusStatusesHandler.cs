@@ -7,7 +7,7 @@ public sealed class StubCensusStatusesHandler
     : StubQueryHandler<GetCensusStatusesQuery, List<GetCensusStatusesResponse>>
 {
     /// <summary>
-    /// For tests that only need the dashboard to render and do not care what it renders.
+    /// For tests that only need the journey to render and do not care what it renders.
     /// </summary>
     public static StubCensusStatusesHandler Succeeding()
     {
