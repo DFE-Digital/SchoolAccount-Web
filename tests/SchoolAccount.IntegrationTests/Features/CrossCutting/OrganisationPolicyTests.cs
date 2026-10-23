@@ -29,6 +29,7 @@ public class OrganisationPolicyTests(SchoolAccountWebApplicationFactory<Program>
             {
                 services.RemoveAll<MockAuthClaimsOptions>();
                 services.AddSingleton(new MockAuthClaimsOptions { Claims = claims });
+                services.StubQueryHandler(StubCensusJourneyHandler.Succeeding());
             },
             new ClientOptions { AllowAutoRedirect = false }
         );
@@ -55,7 +56,7 @@ public class OrganisationPolicyTests(SchoolAccountWebApplicationFactory<Program>
     public async Task User_is_accepted_when_organisation_is_not_empty()
     {
         var client = factory.CreateAuthorisedClient(services =>
-            services.StubQueryHandler(StubCensusStatusesHandler.Succeeding())
+            services.StubQueryHandler(StubCensusJourneyHandler.Succeeding())
         );
 
         var response = await client.GetAsync(

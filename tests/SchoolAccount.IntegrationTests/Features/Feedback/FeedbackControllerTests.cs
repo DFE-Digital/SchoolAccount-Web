@@ -26,8 +26,10 @@ public class FeedbackControllerTests : IClassFixture<SchoolAccountWebApplication
     {
         _factory = factory;
         _authenticatedClient = factory.CreateAuthorisedClient(services =>
-            services.AddScoped<ICommandHandler<FeedbackCommand>>(_ => _feedbackCommandHandler)
-        );
+        {
+            services.AddScoped<ICommandHandler<FeedbackCommand>>(_ => _feedbackCommandHandler);
+            services.StubQueryHandler(StubCensusJourneyHandler.Succeeding());
+        });
     }
 
     [Fact]
@@ -52,9 +54,9 @@ public class FeedbackControllerTests : IClassFixture<SchoolAccountWebApplication
     {
         // Arrange
         var pageUri = _factory.GeneratePath("Feedback", "Submit");
+        using var content = FeedbackForm(string.Empty);
 
         // Act
-        using var content = FeedbackForm(string.Empty);
         var result = await _authenticatedClient.PostAsync(pageUri, content, _cancellationToken);
 
         // Assert
@@ -69,7 +71,7 @@ public class FeedbackControllerTests : IClassFixture<SchoolAccountWebApplication
     {
         // Arrange
         var client = _factory.CreateAuthorisedClient(
-            services => services.StubQueryHandler(StubCensusStatusesHandler.Succeeding()),
+            services => services.StubQueryHandler(StubCensusJourneyHandler.Succeeding()),
             ClientOptions.AllowRedirects
         );
 
@@ -106,13 +108,8 @@ public class FeedbackControllerTests : IClassFixture<SchoolAccountWebApplication
     [Fact]
     public async Task The_feedback_section_is_shown_when_the_feature_flag_is_enabled()
     {
-        // Arrange
-        var client = _factory.CreateAuthorisedClient(services =>
-            services.StubQueryHandler(StubCensusStatusesHandler.Succeeding())
-        );
-
-        // Act
-        var html = await client.GetStringAsync(
+        // Arrange & Act
+        var html = await _authenticatedClient.GetStringAsync(
             _factory.GeneratePath("Journey", "Journey"),
             _cancellationToken
         );
@@ -127,7 +124,7 @@ public class FeedbackControllerTests : IClassFixture<SchoolAccountWebApplication
         // Arrange
         var client = _factory.CreateAuthorisedClient(services =>
         {
-            services.StubQueryHandler(StubCensusStatusesHandler.Succeeding());
+            services.StubQueryHandler(StubCensusJourneyHandler.Succeeding());
             services.DisableFeedbackFeature();
         });
 

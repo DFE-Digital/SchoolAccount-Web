@@ -11,7 +11,7 @@ public class FooterTests(SchoolAccountWebApplicationFactory<Program> factory)
     : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
 {
     private readonly HttpClient _client = factory.CreateAuthorisedClient(services =>
-        services.StubQueryHandler(StubCensusStatusesHandler.Succeeding())
+        services.StubQueryHandler(StubCensusJourneyHandler.Succeeding())
     );
 
     [Theory]

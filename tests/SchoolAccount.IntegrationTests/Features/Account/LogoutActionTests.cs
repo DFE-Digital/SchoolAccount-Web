@@ -61,7 +61,7 @@ public class LogoutActionTests(SchoolAccountWebApplicationFactory<Program> facto
     {
         // Arrange
         var client = factory.CreateAuthorisedClient(
-            services => services.StubQueryHandler(StubCensusStatusesHandler.Succeeding()),
+            services => services.StubQueryHandler(StubCensusJourneyHandler.Succeeding()),
             ClientOptions.AllowRedirects
         );
         var pageUri = factory.GeneratePath("Journey", "Journey");
