@@ -12,7 +12,7 @@ public class LogoutActionTests(SchoolAccountWebApplicationFactory<Program> facto
     : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
 {
     [Fact]
-    public async Task Authorised_users_can_sign_out()
+    public async Task Signed_in_users_can_sign_out()
     {
         // Arrange
         var cancellationToken = TestContext.Current.CancellationToken;
@@ -35,7 +35,7 @@ public class LogoutActionTests(SchoolAccountWebApplicationFactory<Program> facto
     }
 
     [Fact]
-    public async Task Unauthorised_users_accessing_sign_out_get_redirected_to_start_page()
+    public async Task Signed_out_users_accessing_sign_out_get_redirected_to_start_page()
     {
         // Arrange
         var client = factory.CreateUnauthenticatedClient(options: ClientOptions.AllowRedirects);
@@ -57,7 +57,7 @@ public class LogoutActionTests(SchoolAccountWebApplicationFactory<Program> facto
     }
 
     [Fact]
-    public async Task Authenticated_pages_display_the_sign_out_link_for_authorised_users()
+    public async Task Signed_in_users_see_the_sign_out_link()
     {
         // Arrange
         var client = factory.CreateAuthorisedClient(
