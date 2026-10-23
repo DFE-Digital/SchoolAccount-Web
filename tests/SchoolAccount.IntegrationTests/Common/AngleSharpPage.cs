@@ -36,14 +36,14 @@ public abstract class AngleSharpPage
         return page;
     }
 
-    public virtual string? GetComponentTextByContent(string componentClass, string content)
+    public virtual string? GetComponentTextByContent(string querySelector, string content)
     {
-        return GetComponentByContent(componentClass, content)?.TextContent;
+        return GetComponentByContent(querySelector, content)?.TextContent;
     }
 
-    public virtual IElement? GetComponentByContent(string componentClass, string content)
+    public virtual IElement? GetComponentByContent(string querySelector, string content)
     {
-        return Page.QuerySelectorAll(componentClass)
+        return Page.QuerySelectorAll(querySelector)
             .FirstOrDefault(h => h.TextContent?.Contains(content) ?? false);
     }
 
