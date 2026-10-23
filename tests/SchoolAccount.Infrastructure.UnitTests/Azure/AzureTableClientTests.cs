@@ -12,7 +12,7 @@ public class AzureTableClientTests
     private readonly TableClient _tableClient = Substitute.For<TableClient>();
 
     [Fact]
-    public async Task A_table_is_added_by_the_client_successfully()
+    public async Task Feedback_is_saved_to_table_storage()
     {
         // Arrange
         var message = "test-message";
@@ -32,7 +32,7 @@ public class AzureTableClientTests
     }
 
     [Fact]
-    public async Task Failure_returned_when_client_throws_exception()
+    public async Task A_storage_error_is_returned_as_a_failure()
     {
         // Arrange
         var message = "test-message";
