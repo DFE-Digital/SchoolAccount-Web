@@ -28,7 +28,7 @@ public class AuthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<Pr
     }
 
     [Fact]
-    public async Task Authenticated_pages_display_the_sign_out_for_signed_in_users()
+    public async Task Signed_in_users_see_the_sign_out_link()
     {
         // Arrange
         var pageUri = factory.GeneratePath("Dashboard", "Dashboard");
@@ -50,7 +50,7 @@ public class AuthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<Pr
     }
 
     [Fact]
-    public async Task Authenticated_pages_display_the_organisation_name_link_for_signed_in_users()
+    public async Task Signed_in_users_see_their_organisation_name()
     {
         // Arrange
         var pageUri = factory.GeneratePath("Dashboard", "Dashboard");
