@@ -32,7 +32,7 @@ public class ErrorControllerTests : IClassFixture<SchoolAccountWebApplicationFac
     }
 
     [Fact]
-    public async Task Ensure_that_the_not_found_http_status_has_corresponding_page()
+    public async Task A_not_found_error_shows_the_page_not_found_page()
     {
         // Arrange
         var requestUri = _factory.GeneratePath("Error", "Error", new { statusCode = 404 });
@@ -56,7 +56,7 @@ public class ErrorControllerTests : IClassFixture<SchoolAccountWebApplicationFac
     }
 
     [Fact]
-    public async Task Ensure_that_the_internal_server_error_http_status_has_corresponding_page()
+    public async Task A_service_error_shows_the_service_error_page()
     {
         // Arrange
         var requestUri = _factory.GeneratePath("Error", "Error", new { statusCode = 500 });
@@ -103,7 +103,7 @@ public class ErrorControllerTests : IClassFixture<SchoolAccountWebApplicationFac
     }
 
     [Fact]
-    public async Task Ensure_that_the_server_error_http_status_has_corresponding_page()
+    public async Task A_failure_while_loading_a_page_shows_the_service_error_page()
     {
         // Arrange
         var requestUri = _factory.GeneratePath("Dashboard", "Dashboard");
