@@ -6,7 +6,7 @@ namespace SchoolAccount.ArchitectureTests.Layers;
 public class LayerTests : BaseTest
 {
     [Fact]
-    public void Domain_Should_NotHaveDependencyOnApplication()
+    public void The_domain_layer_does_not_depend_on_the_application_layer()
     {
         var result = Types
             .InAssembly(DomainAssembly)
@@ -18,7 +18,7 @@ public class LayerTests : BaseTest
     }
 
     [Fact]
-    public void DomainLayer_ShouldNotHaveDependencyOn_InfrastructureLayer()
+    public void The_domain_layer_does_not_depend_on_the_infrastructure_layer()
     {
         var result = Types
             .InAssembly(DomainAssembly)
@@ -30,7 +30,7 @@ public class LayerTests : BaseTest
     }
 
     [Fact]
-    public void DomainLayer_ShouldNotHaveDependencyOn_PresentationLayer()
+    public void The_domain_layer_does_not_depend_on_the_presentation_layer()
     {
         var result = Types
             .InAssembly(DomainAssembly)
@@ -42,7 +42,7 @@ public class LayerTests : BaseTest
     }
 
     [Fact]
-    public void ApplicationLayer_ShouldNotHaveDependencyOn_InfrastructureLayer()
+    public void The_application_layer_does_not_depend_on_the_infrastructure_layer()
     {
         var result = Types
             .InAssembly(ApplicationAssembly)
@@ -54,7 +54,7 @@ public class LayerTests : BaseTest
     }
 
     [Fact]
-    public void ApplicationLayer_ShouldNotHaveDependencyOn_PresentationLayer()
+    public void The_application_layer_does_not_depend_on_the_presentation_layer()
     {
         var result = Types
             .InAssembly(ApplicationAssembly)
@@ -66,7 +66,7 @@ public class LayerTests : BaseTest
     }
 
     [Fact]
-    public void InfrastructureLayer_ShouldNotHaveDependencyOn_PresentationLayer()
+    public void The_infrastructure_layer_does_not_depend_on_the_presentation_layer()
     {
         var result = Types
             .InAssembly(InfrastructureAssembly)
