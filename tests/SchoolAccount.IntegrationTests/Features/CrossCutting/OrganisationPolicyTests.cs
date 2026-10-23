@@ -44,7 +44,7 @@ public class OrganisationPolicyTests(SchoolAccountWebApplicationFactory<Program>
         var client = CreateClientOrganisationClaims(value);
 
         var response = await client.GetAsync(
-            factory.GeneratePath("Dashboard", "Dashboard"),
+            factory.GeneratePath("Journey", "Journey"),
             TestContext.Current.CancellationToken
         );
 
@@ -59,7 +59,7 @@ public class OrganisationPolicyTests(SchoolAccountWebApplicationFactory<Program>
         );
 
         var response = await client.GetAsync(
-            factory.GeneratePath("Dashboard", "Dashboard"),
+            factory.GeneratePath("Journey", "Journey"),
             TestContext.Current.CancellationToken
         );
 

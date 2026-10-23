@@ -74,10 +74,7 @@ public class FeedbackControllerTests : IClassFixture<SchoolAccountWebApplication
         );
 
         // Act
-        using var content = FeedbackForm(
-            string.Empty,
-            _factory.GeneratePath("Dashboard", "Dashboard")
-        );
+        using var content = FeedbackForm(string.Empty, _factory.GeneratePath("Journey", "Journey"));
         var response = await client.PostAsync(
             _factory.GeneratePath("Feedback", "Submit"),
             content,
@@ -116,7 +113,7 @@ public class FeedbackControllerTests : IClassFixture<SchoolAccountWebApplication
 
         // Act
         var html = await client.GetStringAsync(
-            _factory.GeneratePath("Dashboard", "Dashboard"),
+            _factory.GeneratePath("Journey", "Journey"),
             _cancellationToken
         );
 
@@ -136,7 +133,7 @@ public class FeedbackControllerTests : IClassFixture<SchoolAccountWebApplication
 
         // Act
         var html = await client.GetStringAsync(
-            _factory.GeneratePath("Dashboard", "Dashboard"),
+            _factory.GeneratePath("Journey", "Journey"),
             _cancellationToken
         );
 

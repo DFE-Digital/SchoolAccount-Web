@@ -64,7 +64,7 @@ public class LogoutActionTests(SchoolAccountWebApplicationFactory<Program> facto
             services => services.StubQueryHandler(StubCensusStatusesHandler.Succeeding()),
             ClientOptions.AllowRedirects
         );
-        var pageUri = factory.GeneratePath("Dashboard", "Dashboard");
+        var pageUri = factory.GeneratePath("Journey", "Journey");
 
         // Act
         var response = await client.GetAsync(pageUri, TestContext.Current.CancellationToken);
