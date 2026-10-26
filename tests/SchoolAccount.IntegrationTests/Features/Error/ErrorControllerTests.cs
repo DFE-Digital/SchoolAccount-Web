@@ -106,7 +106,7 @@ public class ErrorControllerTests : IClassFixture<SchoolAccountWebApplicationFac
     public async Task Ensure_that_the_server_error_http_status_has_corresponding_page()
     {
         // Arrange
-        var requestUri = _factory.GeneratePath("Dashboard", "Dashboard");
+        var requestUri = _factory.GeneratePath("Journey", "Journey");
 
         _getCensusStatusesHandler
             .Handle(Arg.Any<GetCensusStatusesQuery>(), Arg.Any<CancellationToken>())

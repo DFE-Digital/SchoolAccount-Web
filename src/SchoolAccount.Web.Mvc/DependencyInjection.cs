@@ -26,7 +26,7 @@ public static class DependencyInjection
         services.AddControllersWithFeatureViews();
         services.AddGovUkFrontend();
         services.AddScoped<IHeaderContentProvider, HeaderContentProvider>();
-        services.AddFeatureManagement(configuration);
+        services.AddCustomFeatureManagement(configuration);
 
         if (env.IsDevelopment())
         {
@@ -89,5 +89,16 @@ public static class DependencyInjection
         {
             return false;
         }
+    }
+
+    private static void AddCustomFeatureManagement(
+        this IServiceCollection services,
+        IConfiguration configuration
+    )
+    {
+        services.AddFeatureManagement(configuration);
+        services.Configure<ConfigurationFeatureDefinitionProviderOptions>(options =>
+            options.CustomConfigurationMergingEnabled = true
+        );
     }
 }

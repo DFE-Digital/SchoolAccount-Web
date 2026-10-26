@@ -67,7 +67,10 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         page.GetFirstBodyParagraph().ShouldBe("This is a test overview");
         page.GetFirstCaption().ShouldBe("This is a test caption");
         page.GetFirstTag().ShouldBe("Test Status");
-        page.GetComponentByContent(".govuk-heading-m", "Test Support Service")
+        page.GetFirstCaption().ShouldBe("This is a test caption");
+        page.GetFirstTag().ShouldBe("Test Status");
+        page.GetFirstTag().ShouldBe("Test Status");
+        page.GetComponentTextByContent(".govuk-heading-m", "Test Support Service")
             .ShouldBe("Test Support Service");
 
         var pageImportantDates = page.GetSummaryListPairs();
@@ -105,7 +108,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         // Assert
         message.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-        var overviewHeading = page.GetComponentByContent(".govuk-heading-m", "Overview");
+        var overviewHeading = page.GetComponentTextByContent(".govuk-heading-m", "Overview");
         overviewHeading.ShouldBeNull();
     }
 
@@ -419,7 +422,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
 
         // Assert
         message.StatusCode.ShouldBe(HttpStatusCode.OK);
-        page.GetComponentByContent("li", "Test Status")
+        page.GetComponentTextByContent("li", "Test Status")
             .ShouldBe("Test Status: Test status description.");
     }
 
@@ -451,7 +454,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
 
         // Assert
         message.StatusCode.ShouldBe(HttpStatusCode.OK);
-        page.GetComponentByContent("li", "Test Status").ShouldBeNull();
+        page.GetComponentTextByContent("li", "Test Status").ShouldBeNull();
     }
 
     [Fact]
@@ -511,7 +514,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
 
         // Assert
         message.StatusCode.ShouldBe(HttpStatusCode.OK);
-        page.GetComponentByContent("li", "Test Status")
+        page.GetComponentTextByContent("li", "Test Status")
             .ShouldBe("Test Status: Test status description.");
     }
 }
