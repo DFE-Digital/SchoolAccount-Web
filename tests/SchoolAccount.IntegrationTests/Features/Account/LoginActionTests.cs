@@ -67,7 +67,7 @@ public class LoginActionTests(SchoolAccountWebApplicationFactory<Program> factor
         var requestUri = factory.GeneratePath(
             "Account",
             "Login",
-            new { returnUrl = factory.GeneratePath("Dashboard", "Dashboard") }
+            new { returnUrl = factory.GeneratePath("Journey", "Journey") }
         );
 
         // Act

@@ -14,17 +14,15 @@ public class UrlHelperExtensionsTests
         new ActionContext(new DefaultHttpContext(), new RouteData(), new ActionDescriptor())
     );
 
-    [Theory]
-    [InlineData("/Dashboard")]
-    [InlineData("/Journey?census=1")]
-    public void A_local_return_url_is_kept(string returnUrl)
+    [Fact]
+    public void A_local_return_url_is_kept()
     {
-        // Act
-        var safeReturnUrl = _url.SafeReturnUrl(returnUrl);
+        // Arrange & Act
+        var safeReturnUrl = _url.SafeReturnUrl("/Journey?census=1");
 
         // Assert
         safeReturnUrl.IsAbsoluteUri.ShouldBeFalse();
-        safeReturnUrl.OriginalString.ShouldBe(returnUrl);
+        safeReturnUrl.OriginalString.ShouldBe("/Journey?census=1");
     }
 
     [Theory]
@@ -35,7 +33,7 @@ public class UrlHelperExtensionsTests
     [InlineData("/\\www.example.com/")]
     public void A_missing_or_external_return_url_becomes_the_home_page(string? returnUrl)
     {
-        // Act
+        // Arrange & Act
         var safeReturnUrl = _url.SafeReturnUrl(returnUrl);
 
         // Assert
