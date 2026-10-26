@@ -23,7 +23,7 @@ public class FeedbackControllerTests
     private readonly IUserContext _userContext = Substitute.For<IUserContext>();
 
     [Fact]
-    public async Task A_valid_submission_redirects_to_the_thank_you_messag()
+    public async Task A_valid_submission_redirects_to_the_thank_you_message()
     {
         // Arrange
         HandlerReturns(Result.Success());
