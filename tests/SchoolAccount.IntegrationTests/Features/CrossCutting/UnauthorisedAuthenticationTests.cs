@@ -24,7 +24,7 @@ public class UnauthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<
         response
             .Headers.Location.ShouldNotBeNull()
             .OriginalString.ShouldBeEquivalentTo(
-                factory.GeneratePath("Start", "Start", new { ReturnUrl = dashboardUri })
+                factory.GeneratePath("Start", "Start", new { ReturnUrl = journeyUri })
             );
     }
 
