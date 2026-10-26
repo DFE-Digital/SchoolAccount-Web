@@ -33,7 +33,7 @@ public class FeedbackControllerTests : IClassFixture<SchoolAccountWebApplication
     }
 
     [Fact]
-    public async Task Sending_feedback_shows_the_thank_you_message()
+    public async Task A_successful_feedback_submission_shows_the_thank_you_message()
     {
         // Arrange
         var pageUri = _factory.GeneratePath("Feedback", "Submit");

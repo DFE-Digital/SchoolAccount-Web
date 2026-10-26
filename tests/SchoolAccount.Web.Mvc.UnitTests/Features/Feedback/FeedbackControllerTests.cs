@@ -23,7 +23,7 @@ public class FeedbackControllerTests
     private readonly IUserContext _userContext = Substitute.For<IUserContext>();
 
     [Fact]
-    public async Task Sending_feedback_redirects_to_the_thank_you_message()
+    public async Task A_valid_submission_redirects_to_the_thank_you_messag()
     {
         // Arrange
         HandlerReturns(Result.Success());
@@ -38,7 +38,7 @@ public class FeedbackControllerTests
     }
 
     [Fact]
-    public async Task Errors_are_displayed_on_the_form_after_an_invalid_submission()
+    public async Task An_invalid_submission_displays_errors_on_the_form()
     {
         // Arrange
         using var controller = CreateController();
