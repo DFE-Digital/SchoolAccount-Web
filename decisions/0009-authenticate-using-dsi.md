@@ -23,4 +23,4 @@ Chosen option: DSI, because it's the strategic single sign-on solution for DfE.
 <!-- This is an optional element. Feel free to remove. -->
 ### Confirmation
 
-Users can log into DSI and see their name appearing on the dashboard page.
+Users can log into DSI and see their organisation name appear in the header.
