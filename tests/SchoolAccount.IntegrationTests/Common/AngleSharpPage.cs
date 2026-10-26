@@ -44,11 +44,17 @@ public abstract class AngleSharpPage
         return page;
     }
 
-    public string? GetSelectorByText(string selector, string text)
+    public string? GetComponentTextByContent(string querySelector, string text)
     {
-        return Page.QuerySelectorAll(selector)
+        return Page.QuerySelectorAll(querySelector)
             .Select(TextOf)
             .FirstOrDefault(content => content!.Contains(text));
+    }
+
+    public IElement? GetComponentByContent(string querySelector, string content)
+    {
+        return Page.QuerySelectorAll(querySelector)
+            .FirstOrDefault(h => h.TextContent?.Contains(content) ?? false);
     }
 
     public IElement? GetElementByLink(string selector, string href)
