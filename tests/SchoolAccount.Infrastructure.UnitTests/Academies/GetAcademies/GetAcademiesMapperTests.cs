@@ -8,7 +8,7 @@ namespace SchoolAccount.Infrastructure.UnitTests.Academies.GetAcademies;
 public class GetAcademiesMapperTests
 {
     [Fact]
-    public void A_TrustDto_is_mapped_to_a_GetAcademyTrustResponse()
+    public void A_trust_from_the_academies_api_is_mapped()
     {
         // Arrange
         var trust = new TrustDto
