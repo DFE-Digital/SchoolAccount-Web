@@ -11,12 +11,12 @@ public class AuthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<Pr
     : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
 {
     private readonly HttpClient _client = factory.CreateAuthorisedClient(services =>
-        services.StubQueryHandler(StubCensusStatusesHandler.Succeeding())
+        services.StubQueryHandler(StubCensusJourneyHandler.Succeeding())
     );
 
     [Theory]
     [InlineData("/")]
-    [InlineData("Dashboard")]
+    [InlineData("Journey")]
     public async Task Signed_in_users_can_access_a_page(string path)
     {
         // Arrange & Act
@@ -31,7 +31,7 @@ public class AuthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<Pr
     public async Task Signed_in_users_see_the_sign_out_link()
     {
         // Arrange
-        var pageUri = factory.GeneratePath("Dashboard", "Dashboard");
+        var pageUri = factory.GeneratePath("Journey", "Journey");
 
         // Act
         var response = await _client.GetAsync(pageUri, TestContext.Current.CancellationToken);
@@ -53,7 +53,7 @@ public class AuthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<Pr
     public async Task Signed_in_users_see_their_organisation_name()
     {
         // Arrange
-        var pageUri = factory.GeneratePath("Dashboard", "Dashboard");
+        var pageUri = factory.GeneratePath("Journey", "Journey");
 
         // Act
         var response = await _client.GetAsync(pageUri, TestContext.Current.CancellationToken);
