@@ -106,7 +106,7 @@ public class ErrorControllerTests : IClassFixture<SchoolAccountWebApplicationFac
     public async Task A_failure_while_loading_a_page_shows_the_service_error_page()
     {
         // Arrange
-        var requestUri = _factory.GeneratePath("Dashboard", "Dashboard");
+        var requestUri = _factory.GeneratePath("Journey", "Journey");
 
         _getCensusStatusesHandler
             .Handle(Arg.Any<GetCensusStatusesQuery>(), Arg.Any<CancellationToken>())
