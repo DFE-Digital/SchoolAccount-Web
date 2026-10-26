@@ -29,7 +29,7 @@ public class UnauthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<
     }
 
     [Fact]
-    public async Task Ensure_that_the_home_controller_allows_unauthorised_users()
+    public async Task Signed_out_users_can_see_the_start_page()
     {
         // Arrange & Act
         var response = await _client.GetAsync("/", TestContext.Current.CancellationToken);
