@@ -7,7 +7,7 @@
         <span class="govuk-caption-xl census-title">@Model.Caption</span>
         <h1 class="govuk-heading-l">@Model.Title</h1>
 
-        @if (!Model.Organisation.IsMat)
+        @if (Model.Organisation.IsEstablishment)
         {
             <strong
                 class="govuk-tag govuk-tag--grey status-tag govuk-!-margin-bottom-6 govuk-tag--wide">@Model.Status</strong>
@@ -31,7 +31,7 @@
             <partial name="~/Features/Shared/StepByStep/StepByStep.cshtml" model="@steps"/>
         }
 
-        @if (!Model.Organisation.IsMat)
+        @if (Model.Organisation.IsEstablishment)
         {
             <govuk-button-link
                 href="@Model.CallToAction.Url"

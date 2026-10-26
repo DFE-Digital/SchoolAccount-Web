@@ -34,7 +34,7 @@ public sealed class JourneyViewModel
     public bool DisplayOverview => !string.IsNullOrWhiteSpace(Overview);
 
     public bool DisplayUnderstandStatuses =>
-        UnderstandStatuses.Any() && (Status != "Unavailable" || Organisation.IsMat);
+        UnderstandStatuses.Any() && (Status != "Unavailable" || DisplaySchoolStatuses);
 
     public bool TryGetSteps(out StepByStepViewModelCollection steps)
     {
