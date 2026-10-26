@@ -137,7 +137,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     }
 
     [Fact]
-    public async Task ImportantDates_renders_multiple_dates()
+    public async Task Every_important_date_is_shown()
     {
         // Arrange
         var token = TestContext.Current.CancellationToken;
@@ -173,7 +173,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     }
 
     [Fact]
-    public async Task Multiple_ImportantDates_are_ordered_earliest_first()
+    public async Task Important_dates_are_shown_earliest_first()
     {
         // Arrange
         var token = TestContext.Current.CancellationToken;

@@ -11,7 +11,7 @@ public class UnauthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<
     private readonly HttpClient _client = factory.CreateUnauthenticatedClient();
 
     [Fact]
-    public async Task Users_that_are_not_signed_in_cannot_access_the_journey_page()
+    public async Task Signed_out_users_cannot_access_the_journey_page()
     {
         // Arrange
         var journeyUri = factory.GeneratePath("Journey", "Journey");
