@@ -10,8 +10,8 @@ namespace SchoolAccount.Web.Mvc.Features.Journey;
 
 public class JourneyViewModelBuilder(IDateTimeProvider dateTimeProvider)
 {
-    private readonly DateFormatter dateFormatter = new(dateTimeProvider);
-    private const int OneDayLag = 1;
+    private readonly DateFormatter _dateFormatter = new(dateTimeProvider);
+    private const int _oneDayLag = 1;
 
     public JourneyViewModel Build(
         string? user,
@@ -21,7 +21,7 @@ public class JourneyViewModelBuilder(IDateTimeProvider dateTimeProvider)
     {
         return new JourneyViewModel
         {
-            User = user,
+            Organisation = organisation,
             Title = getCensusJourneyResponse.Content.Title,
             Caption = getCensusJourneyResponse.Content.Caption,
             Overview = getCensusJourneyResponse.Content.Overview,
@@ -31,7 +31,7 @@ public class JourneyViewModelBuilder(IDateTimeProvider dateTimeProvider)
                 .Select(date => new ImportantDate
                 {
                     Label = date.Label,
-                    FormattedDate = dateFormatter.ToDayMonthNameAndYear(date.Date),
+                    FormattedDate = _dateFormatter.ToDayMonthNameAndYear(date.Date),
                 })
                 .ToList(),
             UnderstandStatuses = getCensusJourneyResponse
@@ -68,7 +68,7 @@ public class JourneyViewModelBuilder(IDateTimeProvider dateTimeProvider)
                                 Queries = x.Queries,
                                 UpdatedAt = x.UpdatedAt is null
                                     ? string.Empty
-                                    : dateFormatter.ToDaysAgo(x.UpdatedAt.Value, OneDayLag),
+                                    : _dateFormatter.ToDaysAgo(x.UpdatedAt.Value, _oneDayLag),
                             })
                         )
                         .ToList(),

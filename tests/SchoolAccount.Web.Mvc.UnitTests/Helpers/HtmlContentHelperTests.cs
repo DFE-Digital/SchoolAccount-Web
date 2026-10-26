@@ -10,7 +10,7 @@ namespace SchoolAccount.Web.Mvc.UnitTests.Helpers;
 public class HtmlContentHelperTests
 {
     [Fact]
-    public async Task Ensure_that_classes_are_added_to_given_html_content_paragraph()
+    public async Task Govuk_classes_are_added_to_paragraphs()
     {
         // Arrange
         var content = "<p>Test</p>";
@@ -27,7 +27,7 @@ public class HtmlContentHelperTests
     }
 
     [Fact]
-    public async Task Ensure_that_classes_are_added_to_given_html_content_list()
+    public async Task Govuk_classes_are_added_to_lists_and_their_items()
     {
         // Arrange
         var content = "<ul><li>Item 1</li><li>Item 2</li><li>Item 3</li></ul>";
