@@ -11,18 +11,18 @@ public class UnauthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<
     private readonly HttpClient _client = factory.CreateUnauthenticatedClient();
 
     [Fact]
-    public async Task Signed_out_users_are_sent_from_the_dashboard_to_the_start_page()
+    public async Task Signed_out_users_cannot_access_the_journey_page()
     {
         // Arrange
-        var dashboardUri = factory.GeneratePath("Dashboard", "Dashboard");
+        var journeyUri = factory.GeneratePath("Journey", "Journey");
 
         // Act
-        var response = await _client.GetAsync(dashboardUri, TestContext.Current.CancellationToken);
+        var response = await _client.GetAsync(journeyUri, TestContext.Current.CancellationToken);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
         response.Headers.Location?.OriginalString.ShouldBeEquivalentTo(
-            factory.GeneratePath("Start", "Start", new { ReturnUrl = dashboardUri })
+            factory.GeneratePath("Start", "Start", new { ReturnUrl = journeyUri })
         );
     }
 

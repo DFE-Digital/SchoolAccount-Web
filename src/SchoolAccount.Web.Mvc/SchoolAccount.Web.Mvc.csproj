@@ -37,8 +37,4 @@
     <PackageReference Include="Serilog.AspNetCore" />
     <PackageReference Include="Serilog.Sinks.Seq" />
   </ItemGroup>
-
-  <ItemGroup>
-    <_ContentIncludedByDefault Remove="Features\Home\Home.cshtml" />
-  </ItemGroup>
 </Project>
