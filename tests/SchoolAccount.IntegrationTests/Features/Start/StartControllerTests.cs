@@ -16,7 +16,7 @@ public class StartControllerTests : IClassFixture<SchoolAccountWebApplicationFac
     }
 
     [Fact]
-    public async Task Ensure_that_the_start_controller_returns_a_successful_result()
+    public async Task The_start_page_explains_how_to_sign_in()
     {
         // Arrange
         var pageUri = _factory.GeneratePath("Start", "Start");
