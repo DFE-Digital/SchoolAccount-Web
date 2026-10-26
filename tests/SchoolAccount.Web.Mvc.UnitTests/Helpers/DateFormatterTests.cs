@@ -25,7 +25,7 @@ public class DateFormatterTests
     }
 
     [Fact]
-    public void A_singular_day_ago_is_returned_for_one_day_ago()
+    public void Day_singular_is_returned_for_one_day_ago()
     {
         // Arrange
         var dateTimeProvider = Substitute.For<IDateTimeProvider>();
@@ -59,7 +59,7 @@ public class DateFormatterTests
     }
 
     [Fact]
-    public void Plural_days_ago_are_returned_for_more_than_one_day_ago()
+    public void Days_plural_are_returned_for_more_than_one_day_ago()
     {
         // Arrange
         var dateTimeProvider = Substitute.For<IDateTimeProvider>();
