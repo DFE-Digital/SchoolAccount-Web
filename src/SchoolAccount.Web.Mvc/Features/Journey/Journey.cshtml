@@ -7,7 +7,7 @@
         <span class="govuk-caption-xl census-title">@Model.Caption</span>
         <h1 class="govuk-heading-l">@Model.Title</h1>
 
-        @if (!Model.IsMatOrLocalAuthority)
+        @if (Model.Organisation.IsEstablishment)
         {
             <strong
                 class="govuk-tag govuk-tag--grey status-tag govuk-!-margin-bottom-6 govuk-tag--wide">@Model.Status</strong>
@@ -19,7 +19,7 @@
             <p class="govuk-body">@Model.Overview</p>
         }
 
-        @if (Model.IsMatOrLocalAuthority)
+        @if (Model.DisplaySchoolStatuses)
         {
             <partial name="~/Features/Shared/MultipleSchoolsStatusTable/MultipleSchoolsStatusTable.cshtml"
                      model="@Model.MatSchoolsStatuses"/>
@@ -31,13 +31,16 @@
             <partial name="~/Features/Shared/StepByStep/StepByStep.cshtml" model="@steps"/>
         }
 
-        <govuk-button-link
-            href="@Model.CallToAction.Url"
-            rel="noreferrer noopener"
-            target="_blank">
-            @Model.CallToAction.Label
-            <span class="govuk-visually-hidden"> opens in new tab</span>
-        </govuk-button-link>
+        @if (Model.Organisation.IsEstablishment)
+        {
+            <govuk-button-link
+                href="@Model.CallToAction.Url"
+                rel="noreferrer noopener"
+                target="_blank">
+                @Model.CallToAction.Label
+                <span class="govuk-visually-hidden"> opens in new tab</span>
+            </govuk-button-link>
+        }
     </div>
 
     <div class="govuk-grid-column-one-third">
