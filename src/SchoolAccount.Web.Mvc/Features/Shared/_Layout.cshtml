@@ -1,8 +1,10 @@
 ﻿@using GovUk.Frontend.AspNetCore
 @using SchoolAccount.Web.Mvc.Features.Header
+@using SchoolAccount.Web.Mvc.Hosting.Models
 @using SchoolAccount.Web.Mvc.Infrastructure
 @inject IHeaderContentProvider HeaderContentProvider
-
+@using System.Text.Json
+@inject IConfiguration Configuration
 @* ReSharper disable Razor.LayoutNotResolved *@
 @* ReSharper disable Razor.SectionNotResolved *@
 
@@ -86,5 +88,20 @@
 
         MOJFrontend.initAll()
     </script>
+    
+    @if (ViewData["EnableCensusAnalytics"] is true &&
+         AzureMonitorSettings.IsConfigured(Configuration))
+    {
+        var connectionString =
+            Configuration[AzureMonitorSettings.ConnectionStringEnvironmentVariable];
+
+        <script type="application/json" id="census-analytics-config">
+        @Html.Raw(JsonSerializer.Serialize(new { connectionString }))
+    </script>
+
+        <script type="module"
+                src="~/js/analytics/census-journey.js"
+                asp-append-version="true"></script>
+    }
 }
 
