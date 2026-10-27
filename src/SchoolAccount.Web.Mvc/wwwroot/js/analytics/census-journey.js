@@ -14,6 +14,19 @@ if (configElement) {
     if (appInsights) {
         registerGovUkAnalytics(appInsights);
 
+        document.querySelectorAll(
+            '[data-analytics-event="census_external_navigation"]'
+        ).forEach(link => {
+            link.addEventListener("click", () => {
+                trackEvent(appInsights, "census_external_navigation", {
+                    action: "ExternalNavigation",
+                    label: link.textContent.trim(),
+                    destination: link.href,
+                    page: "CensusJourney"
+                });
+            });
+        });
+
         trackEvent(appInsights, "census_journey_test", {
             page: "CensusJourney",
             action: "PageLoaded",
