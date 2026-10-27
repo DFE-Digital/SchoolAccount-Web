@@ -75,21 +75,19 @@ comment on *why* the behaviour matters wherever that isn't obvious. Suggested or
 
 1. [StartCardsTests](../tests/SchoolAccount.Web.Mvc.ComponentTests/Features/Start/StartCardsTests.cs) - no model,
    fixed content. The basic shape of a test.
-2. [DashboardTests](../tests/SchoolAccount.Web.Mvc.ComponentTests/Features/Dashboard/DashboardTests.cs) - a simple
-   model, plus checking that text is HTML-encoded.
-3. [ErrorTests](../tests/SchoolAccount.Web.Mvc.ComponentTests/Features/Error/ErrorTests.cs) - `[Theory]` tests
+2. [ErrorTests](../tests/SchoolAccount.Web.Mvc.ComponentTests/Features/Error/ErrorTests.cs) - `[Theory]` tests
    that run once per input.
-4. [MultipleSchoolsStatusTableTests](../tests/SchoolAccount.Web.Mvc.ComponentTests/Features/Shared/MultipleSchoolsStatusTable/MultipleSchoolsStatusTableTests.cs)
+3. [MultipleSchoolsStatusTableTests](../tests/SchoolAccount.Web.Mvc.ComponentTests/Features/Shared/MultipleSchoolsStatusTable/MultipleSchoolsStatusTableTests.cs)
    - helper methods that build test data, and accessibility checks.
-5. [StepByStepTests](../tests/SchoolAccount.Web.Mvc.ComponentTests/Features/Shared/StepByStep/StepByStepTests.cs) - checking
+4. [StepByStepTests](../tests/SchoolAccount.Web.Mvc.ComponentTests/Features/Shared/StepByStep/StepByStepTests.cs) - checking
    the hooks that JavaScript relies on.
-6. [ErrorSummaryTests](../tests/SchoolAccount.Web.Mvc.ComponentTests/Features/Shared/ErrorSummaryTests.cs) - a
+5. [ErrorSummaryTests](../tests/SchoolAccount.Web.Mvc.ComponentTests/Features/Shared/ErrorSummaryTests.cs) - a
    component driven by `TempData` instead of a model.
-7. [FeedbackTests](../tests/SchoolAccount.Web.Mvc.ComponentTests/Features/Feedback/FeedbackTests.cs) - a form with
+6. [FeedbackTests](../tests/SchoolAccount.Web.Mvc.ComponentTests/Features/Feedback/FeedbackTests.cs) - a form with
    three states (not sent, sent with an error, sent), each with its own render helper.
-8. [JourneyTests](../tests/SchoolAccount.Web.Mvc.ComponentTests/Features/Journey/JourneyTests.cs) - a page with
+7. [JourneyTests](../tests/SchoolAccount.Web.Mvc.ComponentTests/Features/Journey/JourneyTests.cs) - a page with
    lots of conditional sections, each tested "shown when…" and "hidden when…".
-9. [ComponentRenderer](../tests/SchoolAccount.Web.Mvc.ComponentTests/Common/ComponentRenderer.cs) - how rendering
+8. [ComponentRenderer](../tests/SchoolAccount.Web.Mvc.ComponentTests/Common/ComponentRenderer.cs) - how rendering
    works under the hood.
 
 ## Glossary

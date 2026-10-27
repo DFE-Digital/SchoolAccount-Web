@@ -1,4 +1,5 @@
 using AngleSharp.Dom;
+using SchoolAccount.SharedKernel.Authentication;
 using SchoolAccount.Web.Mvc.ComponentTests.Common;
 using SchoolAccount.Web.Mvc.Features.Journey;
 using SchoolAccount.Web.Mvc.Features.Shared.MultipleSchoolsStatusTable;
@@ -25,17 +26,18 @@ namespace SchoolAccount.Web.Mvc.ComponentTests.Features.Journey;
 /// <code>
 /// ┌────────────────────────────────────────┬──────────────────────────────┐
 /// │ Caption + title (always)               │ Important dates              │
-/// │ Status tag (single school only)        │   (only if there are dates)  │
+/// │ Status tag (establishment only)        │   (only if there are dates)  │
 /// │ Overview (only if not blank)           │ About your status            │
-/// │ Schools table (trust/LA only)          │   (only if explanations, and │
-/// │ Step by step (only if there are steps) │    not "Unavailable" for a   │
-/// │ Call to action button (always)         │    single school)            │
+/// │ Schools table (only if any schools)    │   (only if explanations, and │
+/// │ Step by step (only if there are steps) │    not "Unavailable" unless  │
+/// │ Call to action (establishment only)    │    the schools table shows)  │
 /// │                                        │ Support (always)             │
 /// └────────────────────────────────────────┴──────────────────────────────┘
 /// </code>
 /// <para>
-/// The page shows a single school view or a trust/local authority view. A user counts as a
-/// trust or local authority when <c>MatSchoolsStatuses</c> contains at least one school.
+/// The status tag and call to action depend on the user's organisation: they only show for an
+/// establishment (a single school). The schools table depends on the data instead: it shows
+/// whenever <c>MatSchoolsStatuses</c> contains at least one school.
 /// </para>
 /// </remarks>
 public sealed class JourneyTests(ComponentRenderer renderer) : IClassFixture<ComponentRenderer>
@@ -52,6 +54,25 @@ public sealed class JourneyTests(ComponentRenderer renderer) : IClassFixture<Com
             new SchoolStatus { Name = "Oakwood Primary", Status = "Submitted" },
             new SchoolStatus { Name = "Riverside Academy", Status = "Not started" },
         ],
+    };
+
+    // DfE Sign-in organisation categories. Only "001" counts as an establishment.
+    private static readonly Organisation AnEstablishment = new()
+    {
+        Id = "establishment-1",
+        Name = "Oakwood Primary",
+        Category = new Category
+        {
+            Id = Organisation.EstablishmentCategoryId,
+            Name = "Establishment",
+        },
+    };
+
+    private static readonly Organisation ATrust = new()
+    {
+        Id = "trust-1",
+        Name = "Oakwood Academy Trust",
+        Category = new Category { Id = "010", Name = "Multi Academy Trust" },
     };
 
     private static readonly UnderstandStatus SubmittedExplanation = new()
@@ -94,13 +115,13 @@ public sealed class JourneyTests(ComponentRenderer renderer) : IClassFixture<Com
         caption.CompareDocumentPosition(heading).ShouldBe(DocumentPositions.Following);
     }
 
-    // Status tag - single school only
+    // Status tag - establishment only
 
     [Fact]
-    public async Task Single_school_sees_its_status_as_a_tag()
+    public async Task Establishment_sees_its_status_as_a_tag()
     {
         // Arrange
-        var model = AJourney(status: "In progress");
+        var model = AJourney(organisation: AnEstablishment, status: "In progress");
 
         // Act
         using var html = await renderer.RenderAsync(ViewPath, model);
@@ -110,32 +131,16 @@ public sealed class JourneyTests(ComponentRenderer renderer) : IClassFixture<Com
     }
 
     [Fact]
-    public async Task Trust_does_not_see_a_single_status_tag()
+    public async Task Trust_does_not_see_a_status_tag()
     {
         // Arrange
-        var model = AJourney(trustSchools: TrustWithTwoSchools);
+        var model = AJourney(organisation: ATrust, trustSchools: TrustWithTwoSchools);
 
         // Act
         using var html = await renderer.RenderAsync(ViewPath, model);
 
         // Assert
         GetJourneyStatusTag(html).ShouldBeNull();
-    }
-
-    [Fact]
-    public async Task Trust_with_no_schools_is_shown_the_single_school_view()
-    {
-        // Arrange
-        // An edge case: a trust model exists, but it lists no schools. The view treats this
-        // the same as a single school.
-        var model = AJourney(trustSchools: new MultipleSchoolsStatusTableViewModel());
-
-        // Act
-        using var html = await renderer.RenderAsync(ViewPath, model);
-
-        // Assert
-        GetJourneyStatusTag(html).ShouldNotBeNull();
-        html.QuerySelector("table").ShouldBeNull();
     }
 
     // Overview - only when not blank
@@ -170,13 +175,13 @@ public sealed class JourneyTests(ComponentRenderer renderer) : IClassFixture<Com
         GetSectionHeadings(html).ShouldNotContain("Overview");
     }
 
-    // Schools table - trust or local authority only
+    // Schools table - only when there are schools
 
     [Fact]
     public async Task Trust_sees_a_table_of_its_schools()
     {
         // Arrange
-        var model = AJourney(trustSchools: TrustWithTwoSchools);
+        var model = AJourney(organisation: ATrust, trustSchools: TrustWithTwoSchools);
 
         // Act
         using var html = await renderer.RenderAsync(ViewPath, model);
@@ -189,10 +194,27 @@ public sealed class JourneyTests(ComponentRenderer renderer) : IClassFixture<Com
     }
 
     [Fact]
-    public async Task Single_school_does_not_see_a_schools_table()
+    public async Task Establishment_does_not_see_a_schools_table()
     {
         // Arrange
-        var model = AJourney(trustSchools: null);
+        var model = AJourney(organisation: AnEstablishment, trustSchools: null);
+
+        // Act
+        using var html = await renderer.RenderAsync(ViewPath, model);
+
+        // Assert
+        html.QuerySelector("table").ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task Trust_with_no_schools_does_not_see_a_schools_table()
+    {
+        // Arrange
+        // An edge case: a trust model exists, but it lists no schools.
+        var model = AJourney(
+            organisation: ATrust,
+            trustSchools: new MultipleSchoolsStatusTableViewModel()
+        );
 
         // Act
         using var html = await renderer.RenderAsync(ViewPath, model);
@@ -248,7 +270,7 @@ public sealed class JourneyTests(ComponentRenderer renderer) : IClassFixture<Com
         html.QuerySelector(".app-step-nav").ShouldBeNull();
     }
 
-    // Call to action button - always shown
+    // Call to action button - establishment only
 
     [Fact]
     public async Task Call_to_action_button_links_to_the_service()
@@ -270,6 +292,19 @@ public sealed class JourneyTests(ComponentRenderer renderer) : IClassFixture<Com
         var button = GetCallToAction(html);
         button.GetAttribute("href").ShouldBe("https://collect.example.gov.uk/");
         button.TextContent.ShouldContain("Go to Collect");
+    }
+
+    [Fact]
+    public async Task Trust_does_not_see_the_call_to_action()
+    {
+        // Arrange
+        var model = AJourney(organisation: ATrust, trustSchools: TrustWithTwoSchools);
+
+        // Act
+        using var html = await renderer.RenderAsync(ViewPath, model);
+
+        // Assert
+        html.QuerySelector("a.govuk-button").ShouldBeNull();
     }
 
     [Fact]
@@ -340,8 +375,8 @@ public sealed class JourneyTests(ComponentRenderer renderer) : IClassFixture<Com
         html.QuerySelector(".govuk-summary-list").ShouldBeNull();
     }
 
-    // About your status - only when there are explanations, and not "Unavailable" for a
-    // single school
+    // About your status - only when there are explanations, and not "Unavailable" unless
+    // the schools table is shown
 
     [Fact]
     public async Task Status_explanations_are_listed_when_provided()
@@ -380,7 +415,7 @@ public sealed class JourneyTests(ComponentRenderer renderer) : IClassFixture<Com
     }
 
     [Fact]
-    public async Task Status_explanations_are_hidden_when_a_single_schools_status_is_unavailable()
+    public async Task Status_explanations_are_hidden_when_an_establishments_status_is_unavailable()
     {
         // Arrange
         var model = AJourney(status: "Unavailable", understandStatuses: [SubmittedExplanation]);
@@ -396,8 +431,10 @@ public sealed class JourneyTests(ComponentRenderer renderer) : IClassFixture<Com
     public async Task Status_explanations_are_shown_to_a_trust_even_when_status_is_unavailable()
     {
         // Arrange
-        // The "Unavailable" rule only hides explanations for a single school.
+        // The "Unavailable" rule doesn't apply when the schools table is shown, because
+        // the explanations then describe the statuses in the table.
         var model = AJourney(
+            organisation: ATrust,
             status: "Unavailable",
             trustSchools: TrustWithTwoSchools,
             understandStatuses: [SubmittedExplanation]
@@ -464,13 +501,14 @@ public sealed class JourneyTests(ComponentRenderer renderer) : IClassFixture<Com
     // Helpers - these keep the tests short so each one shows only what makes it different
 
     /// <summary>
-    /// Builds a journey page model for a single school, with every optional section empty.
+    /// Builds a journey page model for an establishment, with every optional section empty.
     /// </summary>
     /// <remarks>
     /// Every parameter has a sensible default, so a test only names the values it cares
     /// about, e.g. <c>AJourney(status: "Unavailable")</c>.
     /// </remarks>
     private static JourneyViewModel AJourney(
+        Organisation? organisation = null,
         string title = "School census",
         string caption = "Statutory return",
         string status = "In progress",
@@ -485,6 +523,7 @@ public sealed class JourneyTests(ComponentRenderer renderer) : IClassFixture<Com
     {
         return new JourneyViewModel
         {
+            Organisation = organisation ?? AnEstablishment,
             Title = title,
             Caption = caption,
             Status = status,
@@ -553,7 +592,7 @@ public sealed class JourneyTests(ComponentRenderer renderer) : IClassFixture<Com
     }
 
     /// <summary>
-    /// The single school's status tag, or null if it isn't shown.
+    /// The establishment's status tag, or null if it isn't shown.
     /// </summary>
     private static IElement? GetJourneyStatusTag(IDocument html)
     {

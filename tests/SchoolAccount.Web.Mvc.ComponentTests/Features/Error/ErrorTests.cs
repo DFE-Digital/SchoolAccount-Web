@@ -88,11 +88,11 @@ public sealed class ErrorTests(ComponentRenderer renderer) : IClassFixture<Compo
         using var html = await renderer.RenderAsync(ViewPath, model);
 
         // Assert
-        // The view builds this link with Url.Action("Dashboard", "Dashboard"). The renderer
-        // uses the app's real routes, and DashboardController has [Route("/{action}")], so
-        // the URL is "/Dashboard". If that route changes, this test will tell us.
+        // The view builds this link with Url.Action("Journey", "Journey"). The renderer
+        // uses the app's real routes, and JourneyController has [Route("/{action}")], so
+        // the URL is "/Journey". If that route changes, this test will tell us.
         var link = html.QuerySelector("a.govuk-link").ShouldNotBeNull();
         link.TextContent.Trim().ShouldBe("Go to the homepage");
-        link.GetAttribute("href").ShouldBe("/Dashboard");
+        link.GetAttribute("href").ShouldBe("/Journey");
     }
 }
