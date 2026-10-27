@@ -47,18 +47,14 @@ public class FeedbackController(
             return RedirectBackWithErrors(returnUrl);
         }
 
-        if (form.ReturnUrl == "/Feedback/OpenFeedbackForm")
-        {
-            return View("~/Features/Feedback/NonJavascript/FeedbackThanks.cshtml");
-        }
-
         TempData["FeedbackSubmitted"] = true;
 
         return LocalRedirect($"{returnUrl}#feedback-thanks");
     }
 
     [HttpGet]
-    public IActionResult OpenFeedbackForm()
+    [Route("/Feedback")]
+    public IActionResult Feedback()
     {
         return View("~/Features/Feedback/NonJavascript/FeedbackForm.cshtml");
     }
