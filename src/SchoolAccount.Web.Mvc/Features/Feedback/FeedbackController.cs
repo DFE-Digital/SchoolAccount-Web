@@ -49,10 +49,7 @@ public class FeedbackController(
 
         TempData["FeedbackSubmitted"] = true;
 
-        var redirectTo =
-            form.ReturnUrl == "/Feedback" ? form.ReturnUrl : $"{returnUrl}#feedback-thanks";
-
-        return LocalRedirect(redirectTo);
+        return LocalRedirect($"{returnUrl}#feedback-thanks");
     }
 
     [HttpGet]
