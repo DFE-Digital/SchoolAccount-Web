@@ -49,12 +49,10 @@ public class FeedbackController(
 
         TempData["FeedbackSubmitted"] = true;
 
-        if (form.ReturnUrl == "/Feedback")
-        {
-            return RedirectToAction(nameof(FeedbackThanks));
-        }
+        var redirectTo =
+            form.ReturnUrl == "/Feedback" ? form.ReturnUrl : $"{returnUrl}#feedback-thanks";
 
-        return LocalRedirect($"{returnUrl}#feedback-thanks");
+        return LocalRedirect(redirectTo);
     }
 
     [HttpGet]
@@ -62,13 +60,6 @@ public class FeedbackController(
     public IActionResult Feedback()
     {
         return View("~/Features/Feedback/NonJavascript/FeedbackForm.cshtml");
-    }
-
-    [HttpGet]
-    [Route("/Feedback/Thanks")]
-    public IActionResult FeedbackThanks()
-    {
-        return View("~/Features/Feedback/NonJavascript/FeedbackThanks.cshtml");
     }
 
     /// <summary>

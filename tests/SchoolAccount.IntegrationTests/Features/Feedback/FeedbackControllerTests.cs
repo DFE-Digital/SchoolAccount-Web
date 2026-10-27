@@ -184,22 +184,6 @@ public class FeedbackControllerTests : IClassFixture<SchoolAccountWebApplication
     }
 
     [Fact]
-    public async Task Feedback_thanks_page_shows_the_not_found_page_when_the_feature_flag_is_disabled()
-    {
-        // Arrange
-        var client = _factory.CreateAuthorisedClient(services => services.DisableFeedbackFeature());
-
-        // Act
-        var result = await client.GetAsync(
-            _factory.GeneratePath("Feedback", "FeedbackThanks"),
-            _cancellationToken
-        );
-
-        // Assert
-        result.StatusCode.ShouldBe(HttpStatusCode.NotFound);
-    }
-
-    [Fact]
     public async Task The_feedback_form_page_is_shown()
     {
         // Arrange
@@ -220,25 +204,6 @@ public class FeedbackControllerTests : IClassFixture<SchoolAccountWebApplication
     }
 
     [Fact]
-    public async Task The_feedback_thanks_page_is_shown()
-    {
-        // Arrange
-        var pageUri = _factory.GeneratePath("Feedback", "FeedbackThanks");
-        _feedbackCommandHandler
-            .Handle(Arg.Any<FeedbackCommand>(), Arg.Any<CancellationToken>())
-            .Returns(Result.Success());
-
-        // Act
-        var result = await _authenticatedClient.GetAsync(pageUri, _cancellationToken);
-        var html = await result.Content.ReadAsStringAsync(_cancellationToken);
-
-        // Assert
-        result.StatusCode.ShouldBe(HttpStatusCode.OK);
-        html.ShouldContain("id=\"feedback-thanks\"");
-        html.ShouldNotContain("id=\"page-feedback\"");
-    }
-
-    [Fact]
     public async Task The_feedback_thanks_page_is_shown_on_a_successful_submission_from_the_feedback_form_page()
     {
         // Arrange
@@ -253,7 +218,7 @@ public class FeedbackControllerTests : IClassFixture<SchoolAccountWebApplication
 
         // Assert
         result.StatusCode.ShouldBe(HttpStatusCode.Redirect);
-        result.Headers.Location.ShouldNotBeNull().OriginalString.ShouldBe("/Feedback/Thanks");
+        result.Headers.Location.ShouldNotBeNull().OriginalString.ShouldBe("/Feedback");
     }
 
     private static FormUrlEncodedContent FeedbackForm(string message, string? returnUrl = null)
