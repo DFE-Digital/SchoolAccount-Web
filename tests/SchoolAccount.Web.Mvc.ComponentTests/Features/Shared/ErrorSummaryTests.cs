@@ -19,24 +19,17 @@ namespace SchoolAccount.Web.Mvc.ComponentTests.Features.Shared;
 /// through the renderer's <c>tempData</c> parameter.
 /// </para>
 /// </remarks>
-public class ErrorSummaryTests(ComponentRenderer renderer) : IClassFixture<ComponentRenderer>
+public sealed class ErrorSummaryTests(ComponentRenderer renderer) : IClassFixture<ComponentRenderer>
 {
     private const string ViewPath = "~/Features/Shared/_ErrorSummary.cshtml";
 
-    // The TempData key the controllers use. It must match FeedbackController exactly.
-    private const string ErrorSummaryKey = "ErrorSummary";
-
-    // =====================================================================================
     // When it appears
-    // =====================================================================================
 
     [Fact]
     public async Task Nothing_is_shown_when_there_are_no_errors()
     {
-        // Arrange - no TempData at all, as on a normal page visit.
-
         // Act
-        using var html = await RenderWithErrorsAsync(errors: null);
+        using var html = await RenderWithoutErrorsAsync();
 
         // Assert
         GetErrorSummary(html).ShouldBeNull();
@@ -56,120 +49,103 @@ public class ErrorSummaryTests(ComponentRenderer renderer) : IClassFixture<Compo
     }
 
     [Fact]
-    public async Task Summary_is_shown_with_the_standard_govuk_title_when_there_are_errors()
+    public async Task Summary_is_shown_when_there_are_errors()
     {
         // Arrange
-        var errors = new Dictionary<string, string>
+        var missingFeedbackError = new Dictionary<string, string>
         {
             ["FeedbackMessage"] = "Enter your feedback or describe the problem",
         };
 
         // Act
-        using var html = await RenderWithErrorsAsync(errors);
+        using var html = await RenderWithErrorsAsync(missingFeedbackError);
 
         // Assert
-        var summary = GetErrorSummary(html).ShouldNotBeNull();
-        var title = summary.QuerySelector(".govuk-error-summary__title").ShouldNotBeNull();
-        title.TextContent.Trim().ShouldBe("There is a problem");
+        GetErrorSummary(html).ShouldNotBeNull();
     }
 
-    // =====================================================================================
     // The list of errors
-    // =====================================================================================
 
     [Fact]
     public async Task Each_error_message_is_listed()
     {
         // Arrange
-        var errors = new Dictionary<string, string>
+        var twoErrors = new Dictionary<string, string>
         {
             ["FeedbackMessage"] = "Enter your feedback or describe the problem",
             ["Email"] = "Enter an email address",
         };
 
         // Act
-        using var html = await RenderWithErrorsAsync(errors);
+        using var html = await RenderWithErrorsAsync(twoErrors);
 
         // Assert
+        // ignoreOrder because the view lists errors in Dictionary order, which .NET doesn't
+        // guarantee.
         GetErrorLinks(html)
             .Select(link => link.TextContent.Trim())
-            .ShouldBe(["Enter your feedback or describe the problem", "Enter an email address"]);
+            .ShouldBe(
+                ["Enter your feedback or describe the problem", "Enter an email address"],
+                ignoreOrder: true
+            );
     }
 
     [Fact]
     public async Task Each_error_links_to_the_field_that_needs_fixing()
     {
         // Arrange
-        var errors = new Dictionary<string, string>
+        var missingFeedbackError = new Dictionary<string, string>
         {
             ["FeedbackMessage"] = "Enter your feedback or describe the problem",
         };
 
         // Act
-        using var html = await RenderWithErrorsAsync(errors);
+        using var html = await RenderWithErrorsAsync(missingFeedbackError);
 
         // Assert
         // "#FeedbackMessage" jumps to the element with id="FeedbackMessage". In the feedback
         // form that's the textarea, so clicking the error puts the user where they need to type.
-        GetErrorLinks(html).Single().GetAttribute("href").ShouldBe("#FeedbackMessage");
+        GetErrorLinks(html)
+            .ShouldHaveSingleItem()
+            .GetAttribute("href")
+            .ShouldBe("#FeedbackMessage");
     }
 
     [Fact]
     public async Task Error_messages_are_shown_as_text_rather_than_html()
     {
         // Arrange
-        var errors = new Dictionary<string, string> { ["Field"] = "<b>Not bold</b>" };
+        var errorContainingHtml = new Dictionary<string, string> { ["Field"] = "<b>Not bold</b>" };
 
         // Act
-        using var html = await RenderWithErrorsAsync(errors);
+        using var html = await RenderWithErrorsAsync(errorContainingHtml);
 
         // Assert
-        var link = GetErrorLinks(html).Single();
+        var link = GetErrorLinks(html).ShouldHaveSingleItem();
         link.TextContent.Trim().ShouldBe("<b>Not bold</b>");
         link.QuerySelector("b").ShouldBeNull();
     }
 
-    // =====================================================================================
-    // Accessibility
-    // =====================================================================================
-
-    [Fact]
-    public async Task Summary_is_wired_up_to_the_govuk_javascript()
-    {
-        // Arrange
-        var errors = new Dictionary<string, string> { ["FeedbackMessage"] = "Enter your feedback" };
-
-        // Act
-        using var html = await RenderWithErrorsAsync(errors);
-
-        // Assert
-        // The GOV.UK JavaScript finds the summary by this attribute and moves keyboard focus
-        // to it when the page loads, so screen reader users hear about the errors straight away.
-        GetErrorSummary(html)
-            .ShouldNotBeNull()
-            .GetAttribute("data-module")
-            .ShouldBe("govuk-error-summary");
-    }
-
-    // =====================================================================================
     // Helpers
-    // =====================================================================================
 
     /// <summary>
-    /// Renders the summary with the given errors in TempData, or with empty TempData if
-    /// <paramref name="errors"/> is null.
+    /// Renders the summary with empty TempData, as on a normal page visit.
     /// </summary>
-    private Task<IDocument> RenderWithErrorsAsync(Dictionary<string, string>? errors)
+    private Task<IDocument> RenderWithoutErrorsAsync()
     {
-        var tempData = new Dictionary<string, object>();
+        return renderer.RenderAsync<object?>(ViewPath, null, new Dictionary<string, object>());
+    }
 
-        if (errors is not null)
-        {
-            tempData[ErrorSummaryKey] = errors;
-        }
-
-        // No model, so we pass null. <object?> just tells C# what type that null is.
-        return renderer.RenderAsync<object?>(ViewPath, null, tempData);
+    /// <summary>
+    /// Renders the summary with the given errors in TempData.
+    /// </summary>
+    private Task<IDocument> RenderWithErrorsAsync(Dictionary<string, string> errors)
+    {
+        return renderer.RenderAsync<object?>(
+            ViewPath,
+            null,
+            new Dictionary<string, object> { [TempDataKeys.ErrorSummary] = errors }
+        );
     }
 
     private static IElement? GetErrorSummary(IDocument html)

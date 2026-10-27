@@ -4,7 +4,7 @@ using SchoolAccount.Web.Mvc.Features.Shared.MultipleSchoolsStatusTable;
 using Shouldly;
 using static SchoolAccount.Web.Mvc.Features.Shared.MultipleSchoolsStatusTable.MultipleSchoolsStatusTableViewModel;
 
-namespace SchoolAccount.Web.Mvc.ComponentTests.Features.Shared;
+namespace SchoolAccount.Web.Mvc.ComponentTests.Features.Shared.MultipleSchoolsStatusTable;
 
 /// <summary>
 /// Tests for the table of schools and their statuses (MultipleSchoolsStatusTable.cshtml).
@@ -14,15 +14,13 @@ namespace SchoolAccount.Web.Mvc.ComponentTests.Features.Shared;
 /// authority, see this table instead of a single status. It is sortable by clicking a column
 /// header, using the Ministry of Justice (MOJ) "sortable table" JavaScript.
 /// </remarks>
-public class MultipleSchoolsStatusTableTests(ComponentRenderer renderer)
+public sealed class MultipleSchoolsStatusTableTests(ComponentRenderer renderer)
     : IClassFixture<ComponentRenderer>
 {
     private const string ViewPath =
         "~/Features/Shared/MultipleSchoolsStatusTable/MultipleSchoolsStatusTable.cshtml";
 
-    // =====================================================================================
     // Table contents
-    // =====================================================================================
 
     [Fact]
     public async Task Table_caption_explains_the_schools_belong_to_the_trust()
@@ -36,7 +34,8 @@ public class MultipleSchoolsStatusTableTests(ComponentRenderer renderer)
         // Assert
         html.QuerySelector("caption")
             .ShouldNotBeNull()
-            .TextContent.ShouldBe("Schools in your trust");
+            .TextContent.Trim()
+            .ShouldBe("Schools in your trust");
     }
 
     [Fact]
@@ -50,7 +49,7 @@ public class MultipleSchoolsStatusTableTests(ComponentRenderer renderer)
 
         // Assert
         GetHeaders(html)
-            .Select(header => header.TextContent)
+            .Select(header => header.TextContent.Trim())
             .ShouldBe(["Name", "Status", "Last Changed", "Errors", "Queries"]);
     }
 
@@ -79,7 +78,7 @@ public class MultipleSchoolsStatusTableTests(ComponentRenderer renderer)
     public async Task Missing_details_are_shown_as_empty_cells()
     {
         // Arrange
-        // Errors and Queries are "int?" (they can be null), and UpdatedAt is an empty string
+        // Errors and Queries are null when there's no data, and UpdatedAt is an empty string
         // when the school has never changed. In both cases the cell should be blank. In
         // particular, "no data" must not show as "0", which would mean "checked, and none".
         var model = ATableOf(
@@ -90,7 +89,9 @@ public class MultipleSchoolsStatusTableTests(ComponentRenderer renderer)
         using var html = await renderer.RenderAsync(ViewPath, model);
 
         // Assert
-        GetRowCells(html)[0].ShouldBe(["Oakwood Primary", "Not started", "", "", ""]);
+        GetRowCells(html)
+            .ShouldHaveSingleItem()
+            .ShouldBe(["Oakwood Primary", "Not started", "", "", ""]);
     }
 
     [Fact]
@@ -103,7 +104,6 @@ public class MultipleSchoolsStatusTableTests(ComponentRenderer renderer)
         using var html = await renderer.RenderAsync(ViewPath, model);
 
         // Assert
-        // "tbody tr" means "a table row inside the table body" (so header rows are excluded).
         html.QuerySelectorAll("tbody tr").ShouldBeEmpty();
     }
 
@@ -111,20 +111,19 @@ public class MultipleSchoolsStatusTableTests(ComponentRenderer renderer)
     public async Task School_names_are_shown_as_text_rather_than_html()
     {
         // Arrange
-        // Real school names contain "&", and Razor must encode "<" so a name can't inject HTML.
+        // If Razor didn't encode "<", the browser would read "<Primary>" as an element and the
+        // name would lose that part.
         var model = ATableOf(ASchool("St Mary & St John <Primary>", "Submitted"));
 
         // Act
         using var html = await renderer.RenderAsync(ViewPath, model);
 
         // Assert
-        // [0][0] = first row, first cell (the name).
-        GetRowCells(html)[0][0].ShouldBe("St Mary & St John <Primary>");
+        var nameCell = GetRowCells(html).ShouldHaveSingleItem()[0];
+        nameCell.ShouldBe("St Mary & St John <Primary>");
     }
 
-    // =====================================================================================
     // Styling
-    // =====================================================================================
 
     [Fact]
     public async Task Rows_use_the_govuk_table_row_style()
@@ -136,15 +135,14 @@ public class MultipleSchoolsStatusTableTests(ComponentRenderer renderer)
         using var html = await renderer.RenderAsync(ViewPath, model);
 
         // Assert
-        // This test found a real bug: the view had <tr lass="..."> instead of <tr class="...">.
-        // ShouldAllBe checks the condition is true for every row.
+        // One header row and one body row. Listing them stops the test passing when no rows
+        // are found at all.
         html.QuerySelectorAll("tr")
-            .ShouldAllBe(row => row.ClassList.Contains("govuk-table__row"));
+            .Select(row => row.ClassName)
+            .ShouldBe(["govuk-table__row", "govuk-table__row"]);
     }
 
-    // =====================================================================================
     // Accessibility and sorting
-    // =====================================================================================
 
     [Fact]
     public async Task Column_headers_are_announced_as_column_headers_by_screen_readers()
@@ -158,7 +156,9 @@ public class MultipleSchoolsStatusTableTests(ComponentRenderer renderer)
         // Assert
         // scope="col" tells screen readers each header labels the column below it, so they
         // can announce "Status: Submitted" rather than just "Submitted".
-        GetHeaders(html).ShouldAllBe(header => header.GetAttribute("scope") == "col");
+        GetHeaders(html)
+            .Select(header => header.GetAttribute("scope"))
+            .ShouldBe(["col", "col", "col", "col", "col"]);
     }
 
     [Fact]
@@ -192,9 +192,7 @@ public class MultipleSchoolsStatusTableTests(ComponentRenderer renderer)
             .ShouldBe(["none", "descending", "none", "none", "none"]);
     }
 
-    // =====================================================================================
     // Helpers
-    // =====================================================================================
 
     /// <summary>
     /// Builds the table's view model containing the given schools. Pass none for an empty table.
@@ -238,7 +236,9 @@ public class MultipleSchoolsStatusTableTests(ComponentRenderer renderer)
     private static string[][] GetRowCells(IDocument html)
     {
         return html.QuerySelectorAll("tbody tr")
-            .Select(row => row.QuerySelectorAll("td").Select(cell => cell.TextContent).ToArray())
+            .Select(row =>
+                row.QuerySelectorAll("td").Select(cell => cell.TextContent.Trim()).ToArray()
+            )
             .ToArray();
     }
 }

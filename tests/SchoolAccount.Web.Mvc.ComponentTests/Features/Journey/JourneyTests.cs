@@ -38,12 +38,13 @@ namespace SchoolAccount.Web.Mvc.ComponentTests.Features.Journey;
 /// trust or local authority when <c>MatSchoolsStatuses</c> contains at least one school.
 /// </para>
 /// </remarks>
-public class JourneyTests(ComponentRenderer renderer) : IClassFixture<ComponentRenderer>
+public sealed class JourneyTests(ComponentRenderer renderer) : IClassFixture<ComponentRenderer>
 {
     private const string ViewPath = "~/Features/Journey/Journey.cshtml";
 
-    // Example data shared by several tests. "static readonly" means it is created once and
-    // never changed.
+    // Fixed rather than Guid.NewGuid() so every run renders the same IDs.
+    private static readonly Guid StepByStepId = Guid.Parse("11111111-2222-3333-4444-555555555555");
+
     private static readonly MultipleSchoolsStatusTableViewModel TrustWithTwoSchools = new()
     {
         SchoolStatuses =
@@ -59,9 +60,7 @@ public class JourneyTests(ComponentRenderer renderer) : IClassFixture<ComponentR
         Description = "We have received your return",
     };
 
-    // =====================================================================================
     // Heading - always shown
-    // =====================================================================================
 
     [Fact]
     public async Task Journey_title_is_the_main_heading()
@@ -75,7 +74,8 @@ public class JourneyTests(ComponentRenderer renderer) : IClassFixture<ComponentR
         // Assert
         html.QuerySelector("h1")
             .ShouldNotBeNull()
-            .TextContent.ShouldBe("School census autumn 2026");
+            .TextContent.Trim()
+            .ShouldBe("School census autumn 2026");
     }
 
     [Fact]
@@ -89,12 +89,12 @@ public class JourneyTests(ComponentRenderer renderer) : IClassFixture<ComponentR
 
         // Assert
         var caption = html.QuerySelector(".govuk-caption-xl").ShouldNotBeNull();
-        caption.TextContent.ShouldBe("Statutory return");
+        var heading = html.QuerySelector("h1").ShouldNotBeNull();
+        caption.TextContent.Trim().ShouldBe("Statutory return");
+        caption.CompareDocumentPosition(heading).ShouldBe(DocumentPositions.Following);
     }
 
-    // =====================================================================================
     // Status tag - single school only
-    // =====================================================================================
 
     [Fact]
     public async Task Single_school_sees_its_status_as_a_tag()
@@ -106,7 +106,7 @@ public class JourneyTests(ComponentRenderer renderer) : IClassFixture<ComponentR
         using var html = await renderer.RenderAsync(ViewPath, model);
 
         // Assert
-        GetJourneyStatusTag(html).ShouldNotBeNull().TextContent.ShouldBe("In progress");
+        GetJourneyStatusTag(html).ShouldNotBeNull().TextContent.Trim().ShouldBe("In progress");
     }
 
     [Fact]
@@ -138,9 +138,7 @@ public class JourneyTests(ComponentRenderer renderer) : IClassFixture<ComponentR
         html.QuerySelector("table").ShouldBeNull();
     }
 
-    // =====================================================================================
     // Overview - only when not blank
-    // =====================================================================================
 
     [Fact]
     public async Task Overview_is_shown_when_provided()
@@ -152,14 +150,10 @@ public class JourneyTests(ComponentRenderer renderer) : IClassFixture<ComponentR
         using var html = await renderer.RenderAsync(ViewPath, model);
 
         // Assert
-        // "h2 + p.govuk-body" means "a <p class='govuk-body'> directly after an <h2>".
-        GetSectionHeadings(html).ShouldContain("Overview");
-        var overview = html.QuerySelector("h2 + p.govuk-body").ShouldNotBeNull();
-        overview.TextContent.ShouldBe("Tell us about your pupils");
+        var overview = GetSectionHeading(html, "Overview").NextElementSibling.ShouldNotBeNull();
+        overview.TextContent.Trim().ShouldBe("Tell us about your pupils");
     }
 
-    // [Theory] runs the same test once for each [InlineData] row, passing that row's value in
-    // as the method's parameter. Use it when only the input changes between tests.
     [Theory]
     [InlineData(null)]
     [InlineData("")]
@@ -176,9 +170,7 @@ public class JourneyTests(ComponentRenderer renderer) : IClassFixture<ComponentR
         GetSectionHeadings(html).ShouldNotContain("Overview");
     }
 
-    // =====================================================================================
     // Schools table - trust or local authority only
-    // =====================================================================================
 
     [Fact]
     public async Task Trust_sees_a_table_of_its_schools()
@@ -192,7 +184,8 @@ public class JourneyTests(ComponentRenderer renderer) : IClassFixture<ComponentR
         // Assert
         // The table itself is tested in MultipleSchoolsStatusTableTests. Here we only check
         // that the page includes it.
-        html.QuerySelectorAll("table tbody tr").Length.ShouldBe(2);
+        html.QuerySelectorAll("table tbody tr")
+            .Length.ShouldBe(TrustWithTwoSchools.SchoolStatuses.Count);
     }
 
     [Fact]
@@ -208,9 +201,7 @@ public class JourneyTests(ComponentRenderer renderer) : IClassFixture<ComponentR
         html.QuerySelector("table").ShouldBeNull();
     }
 
-    // =====================================================================================
     // Step by step - only when there are steps
-    // =====================================================================================
 
     [Fact]
     public async Task Step_by_step_is_shown_when_there_are_steps()
@@ -226,7 +217,7 @@ public class JourneyTests(ComponentRenderer renderer) : IClassFixture<ComponentR
         // includes it.
         GetSectionHeadings(html).ShouldContain("Step by step");
         var stepTitle = html.QuerySelector(".js-step-title").ShouldNotBeNull();
-        stepTitle.TextContent.ShouldBe("Prepare your data");
+        stepTitle.TextContent.Trim().ShouldBe("Prepare your data");
     }
 
     [Fact]
@@ -254,11 +245,10 @@ public class JourneyTests(ComponentRenderer renderer) : IClassFixture<ComponentR
 
         // Assert
         GetSectionHeadings(html).ShouldNotContain("Step by step");
+        html.QuerySelector(".app-step-nav").ShouldBeNull();
     }
 
-    // =====================================================================================
     // Call to action button - always shown
-    // =====================================================================================
 
     [Fact]
     public async Task Call_to_action_button_links_to_the_service()
@@ -276,6 +266,7 @@ public class JourneyTests(ComponentRenderer renderer) : IClassFixture<ComponentR
         using var html = await renderer.RenderAsync(ViewPath, model);
 
         // Assert
+        // ShouldContain because the button also holds visually hidden "opens in new tab" text.
         var button = GetCallToAction(html);
         button.GetAttribute("href").ShouldBe("https://collect.example.gov.uk/");
         button.TextContent.ShouldContain("Go to Collect");
@@ -291,8 +282,8 @@ public class JourneyTests(ComponentRenderer renderer) : IClassFixture<ComponentR
         using var html = await renderer.RenderAsync(ViewPath, model);
 
         // Assert
-        // target="_blank" opens a new tab. rel="noreferrer noopener" stops the other site
-        // seeing which page linked to it, or controlling this tab.
+        // rel="noreferrer noopener" stops the other site seeing which page linked to it, or
+        // controlling this tab.
         var button = GetCallToAction(html);
         button.GetAttribute("target").ShouldBe("_blank");
         button.GetAttribute("rel").ShouldBe("noreferrer noopener");
@@ -312,9 +303,7 @@ public class JourneyTests(ComponentRenderer renderer) : IClassFixture<ComponentR
         hiddenText.ShouldNotBeNull().TextContent.Trim().ShouldBe("opens in new tab");
     }
 
-    // =====================================================================================
     // Important dates - only when there are dates
-    // =====================================================================================
 
     [Fact]
     public async Task Important_dates_are_listed_in_order_with_their_dates()
@@ -351,10 +340,8 @@ public class JourneyTests(ComponentRenderer renderer) : IClassFixture<ComponentR
         html.QuerySelector(".govuk-summary-list").ShouldBeNull();
     }
 
-    // =====================================================================================
     // About your status - only when there are explanations, and not "Unavailable" for a
     // single school
-    // =====================================================================================
 
     [Fact]
     public async Task Status_explanations_are_listed_when_provided()
@@ -375,7 +362,7 @@ public class JourneyTests(ComponentRenderer renderer) : IClassFixture<ComponentR
         // The explanations sit inside an expandable <details> element.
         GetSectionHeadings(html).ShouldContain("About your status");
         html.QuerySelectorAll("details li")
-            .Select(item => item.TextContent)
+            .Select(item => item.TextContent.Trim())
             .ShouldBe(["Submitted: We have received your return", "Not started: Nothing sent yet"]);
     }
 
@@ -409,7 +396,7 @@ public class JourneyTests(ComponentRenderer renderer) : IClassFixture<ComponentR
     public async Task Status_explanations_are_shown_to_a_trust_even_when_status_is_unavailable()
     {
         // Arrange
-        // Same as the previous test, but for a trust: the "Unavailable" rule doesn't apply.
+        // The "Unavailable" rule only hides explanations for a single school.
         var model = AJourney(
             status: "Unavailable",
             trustSchools: TrustWithTwoSchools,
@@ -423,31 +410,38 @@ public class JourneyTests(ComponentRenderer renderer) : IClassFixture<ComponentR
         GetSectionHeadings(html).ShouldContain("About your status");
     }
 
-    // =====================================================================================
     // Support - always shown
-    // =====================================================================================
 
     [Fact]
-    public async Task Support_service_is_shown_with_a_link_for_help()
+    public async Task Support_section_is_headed_with_the_service_title()
+    {
+        // Arrange
+        var model = AJourney(supportService: ASupportService(title: "Get help"));
+
+        // Act
+        using var html = await renderer.RenderAsync(ViewPath, model);
+
+        // Assert
+        var heading = GetSupportSection(html).QuerySelector("h2").ShouldNotBeNull();
+        heading.TextContent.Trim().ShouldBe("Get help");
+    }
+
+    [Fact]
+    public async Task Support_section_links_to_the_service_for_help()
     {
         // Arrange
         var model = AJourney(
-            supportService: new SupportService
-            {
-                Title = "Get help",
-                Description = "Contact the support desk",
-                Url = new Uri("https://support.example.gov.uk/"),
-            }
+            supportService: ASupportService(
+                description: "Contact the support desk",
+                url: "https://support.example.gov.uk/"
+            )
         );
 
         // Act
         using var html = await renderer.RenderAsync(ViewPath, model);
 
         // Assert
-        var banner = html.QuerySelector(".feedback-banner").ShouldNotBeNull();
-        var heading = banner.QuerySelector("h2").ShouldNotBeNull();
-        var link = banner.QuerySelector("a").ShouldNotBeNull();
-        heading.TextContent.ShouldBe("Get help");
+        var link = GetSupportLink(html);
         link.GetAttribute("href").ShouldBe("https://support.example.gov.uk/");
         link.TextContent.Trim().ShouldBe("Contact the support desk");
     }
@@ -462,22 +456,19 @@ public class JourneyTests(ComponentRenderer renderer) : IClassFixture<ComponentR
         using var html = await renderer.RenderAsync(ViewPath, model);
 
         // Assert
-        var link = html.QuerySelector(".feedback-banner a").ShouldNotBeNull();
+        var link = GetSupportLink(html);
         link.GetAttribute("target").ShouldBe("_blank");
         link.GetAttribute("rel").ShouldBe("noreferrer noopener");
     }
 
-    // =====================================================================================
     // Helpers - these keep the tests short so each one shows only what makes it different
-    // =====================================================================================
 
     /// <summary>
     /// Builds a journey page model for a single school, with every optional section empty.
     /// </summary>
     /// <remarks>
     /// Every parameter has a sensible default, so a test only names the values it cares
-    /// about, e.g. <c>AJourney(status: "Unavailable")</c>. Anything not mentioned gets a
-    /// harmless default value.
+    /// about, e.g. <c>AJourney(status: "Unavailable")</c>.
     /// </remarks>
     private static JourneyViewModel AJourney(
         string title = "School census",
@@ -492,7 +483,6 @@ public class JourneyTests(ComponentRenderer renderer) : IClassFixture<ComponentR
         SupportService? supportService = null
     )
     {
-        // "??" means "use the value on the left, or if it's null, the value on the right".
         return new JourneyViewModel
         {
             Title = title,
@@ -510,14 +500,21 @@ public class JourneyTests(ComponentRenderer renderer) : IClassFixture<ComponentR
                     Label = "Start now",
                     Url = new Uri("https://service.example.gov.uk/"),
                 },
-            SupportService =
-                supportService
-                ?? new SupportService
-                {
-                    Title = "Support",
-                    Description = "Contact us",
-                    Url = new Uri("https://support.example.gov.uk/"),
-                },
+            SupportService = supportService ?? ASupportService(),
+        };
+    }
+
+    private static SupportService ASupportService(
+        string title = "Support",
+        string description = "Contact us",
+        string url = "https://support.example.gov.uk/"
+    )
+    {
+        return new SupportService
+        {
+            Title = title,
+            Description = description,
+            Url = new Uri(url),
         };
     }
 
@@ -531,7 +528,7 @@ public class JourneyTests(ComponentRenderer renderer) : IClassFixture<ComponentR
             Title = title,
             Body = "<p>Body</p>",
         });
-        return StepByStepViewModelCollection.Create(Guid.NewGuid()).AddSteps(steps);
+        return StepByStepViewModelCollection.Create(StepByStepId).AddSteps(steps);
     }
 
     /// <summary>
@@ -546,18 +543,38 @@ public class JourneyTests(ComponentRenderer renderer) : IClassFixture<ComponentR
     }
 
     /// <summary>
+    /// The section heading with the given text. Fails the test unless exactly one exists.
+    /// </summary>
+    private static IElement GetSectionHeading(IDocument html, string text)
+    {
+        return html.QuerySelectorAll("h2.govuk-heading-m")
+            .Where(heading => heading.TextContent.Trim() == text)
+            .ShouldHaveSingleItem();
+    }
+
+    /// <summary>
     /// The single school's status tag, or null if it isn't shown.
     /// </summary>
     private static IElement? GetJourneyStatusTag(IDocument html)
     {
-        // ">" means "directly inside". Step-by-step status tags also use the "status-tag"
-        // class, but they are nested deeper, so this only matches the page's own tag.
+        // Step-by-step status tags also use the "status-tag" class, but they are nested
+        // deeper, so ">" (directly inside) only matches the page's own tag.
         return html.QuerySelector(".govuk-grid-column-two-thirds > strong.status-tag");
     }
 
     private static IElement GetCallToAction(IDocument html)
     {
         return html.QuerySelector("a.govuk-button").ShouldNotBeNull();
+    }
+
+    private static IElement GetSupportSection(IDocument html)
+    {
+        return html.QuerySelector(".feedback-banner").ShouldNotBeNull();
+    }
+
+    private static IElement GetSupportLink(IDocument html)
+    {
+        return GetSupportSection(html).QuerySelector("a").ShouldNotBeNull();
     }
 
     /// <summary>

@@ -19,9 +19,6 @@ namespace SchoolAccount.Web.Mvc.ComponentTests.Common;
 /// </summary>
 /// <remarks>
 /// <para>
-/// HOW IT FITS TOGETHER
-/// </para>
-/// <para>
 /// Normally a browser sends a request, a controller builds a model, and MVC renders a view
 /// with that model. Here we skip the browser, request and controller entirely and go
 /// straight to the last step: "render this view with this model".
@@ -32,9 +29,7 @@ namespace SchoolAccount.Web.Mvc.ComponentTests.Common;
 /// fully configured services: the Razor view engine, tag helpers, routing and so on.
 /// We never send it an HTTP request.
 /// </para>
-/// <para>
-/// USAGE
-/// </para>
+/// <para>Usage:</para>
 /// <code>
 /// public class MyComponentTests(ComponentRenderer renderer) : IClassFixture&lt;ComponentRenderer&gt;
 /// {
@@ -46,13 +41,15 @@ namespace SchoolAccount.Web.Mvc.ComponentTests.Common;
 ///     }
 /// }
 /// </code>
-/// <para>
-/// <c>IClassFixture</c> tells xUnit to create one renderer and share it between every
-/// test in the class, so the app is only started once per test class.
-/// </para>
 /// </remarks>
 public sealed class ComponentRenderer : WebApplicationFactory<Program>
 {
+    private const string FeaturesRoot = "~/Features/";
+
+    // Shared by every render and disposed with the renderer. xUnit runs the tests in a class
+    // one at a time, so documents are never parsed concurrently.
+    private readonly IBrowsingContext _browsingContext = BrowsingContext.New(Configuration.Default);
+
     /// <summary>
     /// Renders the view at <paramref name="viewPath"/> with <paramref name="model"/> as its
     /// <c>@Model</c>, and returns the HTML it produced as a searchable document.
@@ -77,8 +74,7 @@ public sealed class ComponentRenderer : WebApplicationFactory<Program>
         string requestUrl = "/"
     )
     {
-        // A "scope" is a short-lived container for services, the same as the app creates
-        // for each real request. It's disposed (thrown away) at the end of this method.
+        // The app creates a scope like this for each real request.
         using var scope = Services.CreateScope();
         var services = scope.ServiceProvider;
 
@@ -91,8 +87,10 @@ public sealed class ComponentRenderer : WebApplicationFactory<Program>
         // Step 3: run the view with our model, collecting its output as a string of HTML.
         var html = await RenderToStringAsync(services, actionContext, view, model, tempData);
 
-        // Step 4: turn that string into a document we can search, like a browser would.
-        return await ParseHtmlAsync(html);
+        // Step 4: parse the HTML the way a browser would. This is more reliable than searching
+        // the raw string: <tr lass="govuk-table__row"> contains the text "govuk-table__row",
+        // but once parsed the row has no classes at all.
+        return await _browsingContext.OpenAsync(request => request.Content(html));
     }
 
     /// <summary>
@@ -102,6 +100,12 @@ public sealed class ComponentRenderer : WebApplicationFactory<Program>
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseEnvironment("IntegrationTests");
+    }
+
+    public override async ValueTask DisposeAsync()
+    {
+        _browsingContext.Dispose();
+        await base.DisposeAsync();
     }
 
     /// <summary>
@@ -186,8 +190,6 @@ public sealed class ComponentRenderer : WebApplicationFactory<Program>
         IDictionary<string, object>? tempDataValues
     )
     {
-        // ViewData is where a view gets its data from. Setting ViewData.Model is what makes
-        // our test data available as @Model inside the .cshtml file.
         var viewData = new ViewDataDictionary<TModel>(
             services.GetRequiredService<IModelMetadataProvider>(),
             new ModelStateDictionary()
@@ -203,8 +205,7 @@ public sealed class ComponentRenderer : WebApplicationFactory<Program>
             new InMemoryTempDataProvider(tempDataValues ?? new Dictionary<string, object>())
         );
 
-        // Normally a view writes its HTML to the HTTP response. We give it a StringWriter
-        // instead, so the HTML is collected in memory and we can read it back as a string.
+        // Collect the HTML in memory instead of writing it to an HTTP response.
         await using var writer = new StringWriter();
 
         var viewContext = new ViewContext(
@@ -224,31 +225,26 @@ public sealed class ComponentRenderer : WebApplicationFactory<Program>
     }
 
     /// <summary>
-    /// Parses an HTML string into a document, the same way a browser would.
-    /// </summary>
-    /// <remarks>
-    /// We could check the raw string with "Contains", but parsing is more reliable. It tells
-    /// us what a browser would actually make of the HTML. For example, a typo like
-    /// <c>&lt;tr lass="govuk-table__row"&gt;</c> still contains the text "govuk-table__row",
-    /// but after parsing the row correctly has no classes at all.
-    /// </remarks>
-    private static async Task<IDocument> ParseHtmlAsync(string html)
-    {
-        var browsingContext = BrowsingContext.New(Configuration.Default);
-        return await browsingContext.OpenAsync(request => request.Content(html));
-    }
-
-    /// <summary>
-    /// Works out a view's feature folder from its path,
-    /// e.g. "~/Features/Start/Start.cshtml" → "Start".
+    /// Works out a view's feature folder from its path, e.g. "~/Features/Start/Start.cshtml"
+    /// → "Start", or "~/Features/Shared/StepByStep/StepByStep.cshtml" → "Shared/StepByStep".
     /// </summary>
     private static string GetFeatureFolder(string viewPath)
     {
-        // Everything before the last "/" is the folder: "~/Features/Start"
-        var folder = viewPath[..viewPath.LastIndexOf('/')];
+        var lastSlash = viewPath.LastIndexOf('/');
 
-        // Remove the "~/Features/" prefix to leave just "Start"
-        return folder.Replace("~/Features/", string.Empty, StringComparison.Ordinal);
+        if (
+            !viewPath.StartsWith(FeaturesRoot, StringComparison.Ordinal)
+            || lastSlash < FeaturesRoot.Length
+        )
+        {
+            throw new ArgumentException(
+                $"View path '{viewPath}' must be a file inside a folder under '{FeaturesRoot}', "
+                    + "e.g. '~/Features/Start/Start.cshtml'.",
+                nameof(viewPath)
+            );
+        }
+
+        return viewPath[FeaturesRoot.Length..lastSlash];
     }
 
     /// <summary>

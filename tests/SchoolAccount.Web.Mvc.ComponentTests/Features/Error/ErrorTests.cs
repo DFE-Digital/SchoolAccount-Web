@@ -12,13 +12,10 @@ namespace SchoolAccount.Web.Mvc.ComponentTests.Features.Error;
 /// The page shows one of three messages depending on the HTTP status code: "not found"
 /// (404), "access denied" (403), or a general "problem with the service" for anything else.
 /// </remarks>
-public class ErrorTests(ComponentRenderer renderer) : IClassFixture<ComponentRenderer>
+public sealed class ErrorTests(ComponentRenderer renderer) : IClassFixture<ComponentRenderer>
 {
     private const string ViewPath = "~/Features/Error/Error.cshtml";
 
-    // [Theory] runs the same test once for each [InlineData] row. The values in each row
-    // are passed in as the method's parameters, in order. Here each row is
-    // (status code, heading we expect to see).
     [Theory]
     [InlineData(HttpStatusCode.NotFound, "Page not found")]
     [InlineData(HttpStatusCode.Forbidden, "Access denied")]
@@ -33,7 +30,7 @@ public class ErrorTests(ComponentRenderer renderer) : IClassFixture<ComponentRen
         using var html = await renderer.RenderAsync(ViewPath, model);
 
         // Assert
-        html.QuerySelector("h1").ShouldNotBeNull().TextContent.ShouldBe(expectedHeading);
+        html.QuerySelector("h1").ShouldNotBeNull().TextContent.Trim().ShouldBe(expectedHeading);
     }
 
     [Fact]
@@ -46,7 +43,6 @@ public class ErrorTests(ComponentRenderer renderer) : IClassFixture<ComponentRen
         using var html = await renderer.RenderAsync(ViewPath, model);
 
         // Assert
-        // html.Body is the <body> element, so this checks all the visible text on the page.
         html.Body.ShouldNotBeNull()
             .TextContent.ShouldContain("If you typed the web address, check it is correct.");
     }
@@ -82,6 +78,7 @@ public class ErrorTests(ComponentRenderer renderer) : IClassFixture<ComponentRen
     [InlineData(HttpStatusCode.NotFound)]
     [InlineData(HttpStatusCode.Forbidden)]
     [InlineData(HttpStatusCode.InternalServerError)]
+    [InlineData(HttpStatusCode.BadRequest)]
     public async Task Every_error_links_back_to_the_homepage(HttpStatusCode statusCode)
     {
         // Arrange
@@ -95,7 +92,7 @@ public class ErrorTests(ComponentRenderer renderer) : IClassFixture<ComponentRen
         // uses the app's real routes, and DashboardController has [Route("/{action}")], so
         // the URL is "/Dashboard". If that route changes, this test will tell us.
         var link = html.QuerySelector("a.govuk-link").ShouldNotBeNull();
-        link.TextContent.ShouldBe("Go to the homepage");
+        link.TextContent.Trim().ShouldBe("Go to the homepage");
         link.GetAttribute("href").ShouldBe("/Dashboard");
     }
 }

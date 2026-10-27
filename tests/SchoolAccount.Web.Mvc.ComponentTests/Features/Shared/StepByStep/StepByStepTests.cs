@@ -3,8 +3,9 @@ using SchoolAccount.Application.Features.Collect.GetCensusJourney.Responses;
 using SchoolAccount.Web.Mvc.ComponentTests.Common;
 using SchoolAccount.Web.Mvc.Features.Shared.StepByStep;
 using Shouldly;
+using StepByStepResponse = SchoolAccount.Application.Features.Collect.GetCensusJourney.Responses.StepByStep;
 
-namespace SchoolAccount.Web.Mvc.ComponentTests.Features.Shared;
+namespace SchoolAccount.Web.Mvc.ComponentTests.Features.Shared.StepByStep;
 
 /// <summary>
 /// Tests for the step-by-step navigation component (StepByStep.cshtml).
@@ -21,16 +22,14 @@ namespace SchoolAccount.Web.Mvc.ComponentTests.Features.Shared;
 /// behaviour silently stops working. These tests catch that.
 /// </para>
 /// </remarks>
-public class StepByStepTests(ComponentRenderer renderer) : IClassFixture<ComponentRenderer>
+public sealed class StepByStepTests(ComponentRenderer renderer) : IClassFixture<ComponentRenderer>
 {
     private const string ViewPath = "~/Features/Shared/StepByStep/StepByStep.cshtml";
 
-    // A fixed ID (instead of Guid.NewGuid()) so tests can predict the element IDs it produces.
+    // Fixed rather than Guid.NewGuid() so tests can predict the element IDs it produces.
     private static readonly Guid StepByStepId = Guid.Parse("11111111-2222-3333-4444-555555555555");
 
-    // =====================================================================================
     // Steps and their order
-    // =====================================================================================
 
     [Fact]
     public async Task Steps_are_shown_in_order_with_their_titles()
@@ -42,11 +41,8 @@ public class StepByStepTests(ComponentRenderer renderer) : IClassFixture<Compone
         using var html = await renderer.RenderAsync(ViewPath, model);
 
         // Assert
-        // QuerySelectorAll finds every element matching a CSS selector, as in browser dev tools.
-        // ".js-step-title" means "any element with the class js-step-title".
-        // Shouldly's ShouldBe on a list checks the items AND their order.
         html.QuerySelectorAll(".js-step-title")
-            .Select(title => title.TextContent)
+            .Select(title => title.TextContent.Trim())
             .ShouldBe(["Prepare your data", "Submit your return"]);
     }
 
@@ -79,26 +75,19 @@ public class StepByStepTests(ComponentRenderer renderer) : IClassFixture<Compone
         html.QuerySelectorAll(".js-step").ShouldBeEmpty();
     }
 
-    // =====================================================================================
     // Status tags
-    // =====================================================================================
 
     [Fact]
     public async Task Step_with_a_status_shows_a_tag_with_its_label_and_colour()
     {
         // Arrange
         var submitted = new StepByStepStatus { Label = "Submitted", Colour = "govuk-tag--green" };
-
-        // "with" copies a record and changes only the properties listed, so this is
-        // "a normal step, but with this status".
         var model = AStepByStepWith(AStep("Submit your return") with { Status = submitted });
 
         // Act
         using var html = await renderer.RenderAsync(ViewPath, model);
 
         // Assert
-        // ShouldNotBeNull() fails the test with a clear message if nothing matched, and
-        // otherwise hands back the element so we can keep checking it.
         var tag = html.QuerySelector(".govuk-tag").ShouldNotBeNull();
         tag.TextContent.Trim().ShouldBe("Submitted");
         tag.ClassList.ShouldContain("govuk-tag--green");
@@ -123,7 +112,7 @@ public class StepByStepTests(ComponentRenderer renderer) : IClassFixture<Compone
     public async Task Step_without_a_status_shows_no_tag()
     {
         // Arrange
-        var model = AStepByStepWith(AStep("Prepare your data") with { Status = null });
+        var model = AStepByStepWith(AStep("Prepare your data"));
 
         // Act
         using var html = await renderer.RenderAsync(ViewPath, model);
@@ -132,9 +121,7 @@ public class StepByStepTests(ComponentRenderer renderer) : IClassFixture<Compone
         html.QuerySelector(".govuk-tag").ShouldBeNull();
     }
 
-    // =====================================================================================
     // Step content
-    // =====================================================================================
 
     [Fact]
     public async Task Step_body_is_rendered_as_html_with_govuk_styles_applied()
@@ -153,7 +140,6 @@ public class StepByStepTests(ComponentRenderer renderer) : IClassFixture<Compone
         using var html = await renderer.RenderAsync(ViewPath, model);
 
         // Assert
-        // "a[href='/guide']" means "an <a> element whose href attribute is /guide".
         var panel = html.QuerySelector(".js-panel").ShouldNotBeNull();
         var paragraph = panel.QuerySelector("p").ShouldNotBeNull();
         var link = panel.QuerySelector("a[href='/guide']").ShouldNotBeNull();
@@ -176,7 +162,6 @@ public class StepByStepTests(ComponentRenderer renderer) : IClassFixture<Compone
         using var html = await renderer.RenderAsync(ViewPath, model);
 
         // Assert
-        // ".js-panel ul" means "a <ul> somewhere inside an element with class js-panel".
         var list = html.QuerySelector(".js-panel ul").ShouldNotBeNull();
         list.ClassList.ShouldContain("govuk-list");
         list.ClassList.ShouldContain("govuk-list--bullet");
@@ -210,24 +195,20 @@ public class StepByStepTests(ComponentRenderer renderer) : IClassFixture<Compone
     public async Task Step_title_is_shown_as_text_rather_than_html()
     {
         // Arrange
-        // Razor HTML-encodes values by default. It turns "<" into "&lt;" so text can't inject
-        // tags or scripts into the page. This test makes sure that protection stays in place
-        // for titles.
+        // Razor HTML-encodes values so text can't inject tags or scripts into the page. This
+        // makes sure that protection stays in place for titles.
         var model = AStepByStepWith(AStep("<b>Prepare</b> your data"));
 
         // Act
         using var html = await renderer.RenderAsync(ViewPath, model);
 
         // Assert
-        // The title should show the literal text, and no real <b> element should exist.
         var title = html.QuerySelector(".js-step-title").ShouldNotBeNull();
-        title.TextContent.ShouldBe("<b>Prepare</b> your data");
+        title.TextContent.Trim().ShouldBe("<b>Prepare</b> your data");
         title.QuerySelector("b").ShouldBeNull();
     }
 
-    // =====================================================================================
     // Opening steps and remembering which were open
-    // =====================================================================================
 
     [Fact]
     public async Task Step_marked_as_open_is_flagged_to_be_shown_on_load()
@@ -282,12 +263,10 @@ public class StepByStepTests(ComponentRenderer renderer) : IClassFixture<Compone
         GetWrapper(html).HasAttribute("data-remember-state").ShouldBeFalse();
     }
 
-    // =====================================================================================
     // Accessibility
-    // =====================================================================================
 
     [Fact]
-    public async Task Screen_readers_announce_the_step_number_before_the_title()
+    public async Task Screen_readers_hear_the_word_step_before_the_step_number()
     {
         // Arrange
         var model = AStepByStepWith(AStep("Prepare your data"));
@@ -301,12 +280,28 @@ public class StepByStepTests(ComponentRenderer renderer) : IClassFixture<Compone
         var stepNumber = html.QuerySelector(".app-step-nav__circle-background").ShouldNotBeNull();
         var hiddenText = stepNumber.QuerySelector(".govuk-visually-hidden").ShouldNotBeNull();
         hiddenText.TextContent.ShouldBe("Step");
-        stepNumber.TextContent.ShouldContain("1");
+        hiddenText.NextSibling.ShouldNotBeNull().TextContent.Trim().ShouldBe("1");
     }
 
-    // =====================================================================================
     // Hooks the JavaScript relies on
-    // =====================================================================================
+
+    [Fact(
+        Skip = "Bug in StepByStep.cshtml: the script src is relative (\"lib/step-by-step/...\"), "
+            + "so it fails to load on nested URLs such as /Journey/2026. Unskip once it's \"~/lib/...\"."
+    )]
+    public async Task Step_by_step_javascript_is_included()
+    {
+        // Arrange
+        var model = AStepByStepWith(AStep("Prepare your data"));
+
+        // Act
+        using var html = await renderer.RenderAsync(ViewPath, model);
+
+        // Assert
+        // Matches with "^=" (starts with) because asp-append-version adds "?v=..." to the URL.
+        html.QuerySelector("script[src^='/lib/step-by-step/step-by-step.navigation.js']")
+            .ShouldNotBeNull();
+    }
 
     [Fact]
     public async Task Element_ids_are_derived_from_the_step_by_step_identifier()
@@ -322,6 +317,20 @@ public class StepByStepTests(ComponentRenderer renderer) : IClassFixture<Compone
         html.GetElementById($"sbs-{StepByStepId}-wrapper").ShouldNotBeNull();
         html.GetElementById($"sbs-{StepByStepId}-step-1").ShouldNotBeNull();
         html.GetElementById($"sbs-{StepByStepId}-panel-1").ShouldNotBeNull();
+    }
+
+    [Fact]
+    public async Task Javascript_identifies_the_step_by_step_by_its_identifier()
+    {
+        // Arrange
+        var model = AStepByStepWith(AStep("Prepare your data"));
+
+        // Act
+        using var html = await renderer.RenderAsync(ViewPath, model);
+
+        // Assert
+        // The JavaScript uses data-id to store which steps were opened.
+        GetWrapper(html).GetAttribute("data-id").ShouldBe(StepByStepId.ToString());
     }
 
     [Fact]
@@ -349,9 +358,11 @@ public class StepByStepTests(ComponentRenderer renderer) : IClassFixture<Compone
 
         // Assert
         // The component ends with an inline <script> that starts the JavaScript on this
-        // component's wrapper element. [^1] means "the last item".
-        var inlineScript = html.QuerySelectorAll("script")[^1].TextContent;
-        inlineScript.ShouldContain($"document.querySelector('#sbs-{StepByStepId}-wrapper')");
+        // component's wrapper element.
+        var initScript = html.QuerySelectorAll("script:not([src])")
+            .ShouldHaveSingleItem()
+            .TextContent;
+        initScript.ShouldContain($"document.querySelector('#sbs-{StepByStepId}-wrapper')");
     }
 
     [Fact]
@@ -364,20 +375,21 @@ public class StepByStepTests(ComponentRenderer renderer) : IClassFixture<Compone
         using var html = await renderer.RenderAsync(ViewPath, model);
 
         // Assert
-        // The JavaScript creates the "Show all steps" button using this text.
+        // The JavaScript builds each step's "Show"/"Hide" button and the "Show all steps"
+        // button using this text.
         var wrapper = GetWrapper(html);
+        wrapper.GetAttribute("data-show-text").ShouldBe("Show");
+        wrapper.GetAttribute("data-hide-text").ShouldBe("Hide");
         wrapper.GetAttribute("data-show-all-text").ShouldBe("Show all steps");
         wrapper.GetAttribute("data-hide-all-text").ShouldBe("Hide all steps");
     }
 
-    // =====================================================================================
     // Helpers - these keep the tests short so each one shows only what makes it different
-    // =====================================================================================
 
     /// <summary>
     /// Builds the component's view model containing the given steps, in order.
     /// </summary>
-    private static StepByStepViewModelCollection AStepByStepWith(params StepByStep[] steps)
+    private static StepByStepViewModelCollection AStepByStepWith(params StepByStepResponse[] steps)
     {
         return StepByStepViewModelCollection.Create(StepByStepId).AddSteps(steps);
     }
@@ -386,9 +398,9 @@ public class StepByStepTests(ComponentRenderer renderer) : IClassFixture<Compone
     /// A step as the API would send it: a title, simple body, no status and not open.
     /// Use "with { ... }" to change anything a test cares about.
     /// </summary>
-    private static StepByStep AStep(string title)
+    private static StepByStepResponse AStep(string title)
     {
-        return new StepByStep { Title = title, Body = "<p>Step content</p>" };
+        return new StepByStepResponse { Title = title, Body = "<p>Step content</p>" };
     }
 
     /// <summary>
@@ -396,7 +408,6 @@ public class StepByStepTests(ComponentRenderer renderer) : IClassFixture<Compone
     /// </summary>
     private static IElement GetWrapper(IDocument html)
     {
-        // "[data-module='appstepnav']" means "an element whose data-module attribute is appstepnav".
         return html.QuerySelector("[data-module='appstepnav']").ShouldNotBeNull();
     }
 

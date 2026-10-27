@@ -21,7 +21,7 @@ component.
 
 ## How it works
 
-[ComponentRenderer](../tests/SchoolAccount.Web.Mvc.ComponentTests/Common/ComponentRenderer.cs) does three things:
+[ComponentRenderer](../tests/SchoolAccount.Web.Mvc.ComponentTests/Common/ComponentRenderer.cs) does four things:
 
 1. Boots the site once with `WebApplicationFactory` so the real Razor view engine and tag helpers are available.
 2. Renders the requested view with your model into a string - no HTTP request, controller or authentication. Links
@@ -79,9 +79,9 @@ comment on *why* the behaviour matters wherever that isn't obvious. Suggested or
    model, plus checking that text is HTML-encoded.
 3. [ErrorTests](../tests/SchoolAccount.Web.Mvc.ComponentTests/Features/Error/ErrorTests.cs) - `[Theory]` tests
    that run once per input.
-4. [MultipleSchoolsStatusTableTests](../tests/SchoolAccount.Web.Mvc.ComponentTests/Features/Shared/MultipleSchoolsStatusTableTests.cs)
+4. [MultipleSchoolsStatusTableTests](../tests/SchoolAccount.Web.Mvc.ComponentTests/Features/Shared/MultipleSchoolsStatusTable/MultipleSchoolsStatusTableTests.cs)
    - helper methods that build test data, and accessibility checks.
-5. [StepByStepTests](../tests/SchoolAccount.Web.Mvc.ComponentTests/Features/Shared/StepByStepTests.cs) - checking
+5. [StepByStepTests](../tests/SchoolAccount.Web.Mvc.ComponentTests/Features/Shared/StepByStep/StepByStepTests.cs) - checking
    the hooks that JavaScript relies on.
 6. [ErrorSummaryTests](../tests/SchoolAccount.Web.Mvc.ComponentTests/Features/Shared/ErrorSummaryTests.cs) - a
    component driven by `TempData` instead of a model.

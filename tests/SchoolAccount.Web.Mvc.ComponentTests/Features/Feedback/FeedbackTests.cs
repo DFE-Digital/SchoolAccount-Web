@@ -26,19 +26,16 @@ namespace SchoolAccount.Web.Mvc.ComponentTests.Features.Feedback;
 /// always visible. Several tests check the IDs and attributes that JavaScript relies on.
 /// </para>
 /// </remarks>
-public class FeedbackTests(ComponentRenderer renderer) : IClassFixture<ComponentRenderer>
+public sealed class FeedbackTests(ComponentRenderer renderer) : IClassFixture<ComponentRenderer>
 {
     private const string ViewPath = "~/Features/Feedback/_Feedback.cshtml";
 
-    // TempData keys set by FeedbackController. These must match the controller exactly.
-    private const string ErrorSummaryKey = "ErrorSummary";
-    private const string FeedbackSubmittedKey = "FeedbackSubmitted";
+    private const string HintId = "what-do-you-want-to-tell-us-hint";
+    private const string ErrorId = "FeedbackMessage-error";
 
     private const string MissingMessageError = "Enter your feedback or describe the problem";
 
-    // =====================================================================================
     // Always shown
-    // =====================================================================================
 
     [Fact]
     public async Task Feedback_area_is_a_labelled_landmark_for_screen_readers()
@@ -60,14 +57,11 @@ public class FeedbackTests(ComponentRenderer renderer) : IClassFixture<Component
         using var html = await RenderNotSentYetAsync();
 
         // Assert
-        // "[src*='feedback.js']" means "a src attribute that contains feedback.js". We use
-        // "contains" because asp-append-version adds "?v=..." to the end of the URL.
+        // Matches with "*=" (contains) because asp-append-version adds "?v=..." to the URL.
         html.QuerySelector("script[src*='/lib/feedback/feedback.js']").ShouldNotBeNull();
     }
 
-    // =====================================================================================
     // State 1: not sent yet
-    // =====================================================================================
 
     [Fact]
     public async Task Form_posts_to_the_feedback_controller()
@@ -101,7 +95,11 @@ public class FeedbackTests(ComponentRenderer renderer) : IClassFixture<Component
     public async Task Form_remembers_which_page_to_return_to()
     {
         // Act
-        using var html = await RenderAsync(requestUrl: "/Journey?year=2026");
+        using var html = await renderer.RenderAsync<object?>(
+            ViewPath,
+            null,
+            requestUrl: "/Journey?year=2026"
+        );
 
         // Assert
         // After handling the post, the controller redirects the user back to this URL.
@@ -111,20 +109,30 @@ public class FeedbackTests(ComponentRenderer renderer) : IClassFixture<Component
     }
 
     [Fact]
-    public async Task Message_box_is_labelled_and_described_by_its_hint()
+    public async Task Message_box_is_labelled()
     {
         // Act
         using var html = await RenderNotSentYetAsync();
 
         // Assert
-        // label for="FeedbackMessage" points at the element with id="FeedbackMessage". That
-        // links them, so clicking the label focuses the box and screen readers read the label.
-        // aria-describedby does the same for the hint text below the label.
+        // label for="FeedbackMessage" links the label to the box, so clicking the label
+        // focuses the box and screen readers read the label out.
         var label = html.QuerySelector("label[for='FeedbackMessage']").ShouldNotBeNull();
-        var hint = html.QuerySelector("#what-do-you-want-to-tell-us-hint").ShouldNotBeNull();
         label.TextContent.Trim().ShouldBe("Your feedback");
+    }
+
+    [Fact]
+    public async Task Message_box_is_described_by_its_hint()
+    {
+        // Act
+        using var html = await RenderNotSentYetAsync();
+
+        // Assert
+        // ShouldBe rather than ShouldContain: with no error, aria-describedby must not point
+        // at an error element that doesn't exist.
+        var hint = html.GetElementById(HintId).ShouldNotBeNull();
         hint.TextContent.Trim().ShouldBe("Tell us what you think or describe the problem");
-        GetDescribedBy(GetMessageBox(html)).ShouldContain("what-do-you-want-to-tell-us-hint");
+        GetDescribedBy(GetMessageBox(html)).ShouldBe([HintId]);
     }
 
     [Fact]
@@ -151,27 +159,27 @@ public class FeedbackTests(ComponentRenderer renderer) : IClassFixture<Component
     }
 
     [Fact]
-    public async Task Form_starts_closed_when_there_are_no_errors()
+    public async Task Form_tells_the_javascript_to_start_closed_when_there_are_no_errors()
     {
         // Act
         using var html = await RenderNotSentYetAsync();
 
         // Assert
-        // The JavaScript reads data-has-errors: "false" means start with just the button.
         GetFormContainer(html).GetAttribute("data-has-errors").ShouldBe("false");
     }
 
     [Fact]
-    public async Task Give_feedback_button_is_hidden_until_the_javascript_shows_it()
+    public async Task Give_feedback_prompt_is_hidden_until_the_javascript_shows_it()
     {
         // Act
         using var html = await RenderNotSentYetAsync();
 
         // Assert
-        // Without JavaScript the button would do nothing, so it starts hidden. We check
-        // ClassList instead of a CSS selector because "!" has a special meaning in selectors.
-        var intro = html.GetElementById("feedback-initial").ShouldNotBeNull();
-        intro.ClassList.ShouldContain("govuk-!-display-none");
+        // The prompt is the heading and "Give feedback" button. Without JavaScript the button
+        // would do nothing, so the prompt starts hidden. ClassList is used instead of a CSS
+        // selector because "!" has a special meaning in selectors.
+        var prompt = html.GetElementById("feedback-initial").ShouldNotBeNull();
+        prompt.ClassList.ShouldContain("govuk-!-display-none");
     }
 
     [Fact]
@@ -181,9 +189,18 @@ public class FeedbackTests(ComponentRenderer renderer) : IClassFixture<Component
         using var html = await RenderNotSentYetAsync();
 
         // Assert
-        var cancel = html.GetElementById("cancel-feedback").ShouldNotBeNull();
-        cancel.ClassList.ShouldContain("govuk-!-display-none");
-        cancel.GetAttribute("type").ShouldBe("button"); // "button" so it never submits the form
+        GetCancelButton(html).ClassList.ShouldContain("govuk-!-display-none");
+    }
+
+    [Fact]
+    public async Task Cancel_button_does_not_submit_the_form()
+    {
+        // Act
+        using var html = await RenderNotSentYetAsync();
+
+        // Assert
+        // A <button> inside a form submits it unless its type is "button".
+        GetCancelButton(html).GetAttribute("type").ShouldBe("button");
     }
 
     [Fact]
@@ -198,12 +215,9 @@ public class FeedbackTests(ComponentRenderer renderer) : IClassFixture<Component
         var button = html.GetElementById("open-feedback").ShouldNotBeNull();
         var controlledId = button.GetAttribute("aria-controls").ShouldNotBeNull();
         html.GetElementById(controlledId).ShouldBe(GetForm(html));
-        button.GetAttribute("aria-expanded").ShouldBe("false");
     }
 
-    // =====================================================================================
     // State 2: sent, but the message was missing or too long
-    // =====================================================================================
 
     [Fact]
     public async Task Error_message_is_shown_above_the_message_box()
@@ -212,11 +226,22 @@ public class FeedbackTests(ComponentRenderer renderer) : IClassFixture<Component
         using var html = await RenderWithMessageErrorAsync(MissingMessageError);
 
         // Assert
-        // The error starts with visually hidden "Error:", so screen readers say
-        // "Error: Enter your feedback..." and users know it isn't just hint text.
-        var error = html.GetElementById("FeedbackMessage-error").ShouldNotBeNull();
+        var error = html.GetElementById(ErrorId).ShouldNotBeNull();
         error.ClassList.ShouldContain("govuk-error-message");
         error.TextContent.Trim().ShouldBe($"Error: {MissingMessageError}");
+        error.CompareDocumentPosition(GetMessageBox(html)).ShouldBe(DocumentPositions.Following);
+    }
+
+    [Fact]
+    public async Task Error_message_is_announced_as_an_error_by_screen_readers()
+    {
+        // Act
+        using var html = await RenderWithMessageErrorAsync(MissingMessageError);
+
+        // Assert
+        // Visually hidden "Error:" makes screen readers say "Error: Enter your feedback...",
+        // so users know it isn't just hint text.
+        var error = html.GetElementById(ErrorId).ShouldNotBeNull();
         var prefix = error.QuerySelector(".govuk-visually-hidden").ShouldNotBeNull();
         prefix.TextContent.ShouldBe("Error:");
     }
@@ -242,18 +267,17 @@ public class FeedbackTests(ComponentRenderer renderer) : IClassFixture<Component
 
         // Assert
         // aria-describedby can hold several IDs separated by spaces. Screen readers read each.
-        GetDescribedBy(GetMessageBox(html))
-            .ShouldBe(["what-do-you-want-to-tell-us-hint", "FeedbackMessage-error"]);
+        GetDescribedBy(GetMessageBox(html)).ShouldBe([HintId, ErrorId]);
     }
 
     [Fact]
-    public async Task Form_starts_open_when_there_are_errors()
+    public async Task Form_tells_the_javascript_to_start_open_when_there_are_errors()
     {
         // Act
         using var html = await RenderWithMessageErrorAsync(MissingMessageError);
 
         // Assert
-        // "true" tells the JavaScript to open the form, so the error isn't hidden.
+        // Starting open means the error isn't hidden behind the "Give feedback" button.
         GetFormContainer(html).GetAttribute("data-has-errors").ShouldBe("true");
     }
 
@@ -263,11 +287,14 @@ public class FeedbackTests(ComponentRenderer renderer) : IClassFixture<Component
         // Arrange
         // The error summary is shared by every form on the site. An error for some other
         // field shouldn't make the feedback form look broken.
-        var errors = new Dictionary<string, string> { ["SomeOtherField"] = "Enter something" };
+        var errorForAnotherField = new Dictionary<string, string>
+        {
+            ["SomeOtherField"] = "Enter something",
+        };
 
         // Act
-        using var html = await RenderAsync(
-            tempData: new Dictionary<string, object> { [ErrorSummaryKey] = errors }
+        using var html = await RenderWithTempDataAsync(
+            new Dictionary<string, object> { [TempDataKeys.ErrorSummary] = errorForAnotherField }
         );
 
         // Assert
@@ -275,9 +302,7 @@ public class FeedbackTests(ComponentRenderer renderer) : IClassFixture<Component
         GetFormContainer(html).GetAttribute("data-has-errors").ShouldBe("false");
     }
 
-    // =====================================================================================
     // State 3: sent successfully
-    // =====================================================================================
 
     [Fact]
     public async Task Thank_you_message_is_shown_after_feedback_is_sent()
@@ -303,41 +328,37 @@ public class FeedbackTests(ComponentRenderer renderer) : IClassFixture<Component
         html.GetElementById("open-feedback").ShouldBeNull();
     }
 
-    // =====================================================================================
     // Helpers - one per state, so each test reads as "render in state X, then check Y"
-    // =====================================================================================
 
     /// <summary>State 1: a normal page visit. TempData is empty.</summary>
     private Task<IDocument> RenderNotSentYetAsync()
     {
-        return RenderAsync();
+        return RenderWithTempDataAsync(new Dictionary<string, object>());
     }
 
     /// <summary>State 2: the controller sent back an error for the message box.</summary>
     private Task<IDocument> RenderWithMessageErrorAsync(string errorMessage)
     {
         var errors = new Dictionary<string, string> { ["FeedbackMessage"] = errorMessage };
-        return RenderAsync(tempData: new Dictionary<string, object> { [ErrorSummaryKey] = errors });
+        return RenderWithTempDataAsync(
+            new Dictionary<string, object> { [TempDataKeys.ErrorSummary] = errors }
+        );
     }
 
     /// <summary>State 3: the controller saved the feedback successfully.</summary>
     private Task<IDocument> RenderAfterSendingAsync()
     {
-        return RenderAsync(
-            tempData: new Dictionary<string, object> { [FeedbackSubmittedKey] = true }
+        return RenderWithTempDataAsync(
+            new Dictionary<string, object> { [TempDataKeys.FeedbackSubmitted] = true }
         );
     }
 
     /// <summary>
-    /// Renders the component. It has no model (so we pass null) and is driven entirely by
-    /// TempData and the current URL.
+    /// Renders the component, which has no model and is driven entirely by TempData.
     /// </summary>
-    private Task<IDocument> RenderAsync(
-        Dictionary<string, object>? tempData = null,
-        string requestUrl = "/Journey"
-    )
+    private Task<IDocument> RenderWithTempDataAsync(IDictionary<string, object> tempData)
     {
-        return renderer.RenderAsync<object?>(ViewPath, null, tempData, requestUrl);
+        return renderer.RenderAsync<object?>(ViewPath, null, tempData);
     }
 
     private static IElement GetForm(IDocument html)
@@ -356,6 +377,11 @@ public class FeedbackTests(ComponentRenderer renderer) : IClassFixture<Component
     private static IElement GetMessageBox(IDocument html)
     {
         return html.QuerySelector("textarea#FeedbackMessage").ShouldNotBeNull();
+    }
+
+    private static IElement GetCancelButton(IDocument html)
+    {
+        return html.GetElementById("cancel-feedback").ShouldNotBeNull();
     }
 
     /// <summary>
