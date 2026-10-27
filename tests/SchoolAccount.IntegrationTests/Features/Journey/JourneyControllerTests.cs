@@ -137,7 +137,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     }
 
     [Fact]
-    public async Task ImportantDates_renders_multiple_dates()
+    public async Task Every_important_date_is_shown()
     {
         // Arrange
         var token = TestContext.Current.CancellationToken;
@@ -173,7 +173,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     }
 
     [Fact]
-    public async Task Multiple_ImportantDates_are_ordered_earliest_first()
+    public async Task Important_dates_are_shown_earliest_first()
     {
         // Arrange
         var token = TestContext.Current.CancellationToken;
@@ -229,6 +229,63 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         callToActionButton.TextContent.Trim().ShouldStartWith("Go to Autumn Census 2026");
         callToActionButton.TextContent.Trim().ShouldEndWith("opens in new tab");
         hiddenSpan.TextContent.Trim().ShouldStartWith("opens in new tab");
+    }
+
+    [Fact]
+    public async Task Call_to_action_button_is_hidden_for_MAT_users()
+    {
+        // Arrange
+        var token = TestContext.Current.CancellationToken;
+        var pageUri = _factory.GeneratePath("Journey", "Journey");
+
+        var trustJson = """
+            {
+             "id": "2E774B32-E4DB-445B-B915-736C777FF5A4",
+             "name": "Test Multi Academy Trust",
+             "category": { "id": "010", "name": "Multi Academy Trust" },
+             "ukprn": "10037611",
+             "establishments": [
+                 { "urn": "100001", "name": "Test School 1" },
+                 { "urn": "100002", "name": "Test School 2" }
+             ]
+            }
+            """;
+
+        var client = _factory.CreateAuthorisedClient(services =>
+        {
+            services.StubQueryHandler(_getCensusJourneyHandler);
+            services.AddSingleton(
+                new MockAuthClaimsOptions
+                {
+                    Claims =
+                    [
+                        new Claim(GivenName, MockAuthHandler.FakeGivenName),
+                        new Claim(FamilyName, MockAuthHandler.FakeFamilyName),
+                        new Claim(Sub, "1159ee82-d515-4d34-b28d-ac138cb1506b"),
+                        new Claim(Email, "test@example.com"),
+                        new Claim(Organisation, trustJson),
+                    ],
+                }
+            );
+        });
+
+        _getCensusJourneyHandler.Returns(AGetCensusJourneyResponse().AsSuccess());
+
+        // Act
+        var message = await client.GetAsync(pageUri, token);
+        var page = await AngleSharpPage.FromResponseAsync<JourneyPage>(message, token);
+
+        // Assert
+        message.StatusCode.ShouldBe(HttpStatusCode.OK);
+
+        var callToActionButton = page.GetButtonByLink(
+            "https://www.gov.uk/guidance/complete-the-school-census/generate-and-submit-your-return"
+        );
+
+        var hiddenSpan = callToActionButton?.QuerySelector("span.govuk-visually-hidden");
+
+        callToActionButton.ShouldBeNull();
+        hiddenSpan.ShouldBeNull();
     }
 
     [Fact]
