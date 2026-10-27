@@ -16,9 +16,11 @@
                 <input type="hidden" name="returnUrl"
                        value="@($"{Context.Request.Path}{Context.Request.QueryString}")"/>
                 <div class="govuk-form-group @(messageError is not null ? "govuk-form-group--error" : null)">
-                    <h1 class="govuk-heading-xl">Give feedback or report a problem</h1>
-                    <p class="govuk-body-l">Tell us what you think or describe the problem.</p>
-                    <p class="govuk-body">If you don't want to leave feedback, you can close this tab.</p>
+                    <div id="what-do-you-want-to-tell-us-hint">
+                        <h1 class="govuk-heading-xl">Give feedback or report a problem</h1>
+                        <p class="govuk-body-l">Tell us what you think or describe the problem.</p>
+                        <p class="govuk-body">If you don't want to leave feedback, you can close this tab.</p>
+                    </div>
                     @if (messageError is not null)
                     {
                         <p id="FeedbackMessage-error" class="govuk-error-message">
