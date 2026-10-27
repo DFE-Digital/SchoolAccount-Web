@@ -2,7 +2,37 @@
 @{
     ViewData["Title"] = "Journey";
     ViewData["EnableCensusAnalytics"] = true;
+
+    var organisation = Model.Organisation;
+
+    var laestab = organisation.IsEstablishment &&
+                  !string.IsNullOrWhiteSpace(organisation.LocalAuthority?.Code) &&
+                  !string.IsNullOrWhiteSpace(organisation.EstablishmentNumber)
+        ? $"{organisation.LocalAuthority.Code}{organisation.EstablishmentNumber}"
+        : null;
+
+    var organisationId = laestab ?? organisation.Ukprn;
+
+    string? organisationType = null;
+
+    if (laestab is not null)
+    {
+        organisationType = "LAESTAB";
+    }
+    else if (!string.IsNullOrWhiteSpace(organisation.Ukprn))
+    {
+        organisationType = "UKPRN";
+    }
 }
+
+<script type="application/json" id="census-organisation-config">
+    @Html.Raw(System.Text.Json.JsonSerializer.Serialize(new
+    {
+        organisationId,
+        organisationType
+    }))
+</script>
+
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
         <span class="govuk-caption-xl census-title">@Model.Caption</span>

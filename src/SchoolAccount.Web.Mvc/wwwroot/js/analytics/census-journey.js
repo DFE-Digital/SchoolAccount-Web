@@ -1,7 +1,9 @@
+
 import {
     initialiseAnalytics,
     trackEvent,
-    registerGovUkAnalytics
+    registerGovUkAnalytics,
+    setOrganisationContext
 } from "./analytics.js";
 
 const configElement = document.getElementById("census-analytics-config");
@@ -12,8 +14,34 @@ if (configElement) {
     const appInsights = await initialiseAnalytics(connectionString);
 
     if (appInsights) {
+
+        // Organisation identification (LAESTAB or UKPRN)
+        const organisationElement = document.getElementById(
+            "census-organisation-config"
+        );
+
+        if (organisationElement) {
+            const { organisationId, organisationType } =
+                JSON.parse(organisationElement.textContent);
+
+            setOrganisationContext(
+                appInsights,
+                organisationId,
+                organisationType
+            );
+        }
+
+        // Forward existing GOV.UK Step-by-step events
         registerGovUkAnalytics(appInsights);
 
+        // Census Journey page visit
+        trackEvent(appInsights, "census_journey_page_view", {
+            page: "CensusJourney",
+            action: "PageViewed",
+            source: "SAB-527"
+        });
+
+        // Scroll depth tracking
         const scrollMilestones = [25, 50, 75, 100];
         const trackedMilestones = new Set();
 
@@ -32,9 +60,10 @@ if (configElement) {
             );
 
             scrollMilestones.forEach(milestone => {
-                if (scrollPercentage >= milestone &&
-                    !trackedMilestones.has(milestone)) {
-
+                if (
+                    scrollPercentage >= milestone &&
+                    !trackedMilestones.has(milestone)
+                ) {
                     trackedMilestones.add(milestone);
 
                     trackEvent(appInsights, "census_scroll_depth", {
@@ -46,8 +75,11 @@ if (configElement) {
             });
         }
 
-        window.addEventListener("scroll", trackScrollDepth, { passive: true });
+        window.addEventListener("scroll", trackScrollDepth, {
+            passive: true
+        });
 
+        // Guidance hyperlink tracking
         document.querySelectorAll(
             '[data-analytics-event="census_guidance_link"]'
         ).forEach(link => {
@@ -59,8 +91,9 @@ if (configElement) {
                     page: "CensusJourney"
                 });
             });
-        });        
+        });
 
+        // Status descriptions expand/collapse tracking
         document.querySelectorAll(
             '[data-analytics-event="census_status_details"]'
         ).forEach(details => {
@@ -73,6 +106,7 @@ if (configElement) {
             });
         });
 
+        // Go to Collect external navigation tracking
         document.querySelectorAll(
             '[data-analytics-event="census_external_navigation"]'
         ).forEach(link => {
@@ -80,18 +114,12 @@ if (configElement) {
                 trackEvent(appInsights, "census_external_navigation", {
                     action: "ExternalNavigation",
                     label: link.textContent.trim(),
-                    destination: link.href,
+                    destination: link.origin + link.pathname,
                     page: "CensusJourney"
                 });
             });
         });
 
-        trackEvent(appInsights, "census_journey_test", {
-            page: "CensusJourney",
-            action: "PageLoaded",
-            source: "SAB-527"
-        });
-
-        console.log("SAB-527: Test event sent to Application Insights.");
+        console.log("SAB-527: Census Journey analytics initialised.");
     }
 }

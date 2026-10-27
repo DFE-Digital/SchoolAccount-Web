@@ -1,3 +1,4 @@
+
 const sdkUrl = "https://js.monitor.azure.com/scripts/b/ai.3.gbl.min.js";
 
 export async function initialiseAnalytics(connectionString) {
@@ -35,6 +36,33 @@ export function trackEvent(appInsights, name, properties = {}) {
     });
 }
 
+export function setOrganisationContext(appInsights, organisationId, organisationType) {
+    if (!organisationId || !organisationType) {
+        console.warn("SAB-527: Organisation identifier unavailable.");
+        return;
+    }
+
+    // Identify the organisation in Application Insights.
+    // Do not persist this identity in a cookie.
+    appInsights.setAuthenticatedUserContext(
+        `${organisationType}:${organisationId}`,
+        undefined,
+        false
+    );
+
+    // Attach organisation details to all subsequent telemetry.
+    appInsights.addTelemetryInitializer(envelope => {
+        envelope.data = envelope.data || {};
+
+        envelope.data.organisationId = organisationId;
+        envelope.data.organisationType = organisationType;
+    });
+
+    console.log(
+        `SAB-527: Organisation context configured (${organisationType}).`
+    );
+}
+
 export function registerGovUkAnalytics(appInsights) {
     window.GOVUK = window.GOVUK || {};
     window.GOVUK.analytics = window.GOVUK.analytics || {};
@@ -50,9 +78,11 @@ export function registerGovUkAnalytics(appInsights) {
 function loadScript(src) {
     return new Promise((resolve, reject) => {
         const script = document.createElement("script");
+
         script.src = src;
         script.onload = resolve;
         script.onerror = reject;
+
         document.head.appendChild(script);
     });
 }
