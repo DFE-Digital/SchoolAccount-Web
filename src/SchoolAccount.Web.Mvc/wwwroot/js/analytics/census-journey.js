@@ -14,6 +14,40 @@ if (configElement) {
     if (appInsights) {
         registerGovUkAnalytics(appInsights);
 
+        const scrollMilestones = [25, 50, 75, 100];
+        const trackedMilestones = new Set();
+
+        function trackScrollDepth() {
+            const documentHeight = document.documentElement.scrollHeight;
+            const viewportHeight = window.innerHeight;
+            const scrollableHeight = documentHeight - viewportHeight;
+
+            if (scrollableHeight <= 0) {
+                return;
+            }
+
+            const scrollPercentage = Math.min(
+                100,
+                Math.round((window.scrollY / scrollableHeight) * 100)
+            );
+
+            scrollMilestones.forEach(milestone => {
+                if (scrollPercentage >= milestone &&
+                    !trackedMilestones.has(milestone)) {
+
+                    trackedMilestones.add(milestone);
+
+                    trackEvent(appInsights, "census_scroll_depth", {
+                        action: "ScrollDepthReached",
+                        depth: milestone,
+                        page: "CensusJourney"
+                    });
+                }
+            });
+        }
+
+        window.addEventListener("scroll", trackScrollDepth, { passive: true });
+
         document.querySelectorAll(
             '[data-analytics-event="census_guidance_link"]'
         ).forEach(link => {
