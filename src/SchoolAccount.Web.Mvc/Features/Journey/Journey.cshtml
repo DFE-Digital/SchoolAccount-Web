@@ -60,11 +60,11 @@
             </govuk-summary-list>
         }
 
-        @if (Model.DisplayUnderstandStatuses)
+        @if (true) // SAB-527: Temporary spike testing
         {
             <h2 class="govuk-heading-m">About your status</h2>
             <p class="govuk-body">Statuses are updated overnight. You will be emailed when the status changes.</p>
-            <govuk-details>
+            <govuk-details data-analytics-event="census_status_details">
                 <govuk-details-summary>
                     What your status means
                 </govuk-details-summary>

@@ -15,6 +15,18 @@ if (configElement) {
         registerGovUkAnalytics(appInsights);
 
         document.querySelectorAll(
+            '[data-analytics-event="census_status_details"]'
+        ).forEach(details => {
+            details.addEventListener("toggle", () => {
+                trackEvent(appInsights, "census_status_details", {
+                    action: details.open ? "Expanded" : "Collapsed",
+                    label: "What your status means",
+                    page: "CensusJourney"
+                });
+            });
+        });
+
+        document.querySelectorAll(
             '[data-analytics-event="census_external_navigation"]'
         ).forEach(link => {
             link.addEventListener("click", () => {
