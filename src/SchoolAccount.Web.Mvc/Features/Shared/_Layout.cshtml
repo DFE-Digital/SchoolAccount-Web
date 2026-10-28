@@ -55,7 +55,7 @@
 @RenderBody()
 
 @section GovUkFooter {
-    @if (HeaderContentProvider.IsAuthenticated && ViewData["HideFeedbackFooter"] is not true)
+    @if (User.Identity?.IsAuthenticated is true && ViewData["HideFeedbackFooter"] is not true)
     {
         <feature name="@FeatureFlags.FeedbackFooter">
             <partial name="~/Features/Feedback/_Feedback.cshtml" />
