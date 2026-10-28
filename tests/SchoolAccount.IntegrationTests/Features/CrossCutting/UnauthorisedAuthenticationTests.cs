@@ -41,7 +41,7 @@ public class UnauthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<
     }
 
     [Fact]
-    public async Task Unauthenticated_pages_do_not_display_the_sign_out_link()
+    public async Task Signed_out_users_do_not_see_the_sign_out_link()
     {
         // Arrange & Act
         var response = await _client.GetAsync("/", _cancellationToken);
@@ -54,7 +54,7 @@ public class UnauthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<
     }
 
     [Fact]
-    public async Task Unauthenticated_pages_do_not_display_the_organisation_name()
+    public async Task Signed_out_users_do_not_see_an_organisation_name()
     {
         // Arrange & Act
         var response = await _client.GetAsync("/", _cancellationToken);
