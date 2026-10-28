@@ -8,23 +8,28 @@
     <div class="govuk-width-container">
         @if (TempData["FeedbackSubmitted"] is null)
         {
-            <div id="feedback-initial" class="govuk-grid-row footer-feedback__row govuk-!-display-none">
+            <div id="feedback-initial" class="govuk-grid-row footer-feedback__row">
                 <div class="govuk-grid-column-two-thirds">
                     <h2 class="govuk-heading-s govuk-!-margin-bottom-0">
                         Give feedback on this page or report a problem
                     </h2>
                 </div>
                 <div class="govuk-grid-column-one-third">
-                    <button type="button" id="open-feedback" class="govuk-button footer-feedback__button govuk-!-margin-bottom-0"
+                    <button type="button" id="open-feedback" class="govuk-button footer-feedback__button govuk-!-margin-bottom-0 govuk-!-display-none"
                             aria-controls="tell-us-form">
                         Give feedback
                     </button>
                 </div>
             </div>
+            <p class="govuk-body govuk-!-margin-bottom-0 govuk-!-padding-top-4" id="non-js-feedback">
+                <a href="@Url.Action("Feedback", "Feedback")" id="open-feedback-page" class="govuk-link" rel="noreferrer noopener" target="_blank">
+                    Give feedback (opens in new tab)
+                </a>
+            </p>
 
             <div id="feedback-form"
-                 data-has-errors="@(messageError is not null ? "true" : "false")">
-                <form id="tell-us-form" asp-controller="Feedback" asp-action="Submit" 
+                 data-has-errors="@(messageError is not null ? "true" : "false")" class="govuk-!-display-none">
+                <form id="tell-us-form" asp-controller="Feedback" asp-action="Submit"
                       method="post" novalidate>
                     <input type="hidden" name="returnUrl"
                            value="@($"{Context.Request.Path}{Context.Request.QueryString}")"/>
