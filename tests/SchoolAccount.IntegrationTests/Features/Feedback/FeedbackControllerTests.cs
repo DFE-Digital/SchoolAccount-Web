@@ -218,7 +218,9 @@ public class FeedbackControllerTests : IClassFixture<SchoolAccountWebApplication
 
         // Assert
         result.StatusCode.ShouldBe(HttpStatusCode.Redirect);
-        result.Headers.Location.ShouldNotBeNull().OriginalString.ShouldBe("/Feedback");
+        result
+            .Headers.Location.ShouldNotBeNull()
+            .OriginalString.ShouldBe("/Feedback#feedback-thanks");
     }
 
     private static FormUrlEncodedContent FeedbackForm(string message, string? returnUrl = null)
