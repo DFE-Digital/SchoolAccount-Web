@@ -134,7 +134,7 @@ public class ErrorControllerTests : IClassFixture<SchoolAccountWebApplicationFac
     }
 
     [Fact]
-    public async Task The_error_page_is_shown_after_a_form_submission()
+    public async Task A_service_error_shows_the_service_error_page_after_accepting_a_post()
     {
         // Arrange
         var requestUri = _factory.GeneratePath("Error", "Error", new { statusCode = 500 });
