@@ -17,7 +17,7 @@ public class AuthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<Pr
     [Theory]
     [InlineData("/")]
     [InlineData("Journey")]
-    public async Task Authorised_users_can_access_a_page(string path)
+    public async Task Signed_in_users_can_access_a_page(string path)
     {
         // Arrange & Act
         var response = await _client.GetAsync(path, TestContext.Current.CancellationToken);
