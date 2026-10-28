@@ -97,7 +97,7 @@ public class GetCensusJourneyHandlerTests
         // Assert
         await _academiesApiClient
             .DidNotReceive()
-            .GetTrustDetails(query.Organisation.Ukprn, _cancellationToken);
+            .GetTrustDetails(query.Organisation.Ukprn, Arg.Any<CancellationToken>());
     }
 
     [Fact]

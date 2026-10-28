@@ -15,6 +15,8 @@ public class FooterTests(SchoolAccountWebApplicationFactory<Program> factory)
         services.StubQueryHandler(StubCensusJourneyHandler.Succeeding())
     );
 
+    private readonly CancellationToken _cancellationToken = TestContext.Current.CancellationToken;
+
     [Theory]
     [InlineData("Journey", "Journey")]
     [InlineData("Start", "Start")]
@@ -27,12 +29,9 @@ public class FooterTests(SchoolAccountWebApplicationFactory<Program> factory)
         var pageUri = factory.GeneratePath(controller, action);
 
         // Act
-        var response = await _client.GetAsync(pageUri, TestContext.Current.CancellationToken);
+        var response = await _client.GetAsync(pageUri, _cancellationToken);
 
-        var page = await AngleSharpPage.FromResponseAsync<CommonPage>(
-            response,
-            TestContext.Current.CancellationToken
-        );
+        var page = await AngleSharpPage.FromResponseAsync<CommonPage>(response, _cancellationToken);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -47,12 +46,9 @@ public class FooterTests(SchoolAccountWebApplicationFactory<Program> factory)
         var pageUri = factory.GeneratePath("Journey", "Journey");
 
         // Act
-        var response = await _client.GetAsync(pageUri, TestContext.Current.CancellationToken);
+        var response = await _client.GetAsync(pageUri, _cancellationToken);
 
-        var page = await AngleSharpPage.FromResponseAsync<CommonPage>(
-            response,
-            TestContext.Current.CancellationToken
-        );
+        var page = await AngleSharpPage.FromResponseAsync<CommonPage>(response, _cancellationToken);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -75,12 +71,9 @@ public class FooterTests(SchoolAccountWebApplicationFactory<Program> factory)
         var pageUri = factory.GeneratePath("Journey", "Journey");
 
         // Act
-        var response = await _client.GetAsync(pageUri, TestContext.Current.CancellationToken);
+        var response = await _client.GetAsync(pageUri, _cancellationToken);
 
-        var page = await AngleSharpPage.FromResponseAsync<CommonPage>(
-            response,
-            TestContext.Current.CancellationToken
-        );
+        var page = await AngleSharpPage.FromResponseAsync<CommonPage>(response, _cancellationToken);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);

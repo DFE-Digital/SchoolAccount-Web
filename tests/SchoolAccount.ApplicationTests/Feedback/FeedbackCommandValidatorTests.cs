@@ -1,7 +1,6 @@
 using FluentValidation;
 using FluentValidation.TestHelper;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using NSubstitute;
 using SchoolAccount.Application;
 using SchoolAccount.Application.Abstractions.Clients;
@@ -14,6 +13,7 @@ namespace SchoolAccount.ApplicationTests.Feedback;
 
 public class FeedbackCommandValidatorTests
 {
+    private readonly CancellationToken _cancellationToken = TestContext.Current.CancellationToken;
     private readonly FeedbackCommandValidator _validator = new();
 
     [Fact]
@@ -50,7 +50,7 @@ public class FeedbackCommandValidatorTests
         var command = new FeedbackCommand { Message = string.Empty, OrganisationId = "test-id" };
 
         // Act
-        var result = await handler.Handle(command, CancellationToken.None);
+        var result = await handler.Handle(command, _cancellationToken);
 
         // Assert
         result.IsFailure.ShouldBeTrue();
@@ -74,7 +74,7 @@ public class FeedbackCommandValidatorTests
                 Arg.Any<string>(),
                 Arg.Any<string>(),
                 Arg.Any<string>(),
-                Arg.Any<CancellationToken>()
+                _cancellationToken
             )
             .Returns(Result.Success);
         var services = new ServiceCollection();
@@ -94,7 +94,7 @@ public class FeedbackCommandValidatorTests
         };
 
         // Act
-        var result = await handler.Handle(command, CancellationToken.None);
+        var result = await handler.Handle(command, _cancellationToken);
 
         // Assert
         result.IsSuccess.ShouldBeTrue();
