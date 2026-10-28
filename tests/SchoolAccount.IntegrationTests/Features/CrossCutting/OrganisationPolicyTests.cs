@@ -42,28 +42,34 @@ public class OrganisationPolicyTests(SchoolAccountWebApplicationFactory<Program>
     [InlineData(null)]
     public async Task User_is_Forbidden_when_Organisation_Claim_is_empty(string? value)
     {
+        // Arrange
         var client = CreateClientOrganisationClaims(value);
 
+        // Act
         var response = await client.GetAsync(
             factory.GeneratePath("Journey", "Journey"),
             TestContext.Current.CancellationToken
         );
 
+        // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     [Fact]
     public async Task User_is_accepted_when_organisation_is_not_empty()
     {
+        // Arrange
         var client = factory.CreateAuthorisedClient(services =>
             services.StubQueryHandler(StubCensusJourneyHandler.Succeeding())
         );
 
+        // Act
         var response = await client.GetAsync(
             factory.GeneratePath("Journey", "Journey"),
             TestContext.Current.CancellationToken
         );
 
+        // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 }

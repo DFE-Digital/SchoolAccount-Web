@@ -43,7 +43,7 @@ public static class GetCensusJourneyMapperTests
         [Fact]
         public void An_empty_status_list_is_mapped_onto_the_response()
         {
-            // Act
+            // Arrange & Act
             var result = AGetCensusJourneyResponse().Build();
 
             // Assert

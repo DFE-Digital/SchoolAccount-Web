@@ -96,7 +96,7 @@ public class CensusStatusMapperTests
     [Fact]
     public void The_email_address_is_mapped_onto_the_apis_email_field()
     {
-        // Act
+        // Arrange & Act
         var request = CensusStatusMapper.ToApiRequest("id", "test-user@example.com", []);
 
         // Assert

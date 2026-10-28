@@ -42,7 +42,6 @@ public class AuthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<Pr
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
-        page.ShouldNotBeNull();
 
         var pageSignOutLink = page.GetSignOutLink();
         pageSignOutLink.ShouldNotBeNull();
@@ -64,7 +63,6 @@ public class AuthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<Pr
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
-        page.ShouldNotBeNull();
 
         var pageOrganisationName = page.GetOrganisationName();
         pageOrganisationName.ShouldNotBeNull();
