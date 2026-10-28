@@ -40,6 +40,7 @@ public class ServiceCollectionExtensionsTests
         using var configuration = BuildConfiguration();
         services.AddDsiAuthentication(configuration);
 
+        // Act
         var provider = services.BuildServiceProvider();
         var oidc = provider
             .GetRequiredService<IOptionsMonitor<OpenIdConnectOptions>>()
@@ -66,6 +67,7 @@ public class ServiceCollectionExtensionsTests
         using var configuration = BuildConfiguration();
         services.AddDsiAuthentication(configuration);
 
+        // Act
         var provider = services.BuildServiceProvider();
         var oidc = provider
             .GetRequiredService<IOptionsMonitor<OpenIdConnectOptions>>()
