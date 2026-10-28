@@ -14,7 +14,6 @@ if (configElement) {
     const appInsights = await initialiseAnalytics(connectionString);
 
     if (appInsights) {
-
         // Organisation identification (LAESTAB or UKPRN)
         const organisationElement = document.getElementById(
             "census-organisation-config"
@@ -33,6 +32,21 @@ if (configElement) {
 
         // Forward existing GOV.UK Step-by-step events
         registerGovUkAnalytics(appInsights);
+
+        // Track ordinary hyperlinks within Step-by-step content.
+        // Exclude .js-link elements already handled by the GOV.UK component.
+        document.querySelectorAll(
+            '.app-step-nav .js-panel a[href]:not(.js-link)'
+        ).forEach(link => {
+            link.addEventListener("click", () => {
+                trackEvent(appInsights, "census_step_navigation_link", {
+                    action: "StepLinkClicked",
+                    label: link.textContent.trim(),
+                    destination: link.origin + link.pathname,
+                    page: "CensusJourney"
+                });
+            });
+        });
 
         // Census Journey page visit
         trackEvent(appInsights, "census_journey_page_view", {
