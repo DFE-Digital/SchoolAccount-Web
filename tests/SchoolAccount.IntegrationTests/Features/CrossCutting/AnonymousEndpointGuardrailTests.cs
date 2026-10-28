@@ -44,6 +44,7 @@ public class AnonymousEndpointGuardrailTests(SchoolAccountWebApplicationFactory<
         using var scope = factory.Services.CreateScope();
         var endpointDataSource = scope.ServiceProvider.GetRequiredService<EndpointDataSource>();
 
+        // Act
         var anonymousRoutes = endpointDataSource
             .Endpoints.OfType<RouteEndpoint>()
             .Where(e => e.Metadata.GetMetadata<IAllowAnonymous>() is not null)
