@@ -1,9 +1,6 @@
 using System.Net;
 using System.Text.RegularExpressions;
 using SchoolAccount.IntegrationTests.Common;
-using SchoolAccount.IntegrationTests.Common.Extensions;
-using SchoolAccount.IntegrationTests.Common.Pages;
-using SchoolAccount.TestCommon.Stubs;
 using Shouldly;
 
 namespace SchoolAccount.IntegrationTests.Features.Account;
