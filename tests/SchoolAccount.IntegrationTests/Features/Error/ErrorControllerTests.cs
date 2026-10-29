@@ -12,7 +12,6 @@ namespace SchoolAccount.IntegrationTests.Features.Error;
 
 public class ErrorControllerTests : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
 {
-    private readonly SchoolAccountWebApplicationFactory<Program> _factory;
     private readonly HttpClient _authenticatedClient;
     private readonly IQueryHandler<
         GetCensusStatusesQuery,
@@ -23,7 +22,6 @@ public class ErrorControllerTests : IClassFixture<SchoolAccountWebApplicationFac
 
     public ErrorControllerTests(SchoolAccountWebApplicationFactory<Program> factory)
     {
-        _factory = factory;
         _authenticatedClient = factory.CreateAuthorisedClient(services =>
             services.AddScoped<
                 IQueryHandler<GetCensusStatusesQuery, List<GetCensusStatusesResponse>>
@@ -35,7 +33,7 @@ public class ErrorControllerTests : IClassFixture<SchoolAccountWebApplicationFac
     public async Task A_not_found_error_shows_the_page_not_found_page()
     {
         // Arrange
-        var requestUri = _factory.GeneratePath("Error", "Error", new { statusCode = 404 });
+        var requestUri = UrlConstants.Error404Url;
 
         // Act
         var response = await _authenticatedClient.GetAsync(
@@ -59,7 +57,7 @@ public class ErrorControllerTests : IClassFixture<SchoolAccountWebApplicationFac
     public async Task A_service_error_shows_the_service_error_page()
     {
         // Arrange
-        var requestUri = _factory.GeneratePath("Error", "Error", new { statusCode = 500 });
+        var requestUri = UrlConstants.Error500Url;
 
         // Act
         var response = await _authenticatedClient.GetAsync(
@@ -106,7 +104,7 @@ public class ErrorControllerTests : IClassFixture<SchoolAccountWebApplicationFac
     public async Task A_failure_while_loading_a_page_shows_the_service_error_page()
     {
         // Arrange
-        var requestUri = _factory.GeneratePath("Journey", "Journey");
+        var requestUri = UrlConstants.JourneyUrl;
 
         _getCensusStatusesHandler
             .Handle(Arg.Any<GetCensusStatusesQuery>(), Arg.Any<CancellationToken>())
@@ -137,7 +135,7 @@ public class ErrorControllerTests : IClassFixture<SchoolAccountWebApplicationFac
     public async Task A_service_error_shows_the_service_error_page_after_accepting_a_post()
     {
         // Arrange
-        var requestUri = _factory.GeneratePath("Error", "Error", new { statusCode = 500 });
+        var requestUri = UrlConstants.Error500Url;
 
         // Act
         var response = await _authenticatedClient.PostAsync(
