@@ -9,7 +9,7 @@
 <div class="govuk-width-container">
     @if (TempData["FeedbackSubmitted"] is null)
     {
-        <div id="feedback-form"
+        <div id="non-js-feedback-form"
              data-has-errors="@(messageError is not null ? "true" : "false")">
             <form id="tell-us-form" asp-controller="Feedback" asp-action="Submit"
                   method="post" novalidate>

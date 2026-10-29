@@ -199,7 +199,7 @@ public class FeedbackControllerTests : IClassFixture<SchoolAccountWebApplication
         // Assert
         result.StatusCode.ShouldBe(HttpStatusCode.OK);
         html.ShouldContain("<title>Feedback");
-        html.ShouldContain("id=\"feedback-form\"");
+        html.ShouldContain("id=\"non-js-feedback-form\"");
         html.ShouldNotContain("id=\"page-feedback\"");
     }
 
