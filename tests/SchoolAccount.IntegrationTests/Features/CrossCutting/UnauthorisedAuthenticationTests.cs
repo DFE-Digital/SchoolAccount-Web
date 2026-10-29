@@ -24,9 +24,7 @@ public class UnauthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<
         response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
         response
             .Headers.Location.ShouldNotBeNull()
-            .OriginalString.ShouldBeEquivalentTo(
-                factory.GeneratePath("Start", "Start", new { ReturnUrl = journeyUri })
-            );
+            .OriginalString.ShouldBeEquivalentTo("/?ReturnUrl=%2FJourney");
     }
 
     [Fact]

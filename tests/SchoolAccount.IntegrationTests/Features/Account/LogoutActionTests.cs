@@ -41,8 +41,6 @@ public class LogoutActionTests(SchoolAccountWebApplicationFactory<Program> facto
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
-        response
-            .Headers.Location.ShouldNotBeNull()
-            .OriginalString.ShouldEndWith(factory.GeneratePath("Start", "Start"));
+        response.Headers.Location.ShouldNotBeNull().OriginalString.ShouldBe("/");
     }
 }
