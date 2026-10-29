@@ -22,9 +22,9 @@ public class UnauthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
-        response.Headers.Location?.OriginalString.ShouldBeEquivalentTo(
-            factory.GeneratePath("Start", "Start", new { ReturnUrl = journeyUri })
-        );
+        response
+            .Headers.Location.ShouldNotBeNull()
+            .OriginalString.ShouldBeEquivalentTo("/?ReturnUrl=%2FJourney");
     }
 
     [Fact]
