@@ -46,11 +46,7 @@ public class LoginActionTests(SchoolAccountWebApplicationFactory<Program> factor
     {
         // Arrange
         var client = factory.CreateAuthorisedClient();
-        var requestUri = factory.GeneratePath(
-            "Account",
-            "Login",
-            new { returnUrl = "https://www.google.com" }
-        );
+        var requestUri = UrlConstants.LoginWithExternalReturnUrl;
 
         // Act
         var response = await client.GetAsync(requestUri, TestContext.Current.CancellationToken);
@@ -64,11 +60,7 @@ public class LoginActionTests(SchoolAccountWebApplicationFactory<Program> factor
     {
         // Arrange
         var client = factory.CreateAuthorisedClient();
-        var requestUri = factory.GeneratePath(
-            "Account",
-            "Login",
-            new { returnUrl = factory.GeneratePath("Journey", "Journey") }
-        );
+        var requestUri = UrlConstants.LoginWithJourneyReturnUrl;
 
         // Act
         var response = await client.GetAsync(requestUri, TestContext.Current.CancellationToken);

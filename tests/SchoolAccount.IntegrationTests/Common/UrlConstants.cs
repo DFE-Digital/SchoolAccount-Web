@@ -13,5 +13,8 @@ public static class UrlConstants
     public const string JourneyUrl = "/Journey";
     public const string LoggedOutUrl = "/Account/LoggedOut";
     public const string LoginUrl = "/Account/Login";
+    public const string LoginWithExternalReturnUrl =
+        "/Account/Login?returnUrl=https%3A%2F%2Fwww.google.com";
+    public const string LoginWithJourneyReturnUrl = "/Account/Login?returnUrl=%2FJourney";
     public const string LogoutUrl = "/Account/Logout";
 }
