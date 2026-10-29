@@ -47,7 +47,7 @@ public class OrganisationPolicyTests(SchoolAccountWebApplicationFactory<Program>
 
         // Act
         var response = await client.GetAsync(
-            factory.GeneratePath("Journey", "Journey"),
+            UrlConstants.JourneyUrl,
             TestContext.Current.CancellationToken
         );
 
@@ -65,7 +65,7 @@ public class OrganisationPolicyTests(SchoolAccountWebApplicationFactory<Program>
 
         // Act
         var response = await client.GetAsync(
-            factory.GeneratePath("Journey", "Journey"),
+            UrlConstants.JourneyUrl,
             TestContext.Current.CancellationToken
         );
 

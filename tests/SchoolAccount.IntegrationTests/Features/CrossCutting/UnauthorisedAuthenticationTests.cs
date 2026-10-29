@@ -15,7 +15,7 @@ public class UnauthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<
     public async Task Signed_out_users_cannot_access_the_journey_page()
     {
         // Arrange
-        var journeyUri = factory.GeneratePath("Journey", "Journey");
+        var journeyUri = UrlConstants.JourneyUrl;
 
         // Act
         var response = await _client.GetAsync(journeyUri, _cancellationToken);
@@ -31,7 +31,7 @@ public class UnauthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<
     public async Task Signed_out_users_can_see_the_start_page()
     {
         // Arrange & Act
-        var response = await _client.GetAsync("/", _cancellationToken);
+        var response = await _client.GetAsync(UrlConstants.BaseUrl, _cancellationToken);
 
         // Assert
         response.StatusCode.ShouldNotBe(HttpStatusCode.Redirect);
@@ -42,7 +42,7 @@ public class UnauthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<
     public async Task Signed_out_users_do_not_see_the_sign_out_link()
     {
         // Arrange & Act
-        var response = await _client.GetAsync("/", _cancellationToken);
+        var response = await _client.GetAsync(UrlConstants.BaseUrl, _cancellationToken);
         var page = await AngleSharpPage.FromResponseAsync<CommonPage>(response, _cancellationToken);
 
         // Assert
@@ -55,7 +55,7 @@ public class UnauthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<
     public async Task Signed_out_users_do_not_see_an_organisation_name()
     {
         // Arrange & Act
-        var response = await _client.GetAsync("/", _cancellationToken);
+        var response = await _client.GetAsync(UrlConstants.BaseUrl, _cancellationToken);
         var page = await AngleSharpPage.FromResponseAsync<CommonPage>(response, _cancellationToken);
 
         // Assert
