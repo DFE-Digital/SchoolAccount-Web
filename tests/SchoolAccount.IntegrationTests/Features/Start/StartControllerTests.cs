@@ -7,11 +7,9 @@ namespace SchoolAccount.IntegrationTests.Features.Start;
 public class StartControllerTests : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
 {
     private readonly HttpClient _client;
-    private readonly SchoolAccountWebApplicationFactory<Program> _factory;
 
     public StartControllerTests(SchoolAccountWebApplicationFactory<Program> factory)
     {
-        _factory = factory;
         _client = factory.CreateUnauthenticatedClient();
     }
 
@@ -19,7 +17,7 @@ public class StartControllerTests : IClassFixture<SchoolAccountWebApplicationFac
     public async Task The_start_page_explains_how_to_sign_in()
     {
         // Arrange
-        var pageUri = _factory.GeneratePath("Start", "Start");
+        var pageUri = UrlConstants.BaseUrl;
 
         // Act
         var response = await _client.GetAsync(pageUri, TestContext.Current.CancellationToken);
