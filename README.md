@@ -72,18 +72,19 @@ To ensure the feedback component is functional locally, there are tools that can
 
 1. Install prerequisites:
     - [Azure Storage Explorer](https://azure.microsoft.com/en-us/products/storage/storage-explorer)
+    - Pull [SchoolAccount-LocalDevTools repository](https://github.com/DFE-Digital/SchoolAccount-LocalDevTools)
 
-2. Pull the latest Docker image of Azurite and run it
+2. Go to the root of the LocalDevTools repository and run this command to start Azurite and seed an initial table:
 ```
-docker pull mcr.microsoft.com/azure-storage/azurite
-docker run -p 10000:10000 -p 10001:10001 -p 10002:10002 mcr.microsoft.com/azure-storage/azurite
+docker compose up
 ```
 
 3. Open Azure Storage Explorer and connect to the Azurite instance running on `http://127.0.0.1:10002/devstoreaccount1/`
 
-4. Use the feedback component as an authenticated user to populate the table
+4. To set your own `TableStorageConnectionString` use the .NET user secrets
 
-5. To set your own `TableStorageConnectionString` use the .NET user secrets
+5. Use the feedback component and check Azure Storage Explorer to see your new data
+
 ## Configuration
 
 The project requires the following app configuration values to be overridden, ideally using [User Secrets](https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-6.0&tabs=windows):
