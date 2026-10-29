@@ -17,7 +17,7 @@ public class AuthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<Pr
     [Theory]
     [InlineData("/")]
     [InlineData("Journey")]
-    public async Task Authorised_users_can_access_a_page(string path)
+    public async Task Signed_in_users_can_access_a_page(string path)
     {
         // Arrange & Act
         var response = await _client.GetAsync(path, TestContext.Current.CancellationToken);
@@ -28,7 +28,7 @@ public class AuthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<Pr
     }
 
     [Fact]
-    public async Task Authenticated_pages_display_the_sign_out_for_authorised_users()
+    public async Task Signed_in_users_see_the_sign_out_link()
     {
         // Arrange
         var pageUri = factory.GeneratePath("Journey", "Journey");
@@ -42,7 +42,6 @@ public class AuthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<Pr
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
-        page.ShouldNotBeNull();
 
         var pageSignOutLink = page.GetSignOutLink();
         pageSignOutLink.ShouldNotBeNull();
@@ -50,7 +49,7 @@ public class AuthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<Pr
     }
 
     [Fact]
-    public async Task Authenticated_pages_display_the_organisation_name_link_for_authorised_users()
+    public async Task Signed_in_users_see_their_organisation_name()
     {
         // Arrange
         var pageUri = factory.GeneratePath("Journey", "Journey");
@@ -64,7 +63,6 @@ public class AuthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<Pr
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
-        page.ShouldNotBeNull();
 
         var pageOrganisationName = page.GetOrganisationName();
         pageOrganisationName.ShouldNotBeNull();

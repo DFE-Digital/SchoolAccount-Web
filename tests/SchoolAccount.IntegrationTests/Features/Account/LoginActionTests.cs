@@ -8,7 +8,7 @@ public class LoginActionTests(SchoolAccountWebApplicationFactory<Program> factor
     : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
 {
     [Fact]
-    public async Task Unauthorised_users_are_redirected_to_DSI()
+    public async Task Signed_out_users_are_redirected_to_DSI()
     {
         // Arrange
         var client = factory.CreateUnauthenticatedClient();
@@ -25,7 +25,7 @@ public class LoginActionTests(SchoolAccountWebApplicationFactory<Program> factor
     }
 
     [Fact]
-    public async Task Authorised_users_are_redirected_to_the_journey_page()
+    public async Task Signed_in_users_are_redirected_to_the_journey_page()
     {
         // Arrange
         var client = factory.CreateAuthorisedClient();
@@ -42,7 +42,7 @@ public class LoginActionTests(SchoolAccountWebApplicationFactory<Program> factor
     }
 
     [Fact]
-    public async Task Non_local_urls_returns_problem_response()
+    public async Task Signing_in_with_an_external_return_url_is_rejected()
     {
         // Arrange
         var client = factory.CreateAuthorisedClient();
@@ -60,7 +60,7 @@ public class LoginActionTests(SchoolAccountWebApplicationFactory<Program> factor
     }
 
     [Fact]
-    public async Task Local_urls_returns_success_response()
+    public async Task Signing_in_with_a_local_return_url_is_accepted()
     {
         // Arrange
         var client = factory.CreateAuthorisedClient();

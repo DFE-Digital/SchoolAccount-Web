@@ -79,7 +79,7 @@ public class ErrorControllerTests : IClassFixture<SchoolAccountWebApplicationFac
     }
 
     [Fact]
-    public async Task If_page_is_unknown_it_provides_you_a_not_found_page()
+    public async Task An_unknown_page_shows_the_page_not_found_page()
     {
         // Arrange
         var requestUri = "/this-page-does-not-exist";
@@ -134,7 +134,7 @@ public class ErrorControllerTests : IClassFixture<SchoolAccountWebApplicationFac
     }
 
     [Fact]
-    public async Task Error_page_is_rendered_when_re_executed_with_a_non_get_method()
+    public async Task A_service_error_shows_the_service_error_page_after_accepting_a_post()
     {
         // Arrange
         var requestUri = _factory.GeneratePath("Error", "Error", new { statusCode = 500 });

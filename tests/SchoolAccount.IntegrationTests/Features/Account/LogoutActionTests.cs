@@ -12,7 +12,7 @@ public class LogoutActionTests(SchoolAccountWebApplicationFactory<Program> facto
     : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
 {
     [Fact]
-    public async Task Authorised_users_can_sign_out()
+    public async Task Signed_in_users_can_sign_out()
     {
         // Arrange
         var cancellationToken = TestContext.Current.CancellationToken;
@@ -35,7 +35,7 @@ public class LogoutActionTests(SchoolAccountWebApplicationFactory<Program> facto
     }
 
     [Fact]
-    public async Task Unauthorised_users_accessing_sign_out_get_redirected_to_start_page()
+    public async Task Signed_out_users_accessing_sign_out_get_redirected_to_start_page()
     {
         // Arrange
         var client = factory.CreateUnauthenticatedClient(options: ClientOptions.AllowRedirects);
@@ -54,32 +54,6 @@ public class LogoutActionTests(SchoolAccountWebApplicationFactory<Program> facto
         response.Headers.Location?.OriginalString.ShouldEndWith(
             factory.GeneratePath("Start", "Start")
         );
-    }
-
-    [Fact]
-    public async Task Authenticated_pages_display_the_sign_out_link_for_authorised_users()
-    {
-        // Arrange
-        var client = factory.CreateAuthorisedClient(
-            services => services.StubQueryHandler(StubCensusJourneyHandler.Succeeding()),
-            ClientOptions.AllowRedirects
-        );
-        var pageUri = factory.GeneratePath("Journey", "Journey");
-
-        // Act
-        var response = await client.GetAsync(pageUri, TestContext.Current.CancellationToken);
-        var page = await AngleSharpPage.FromResponseAsync<CommonPage>(
-            response,
-            TestContext.Current.CancellationToken
-        );
-
-        // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.OK);
-        page.ShouldNotBeNull();
-
-        var pageSignOutLink = page.GetSignOutLink();
-        pageSignOutLink.ShouldNotBeNull();
-        pageSignOutLink.ShouldContainWithoutWhitespace("Sign out");
     }
 
     private static async Task<string> GetAntiforgeryTokenAsync(

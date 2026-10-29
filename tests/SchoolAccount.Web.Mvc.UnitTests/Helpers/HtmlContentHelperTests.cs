@@ -10,7 +10,7 @@ namespace SchoolAccount.Web.Mvc.UnitTests.Helpers;
 public class HtmlContentHelperTests
 {
     [Fact]
-    public async Task Govuk_classes_are_added_to_paragraphs()
+    public void Govuk_classes_are_added_to_paragraphs()
     {
         // Arrange
         var content = "<p>Test</p>";
@@ -19,7 +19,7 @@ public class HtmlContentHelperTests
         // Act
         var corrected = HtmlContentHelper.AddClassesToNodes(content, requiredClasses);
 
-        // Arrange
+        // Assert
         var document = Parse(corrected);
         var paragraph = document.QuerySelector(".govuk-paragraph");
         paragraph.ShouldNotBeNull();
@@ -27,7 +27,7 @@ public class HtmlContentHelperTests
     }
 
     [Fact]
-    public async Task Govuk_classes_are_added_to_lists_and_their_items()
+    public void Govuk_classes_are_added_to_lists_and_their_items()
     {
         // Arrange
         var content = "<ul><li>Item 1</li><li>Item 2</li><li>Item 3</li></ul>";
@@ -40,7 +40,7 @@ public class HtmlContentHelperTests
         // Act
         var corrected = HtmlContentHelper.AddClassesToNodes(content, requiredClasses);
 
-        // Arrange
+        // Assert
         var document = Parse(corrected);
         var list = document.QuerySelector<IHtmlUnorderedListElement>(".govuk-unsorted-list");
         list.ShouldNotBeNull();
@@ -49,12 +49,12 @@ public class HtmlContentHelperTests
         list.Children.ShouldAllBe(x => x.ClassList.Contains("govuk-unsorted-list__item"));
     }
 
-    private static AngleSharp.Dom.IDocument Parse(IHtmlContent html)
+    private static IDocument Parse(IHtmlContent html)
     {
         return Parse(html.ToString() ?? string.Empty);
     }
 
-    private static AngleSharp.Dom.IDocument Parse(string html)
+    private static IDocument Parse(string html)
     {
         var parser = new HtmlParser();
         return parser.ParseDocument($"<body>{html}</body>");

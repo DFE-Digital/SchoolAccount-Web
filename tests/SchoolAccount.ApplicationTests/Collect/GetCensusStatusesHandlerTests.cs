@@ -1,6 +1,7 @@
 using NSubstitute;
 using SchoolAccount.Application.Abstractions.Clients;
 using SchoolAccount.Application.Features.Collect.CensusStatuses;
+using SchoolAccount.SharedKernel;
 using SchoolAccount.SharedKernel.Authentication;
 using SchoolAccount.TestCommon.Builders;
 using Shouldly;
@@ -62,7 +63,7 @@ public class GetCensusStatusesHandlerTests
 
     private ICollectApiClient ClientReturning(
         GetCensusStatusesQuery query,
-        GetCensusStatusesResponse response
+        Result<GetCensusStatusesResponse> response
     )
     {
         var collectApiClient = Substitute.For<ICollectApiClient>();
@@ -73,7 +74,7 @@ public class GetCensusStatusesHandlerTests
                 query.Organisations,
                 _cancellationToken
             )
-            .Returns([response]);
+            .Returns(new List<GetCensusStatusesResponse> { response.Value });
 
         return collectApiClient;
     }
