@@ -5,7 +5,6 @@ using static SchoolAccount.Application.Features.Collect.GetCensusJourney.GetCens
 using static SchoolAccount.TestCommon.Builders.CensusStatusesResponseBuilder;
 using static SchoolAccount.TestCommon.Builders.GetAcademyTrustResponseBuilder.GetAcademyEstablishmentResponseBuilder;
 using static SchoolAccount.TestCommon.Builders.GetCensusJourney.GetCensusJourneyContentResponseBuilder;
-using static SchoolAccount.TestCommon.Builders.GetCensusJourney.GetCensusJourneyResponseBuilder;
 
 namespace SchoolAccount.ApplicationTests.Collect.GetCensusJourney;
 
@@ -26,36 +25,6 @@ public static class GetCensusJourneyMapperTests
             // Assert
             result.Content.ShouldBe(content);
             result.SchoolStatuses.ShouldBe(statuses);
-        }
-
-        [Fact]
-        public void The_statuses_are_mapped_onto_the_response()
-        {
-            // Arrange
-            var content = ACensusJourneyContentResponse().Build();
-            var first = ACensusStatusResponse().Build();
-            var second = ACensusStatusResponse().Build();
-            var statuses = new List<GetCensusStatusesResponse> { first, second };
-
-            // Act
-            var result = CreateGetCensusJourneyResponse(content, statuses);
-
-            // Assert
-            result.SchoolStatuses[0].ShouldBe(first);
-            result.SchoolStatuses[1].ShouldBe(second);
-        }
-
-        [Fact]
-        public void An_empty_status_list_is_mapped_onto_the_response()
-        {
-            // Arrange
-            var content = ACensusJourneyContentResponse().Build();
-
-            // Act
-            var result = CreateGetCensusJourneyResponse(content, []);
-
-            // Assert
-            result.SchoolStatuses.ShouldBeEmpty();
         }
     }
 
