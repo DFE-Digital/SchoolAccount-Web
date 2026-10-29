@@ -109,7 +109,7 @@ public class FeedbackCommandValidatorTests
     }
 
     [Fact]
-    public void Validation_error_when_message_is_empty()
+    public void An_empty_message_is_invalid()
     {
         // Arrange
         var command = new FeedbackCommand { Message = string.Empty, OrganisationId = "test-id" };
@@ -122,7 +122,7 @@ public class FeedbackCommandValidatorTests
     }
 
     [Fact]
-    public void Validation_error_when_message_is_over_maximum_length()
+    public void A_message_over_the_maximum_character_limit_is_invalid()
     {
         // Arrange
         var command = new FeedbackCommand
@@ -139,7 +139,7 @@ public class FeedbackCommandValidatorTests
     }
 
     [Fact]
-    public void Validation_error_when_organisationid_is_empty()
+    public void Feedback_without_an_organisation_is_invalid()
     {
         // Arrange
         var command = new FeedbackCommand { Message = "test-message", OrganisationId = "" };

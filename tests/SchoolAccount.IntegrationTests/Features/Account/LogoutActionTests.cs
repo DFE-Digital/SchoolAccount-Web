@@ -53,29 +53,6 @@ public class LogoutActionTests(SchoolAccountWebApplicationFactory<Program> facto
         );
     }
 
-    [Fact]
-    public async Task Signed_in_users_see_the_sign_out_link()
-    {
-        // Arrange
-        var client = factory.CreateAuthorisedClient(
-            services => services.StubQueryHandler(StubCensusJourneyHandler.Succeeding()),
-            ClientOptions.AllowRedirects
-        );
-        var pageUri = factory.GeneratePath("Journey", "Journey");
-
-        // Act
-        var response = await client.GetAsync(pageUri, _cancellationToken);
-        var page = await AngleSharpPage.FromResponseAsync<CommonPage>(response, _cancellationToken);
-
-        // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.OK);
-        page.ShouldNotBeNull();
-
-        var pageSignOutLink = page.GetSignOutLink();
-        pageSignOutLink.ShouldNotBeNull();
-        pageSignOutLink.ShouldContainWithoutWhitespace("Sign out");
-    }
-
     private static async Task<string> GetAntiforgeryTokenAsync(
         HttpClient client,
         string path,

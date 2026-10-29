@@ -20,7 +20,7 @@ public sealed class CollectApiClient(HttpClient httpClient, ILogger<CollectApiCl
     private const string _statusEndpoint = "/status";
     private const string _censusJourneyEndpoint = "/census/autumn-school-census";
 
-    public async Task<List<GetCensusStatusesResponse>> GetCensusStatuses(
+    public async Task<Result<List<GetCensusStatusesResponse>>> GetCensusStatuses(
         string id,
         string emailAddress,
         IReadOnlyList<Organisation> organisations,

@@ -35,7 +35,7 @@ public class GetCensusJourneyHandler(
 
         var getCensusJourney = CreateGetCensusJourneyResponse(
             censusJourneyContentResult.Value,
-            censusStatusesResult
+            censusStatusesResult.Value
         );
 
         return await Task.FromResult(getCensusJourney);

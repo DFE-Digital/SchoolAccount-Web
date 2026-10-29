@@ -35,7 +35,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     }
 
     [Fact]
-    public async Task Page_content_successfully_renders()
+    public async Task The_journey_page_shows_the_census_content()
     {
         // Arrange
         var journeyResult = AGetCensusJourneyResponse()
@@ -89,7 +89,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     [Theory]
     [InlineData("")]
     [InlineData("      ")]
-    public async Task Overview_does_not_render_for_an_empty_string(string overview)
+    public async Task The_overview_is_hidden_when_it_is_blank(string overview)
     {
         // Arrange
         var journeyResult = AGetCensusJourneyResponse()
@@ -299,7 +299,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     }
 
     [Fact]
-    public async Task School_status_table_not_displayed_when_not_a_mat()
+    public async Task The_school_status_table_is_not_shown_to_a_single_school()
     {
         // Arrange
         _getCensusJourneyHandler.Returns(
@@ -425,7 +425,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     }
 
     [Fact]
-    public async Task Understand_statuses_list_is_displayed_when_status_is_not_unavailable()
+    public async Task Status_explanations_are_shown_when_the_census_is_available()
     {
         // Arrange
         _getCensusJourneyHandler.Returns(
@@ -453,7 +453,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     }
 
     [Fact]
-    public async Task Understand_statuses_list_is_not_displayed_when_status_is_unavailable()
+    public async Task Status_explanations_are_hidden_when_the_census_is_unavailable()
     {
         // Arrange
         _getCensusJourneyHandler.Returns(
@@ -480,7 +480,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     }
 
     [Fact]
-    public async Task Understand_statuses_list_is_displayed_for_multi_academy_trust()
+    public async Task Status_explanations_are_shown_for_a_multi_academy_trust()
     {
         // Arrange
         var trustJson = """
