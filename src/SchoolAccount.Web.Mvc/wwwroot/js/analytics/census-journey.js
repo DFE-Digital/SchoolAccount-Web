@@ -1,4 +1,3 @@
-
 import {
     initialiseAnalytics,
     trackEvent,
@@ -10,7 +9,7 @@ const configElement = document.getElementById("census-analytics-config");
 
 if (configElement) {
     const { connectionString } = JSON.parse(configElement.textContent);
-
+    
     const appInsights = await initialiseAnalytics(connectionString);
 
     if (appInsights) {
@@ -18,7 +17,7 @@ if (configElement) {
         const organisationElement = document.getElementById(
             "census-organisation-config"
         );
-
+        
         if (organisationElement) {
             const { organisationId, organisationType } =
                 JSON.parse(organisationElement.textContent);
@@ -29,7 +28,7 @@ if (configElement) {
                 organisationType
             );
         }
-
+        
         // Forward existing GOV.UK Step-by-step events
         registerGovUkAnalytics(appInsights);
 
@@ -58,7 +57,7 @@ if (configElement) {
         // Scroll depth tracking
         const scrollMilestones = [25, 50, 75, 100];
         const trackedMilestones = new Set();
-
+        
         function trackScrollDepth() {
             const documentHeight = document.documentElement.scrollHeight;
             const viewportHeight = window.innerHeight;
