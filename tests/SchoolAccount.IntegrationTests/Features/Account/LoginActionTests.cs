@@ -12,7 +12,7 @@ public class LoginActionTests(SchoolAccountWebApplicationFactory<Program> factor
     {
         // Arrange
         var client = factory.CreateUnauthenticatedClient();
-        var requestUri = factory.GeneratePath("Account", "Login");
+        var requestUri = UrlConstants.LoginUrl;
 
         // Act
         var response = await client.GetAsync(requestUri, TestContext.Current.CancellationToken);
@@ -29,14 +29,16 @@ public class LoginActionTests(SchoolAccountWebApplicationFactory<Program> factor
     {
         // Arrange
         var client = factory.CreateAuthorisedClient();
-        var requestUri = factory.GeneratePath("Account", "Login");
+        var requestUri = UrlConstants.LoginUrl;
 
         // Act
         var response = await client.GetAsync(requestUri, TestContext.Current.CancellationToken);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
-        response.Headers.Location.ShouldNotBeNull().OriginalString.ShouldBe("/Journey");
+        response
+            .Headers.Location.ShouldNotBeNull()
+            .OriginalString.ShouldBe(UrlConstants.JourneyUrl);
     }
 
     [Fact]

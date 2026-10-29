@@ -13,7 +13,7 @@ public class LogoutActionTests(SchoolAccountWebApplicationFactory<Program> facto
         // Arrange
         var cancellationToken = TestContext.Current.CancellationToken;
         var client = factory.CreateAuthorisedClient();
-        var requestUri = factory.GeneratePath("Account", "Logout");
+        var requestUri = UrlConstants.LogoutUrl;
 
         using var content = new FormUrlEncodedContent(new Dictionary<string, string>());
 
@@ -29,7 +29,7 @@ public class LogoutActionTests(SchoolAccountWebApplicationFactory<Program> facto
     {
         // Arrange
         var client = factory.CreateUnauthenticatedClient();
-        var requestUri = factory.GeneratePath("Account", "Logout");
+        var requestUri = UrlConstants.LogoutUrl;
 
         // Act
         using var content = new StringContent(string.Empty);
@@ -41,6 +41,6 @@ public class LogoutActionTests(SchoolAccountWebApplicationFactory<Program> facto
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
-        response.Headers.Location.ShouldNotBeNull().OriginalString.ShouldBe("/");
+        response.Headers.Location.ShouldNotBeNull().OriginalString.ShouldBe(UrlConstants.BaseUrl);
     }
 }
