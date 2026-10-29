@@ -11,6 +11,7 @@ public static class UrlConstants
     public const string FeedbackPageThanksUrl = "/Feedback#feedback-thanks";
     public const string FeedbackSubmissionUrl = "/Feedback/Submit";
     public const string JourneyUrl = "/Journey";
+    public const string JourneyReturnUrl = "/?ReturnUrl=%2FJourney";
     public const string LoggedOutUrl = "/Account/LoggedOut";
     public const string LoginUrl = "/Account/Login";
     public const string LoginWithExternalReturnUrl =
