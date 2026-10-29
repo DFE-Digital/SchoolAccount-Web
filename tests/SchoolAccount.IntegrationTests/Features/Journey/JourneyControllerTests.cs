@@ -36,7 +36,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     {
         // Arrange
         var token = TestContext.Current.CancellationToken;
-        var pageUri = _factory.GeneratePath("Journey", "Journey");
+        var pageUri = UrlConstants.JourneyUrl;
 
         var journeyResult = AGetCensusJourneyResponse()
             .WithContent(
@@ -93,7 +93,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     {
         // Arrange
         var token = TestContext.Current.CancellationToken;
-        var pageUri = _factory.GeneratePath("Journey", "Journey");
+        var pageUri = UrlConstants.JourneyUrl;
 
         var journeyResult = AGetCensusJourneyResponse()
             .WithContent(ACensusJourneyContentResponse().WithOverview(overview))
@@ -117,7 +117,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     {
         // Arrange
         var token = TestContext.Current.CancellationToken;
-        var pageUri = _factory.GeneratePath("Journey", "Journey");
+        var pageUri = UrlConstants.JourneyUrl;
 
         var journeyResult = AGetCensusJourneyResponse()
             .WithContent(ACensusJourneyContentResponse())
@@ -141,7 +141,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     {
         // Arrange
         var token = TestContext.Current.CancellationToken;
-        var pageUri = _factory.GeneratePath("Journey", "Journey");
+        var pageUri = UrlConstants.JourneyUrl;
 
         var journeyResult = AGetCensusJourneyResponse()
             .WithContent(
@@ -177,7 +177,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     {
         // Arrange
         var token = TestContext.Current.CancellationToken;
-        var pageUri = _factory.GeneratePath("Journey", "Journey");
+        var pageUri = UrlConstants.JourneyUrl;
 
         var journeyResult = AGetCensusJourneyResponse()
             .WithContent(
@@ -209,7 +209,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     {
         // Arrange
         var token = TestContext.Current.CancellationToken;
-        var pageUri = _factory.GeneratePath("Journey", "Journey");
+        var pageUri = UrlConstants.JourneyUrl;
         _getCensusJourneyHandler.Returns(AGetCensusJourneyResponse().AsSuccess());
 
         // Act
@@ -236,7 +236,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     {
         // Arrange
         var token = TestContext.Current.CancellationToken;
-        var pageUri = _factory.GeneratePath("Journey", "Journey");
+        var pageUri = UrlConstants.JourneyUrl;
 
         var trustJson = """
             {
@@ -292,7 +292,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     public async Task There_are_steps_on_the_page_by_default()
     {
         // Arrange
-        var pageUri = _factory.GeneratePath("Journey", "Journey");
+        var pageUri = UrlConstants.JourneyUrl;
         _getCensusJourneyHandler.Returns(
             AGetCensusJourneyResponse()
                 .WithContent(ACensusJourneyContentResponse().WithSteps())
@@ -323,7 +323,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     public async Task The_school_status_table_is_not_shown_to_a_single_school()
     {
         // Arrange
-        var pageUri = _factory.GeneratePath("Journey", "Journey");
+        var pageUri = UrlConstants.JourneyUrl;
         _getCensusJourneyHandler.Returns(
             AGetCensusJourneyResponse()
                 .WithSchoolStatuses(
@@ -362,7 +362,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         var octoberFirst2026 = new DateTime(2026, 10, 1, 2, 0, 0, DateTimeKind.Utc);
         var octoberFourth2026 = new DateTime(2026, 10, 4, 9, 0, 0, DateTimeKind.Utc);
         var token = TestContext.Current.CancellationToken;
-        var pageUri = _factory.GeneratePath("Journey", "Journey");
+        var pageUri = UrlConstants.JourneyUrl;
 
         var trustJson = """
             {
@@ -455,7 +455,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     public async Task Status_explanations_are_shown_when_the_census_is_available()
     {
         // Arrange
-        var pageUri = _factory.GeneratePath("Journey", "Journey");
+        var pageUri = UrlConstants.JourneyUrl;
         _getCensusJourneyHandler.Returns(
             AGetCensusJourneyResponse()
                 .WithContent(
@@ -487,7 +487,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     public async Task Status_explanations_are_hidden_when_the_census_is_unavailable()
     {
         // Arrange
-        var pageUri = _factory.GeneratePath("Journey", "Journey");
+        var pageUri = UrlConstants.JourneyUrl;
         _getCensusJourneyHandler.Returns(
             AGetCensusJourneyResponse()
                 .WithContent(
@@ -519,7 +519,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     {
         // Arrange
         var token = TestContext.Current.CancellationToken;
-        var pageUri = _factory.GeneratePath("Journey", "Journey");
+        var pageUri = UrlConstants.JourneyUrl;
 
         var trustJson = """
             {
