@@ -36,7 +36,7 @@ public class LoginActionTests(SchoolAccountWebApplicationFactory<Program> factor
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
-        response.Headers.Location.ShouldNotBeNull().OriginalString.ShouldEndWith("/Journey");
+        response.Headers.Location.ShouldNotBeNull().OriginalString.ShouldBe("/Journey");
     }
 
     [Fact]
