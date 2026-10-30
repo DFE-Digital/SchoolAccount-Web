@@ -9,6 +9,7 @@ namespace SchoolAccount.Infrastructure.UnitTests.Azure;
 
 public class AzureTableClientTests
 {
+    private readonly CancellationToken _cancellationToken = TestContext.Current.CancellationToken;
     private readonly TableClient _tableClient = Substitute.For<TableClient>();
 
     [Fact]
@@ -22,7 +23,7 @@ public class AzureTableClientTests
         var client = new AzureTableClient(_tableClient);
 
         // Act
-        var result = await client.SendFeedback(message, ukprn, laestab, CancellationToken.None);
+        var result = await client.SendFeedback(message, ukprn, laestab, _cancellationToken);
 
         // Assert
         await _tableClient
@@ -40,12 +41,12 @@ public class AzureTableClientTests
         var laestab = "test-laestab";
 
         _tableClient
-            .AddEntityAsync(Arg.Any<FeedbackModel>(), Arg.Any<CancellationToken>())
+            .AddEntityAsync(Arg.Any<FeedbackModel>(), _cancellationToken)
             .ThrowsAsync(new RequestFailedException(""));
         var client = new AzureTableClient(_tableClient);
 
         // Act
-        var result = await client.SendFeedback(message, ukprn, laestab, CancellationToken.None);
+        var result = await client.SendFeedback(message, ukprn, laestab, _cancellationToken);
 
         // Assert
         await _tableClient
