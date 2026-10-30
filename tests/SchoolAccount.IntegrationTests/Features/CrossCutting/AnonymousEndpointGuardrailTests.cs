@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using SchoolAccount.IntegrationTests.Common;
+using SchoolAccount.TestCommon.Constants;
 using Shouldly;
 
 namespace SchoolAccount.IntegrationTests.Features.CrossCutting;

@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using SchoolAccount.IntegrationTests.Common;
 using SchoolAccount.IntegrationTests.Common.Pages;
+using SchoolAccount.TestCommon.Constants;
 using Shouldly;
 
 namespace SchoolAccount.IntegrationTests.Features.CrossCutting;

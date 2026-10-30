@@ -1,4 +1,4 @@
-namespace SchoolAccount.IntegrationTests.Common;
+namespace SchoolAccount.TestCommon.Constants;
 
 public static class UrlConstants
 {
