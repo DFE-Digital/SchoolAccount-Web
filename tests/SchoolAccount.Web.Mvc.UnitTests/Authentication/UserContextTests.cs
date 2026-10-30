@@ -15,7 +15,7 @@ public class UserContextTests
     private readonly FakeLogger<UserContext> _logger = new();
 
     [Fact]
-    public void Ensure_that_an_authenticated_user_can_be_retrieved_from_the_user_context_with_an_academy()
+    public void A_signed_in_academy_users_details_are_read_from_their_claims()
     {
         // Arrange
         var id = "EEEEEEEE-EEEE-EEEE-EEEE-EEEEEEEEEEEE";
@@ -77,7 +77,7 @@ public class UserContextTests
     }
 
     [Fact]
-    public void Ensure_that_an_authenticated_user_can_be_retrieved_from_the_user_context_with_a_trust_school()
+    public void A_signed_in_trust_users_details_are_read_from_their_claims()
     {
         // Arrange
         var id = "EEEEEEEE-EEEE-EEEE-EEEE-EEEEEEEEEEEE";
@@ -128,7 +128,7 @@ public class UserContextTests
     }
 
     [Fact]
-    public void Ensure_that_an_unauthorised_request_occurs_when_user_context_is_flagged_as_unauthenticated()
+    public void A_signed_out_user_has_no_details()
     {
         // Arrange
         var accessor = CreateHttpContextAccessor(false, null);
@@ -146,7 +146,7 @@ public class UserContextTests
     }
 
     [Fact]
-    public void Ensure_that_malformed_json_is_handled_gracefully()
+    public void An_unreadable_organisation_claim_is_ignored_and_logged()
     {
         // Arrange
         var id = "EEEEEEEE-EEEE-EEEE-EEEE-EEEEEEEEEEEE";

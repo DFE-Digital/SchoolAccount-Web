@@ -10,7 +10,7 @@ public class ErrorViewModelTests
     [Fact]
     public void Is_not_found_when_status_code_is_404()
     {
-        // Arrange / Act
+        // Arrange & Act
         var sut = new ErrorViewModel(HttpStatusCode.NotFound);
 
         // Assert
@@ -21,7 +21,7 @@ public class ErrorViewModelTests
     [Fact]
     public void Is_forbidden_when_status_code_is_403()
     {
-        // Arrange / Act
+        // Arrange & Act
         var sut = new ErrorViewModel(HttpStatusCode.Forbidden);
 
         // Assert
@@ -32,7 +32,7 @@ public class ErrorViewModelTests
     [Fact]
     public void Title_is_not_found_when_status_code_is_404()
     {
-        // Arrange / Act
+        // Arrange & Act
         var sut = new ErrorViewModel(HttpStatusCode.NotFound);
 
         // Assert
@@ -42,7 +42,7 @@ public class ErrorViewModelTests
     [Fact]
     public void Title_is_forbidden_when_status_code_is_403()
     {
-        // Arrange / Act
+        // Arrange & Act
         var sut = new ErrorViewModel(HttpStatusCode.Forbidden);
 
         // Assert
@@ -52,7 +52,7 @@ public class ErrorViewModelTests
     [Fact]
     public void Title_is_error_for_all_other_status_codes()
     {
-        // Arrange / Act
+        // Arrange & Act
         var sut = new ErrorViewModel(HttpStatusCode.PaymentRequired);
 
         // Assert

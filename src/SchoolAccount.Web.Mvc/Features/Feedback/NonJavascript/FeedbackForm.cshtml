@@ -1,0 +1,47 @@
+@using SchoolAccount.Web.Mvc.Features.Feedback
+@{
+    ViewData["Title"] = "Feedback";
+    ViewData["HideFeedbackFooter"] = true;
+    var errors = TempData["ErrorSummary"] as IDictionary<string, string> ?? new Dictionary<string, string>();
+    var messageError = errors.TryGetValue(nameof(FeedbackForm.FeedbackMessage), out var error) ? error : null;
+}
+
+<div class="govuk-width-container">
+    @if (TempData["FeedbackSubmitted"] is null)
+    {
+        <div id="non-js-feedback-form"
+             data-has-errors="@(messageError is not null ? "true" : "false")">
+            <form id="tell-us-form" asp-controller="Feedback" asp-action="Submit"
+                  method="post" novalidate>
+                <input type="hidden" name="returnUrl"
+                       value="@($"{Context.Request.Path}{Context.Request.QueryString}")"/>
+                <div class="govuk-form-group @(messageError is not null ? "govuk-form-group--error" : null)">
+                    <div id="what-do-you-want-to-tell-us-hint">
+                        <h1 class="govuk-heading-xl">Give feedback or report a problem</h1>
+                        <p class="govuk-body-l">Tell us what you think or describe the problem.</p>
+                        <p class="govuk-body">If you don't want to leave feedback, you can close this tab.</p>
+                    </div>
+                    @if (messageError is not null)
+                    {
+                        <p id="FeedbackMessage-error" class="govuk-error-message">
+                            <span class="govuk-visually-hidden">Error:</span> @messageError
+                        </p>
+                    }
+                    <textarea class="govuk-textarea @(messageError is not null ? "govuk-textarea--error" : null)"
+                          id="FeedbackMessage" name="FeedbackMessage" rows="5"
+                          aria-describedby="what-do-you-want-to-tell-us-hint @(messageError is not null ? "FeedbackMessage-error" : null)"></textarea>
+                </div>
+                <div class="govuk-button-group">
+                    <button type="submit" class="govuk-button">
+                        Send feedback
+                    </button>
+                </div>
+            </form>
+        </div>
+    }
+    else
+    {
+        <h1 id="feedback-thanks" class="govuk-heading-xl">Thanks for your feedback</h1>
+        <p class="govuk-body-l">You can now close this tab.</p>
+    }
+</div>

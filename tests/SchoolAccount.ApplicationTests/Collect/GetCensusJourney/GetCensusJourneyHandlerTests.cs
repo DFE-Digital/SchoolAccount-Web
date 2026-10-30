@@ -76,6 +76,7 @@ public class GetCensusJourneyHandlerTests
     [Fact]
     public async Task Academies_api_is_bypassed_when_the_organisation_is_of_establishment_category()
     {
+        // Arrange
         var query = new GetCensusJourneyQuery
         {
             Id = "test-user-id",
@@ -96,7 +97,7 @@ public class GetCensusJourneyHandlerTests
         // Assert
         await _academiesApiClient
             .DidNotReceive()
-            .GetTrustDetails(query.Organisation.Ukprn, _cancellationToken);
+            .GetTrustDetails(query.Organisation.Ukprn, Arg.Any<CancellationToken>());
     }
 
     [Fact]

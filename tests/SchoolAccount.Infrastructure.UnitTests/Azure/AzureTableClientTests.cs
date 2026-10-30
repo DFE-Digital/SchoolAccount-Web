@@ -9,10 +9,11 @@ namespace SchoolAccount.Infrastructure.UnitTests.Azure;
 
 public class AzureTableClientTests
 {
+    private readonly CancellationToken _cancellationToken = TestContext.Current.CancellationToken;
     private readonly TableClient _tableClient = Substitute.For<TableClient>();
 
     [Fact]
-    public async Task A_table_is_added_by_the_client_successfully()
+    public async Task Feedback_is_saved_to_table_storage()
     {
         // Arrange
         var message = "test-message";
@@ -22,7 +23,7 @@ public class AzureTableClientTests
         var client = new AzureTableClient(_tableClient);
 
         // Act
-        var result = await client.SendFeedback(message, ukprn, laestab, CancellationToken.None);
+        var result = await client.SendFeedback(message, ukprn, laestab, _cancellationToken);
 
         // Assert
         await _tableClient
@@ -32,7 +33,7 @@ public class AzureTableClientTests
     }
 
     [Fact]
-    public async Task Failure_returned_when_client_throws_exception()
+    public async Task A_storage_error_is_returned_as_a_failure()
     {
         // Arrange
         var message = "test-message";
@@ -40,12 +41,12 @@ public class AzureTableClientTests
         var laestab = "test-laestab";
 
         _tableClient
-            .AddEntityAsync(Arg.Any<FeedbackModel>(), Arg.Any<CancellationToken>())
+            .AddEntityAsync(Arg.Any<FeedbackModel>(), _cancellationToken)
             .ThrowsAsync(new RequestFailedException(""));
         var client = new AzureTableClient(_tableClient);
 
         // Act
-        var result = await client.SendFeedback(message, ukprn, laestab, CancellationToken.None);
+        var result = await client.SendFeedback(message, ukprn, laestab, _cancellationToken);
 
         // Assert
         await _tableClient

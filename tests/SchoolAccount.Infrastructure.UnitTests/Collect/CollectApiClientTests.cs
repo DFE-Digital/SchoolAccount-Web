@@ -62,7 +62,8 @@ public class CollectApiClientTests : IDisposable
         );
 
         // Assert
-        var status = result.ShouldHaveSingleItem();
+        result.IsSuccess.ShouldBeTrue();
+        var status = result.Value.ShouldHaveSingleItem();
         status.Id.ShouldBe("123");
         status.Interesting.ShouldBeTrue();
         status.Actions.ShouldHaveSingleItem().Name.ShouldBe("Autumn School Census");

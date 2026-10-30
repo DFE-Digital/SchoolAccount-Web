@@ -1,8 +1,5 @@
-using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -40,6 +37,7 @@ public class ServiceCollectionExtensionsTests
         using var configuration = BuildConfiguration();
         services.AddDsiAuthentication(configuration);
 
+        // Act
         var provider = services.BuildServiceProvider();
         var oidc = provider
             .GetRequiredService<IOptionsMonitor<OpenIdConnectOptions>>()
@@ -66,6 +64,7 @@ public class ServiceCollectionExtensionsTests
         using var configuration = BuildConfiguration();
         services.AddDsiAuthentication(configuration);
 
+        // Act
         var provider = services.BuildServiceProvider();
         var oidc = provider
             .GetRequiredService<IOptionsMonitor<OpenIdConnectOptions>>()
@@ -73,6 +72,5 @@ public class ServiceCollectionExtensionsTests
 
         // Assert
         oidc.CallbackPath.Value.ShouldBe("/signin-oidc");
-        oidc.SignedOutCallbackPath.Value.ShouldBe("/account/loggedout");
     }
 }

@@ -4,22 +4,16 @@ using Shouldly;
 
 namespace SchoolAccount.IntegrationTests.Features.Start;
 
-public class StartControllerTests : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
+public class StartControllerTests(SchoolAccountWebApplicationFactory<Program> factory)
+    : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
 {
-    private readonly HttpClient _client;
-    private readonly SchoolAccountWebApplicationFactory<Program> _factory;
-
-    public StartControllerTests(SchoolAccountWebApplicationFactory<Program> factory)
-    {
-        _factory = factory;
-        _client = factory.CreateUnauthenticatedClient();
-    }
+    private readonly HttpClient _client = factory.CreateUnauthenticatedClient();
 
     [Fact]
-    public async Task Ensure_that_the_start_controller_returns_a_successful_result()
+    public async Task The_start_page_explains_how_to_sign_in()
     {
         // Arrange
-        var pageUri = _factory.GeneratePath("Start", "Start");
+        var pageUri = factory.GeneratePath("Start", "Start");
 
         // Act
         var response = await _client.GetAsync(pageUri, TestContext.Current.CancellationToken);
