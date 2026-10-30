@@ -3,6 +3,7 @@ using AngleSharp.Html.Dom;
 using SchoolAccount.IntegrationTests.Common;
 using SchoolAccount.IntegrationTests.Common.Extensions;
 using SchoolAccount.IntegrationTests.Common.Pages;
+using SchoolAccount.TestCommon.Constants;
 using SchoolAccount.TestCommon.Stubs;
 using Shouldly;
 
@@ -18,17 +19,11 @@ public class FooterTests(SchoolAccountWebApplicationFactory<Program> factory)
     private readonly CancellationToken _cancellationToken = TestContext.Current.CancellationToken;
 
     [Theory]
-    [InlineData("Journey", "Journey")]
-    [InlineData("Start", "Start")]
-    public async Task Footer_is_displayed_on_pages_across_the_service(
-        string controller,
-        string action
-    )
+    [InlineData(UrlConstants.JourneyUrl)]
+    [InlineData(UrlConstants.BaseUrl)]
+    public async Task Footer_is_displayed_on_pages_across_the_service(string pageUri)
     {
-        // Arrange
-        var pageUri = factory.GeneratePath(controller, action);
-
-        // Act
+        // Arrange & Act
         var response = await _client.GetAsync(pageUri, _cancellationToken);
 
         var page = await AngleSharpPage.FromResponseAsync<CommonPage>(response, _cancellationToken);
@@ -43,7 +38,7 @@ public class FooterTests(SchoolAccountWebApplicationFactory<Program> factory)
     public async Task Footer_includes_an_accessibility_statement()
     {
         // Arrange
-        var pageUri = factory.GeneratePath("Journey", "Journey");
+        var pageUri = UrlConstants.JourneyUrl;
 
         // Act
         var response = await _client.GetAsync(pageUri, _cancellationToken);
@@ -68,7 +63,7 @@ public class FooterTests(SchoolAccountWebApplicationFactory<Program> factory)
     public async Task Footer_includes_a_privacy_notice()
     {
         // Arrange
-        var pageUri = factory.GeneratePath("Journey", "Journey");
+        var pageUri = UrlConstants.JourneyUrl;
 
         // Act
         var response = await _client.GetAsync(pageUri, _cancellationToken);

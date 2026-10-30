@@ -9,6 +9,7 @@ using SchoolAccount.Application.Abstractions.Messaging;
 using SchoolAccount.Application.Features.Feedback;
 using SchoolAccount.SharedKernel;
 using SchoolAccount.SharedKernel.Authentication;
+using SchoolAccount.TestCommon.Constants;
 using SchoolAccount.Web.Mvc.Features.Feedback;
 using Shouldly;
 
@@ -51,7 +52,7 @@ public class FeedbackControllerTests
         var result = await controller.Submit(Form(string.Empty), _cancellationToken);
 
         // Assert
-        result.ShouldBeOfType<LocalRedirectResult>().Url.ShouldBe("/Submit");
+        result.ShouldBeOfType<LocalRedirectResult>().Url.ShouldBe(UrlConstants.SubmitRedirectUrl);
         controller
             .TempData["ErrorSummary"]
             .ShouldBeOfType<Dictionary<string, string>>()
@@ -102,7 +103,7 @@ public class FeedbackControllerTests
         var result = await controller.Submit(Form("test-feedback"), _cancellationToken);
 
         // Assert
-        result.ShouldBeOfType<LocalRedirectResult>().Url.ShouldBe("/Submit");
+        result.ShouldBeOfType<LocalRedirectResult>().Url.ShouldBe(UrlConstants.SubmitRedirectUrl);
         controller
             .TempData["ErrorSummary"]
             .ShouldBeOfType<Dictionary<string, string>>()
@@ -138,8 +139,10 @@ public class FeedbackControllerTests
             .Handle(Arg.Any<FeedbackCommand>(), Arg.Any<CancellationToken>())
             .Returns(result);
 
-    private static FeedbackForm Form(string message, string returnUrl = "/Submit") =>
-        new() { FeedbackMessage = message, ReturnUrl = returnUrl };
+    private static FeedbackForm Form(
+        string message,
+        string returnUrl = UrlConstants.SubmitRedirectUrl
+    ) => new() { FeedbackMessage = message, ReturnUrl = returnUrl };
 
     private FeedbackController CreateController()
     {

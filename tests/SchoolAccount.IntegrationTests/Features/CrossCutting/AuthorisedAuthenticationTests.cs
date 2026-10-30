@@ -2,6 +2,7 @@
 using SchoolAccount.IntegrationTests.Common;
 using SchoolAccount.IntegrationTests.Common.Extensions;
 using SchoolAccount.IntegrationTests.Common.Pages;
+using SchoolAccount.TestCommon.Constants;
 using SchoolAccount.TestCommon.Stubs;
 using Shouldly;
 
@@ -17,8 +18,8 @@ public class AuthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<Pr
     );
 
     [Theory]
-    [InlineData("/")]
-    [InlineData("Journey")]
+    [InlineData(UrlConstants.BaseUrl)]
+    [InlineData(UrlConstants.JourneyUrl)]
     public async Task Signed_in_users_can_access_a_page(string path)
     {
         // Arrange & Act
@@ -33,7 +34,7 @@ public class AuthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<Pr
     public async Task Signed_in_users_see_the_sign_out_link()
     {
         // Arrange
-        var pageUri = factory.GeneratePath("Journey", "Journey");
+        var pageUri = UrlConstants.JourneyUrl;
 
         // Act
         var response = await _client.GetAsync(pageUri, _cancellationToken);
@@ -48,7 +49,7 @@ public class AuthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<Pr
     public async Task Signed_in_users_see_their_organisation_name()
     {
         // Arrange
-        var pageUri = factory.GeneratePath("Journey", "Journey");
+        var pageUri = UrlConstants.JourneyUrl;
 
         // Act
         var response = await _client.GetAsync(pageUri, _cancellationToken);

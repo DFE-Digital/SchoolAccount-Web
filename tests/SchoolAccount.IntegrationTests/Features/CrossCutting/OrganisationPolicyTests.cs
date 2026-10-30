@@ -3,6 +3,7 @@ using System.Security.Claims;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SchoolAccount.IntegrationTests.Common;
 using SchoolAccount.IntegrationTests.Common.Extensions;
+using SchoolAccount.TestCommon.Constants;
 using SchoolAccount.TestCommon.Stubs;
 using Shouldly;
 using static SchoolAccount.Web.Mvc.Authentication.ClaimConstants;
@@ -47,7 +48,7 @@ public class OrganisationPolicyTests(SchoolAccountWebApplicationFactory<Program>
 
         // Act
         var response = await client.GetAsync(
-            factory.GeneratePath("Journey", "Journey"),
+            UrlConstants.JourneyUrl,
             TestContext.Current.CancellationToken
         );
 
@@ -65,7 +66,7 @@ public class OrganisationPolicyTests(SchoolAccountWebApplicationFactory<Program>
 
         // Act
         var response = await client.GetAsync(
-            factory.GeneratePath("Journey", "Journey"),
+            UrlConstants.JourneyUrl,
             TestContext.Current.CancellationToken
         );
 
