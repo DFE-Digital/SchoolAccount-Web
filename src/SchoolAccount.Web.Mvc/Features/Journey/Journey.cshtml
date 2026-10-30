@@ -1,35 +1,36 @@
 ﻿@model SchoolAccount.Web.Mvc.Features.Journey.JourneyViewModel
+@using SchoolAccount.Web.Mvc.Authentication
+@inject AnalyticsUserIdProvider AnalyticsUserIdProvider
 @{
     ViewData["Title"] = "Journey";
     ViewData["EnableCensusAnalytics"] = true;
 
+    var analyticsUserId = AnalyticsUserIdProvider.GetUserId();
+    
     var organisation = Model.Organisation;
 
-    var laestab = organisation.IsEstablishment &&
-                  !string.IsNullOrWhiteSpace(organisation.LocalAuthority?.Code) &&
-                  !string.IsNullOrWhiteSpace(organisation.EstablishmentNumber)
-        ? $"{organisation.LocalAuthority.Code}{organisation.EstablishmentNumber}"
+    // SAB-527: Use UKPRN for organisation attribution.
+    var organisationId = string.IsNullOrWhiteSpace(organisation.Ukprn)
+        ? null
+        : organisation.Ukprn.Trim();
+
+    var organisationType = organisationId is not null
+        ? "UKPRN"
         : null;
-
-    var organisationId = laestab ?? organisation.Ukprn;
-
-    string? organisationType = null;
-
-    if (laestab is not null)
-    {
-        organisationType = "LAESTAB";
-    }
-    else if (!string.IsNullOrWhiteSpace(organisation.Ukprn))
-    {
-        organisationType = "UKPRN";
-    }
+    
+    // Distinguish schools from other organisation types.
+    var organisationCategory = organisation.IsEstablishment
+        ? "School"
+        : "Trust";
 }
 
 <script type="application/json" id="census-organisation-config">
     @Html.Raw(System.Text.Json.JsonSerializer.Serialize(new
     {
         organisationId,
-        organisationType
+        organisationType,
+        organisationCategory,
+        analyticsUserId
     }))
 </script>
 

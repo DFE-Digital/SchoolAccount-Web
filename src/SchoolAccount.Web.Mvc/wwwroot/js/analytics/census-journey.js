@@ -1,3 +1,4 @@
+
 import {
     initialiseAnalytics,
     trackEvent,
@@ -8,27 +9,33 @@ import {
 const configElement = document.getElementById("census-analytics-config");
 
 if (configElement) {
-        const { mode, connectionString } = JSON.parse(configElement.textContent);
+    const { mode, connectionString } = JSON.parse(configElement.textContent);
 
     const appInsights = await initialiseAnalytics(mode, connectionString);
 
     if (appInsights) {
-        // Organisation identification (LAESTAB or UKPRN)
+        // Identify the authenticated user and organisation (UKPRN)
         const organisationElement = document.getElementById(
             "census-organisation-config"
         );
-        
+
         if (organisationElement) {
-            const { organisationId, organisationType } =
-                JSON.parse(organisationElement.textContent);
+            const {
+                organisationId,
+                organisationType,
+                organisationCategory,
+                analyticsUserId
+            } = JSON.parse(organisationElement.textContent);
 
             setOrganisationContext(
                 appInsights,
                 organisationId,
-                organisationType
+                organisationType,
+                analyticsUserId,
+                organisationCategory
             );
         }
-        
+
         // Forward existing GOV.UK Step-by-step events
         registerGovUkAnalytics(appInsights);
 
@@ -57,7 +64,7 @@ if (configElement) {
         // Scroll depth tracking
         const scrollMilestones = [25, 50, 75, 100];
         const trackedMilestones = new Set();
-        
+
         function trackScrollDepth() {
             const documentHeight = document.documentElement.scrollHeight;
             const viewportHeight = window.innerHeight;

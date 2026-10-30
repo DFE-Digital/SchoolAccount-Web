@@ -20,12 +20,19 @@ export async function initialiseAnalytics(mode, connectionString) {
             },
 
             addTelemetryInitializer: (initializer) => {
-                const envelope = { data: {} };
+                const envelope = {
+                    data: {
+                        baseData: {
+                            properties: {}
+                        }
+                    }
+                };
+
                 initializer(envelope);
 
                 organisationContext = {
                     ...organisationContext,
-                    ...envelope.data
+                    ...envelope.data.baseData.properties
                 };
             }
         };
@@ -73,23 +80,36 @@ export function trackEvent(appInsights, name, properties = {}) {
 export function setOrganisationContext(
     appInsights,
     organisationId,
-    organisationType
+    organisationType,
+    analyticsUserId,
+    organisationCategory
 ) {
+    if (analyticsUserId) {
+        appInsights.setAuthenticatedUserContext(
+            analyticsUserId,
+            undefined,
+            false
+        );
+    } else {
+        console.warn("SAB-527: Analytics user identifier unavailable.");
+    }
+
     if (!organisationId || !organisationType) {
         console.warn("SAB-527: Organisation identifier unavailable.");
         return;
     }
 
-    appInsights.setAuthenticatedUserContext(
-        `${organisationType}:${organisationId}`,
-        undefined,
-        false
-    );
-
     appInsights.addTelemetryInitializer(envelope => {
         envelope.data = envelope.data || {};
-        envelope.data.organisationId = organisationId;
-        envelope.data.organisationType = organisationType;
+        envelope.data.baseData = envelope.data.baseData || {};
+        envelope.data.baseData.properties =
+            envelope.data.baseData.properties || {};
+
+        Object.assign(envelope.data.baseData.properties, {
+            organisationId,
+            organisationType,
+            organisationCategory
+        });
     });
 
     console.log(

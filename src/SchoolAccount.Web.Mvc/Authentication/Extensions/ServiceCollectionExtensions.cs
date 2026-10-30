@@ -45,5 +45,6 @@ public static class ServiceCollectionExtensions
             });
 
         services.AddScoped<IUserContext, UserContext>();
+        services.AddScoped<AnalyticsUserIdProvider>();
     }
 }
