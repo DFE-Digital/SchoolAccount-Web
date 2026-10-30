@@ -1,7 +1,40 @@
 
 const sdkUrl = "https://js.monitor.azure.com/scripts/b/ai.3.gbl.min.js";
 
-export async function initialiseAnalytics(connectionString) {
+export async function initialiseAnalytics(mode, connectionString) {
+    if (mode === "Console") {
+        console.info("SAB-527: Console analytics enabled.");
+
+        let organisationContext = {};
+
+        return {
+            trackEvent: ({ name, properties = {} }) => {
+                console.log(`[Analytics] ${name}`, {
+                    ...organisationContext,
+                    ...properties
+                });
+            },
+
+            setAuthenticatedUserContext: (userId) => {
+                organisationContext.authenticatedId = userId;
+            },
+
+            addTelemetryInitializer: (initializer) => {
+                const envelope = { data: {} };
+                initializer(envelope);
+
+                organisationContext = {
+                    ...organisationContext,
+                    ...envelope.data
+                };
+            }
+        };
+    }
+
+    if (mode !== "ApplicationInsights") {
+        return null;
+    }
+
     if (!connectionString) {
         console.warn("Application Insights connection string is missing.");
         return null;
@@ -10,15 +43,16 @@ export async function initialiseAnalytics(connectionString) {
     try {
         await loadScript(sdkUrl);
 
-        const appInsights = new window.Microsoft.ApplicationInsights.ApplicationInsights({
-            config: {
-                connectionString,
-                enableAutoRouteTracking: false,
-                disableExceptionTracking: true,
-                disableAjaxTracking: true,
-                disableFetchTracking: true
-            }
-        });
+        const appInsights =
+            new window.Microsoft.ApplicationInsights.ApplicationInsights({
+                config: {
+                    connectionString,
+                    enableAutoRouteTracking: false,
+                    disableExceptionTracking: true,
+                    disableAjaxTracking: true,
+                    disableFetchTracking: true
+                }
+            });
 
         appInsights.loadAppInsights();
 
@@ -36,24 +70,24 @@ export function trackEvent(appInsights, name, properties = {}) {
     });
 }
 
-export function setOrganisationContext(appInsights, organisationId, organisationType) {
+export function setOrganisationContext(
+    appInsights,
+    organisationId,
+    organisationType
+) {
     if (!organisationId || !organisationType) {
         console.warn("SAB-527: Organisation identifier unavailable.");
         return;
     }
 
-    // Identify the organisation in Application Insights.
-    // Do not persist this identity in a cookie.
     appInsights.setAuthenticatedUserContext(
         `${organisationType}:${organisationId}`,
         undefined,
         false
     );
 
-    // Attach organisation details to all subsequent telemetry.
     appInsights.addTelemetryInitializer(envelope => {
         envelope.data = envelope.data || {};
-
         envelope.data.organisationId = organisationId;
         envelope.data.organisationType = organisationType;
     });

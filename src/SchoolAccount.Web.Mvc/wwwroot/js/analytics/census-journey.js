@@ -8,9 +8,9 @@ import {
 const configElement = document.getElementById("census-analytics-config");
 
 if (configElement) {
-    const { connectionString } = JSON.parse(configElement.textContent);
-    
-    const appInsights = await initialiseAnalytics(connectionString);
+        const { mode, connectionString } = JSON.parse(configElement.textContent);
+
+    const appInsights = await initialiseAnalytics(mode, connectionString);
 
     if (appInsights) {
         // Organisation identification (LAESTAB or UKPRN)

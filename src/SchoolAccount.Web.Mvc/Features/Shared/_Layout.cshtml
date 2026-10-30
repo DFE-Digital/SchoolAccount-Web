@@ -89,19 +89,30 @@
         MOJFrontend.initAll()
     </script>
     
-    @if (ViewData["EnableCensusAnalytics"] is true &&
-         AzureMonitorSettings.IsConfigured(Configuration))
+    @if (ViewData["EnableCensusAnalytics"] is true)
     {
-        var connectionString =
-            Configuration[AzureMonitorSettings.ConnectionStringEnvironmentVariable];
+        var analyticsMode = Configuration["CensusAnalytics:Mode"] ?? "Disabled";
 
-        <script type="application/json" id="census-analytics-config">
-        @Html.Raw(JsonSerializer.Serialize(new { connectionString }))
-    </script>
+        var connectionString = analyticsMode == "ApplicationInsights"
+            ? Configuration[AzureMonitorSettings.ConnectionStringEnvironmentVariable]
+            : null;
 
-        <script type="module"
-                src="~/js/analytics/census-journey.js"
-                asp-append-version="true"></script>
+        if (analyticsMode == "Console" ||
+            (analyticsMode == "ApplicationInsights" &&
+             !string.IsNullOrWhiteSpace(connectionString)))
+        {
+            <script type="application/json" id="census-analytics-config">
+            @Html.Raw(JsonSerializer.Serialize(new
+            {
+                mode = analyticsMode,
+                connectionString
+            }))
+        </script>
+
+            <script type="module"
+                    src="~/js/analytics/census-journey.js"
+                    asp-append-version="true"></script>
+        }
     }
 }
 
