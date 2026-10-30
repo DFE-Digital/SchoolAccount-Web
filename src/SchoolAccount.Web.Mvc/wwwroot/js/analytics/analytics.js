@@ -21,10 +21,8 @@ export async function initialiseAnalytics(mode, connectionString) {
 
             addTelemetryInitializer: (initializer) => {
                 const envelope = {
-                    data: {
-                        baseData: {
-                            properties: {}
-                        }
+                    baseData: {
+                        properties: {}
                     }
                 };
 
@@ -32,7 +30,7 @@ export async function initialiseAnalytics(mode, connectionString) {
 
                 organisationContext = {
                     ...organisationContext,
-                    ...envelope.data.baseData.properties
+                    ...envelope.baseData.properties
                 };
             }
         };
@@ -100,12 +98,11 @@ export function setOrganisationContext(
     }
 
     appInsights.addTelemetryInitializer(envelope => {
-        envelope.data = envelope.data || {};
-        envelope.data.baseData = envelope.data.baseData || {};
-        envelope.data.baseData.properties =
-            envelope.data.baseData.properties || {};
+        envelope.baseData = envelope.baseData || {};
+        envelope.baseData.properties =
+            envelope.baseData.properties || {};
 
-        Object.assign(envelope.data.baseData.properties, {
+        Object.assign(envelope.baseData.properties, {
             organisationId,
             organisationType,
             organisationCategory
