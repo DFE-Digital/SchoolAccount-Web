@@ -13,6 +13,7 @@ namespace SchoolAccount.IntegrationTests.Features.Error;
 
 public class ErrorControllerTests : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
 {
+    private readonly CancellationToken _cancellationToken = TestContext.Current.CancellationToken;
     private readonly HttpClient _authenticatedClient;
     private readonly IQueryHandler<
         GetCensusStatusesQuery,
@@ -37,17 +38,10 @@ public class ErrorControllerTests : IClassFixture<SchoolAccountWebApplicationFac
         var requestUri = UrlConstants.Error404Url;
 
         // Act
-        var response = await _authenticatedClient.GetAsync(
-            requestUri,
-            TestContext.Current.CancellationToken
-        );
-        var page = await AngleSharpPage.FromResponseAsync<ErrorPage>(
-            response,
-            TestContext.Current.CancellationToken
-        );
+        var response = await _authenticatedClient.GetAsync(requestUri, _cancellationToken);
+        var page = await AngleSharpPage.FromResponseAsync<ErrorPage>(response, _cancellationToken);
 
         // Assert
-        page.ShouldNotBeNull();
         page.IsNotFoundPageTitle().ShouldBeTrue();
         page.IsNotFoundPageHeading().ShouldBeTrue();
         response.IsSuccessStatusCode.ShouldBeFalse();
@@ -61,17 +55,10 @@ public class ErrorControllerTests : IClassFixture<SchoolAccountWebApplicationFac
         var requestUri = UrlConstants.Error500Url;
 
         // Act
-        var response = await _authenticatedClient.GetAsync(
-            requestUri,
-            TestContext.Current.CancellationToken
-        );
-        var page = await AngleSharpPage.FromResponseAsync<ErrorPage>(
-            response,
-            TestContext.Current.CancellationToken
-        );
+        var response = await _authenticatedClient.GetAsync(requestUri, _cancellationToken);
+        var page = await AngleSharpPage.FromResponseAsync<ErrorPage>(response, _cancellationToken);
 
         // Assert
-        page.ShouldNotBeNull();
         page.IsServerErrorPageTitle().ShouldBeTrue();
         response.IsSuccessStatusCode.ShouldBeFalse();
         response.StatusCode.ShouldBe(HttpStatusCode.InternalServerError);
@@ -84,17 +71,10 @@ public class ErrorControllerTests : IClassFixture<SchoolAccountWebApplicationFac
         var requestUri = "/this-page-does-not-exist";
 
         // Act
-        var response = await _authenticatedClient.GetAsync(
-            requestUri,
-            TestContext.Current.CancellationToken
-        );
-        var page = await AngleSharpPage.FromResponseAsync<ErrorPage>(
-            response,
-            TestContext.Current.CancellationToken
-        );
+        var response = await _authenticatedClient.GetAsync(requestUri, _cancellationToken);
+        var page = await AngleSharpPage.FromResponseAsync<ErrorPage>(response, _cancellationToken);
 
         // Assert
-        page.ShouldNotBeNull();
         page.IsNotFoundPageTitle().ShouldBeTrue();
         page.IsNotFoundPageHeading().ShouldBeTrue();
         response.IsSuccessStatusCode.ShouldBeFalse();
@@ -112,18 +92,10 @@ public class ErrorControllerTests : IClassFixture<SchoolAccountWebApplicationFac
             .Throws(new ApplicationException("Bang!"));
 
         // Act
-        var response = await _authenticatedClient.GetAsync(
-            requestUri,
-            TestContext.Current.CancellationToken
-        );
-        var page = await AngleSharpPage.FromResponseAsync<CommonPage>(
-            response,
-            TestContext.Current.CancellationToken
-        );
+        var response = await _authenticatedClient.GetAsync(requestUri, _cancellationToken);
+        var page = await AngleSharpPage.FromResponseAsync<CommonPage>(response, _cancellationToken);
 
         // Assert
-        page.ShouldNotBeNull();
-
         var pageTitle = page.GetTitle();
         pageTitle.ShouldNotBeNull();
         pageTitle.ShouldBeEquivalentTo(ErrorViewModel.ErrorTitle);
@@ -142,16 +114,12 @@ public class ErrorControllerTests : IClassFixture<SchoolAccountWebApplicationFac
         var response = await _authenticatedClient.PostAsync(
             requestUri,
             content: null,
-            TestContext.Current.CancellationToken
+            _cancellationToken
         );
 
-        var page = await AngleSharpPage.FromResponseAsync<ErrorPage>(
-            response,
-            TestContext.Current.CancellationToken
-        );
+        var page = await AngleSharpPage.FromResponseAsync<ErrorPage>(response, _cancellationToken);
 
         // Assert
-        page.ShouldNotBeNull();
         page.IsServerErrorPageTitle().ShouldBeTrue();
         response.StatusCode.ShouldBe(HttpStatusCode.InternalServerError);
     }
@@ -166,16 +134,12 @@ public class ErrorControllerTests : IClassFixture<SchoolAccountWebApplicationFac
         var response = await _authenticatedClient.PostAsync(
             requestUri,
             content: null,
-            TestContext.Current.CancellationToken
+            _cancellationToken
         );
 
-        var page = await AngleSharpPage.FromResponseAsync<ErrorPage>(
-            response,
-            TestContext.Current.CancellationToken
-        );
+        var page = await AngleSharpPage.FromResponseAsync<ErrorPage>(response, _cancellationToken);
 
         // Assert
-        page.ShouldNotBeNull();
         page.IsServerErrorPageTitle().ShouldBeTrue();
         response.IsSuccessStatusCode.ShouldBeFalse();
     }

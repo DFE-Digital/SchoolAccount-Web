@@ -8,6 +8,8 @@ namespace SchoolAccount.IntegrationTests.Features.Account;
 public class LoginActionTests(SchoolAccountWebApplicationFactory<Program> factory)
     : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
 {
+    private readonly CancellationToken _cancellationToken = TestContext.Current.CancellationToken;
+
     [Fact]
     public async Task Signed_out_users_are_redirected_to_DSI()
     {
@@ -16,7 +18,7 @@ public class LoginActionTests(SchoolAccountWebApplicationFactory<Program> factor
         var requestUri = UrlConstants.LoginUrl;
 
         // Act
-        var response = await client.GetAsync(requestUri, TestContext.Current.CancellationToken);
+        var response = await client.GetAsync(requestUri, _cancellationToken);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
@@ -33,7 +35,7 @@ public class LoginActionTests(SchoolAccountWebApplicationFactory<Program> factor
         var requestUri = UrlConstants.LoginUrl;
 
         // Act
-        var response = await client.GetAsync(requestUri, TestContext.Current.CancellationToken);
+        var response = await client.GetAsync(requestUri, _cancellationToken);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
@@ -50,7 +52,7 @@ public class LoginActionTests(SchoolAccountWebApplicationFactory<Program> factor
         var requestUri = UrlConstants.LoginWithExternalReturnUrl;
 
         // Act
-        var response = await client.GetAsync(requestUri, TestContext.Current.CancellationToken);
+        var response = await client.GetAsync(requestUri, _cancellationToken);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
@@ -64,7 +66,7 @@ public class LoginActionTests(SchoolAccountWebApplicationFactory<Program> factor
         var requestUri = UrlConstants.LoginWithJourneyReturnUrl;
 
         // Act
-        var response = await client.GetAsync(requestUri, TestContext.Current.CancellationToken);
+        var response = await client.GetAsync(requestUri, _cancellationToken);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Found);

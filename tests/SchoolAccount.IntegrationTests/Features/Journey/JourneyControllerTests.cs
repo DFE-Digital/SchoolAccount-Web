@@ -19,6 +19,7 @@ namespace SchoolAccount.IntegrationTests.Features.Journey;
 
 public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
 {
+    private readonly CancellationToken _cancellationToken = TestContext.Current.CancellationToken;
     private readonly HttpClient _client;
     private readonly SchoolAccountWebApplicationFactory<Program> _factory;
     private readonly StubCensusJourneyHandler _getCensusJourneyHandler = new();
@@ -36,7 +37,6 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     public async Task The_journey_page_shows_the_census_content()
     {
         // Arrange
-        var token = TestContext.Current.CancellationToken;
         var pageUri = UrlConstants.JourneyUrl;
 
         var journeyResult = AGetCensusJourneyResponse()
@@ -58,8 +58,8 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         _getCensusJourneyHandler.Returns(journeyResult);
 
         // Act
-        var message = await _client.GetAsync(pageUri, token);
-        var page = await AngleSharpPage.FromResponseAsync<CommonPage>(message, token);
+        var message = await _client.GetAsync(pageUri, _cancellationToken);
+        var page = await AngleSharpPage.FromResponseAsync<CommonPage>(message, _cancellationToken);
 
         // Assert
         message.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -93,7 +93,6 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     public async Task The_overview_is_hidden_when_it_is_blank(string overview)
     {
         // Arrange
-        var token = TestContext.Current.CancellationToken;
         var pageUri = UrlConstants.JourneyUrl;
 
         var journeyResult = AGetCensusJourneyResponse()
@@ -103,8 +102,8 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         _getCensusJourneyHandler.Returns(journeyResult);
 
         // Act
-        var message = await _client.GetAsync(pageUri, token);
-        var page = await AngleSharpPage.FromResponseAsync<CommonPage>(message, token);
+        var message = await _client.GetAsync(pageUri, _cancellationToken);
+        var page = await AngleSharpPage.FromResponseAsync<CommonPage>(message, _cancellationToken);
 
         // Assert
         message.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -117,7 +116,6 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     public async Task ImportantDates_does_not_render_when_empty()
     {
         // Arrange
-        var token = TestContext.Current.CancellationToken;
         var pageUri = UrlConstants.JourneyUrl;
 
         var journeyResult = AGetCensusJourneyResponse()
@@ -127,8 +125,8 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         _getCensusJourneyHandler.Returns(journeyResult);
 
         // Act
-        var message = await _client.GetAsync(pageUri, token);
-        var page = await AngleSharpPage.FromResponseAsync<CommonPage>(message, token);
+        var message = await _client.GetAsync(pageUri, _cancellationToken);
+        var page = await AngleSharpPage.FromResponseAsync<CommonPage>(message, _cancellationToken);
 
         // Assert
         message.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -141,7 +139,6 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     public async Task Every_important_date_is_shown()
     {
         // Arrange
-        var token = TestContext.Current.CancellationToken;
         var pageUri = UrlConstants.JourneyUrl;
 
         var journeyResult = AGetCensusJourneyResponse()
@@ -157,8 +154,8 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         _getCensusJourneyHandler.Returns(journeyResult);
 
         // Act
-        var message = await _client.GetAsync(pageUri, token);
-        var page = await AngleSharpPage.FromResponseAsync<CommonPage>(message, token);
+        var message = await _client.GetAsync(pageUri, _cancellationToken);
+        var page = await AngleSharpPage.FromResponseAsync<CommonPage>(message, _cancellationToken);
 
         // Assert
         message.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -177,7 +174,6 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     public async Task Important_dates_are_shown_earliest_first()
     {
         // Arrange
-        var token = TestContext.Current.CancellationToken;
         var pageUri = UrlConstants.JourneyUrl;
 
         var journeyResult = AGetCensusJourneyResponse()
@@ -193,8 +189,8 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         _getCensusJourneyHandler.Returns(journeyResult);
 
         // Act
-        var message = await _client.GetAsync(pageUri, token);
-        var page = await AngleSharpPage.FromResponseAsync<CommonPage>(message, token);
+        var message = await _client.GetAsync(pageUri, _cancellationToken);
+        var page = await AngleSharpPage.FromResponseAsync<CommonPage>(message, _cancellationToken);
 
         // Assert
         message.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -209,13 +205,12 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     public async Task Call_to_action_button_has_hidden_opens_in_new_tab_text_for_screen_readers()
     {
         // Arrange
-        var token = TestContext.Current.CancellationToken;
         var pageUri = UrlConstants.JourneyUrl;
         _getCensusJourneyHandler.Returns(AGetCensusJourneyResponse().AsSuccess());
 
         // Act
-        var message = await _client.GetAsync(pageUri, token);
-        var page = await AngleSharpPage.FromResponseAsync<CommonPage>(message, token);
+        var message = await _client.GetAsync(pageUri, _cancellationToken);
+        var page = await AngleSharpPage.FromResponseAsync<CommonPage>(message, _cancellationToken);
 
         // Assert
         message.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -236,7 +231,6 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     public async Task Call_to_action_button_is_hidden_for_MAT_users()
     {
         // Arrange
-        var token = TestContext.Current.CancellationToken;
         var pageUri = UrlConstants.JourneyUrl;
 
         var trustJson = """
@@ -273,8 +267,8 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         _getCensusJourneyHandler.Returns(AGetCensusJourneyResponse().AsSuccess());
 
         // Act
-        var message = await client.GetAsync(pageUri, token);
-        var page = await AngleSharpPage.FromResponseAsync<JourneyPage>(message, token);
+        var message = await client.GetAsync(pageUri, _cancellationToken);
+        var page = await AngleSharpPage.FromResponseAsync<JourneyPage>(message, _cancellationToken);
 
         // Assert
         message.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -301,11 +295,8 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         );
 
         // Act
-        var message = await _client.GetAsync(pageUri, TestContext.Current.CancellationToken);
-        var page = await AngleSharpPage.FromResponseAsync<JourneyPage>(
-            message,
-            TestContext.Current.CancellationToken
-        );
+        var message = await _client.GetAsync(pageUri, _cancellationToken);
+        var page = await AngleSharpPage.FromResponseAsync<JourneyPage>(message, _cancellationToken);
 
         // Assert
         message.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -342,11 +333,8 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         );
 
         // Act
-        var message = await _client.GetAsync(pageUri, TestContext.Current.CancellationToken);
-        var page = await AngleSharpPage.FromResponseAsync<JourneyPage>(
-            message,
-            TestContext.Current.CancellationToken
-        );
+        var message = await _client.GetAsync(pageUri, _cancellationToken);
+        var page = await AngleSharpPage.FromResponseAsync<JourneyPage>(message, _cancellationToken);
 
         // Assert
         message.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -362,7 +350,6 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         // Arrange
         var octoberFirst2026 = new DateTime(2026, 10, 1, 2, 0, 0, DateTimeKind.Utc);
         var octoberFourth2026 = new DateTime(2026, 10, 4, 9, 0, 0, DateTimeKind.Utc);
-        var token = TestContext.Current.CancellationToken;
         var pageUri = UrlConstants.JourneyUrl;
 
         var trustJson = """
@@ -413,8 +400,8 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         );
 
         // Act
-        var message = await client.GetAsync(pageUri, token);
-        var page = await AngleSharpPage.FromResponseAsync<JourneyPage>(message, token);
+        var message = await client.GetAsync(pageUri, _cancellationToken);
+        var page = await AngleSharpPage.FromResponseAsync<JourneyPage>(message, _cancellationToken);
 
         // Assert
         message.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -472,11 +459,8 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         );
 
         // Act
-        var message = await _client.GetAsync(pageUri, TestContext.Current.CancellationToken);
-        var page = await AngleSharpPage.FromResponseAsync<JourneyPage>(
-            message,
-            TestContext.Current.CancellationToken
-        );
+        var message = await _client.GetAsync(pageUri, _cancellationToken);
+        var page = await AngleSharpPage.FromResponseAsync<JourneyPage>(message, _cancellationToken);
 
         // Assert
         message.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -504,11 +488,8 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         );
 
         // Act
-        var message = await _client.GetAsync(pageUri, TestContext.Current.CancellationToken);
-        var page = await AngleSharpPage.FromResponseAsync<JourneyPage>(
-            message,
-            TestContext.Current.CancellationToken
-        );
+        var message = await _client.GetAsync(pageUri, _cancellationToken);
+        var page = await AngleSharpPage.FromResponseAsync<JourneyPage>(message, _cancellationToken);
 
         // Assert
         message.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -519,7 +500,6 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     public async Task Status_explanations_are_shown_for_a_multi_academy_trust()
     {
         // Arrange
-        var token = TestContext.Current.CancellationToken;
         var pageUri = UrlConstants.JourneyUrl;
 
         var trustJson = """
@@ -567,8 +547,8 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         );
 
         // Act
-        var message = await client.GetAsync(pageUri, token);
-        var page = await AngleSharpPage.FromResponseAsync<JourneyPage>(message, token);
+        var message = await client.GetAsync(pageUri, _cancellationToken);
+        var page = await AngleSharpPage.FromResponseAsync<JourneyPage>(message, _cancellationToken);
 
         // Assert
         message.StatusCode.ShouldBe(HttpStatusCode.OK);

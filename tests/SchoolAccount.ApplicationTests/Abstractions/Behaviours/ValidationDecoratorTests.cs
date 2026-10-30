@@ -31,7 +31,7 @@ public class ValidationDecoratorTests
         // Act
         var result = await decorated.Handle(
             new TestCommand { Name = string.Empty },
-            CancellationToken.None
+            TestContext.Current.CancellationToken
         );
 
         // Assert
@@ -63,7 +63,7 @@ public class ValidationDecoratorTests
         // Act
         var result = await decorated.Handle(
             new TestCommand { Name = "test-name" },
-            CancellationToken.None
+            TestContext.Current.CancellationToken
         );
 
         // Assert

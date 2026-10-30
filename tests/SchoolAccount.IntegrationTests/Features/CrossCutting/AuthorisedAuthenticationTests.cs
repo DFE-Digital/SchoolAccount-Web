@@ -11,6 +11,8 @@ namespace SchoolAccount.IntegrationTests.Features.CrossCutting;
 public class AuthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<Program> factory)
     : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
 {
+    private readonly CancellationToken _cancellationToken = TestContext.Current.CancellationToken;
+
     private readonly HttpClient _client = factory.CreateAuthorisedClient(services =>
         services.StubQueryHandler(StubCensusJourneyHandler.Succeeding())
     );
@@ -21,7 +23,7 @@ public class AuthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<Pr
     public async Task Signed_in_users_can_access_a_page(string path)
     {
         // Arrange & Act
-        var response = await _client.GetAsync(path, TestContext.Current.CancellationToken);
+        var response = await _client.GetAsync(path, _cancellationToken);
 
         // Assert
         response.StatusCode.ShouldNotBe(HttpStatusCode.Redirect);
@@ -35,11 +37,8 @@ public class AuthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<Pr
         var pageUri = UrlConstants.JourneyUrl;
 
         // Act
-        var response = await _client.GetAsync(pageUri, TestContext.Current.CancellationToken);
-        var page = await AngleSharpPage.FromResponseAsync<CommonPage>(
-            response,
-            TestContext.Current.CancellationToken
-        );
+        var response = await _client.GetAsync(pageUri, _cancellationToken);
+        var page = await AngleSharpPage.FromResponseAsync<CommonPage>(response, _cancellationToken);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -56,11 +55,8 @@ public class AuthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<Pr
         var pageUri = UrlConstants.JourneyUrl;
 
         // Act
-        var response = await _client.GetAsync(pageUri, TestContext.Current.CancellationToken);
-        var page = await AngleSharpPage.FromResponseAsync<CommonPage>(
-            response,
-            TestContext.Current.CancellationToken
-        );
+        var response = await _client.GetAsync(pageUri, _cancellationToken);
+        var page = await AngleSharpPage.FromResponseAsync<CommonPage>(response, _cancellationToken);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);

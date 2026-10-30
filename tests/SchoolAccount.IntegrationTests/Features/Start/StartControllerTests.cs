@@ -5,14 +5,10 @@ using Shouldly;
 
 namespace SchoolAccount.IntegrationTests.Features.Start;
 
-public class StartControllerTests : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
+public class StartControllerTests(SchoolAccountWebApplicationFactory<Program> factory)
+    : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
 {
-    private readonly HttpClient _client;
-
-    public StartControllerTests(SchoolAccountWebApplicationFactory<Program> factory)
-    {
-        _client = factory.CreateUnauthenticatedClient();
-    }
+    private readonly HttpClient _client = factory.CreateUnauthenticatedClient();
 
     [Fact]
     public async Task The_start_page_explains_how_to_sign_in()
