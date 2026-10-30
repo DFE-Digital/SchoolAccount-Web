@@ -6,7 +6,7 @@ namespace SchoolAccount.IntegrationTests.Common;
 
 public abstract class AngleSharpPage
 {
-    protected IDocument Page = null!;
+    protected IDocument Document = null!;
 
     protected AngleSharpPage() { }
 
@@ -17,7 +17,7 @@ public abstract class AngleSharpPage
 
     protected string? GetText(string selector)
     {
-        return TextOf(Page.QuerySelector(selector));
+        return TextOf(Document.QuerySelector(selector));
     }
 
     protected static string Normalise(string text)
@@ -38,28 +38,32 @@ public abstract class AngleSharpPage
     {
         var html = await responseMessage.Content.ReadAsStringAsync(cancellationToken);
 
-        var page = new T();
-        page.Initialise(html);
+        var Document = new T();
+        Document.Initialise(html);
 
-        return page;
+        return Document;
     }
 
     public string? GetComponentTextByContent(string querySelector, string text)
     {
-        return Page.QuerySelectorAll(querySelector)
+        return Document
+            .QuerySelectorAll(querySelector)
             .Select(TextOf)
             .FirstOrDefault(content => content!.Contains(text));
     }
 
     public IElement? GetComponentByContent(string querySelector, string content)
     {
-        return Page.QuerySelectorAll(querySelector)
+        return Document
+            .QuerySelectorAll(querySelector)
             .FirstOrDefault(h => h.TextContent?.Contains(content) ?? false);
     }
 
     public IElement? GetElementByLink(string selector, string href)
     {
-        return Page.QuerySelectorAll(selector).FirstOrDefault(e => e.GetAttribute("href") == href);
+        return Document
+            .QuerySelectorAll(selector)
+            .FirstOrDefault(e => e.GetAttribute("href") == href);
     }
 
     public string? GetTitle()
@@ -89,7 +93,7 @@ public abstract class AngleSharpPage
 
     public IElement? GetFooter()
     {
-        return Page.QuerySelector(".govuk-footer");
+        return Document.QuerySelector(".govuk-footer");
     }
 
     public string? GetHiddenTextOnElement(IElement? element)
@@ -104,6 +108,6 @@ public abstract class AngleSharpPage
 
     private void Initialise(string pageContent)
     {
-        Page = new HtmlParser().ParseDocument(pageContent);
+        Document = new HtmlParser().ParseDocument(pageContent);
     }
 }

@@ -7,7 +7,7 @@ public class JourneyPage : AngleSharpPage
     public JourneyStepsElement GetStepsComponent()
     {
         return new JourneyStepsElement(
-            Page.QuerySelector("div.app-step-nav[data-module='appstepnav']")
+            Document.QuerySelector("div.app-step-nav[data-module='appstepnav']")
         );
     }
 
@@ -21,9 +21,10 @@ public class JourneyPage : AngleSharpPage
         return GetText("span.govuk-caption-xl");
     }
 
-    public IReadOnlyList<(string Key, string Value)> GetImportantDateSummaryListRows()
+    public IReadOnlyList<(string Key, string Value)> GetSummaryListRows()
     {
-        return Page.QuerySelectorAll("dl.govuk-summary-list div.govuk-summary-list__row")
+        return Document
+            .QuerySelectorAll("dl.govuk-summary-list div.govuk-summary-list__row")
             .Select(row =>
                 (
                     Key: row.QuerySelector(".govuk-summary-list__key")!.TextContent.Trim(),
@@ -33,21 +34,23 @@ public class JourneyPage : AngleSharpPage
             .ToList();
     }
 
-    public IReadOnlyDictionary<string, string> GetImportantDateSummaryListPairs()
+    public IReadOnlyDictionary<string, string> GetSummaryListPairs()
     {
-        return GetImportantDateSummaryListRows().ToDictionary(row => row.Key, row => row.Value);
+        return GetSummaryListRows().ToDictionary(row => row.Key, row => row.Value);
     }
 
-    public IReadOnlyList<string> GetSchoolStatusTableHeaders()
+    public IReadOnlyList<string> GetTableHeaders()
     {
-        return Page.QuerySelectorAll("table.govuk-table thead th.govuk-table__header")
+        return Document
+            .QuerySelectorAll("table.govuk-table thead th.govuk-table__header")
             .Select(header => Normalise(header.TextContent))
             .ToList();
     }
 
-    public IReadOnlyList<IReadOnlyList<string>> GetSchoolStatusTableRows()
+    public IReadOnlyList<IReadOnlyList<string>> GetTableRows()
     {
-        return Page.QuerySelectorAll("table.govuk-table tbody tr")
+        return Document
+            .QuerySelectorAll("table.govuk-table tbody tr")
             .Select(row =>
                 (IReadOnlyList<string>)
                     row.QuerySelectorAll("td.govuk-table__cell")
@@ -57,11 +60,11 @@ public class JourneyPage : AngleSharpPage
             .ToList();
     }
 
-    public IReadOnlyList<IReadOnlyDictionary<string, string>> GetSchoolStatusTableCellByHeader()
+    public IReadOnlyList<IReadOnlyDictionary<string, string>> GetTableCellByHeader()
     {
-        var headers = GetSchoolStatusTableHeaders();
+        var headers = GetTableHeaders();
 
-        return GetSchoolStatusTableRows()
+        return GetTableRows()
             .Select(cells =>
                 (IReadOnlyDictionary<string, string>)
                     cells
