@@ -2,6 +2,7 @@
 @{
     ViewData["Title"] = "Feedback";
     ViewData["HideFeedbackFooter"] = true;
+    ViewData["HideSignOutLink"] = true;
     var errors = TempData["ErrorSummary"] as IDictionary<string, string> ?? new Dictionary<string, string>();
     var messageError = errors.TryGetValue(nameof(FeedbackForm.FeedbackMessage), out var error) ? error : null;
 }

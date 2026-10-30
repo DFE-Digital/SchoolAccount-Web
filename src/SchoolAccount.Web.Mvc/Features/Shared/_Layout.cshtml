@@ -29,13 +29,16 @@
                 @if (User.Identity?.IsAuthenticated is true)
                 {
                     <span class="header-navigation__school">@HeaderContentProvider.OrganisationName</span>
-
-                    @Html.AntiForgeryToken()
-                    @using (Html.BeginForm("Logout", "Account", FormMethod.Post))
+                    
+                    @if (ViewData["HideSignOutLink"] is not true)
                     {
-                        <button type="submit" class="header-navigation__link">
-                            Sign out
-                        </button>
+                        @Html.AntiForgeryToken()
+                        @using (Html.BeginForm("Logout", "Account", FormMethod.Post))
+                        {
+                            <button type="submit" class="header-navigation__link">
+                                Sign out
+                            </button>
+                        }
                     }
                 }
             </div>
