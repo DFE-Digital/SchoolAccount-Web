@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Routing;
+using SchoolAccount.TestCommon.Constants;
 using SchoolAccount.Web.Mvc.Helpers;
 using Shouldly;
 
@@ -18,11 +19,11 @@ public class UrlHelperExtensionsTests
     public void A_local_return_url_is_kept()
     {
         // Arrange & Act
-        var safeReturnUrl = _url.SafeReturnUrl("/Journey?census=1");
+        var safeReturnUrl = _url.SafeReturnUrl(UrlConstants.JourneyInitialCensusUrl);
 
         // Assert
         safeReturnUrl.IsAbsoluteUri.ShouldBeFalse();
-        safeReturnUrl.OriginalString.ShouldBe("/Journey?census=1");
+        safeReturnUrl.OriginalString.ShouldBe(UrlConstants.JourneyInitialCensusUrl);
     }
 
     [Theory]
@@ -37,6 +38,6 @@ public class UrlHelperExtensionsTests
         var safeReturnUrl = _url.SafeReturnUrl(returnUrl);
 
         // Assert
-        safeReturnUrl.OriginalString.ShouldBe("/");
+        safeReturnUrl.OriginalString.ShouldBe(UrlConstants.BaseUrl);
     }
 }

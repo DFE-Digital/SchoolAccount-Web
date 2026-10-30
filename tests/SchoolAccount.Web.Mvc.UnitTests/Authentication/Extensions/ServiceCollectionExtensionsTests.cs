@@ -1,12 +1,10 @@
-using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using SchoolAccount.TestCommon.Constants;
 using SchoolAccount.Web.Mvc.Authentication.Extensions;
 using SchoolAccount.Web.Mvc.Authentication.Models;
 using Shouldly;
@@ -47,7 +45,7 @@ public class ServiceCollectionExtensionsTests
             .Get(OpenIdConnectDefaults.AuthenticationScheme);
 
         // Assert
-        oidc.Authority.ShouldBe("https://idp.example.com");
+        oidc.Authority.ShouldBe(UrlConstants.OidcAuthorityUrl);
         oidc.ClientId.ShouldBe("test-client-id");
         oidc.SignInScheme.ShouldBe(CookieAuthenticationDefaults.AuthenticationScheme);
         oidc.ResponseType.ShouldBe(OpenIdConnectResponseType.IdToken);
@@ -74,6 +72,6 @@ public class ServiceCollectionExtensionsTests
             .Get(OpenIdConnectDefaults.AuthenticationScheme);
 
         // Assert
-        oidc.CallbackPath.Value.ShouldBe("/signin-oidc");
+        oidc.CallbackPath.Value.ShouldBe(UrlConstants.OidcSignInUrl);
     }
 }
