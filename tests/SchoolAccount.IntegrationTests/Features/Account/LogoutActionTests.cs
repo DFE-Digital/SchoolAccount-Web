@@ -7,18 +7,19 @@ namespace SchoolAccount.IntegrationTests.Features.Account;
 public class LogoutActionTests(SchoolAccountWebApplicationFactory<Program> factory)
     : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
 {
+    private readonly CancellationToken _cancellationToken = TestContext.Current.CancellationToken;
+
     [Fact]
     public async Task Signed_in_users_can_sign_out()
     {
         // Arrange
-        var cancellationToken = TestContext.Current.CancellationToken;
         var client = factory.CreateAuthorisedClient();
         var requestUri = factory.GeneratePath("Account", "Logout");
 
         using var content = new FormUrlEncodedContent(new Dictionary<string, string>());
 
         // Act
-        var response = await client.PostAsync(requestUri, content, cancellationToken);
+        var response = await client.PostAsync(requestUri, content, _cancellationToken);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -33,11 +34,7 @@ public class LogoutActionTests(SchoolAccountWebApplicationFactory<Program> facto
 
         // Act
         using var content = new StringContent(string.Empty);
-        var response = await client.PostAsync(
-            requestUri,
-            content,
-            TestContext.Current.CancellationToken
-        );
+        var response = await client.PostAsync(requestUri, content, _cancellationToken);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Redirect);

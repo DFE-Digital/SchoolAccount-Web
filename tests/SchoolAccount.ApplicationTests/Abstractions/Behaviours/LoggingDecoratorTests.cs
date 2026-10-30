@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Testing;
 using NSubstitute;
 using SchoolAccount.Application;
 using SchoolAccount.Application.Abstractions.Clients;
@@ -28,7 +27,7 @@ public class LoggingDecoratorTests
         // Act
         await handler.Handle(
             new FeedbackCommand { Message = "test-message", OrganisationId = string.Empty },
-            CancellationToken.None
+            TestContext.Current.CancellationToken
         );
 
         // Assert
