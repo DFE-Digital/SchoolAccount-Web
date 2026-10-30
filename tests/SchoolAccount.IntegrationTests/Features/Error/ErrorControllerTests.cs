@@ -32,7 +32,7 @@ public class ErrorControllerTests : IClassFixture<SchoolAccountWebApplicationFac
     }
 
     [Fact]
-    public async Task A_not_found_error_shows_the_page_not_found_page()
+    public async Task A_not_found_error_shows_the_not_found_page()
     {
         // Arrange
         var requestUri = UrlConstants.Error404Url;
@@ -65,7 +65,7 @@ public class ErrorControllerTests : IClassFixture<SchoolAccountWebApplicationFac
     }
 
     [Fact]
-    public async Task An_unknown_page_shows_the_page_not_found_page()
+    public async Task An_unknown_page_shows_the_not_found_page()
     {
         // Arrange
         var requestUri = "/this-page-does-not-exist";
@@ -96,7 +96,7 @@ public class ErrorControllerTests : IClassFixture<SchoolAccountWebApplicationFac
         var page = await AngleSharpPage.FromResponseAsync<CommonPage>(response, _cancellationToken);
 
         // Assert
-        var pageTitle = page.GetTitle();
+        var pageTitle = page.GetPageTitle();
         pageTitle.ShouldNotBeNull();
         pageTitle.ShouldBeEquivalentTo(ErrorViewModel.ErrorTitle);
 

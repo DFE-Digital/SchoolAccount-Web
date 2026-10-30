@@ -1,25 +1,18 @@
-﻿using AngleSharp;
+﻿using System.Text.RegularExpressions;
 using AngleSharp.Dom;
+using AngleSharp.Html.Parser;
 
 namespace SchoolAccount.IntegrationTests.Common;
 
 public abstract class AngleSharpPage
 {
-    protected IDocument Page;
+    protected IDocument Document = null!;
 
     protected AngleSharpPage() { }
 
     protected AngleSharpPage(string pageContent)
     {
         Initialise(pageContent);
-    }
-
-    protected void Initialise(string pageContent)
-    {
-        var context = BrowsingContext.New(Configuration.Default);
-        Page = context
-            .OpenAsync(req => req.Content(pageContent), TestContext.Current.CancellationToken)
-            .Result;
     }
 
     public static async Task<T> FromResponseAsync<T>(
@@ -30,139 +23,88 @@ public abstract class AngleSharpPage
     {
         var html = await responseMessage.Content.ReadAsStringAsync(cancellationToken);
 
-        var page = new T();
-        page.Initialise(html);
+        var document = new T();
+        document.Initialise(html);
 
-        return page;
+        return document;
     }
 
-    public virtual string? GetComponentTextByContent(string querySelector, string content)
+    public string? GetElementContentByText(string querySelector, string text)
     {
-        return GetComponentByContent(querySelector, content)?.TextContent;
+        return GetNormalisedText(GetElementContainingText(querySelector, text));
     }
 
-    public virtual IElement? GetComponentByContent(string querySelector, string content)
+    public IElement? GetElementContainingText(string querySelector, string text)
     {
-        return Page.QuerySelectorAll(querySelector)
-            .FirstOrDefault(h => h.TextContent?.Contains(content) ?? false);
+        return Document
+            .QuerySelectorAll(querySelector)
+            .FirstOrDefault(element => element.TextContent.Contains(text));
     }
 
-    public virtual string? GetTitle()
+    public IElement? GetElementByHref(string querySelector, string href)
     {
-        var pageTitle = Page.QuerySelector("title");
-        return pageTitle?.TextContent;
+        return Document
+            .QuerySelectorAll(querySelector)
+            .FirstOrDefault(e => e.GetAttribute("href") == href);
     }
 
-    public virtual string? GetFirstHeading()
+    public string? GetPageTitle()
     {
-        var headingElement = Page.QuerySelector("h1.govuk-heading-l");
-        return headingElement?.TextContent;
+        return GetTextBySelector("title");
     }
 
-    public virtual string? GetFirstBody()
+    public string? GetFirstHeading()
     {
-        var bodyElement = Page.QuerySelector("body");
-        return bodyElement?.TextContent;
+        return GetTextBySelector("h1.govuk-heading-l");
     }
 
-    public virtual string? GetFirstBodyParagraph()
+    public string? GetFirstBody()
     {
-        var bodyElement = Page.QuerySelector("p.govuk-body");
-        return bodyElement?.TextContent;
+        return GetTextBySelector("body");
     }
 
-    public virtual string? GetFirstCaption()
+    public string? GetFirstBodyParagraph()
     {
-        var captionElement = Page.QuerySelector("span.govuk-caption-xl");
-        return captionElement?.TextContent;
+        return GetTextBySelector("p.govuk-body");
     }
 
-    public virtual string? GetSignOutLink()
+    public string? GetOrganisationName()
     {
-        var signOutElement = Page.QuerySelector("button");
-        return signOutElement?.TextContent;
+        return GetTextBySelector(".header-navigation__school");
     }
 
-    public virtual string? GetOrganisationName()
+    public IElement? GetFooter()
     {
-        var organisationNameElement = Page.QuerySelector(".header-navigation__school");
-        return organisationNameElement?.TextContent;
+        return Document.QuerySelector(".govuk-footer");
     }
 
-    public virtual string GetFirstTag()
+    public string? GetVisuallyHiddenTextOnElement(IElement? element)
     {
-        var tagElement = Page.QuerySelector(".govuk-tag");
-        return tagElement?.TextContent;
+        return GetNormalisedText(element?.QuerySelector(".govuk-visually-hidden"));
     }
 
-    public virtual IReadOnlyDictionary<string, string> GetSummaryListPairs()
+    public string? GetTextOf(IElement? element)
     {
-        return Page.QuerySelectorAll("dl.govuk-summary-list div.govuk-summary-list__row")
-            .ToDictionary(
-                row => row.QuerySelector(".govuk-summary-list__key")!.TextContent.Trim(),
-                row => row.QuerySelector(".govuk-summary-list__value")!.TextContent.Trim()
-            );
+        return GetNormalisedText(element);
     }
 
-    public virtual IReadOnlyList<(string Key, string Value)> GetSummaryListRows()
+    protected string? GetTextBySelector(string selector)
     {
-        return Page.QuerySelectorAll("dl.govuk-summary-list div.govuk-summary-list__row")
-            .Select(row =>
-                (
-                    Key: row.QuerySelector(".govuk-summary-list__key")!.TextContent.Trim(),
-                    Value: row.QuerySelector(".govuk-summary-list__value")!.TextContent.Trim()
-                )
-            )
-            .ToList();
+        return GetNormalisedText(Document.QuerySelector(selector));
     }
 
-    public virtual IElement? GetFooter()
+    protected static string Normalise(string text)
     {
-        return Page.QuerySelector(".govuk-footer");
+        return Regex.Replace(text, @"\s+", " ").Trim();
     }
 
-    public virtual IElement? GetButtonByLink(string href)
+    protected static string? GetNormalisedText(IElement? element)
     {
-        return Page.QuerySelector($"a.govuk-button[href='{href}']");
+        return element is null ? null : Normalise(element.TextContent);
     }
 
-    public virtual IReadOnlyList<string> GetTableHeaders()
+    private void Initialise(string pageContent)
     {
-        return Page.QuerySelectorAll("table.govuk-table thead th.govuk-table__header")
-            .Select(header => header.TextContent.Trim())
-            .ToList();
-    }
-
-    public virtual IReadOnlyList<IReadOnlyList<string>> GetTableRows()
-    {
-        return Page.QuerySelectorAll("table.govuk-table tbody tr")
-            .Select(row =>
-                (IReadOnlyList<string>)
-                    row.QuerySelectorAll("td.govuk-table__cell")
-                        .Select(cell => cell.TextContent.Trim())
-                        .ToList()
-            )
-            .ToList();
-    }
-
-    public virtual IReadOnlyList<IReadOnlyDictionary<string, string>> GetTableCellByHeader()
-    {
-        var headers = GetTableHeaders();
-
-        return Page.QuerySelectorAll("table.govuk-table tbody tr")
-            .Select(row =>
-                (IReadOnlyDictionary<string, string>)
-                    row.QuerySelectorAll("td.govuk-table__cell")
-                        .Select(
-                            (cell, index) =>
-                                new
-                                {
-                                    Key = index < headers.Count ? headers[index] : $"Column{index}",
-                                    Value = cell.TextContent.Trim(),
-                                }
-                        )
-                        .ToDictionary(cell => cell.Key, cell => cell.Value)
-            )
-            .ToList();
+        Document = new HtmlParser().ParseDocument(pageContent);
     }
 }

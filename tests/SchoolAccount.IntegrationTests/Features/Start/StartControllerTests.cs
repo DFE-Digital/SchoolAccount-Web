@@ -27,7 +27,7 @@ public class StartControllerTests(SchoolAccountWebApplicationFactory<Program> fa
         response.IsSuccessStatusCode.ShouldBeTrue();
         page.ShouldNotBeNull();
 
-        var pageTitle = page.GetTitle();
+        var pageTitle = page.GetPageTitle();
         pageTitle.ShouldNotBeNull();
         pageTitle.ShouldBeEquivalentTo("Home Page");
 
