@@ -34,7 +34,6 @@ public class AnonymousEndpointGuardrailTests(SchoolAccountWebApplicationFactory<
         factory.GeneratePath("Start", "Start"),
         factory.GeneratePath("Account", "Login"),
         factory.GeneratePath("Account", "Logout"),
-        factory.GeneratePath("Account", "LoggedOut"),
     ];
 
     [Fact]

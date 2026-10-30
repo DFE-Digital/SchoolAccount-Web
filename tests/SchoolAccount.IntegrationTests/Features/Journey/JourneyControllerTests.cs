@@ -110,7 +110,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     }
 
     [Fact]
-    public async Task ImportantDates_does_not_render_when_null_or_empty()
+    public async Task ImportantDates_does_not_render_when_empty()
     {
         // Arrange
         var journeyResult = AGetCensusJourneyResponse()
@@ -127,7 +127,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         message.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         var pageImportantDates = page.GetSummaryListPairs();
-        pageImportantDates.ShouldNotBeNull();
+        pageImportantDates.ShouldBeEmpty();
     }
 
     [Fact]

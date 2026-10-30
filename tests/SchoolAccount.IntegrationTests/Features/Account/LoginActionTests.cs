@@ -21,9 +21,9 @@ public class LoginActionTests(SchoolAccountWebApplicationFactory<Program> factor
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
-        response.Headers.Location?.OriginalString.ShouldStartWith(
-            MockOidcHandler.AuthoriserRedirectUrl
-        );
+        response
+            .Headers.Location.ShouldNotBeNull()
+            .OriginalString.ShouldStartWith(MockOidcHandler.AuthoriserRedirectUrl);
     }
 
     [Fact]
@@ -38,9 +38,7 @@ public class LoginActionTests(SchoolAccountWebApplicationFactory<Program> factor
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
-        response.Headers.Location?.OriginalString.ShouldEndWith(
-            $"{factory.GeneratePath("Journey", "Journey")}"
-        );
+        response.Headers.Location.ShouldNotBeNull().OriginalString.ShouldBe("/Journey");
     }
 
     [Fact]

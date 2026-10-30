@@ -72,6 +72,5 @@ public class ServiceCollectionExtensionsTests
 
         // Assert
         oidc.CallbackPath.Value.ShouldBe("/signin-oidc");
-        oidc.SignedOutCallbackPath.Value.ShouldBe("/account/loggedout");
     }
 }
