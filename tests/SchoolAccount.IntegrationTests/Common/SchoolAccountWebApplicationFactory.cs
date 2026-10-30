@@ -35,17 +35,6 @@ public class SchoolAccountWebApplicationFactory<TProgram> : WebApplicationFactor
         return CreateClient<MockOidcHandler>(additionalConfigurableServices, options);
     }
 
-    public string GeneratePath(
-        [AspMvcController] string controller,
-        [AspMvcAction] string action,
-        [AspMvcModelType] object? query = null
-    )
-    {
-        using var scope = Services.CreateScope();
-        var generator = scope.ServiceProvider.GetRequiredService<LinkGenerator>();
-        return generator.GetPathByAction(action, controller.Replace("Controller", ""), query);
-    }
-
     private HttpClient CreateClient<THandler>(
         Action<IServiceCollection>? additionalConfigurableServices = null,
         ClientOptions? options = null
