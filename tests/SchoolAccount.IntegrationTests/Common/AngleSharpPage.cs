@@ -15,21 +15,6 @@ public abstract class AngleSharpPage
         Initialise(pageContent);
     }
 
-    protected string? GetText(string selector)
-    {
-        return TextOf(Document.QuerySelector(selector));
-    }
-
-    protected static string Normalise(string text)
-    {
-        return Regex.Replace(text, @"\s+", " ").Trim();
-    }
-
-    protected static string? TextOf(IElement? element)
-    {
-        return element is null ? null : Normalise(element.TextContent);
-    }
-
     public static async Task<T> FromResponseAsync<T>(
         HttpResponseMessage responseMessage,
         CancellationToken cancellationToken = default
@@ -38,57 +23,54 @@ public abstract class AngleSharpPage
     {
         var html = await responseMessage.Content.ReadAsStringAsync(cancellationToken);
 
-        var Document = new T();
-        Document.Initialise(html);
+        var document = new T();
+        document.Initialise(html);
 
-        return Document;
+        return document;
     }
 
-    public string? GetComponentTextByContent(string querySelector, string text)
+    public string? GetElementContentByText(string querySelector, string text)
+    {
+        return GetNormalisedText(GetElementContainingText(querySelector, text));
+    }
+
+    public IElement? GetElementContainingText(string querySelector, string text)
     {
         return Document
             .QuerySelectorAll(querySelector)
-            .Select(TextOf)
-            .FirstOrDefault(content => content!.Contains(text));
+            .FirstOrDefault(element => element.TextContent.Contains(text));
     }
 
-    public IElement? GetComponentByContent(string querySelector, string content)
+    public IElement? GetElementByHref(string querySelector, string href)
     {
         return Document
             .QuerySelectorAll(querySelector)
-            .FirstOrDefault(h => h.TextContent?.Contains(content) ?? false);
-    }
-
-    public IElement? GetElementByLink(string selector, string href)
-    {
-        return Document
-            .QuerySelectorAll(selector)
             .FirstOrDefault(e => e.GetAttribute("href") == href);
     }
 
-    public string? GetTitle()
+    public string? GetPageTitle()
     {
-        return GetText("title");
+        return GetTextBySelector("title");
     }
 
     public string? GetFirstHeading()
     {
-        return GetText("h1.govuk-heading-l");
+        return GetTextBySelector("h1.govuk-heading-l");
     }
 
     public string? GetFirstBody()
     {
-        return GetText("body");
+        return GetTextBySelector("body");
     }
 
     public string? GetFirstBodyParagraph()
     {
-        return GetText("p.govuk-body");
+        return GetTextBySelector("p.govuk-body");
     }
 
     public string? GetOrganisationName()
     {
-        return GetText(".header-navigation__school");
+        return GetTextBySelector(".header-navigation__school");
     }
 
     public IElement? GetFooter()
@@ -96,14 +78,29 @@ public abstract class AngleSharpPage
         return Document.QuerySelector(".govuk-footer");
     }
 
-    public string? GetHiddenTextOnElement(IElement? element)
+    public string? GetVisuallyHiddenTextOnElement(IElement? element)
     {
-        return TextOf(element?.QuerySelector(".govuk-visually-hidden"));
+        return GetNormalisedText(element?.QuerySelector(".govuk-visually-hidden"));
     }
 
     public string? GetTextOf(IElement? element)
     {
-        return TextOf(element);
+        return GetNormalisedText(element);
+    }
+
+    protected string? GetTextBySelector(string selector)
+    {
+        return GetNormalisedText(Document.QuerySelector(selector));
+    }
+
+    protected static string Normalise(string text)
+    {
+        return Regex.Replace(text, @"\s+", " ").Trim();
+    }
+
+    protected static string? GetNormalisedText(IElement? element)
+    {
+        return element is null ? null : Normalise(element.TextContent);
     }
 
     private void Initialise(string pageContent)

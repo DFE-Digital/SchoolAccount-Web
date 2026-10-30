@@ -57,12 +57,12 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
 
         // Assert
         message.StatusCode.ShouldBe(HttpStatusCode.OK);
-        page.GetTitle().ShouldBe("Journey");
+        page.GetPageTitle().ShouldBe("Journey");
         page.GetFirstHeading().ShouldBe("Test Journey Title");
         page.GetFirstBodyParagraph().ShouldBe("This is a test overview");
         page.GetFirstCaption().ShouldBe("This is a test caption");
         page.GetFirstTag().ShouldBe("Test Status");
-        page.GetComponentTextByContent(".govuk-heading-m", "Test Support Service")
+        page.GetElementContentByText(".govuk-heading-m", "Test Support Service")
             .ShouldBe("Test Support Service");
     }
 
@@ -85,7 +85,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         // Assert
         message.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-        var overviewHeading = page.GetComponentTextByContent(".govuk-heading-m", "Overview");
+        var overviewHeading = page.GetElementContentByText(".govuk-heading-m", "Overview");
         overviewHeading.ShouldBeNull();
     }
 
@@ -224,7 +224,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         // Assert
         message.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-        var callToActionButton = page.GetElementByLink("a.govuk-button", _testUri.ToString());
+        var callToActionButton = page.GetElementByHref("a.govuk-button", _testUri.ToString());
 
         callToActionButton.ShouldNotBeNull();
         page.GetTextOf(callToActionButton).ShouldBe("Test Call To Action opens in new tab");
@@ -243,14 +243,14 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         // Assert
         message.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-        var callToActionButton = page.GetElementByLink(
+        var callToActionButton = page.GetElementByHref(
             "a.govuk-button",
             "https://www.gov.uk/guidance/complete-the-school-census/generate-and-submit-your-return"
         );
 
         callToActionButton.ShouldNotBeNull();
         page.GetTextOf(callToActionButton).ShouldBe("Go to Autumn Census 2026 opens in new tab");
-        page.GetHiddenTextOnElement(callToActionButton).ShouldBe("opens in new tab");
+        page.GetVisuallyHiddenTextOnElement(callToActionButton).ShouldBe("opens in new tab");
     }
 
     [Fact]
@@ -297,7 +297,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         // Assert
         message.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-        var callToActionButton = page.GetElementByLink(
+        var callToActionButton = page.GetElementByHref(
             "a.govuk-button",
             "https://www.gov.uk/guidance/complete-the-school-census/generate-and-submit-your-return"
         );
@@ -482,7 +482,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
 
         // Assert
         message.StatusCode.ShouldBe(HttpStatusCode.OK);
-        page.GetComponentTextByContent("li", "Test Status")
+        page.GetElementContentByText("li", "Test Status")
             .ShouldBe("Test Status: Test status description.");
     }
 
@@ -510,7 +510,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
 
         // Assert
         message.StatusCode.ShouldBe(HttpStatusCode.OK);
-        page.GetComponentTextByContent("li", "Test Status").ShouldBeNull();
+        page.GetElementContentByText("li", "Test Status").ShouldBeNull();
     }
 
     [Fact]
@@ -567,7 +567,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
 
         // Assert
         message.StatusCode.ShouldBe(HttpStatusCode.OK);
-        page.GetComponentTextByContent("li", "Test Status")
+        page.GetElementContentByText("li", "Test Status")
             .ShouldBe("Test Status: Test status description.");
     }
 }

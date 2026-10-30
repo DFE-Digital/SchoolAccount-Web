@@ -97,7 +97,7 @@ public class ErrorControllerTests : IClassFixture<SchoolAccountWebApplicationFac
         var page = await AngleSharpPage.FromResponseAsync<CommonPage>(response, _cancellationToken);
 
         // Assert
-        var pageTitle = page.GetTitle();
+        var pageTitle = page.GetPageTitle();
         pageTitle.ShouldNotBeNull();
         pageTitle.ShouldBeEquivalentTo(ErrorViewModel.ErrorTitle);
 

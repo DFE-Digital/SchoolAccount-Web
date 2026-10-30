@@ -13,12 +13,12 @@ public class JourneyPage : AngleSharpPage
 
     public string? GetFirstTag()
     {
-        return GetText(".govuk-tag");
+        return GetTextBySelector(".govuk-tag");
     }
 
     public string? GetFirstCaption()
     {
-        return GetText("span.govuk-caption-xl");
+        return GetTextBySelector("span.govuk-caption-xl");
     }
 
     public IReadOnlyList<(string Key, string Value)> GetSummaryListRows()
@@ -94,7 +94,7 @@ public class JourneyPage : AngleSharpPage
         {
             public string? GetTitle()
             {
-                return TextOf(element.QuerySelector("span.js-step-title"));
+                return GetNormalisedText(element.QuerySelector("span.js-step-title"));
             }
         }
     }
