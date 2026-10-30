@@ -11,6 +11,21 @@ public class LoggedOutActionTests(SchoolAccountWebApplicationFactory<Program> fa
     public async Task Ensure_an_authenticated_user_accessing_LoggedOut_are_redirected_to_the_start_page()
     {
         // Arrange
+        var client = factory.CreateAuthorisedClient();
+        var requestUri = factory.GeneratePath("Account", "LoggedOut");
+
+        // Act
+        var response = await client.GetAsync(requestUri, TestContext.Current.CancellationToken);
+
+        // Assert
+        response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
+        response.Headers.Location.ShouldNotBeNull().OriginalString.ShouldBe("/");
+    }
+
+    [Fact]
+    public async Task Ensure_an_unauthenticated_user_accessing_LoggedOut_are_redirected_to_the_start_page()
+    {
+        // Arrange
         var client = factory.CreateUnauthenticatedClient();
         var requestUri = factory.GeneratePath("Account", "LoggedOut");
 
@@ -19,8 +34,6 @@ public class LoggedOutActionTests(SchoolAccountWebApplicationFactory<Program> fa
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
-        response.Headers.Location?.OriginalString.ShouldStartWith(
-            factory.GeneratePath("Start", "Start")
-        );
+        response.Headers.Location.ShouldNotBeNull().OriginalString.ShouldBe("/");
     }
 }
