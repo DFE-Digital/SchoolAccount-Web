@@ -38,6 +38,6 @@ public class UrlHelperExtensionsTests
         var safeReturnUrl = _url.SafeReturnUrl(returnUrl);
 
         // Assert
-        safeReturnUrl.OriginalString.ShouldBe(UrlConstants.BaseUrl);
+        safeReturnUrl.OriginalString.ShouldBe(UrlConstants.StartUrl);
     }
 }
