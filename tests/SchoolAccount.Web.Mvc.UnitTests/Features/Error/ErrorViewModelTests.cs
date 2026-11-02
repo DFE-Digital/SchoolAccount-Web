@@ -11,51 +11,51 @@ public class ErrorViewModelTests
     public void Is_not_found_when_status_code_is_404()
     {
         // Arrange & Act
-        var sut = new ErrorViewModel(NotFound);
+        var errorViewModel = new ErrorViewModel(NotFound);
 
         // Assert
-        sut.StatusCode.ShouldBe(NotFound);
-        sut.IsNotFound.ShouldBeTrue();
+        errorViewModel.StatusCode.ShouldBe(NotFound);
+        errorViewModel.IsNotFound.ShouldBeTrue();
     }
 
     [Fact]
     public void Is_forbidden_when_status_code_is_403()
     {
         // Arrange & Act
-        var sut = new ErrorViewModel(Forbidden);
+        var errorViewModel = new ErrorViewModel(Forbidden);
 
         // Assert
-        sut.StatusCode.ShouldBe(Forbidden);
-        sut.IsForbidden.ShouldBeTrue();
+        errorViewModel.StatusCode.ShouldBe(Forbidden);
+        errorViewModel.IsForbidden.ShouldBeTrue();
     }
 
     [Fact]
     public void Title_is_not_found_when_status_code_is_404()
     {
         // Arrange & Act
-        var sut = new ErrorViewModel(NotFound);
+        var errorViewModel = new ErrorViewModel(NotFound);
 
         // Assert
-        sut.Title.ShouldBe(NotFoundTitle);
+        errorViewModel.Title.ShouldBe(NotFoundTitle);
     }
 
     [Fact]
     public void Title_is_forbidden_when_status_code_is_403()
     {
         // Arrange & Act
-        var sut = new ErrorViewModel(Forbidden);
+        var errorViewModel = new ErrorViewModel(Forbidden);
 
         // Assert
-        sut.Title.ShouldBe(ForbiddenTitle);
+        errorViewModel.Title.ShouldBe(ForbiddenTitle);
     }
 
     [Fact]
     public void Title_is_error_for_all_other_status_codes()
     {
         // Arrange & Act
-        var sut = new ErrorViewModel(PaymentRequired);
+        var errorViewModel = new ErrorViewModel(PaymentRequired);
 
         // Assert
-        sut.Title.ShouldBe(ErrorTitle);
+        errorViewModel.Title.ShouldBe(ErrorTitle);
     }
 }
