@@ -1,6 +1,7 @@
-using System.Net;
 using SchoolAccount.IntegrationTests.Common;
 using Shouldly;
+using static System.Net.HttpStatusCode;
+using static SchoolAccount.TestCommon.Constants.UrlConstants;
 
 namespace SchoolAccount.IntegrationTests.Features.Account;
 
@@ -14,15 +15,14 @@ public class LogoutActionTests(SchoolAccountWebApplicationFactory<Program> facto
     {
         // Arrange
         var client = factory.CreateAuthorisedClient();
-        var requestUri = factory.GeneratePath("Account", "Logout");
 
         using var content = new FormUrlEncodedContent(new Dictionary<string, string>());
 
         // Act
-        var response = await client.PostAsync(requestUri, content, _cancellationToken);
+        var response = await client.PostAsync(LogoutUrl, content, _cancellationToken);
 
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(OK);
     }
 
     [Fact]
@@ -30,14 +30,13 @@ public class LogoutActionTests(SchoolAccountWebApplicationFactory<Program> facto
     {
         // Arrange
         var client = factory.CreateUnauthenticatedClient();
-        var requestUri = factory.GeneratePath("Account", "Logout");
 
         // Act
         using var content = new StringContent(string.Empty);
-        var response = await client.PostAsync(requestUri, content, _cancellationToken);
+        var response = await client.PostAsync(LogoutUrl, content, _cancellationToken);
 
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
-        response.Headers.Location.ShouldNotBeNull().OriginalString.ShouldBe("/");
+        response.StatusCode.ShouldBe(Redirect);
+        response.Headers.Location.ShouldNotBeNull().OriginalString.ShouldBe(StartUrl);
     }
 }

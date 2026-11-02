@@ -1,6 +1,8 @@
 using SchoolAccount.IntegrationTests.Common;
 using SchoolAccount.IntegrationTests.Common.Pages;
 using Shouldly;
+using static SchoolAccount.TestCommon.Constants.UrlConstants;
+using static Xunit.TestContext;
 
 namespace SchoolAccount.IntegrationTests.Features.Start;
 
@@ -12,25 +14,21 @@ public class StartControllerTests(SchoolAccountWebApplicationFactory<Program> fa
     [Fact]
     public async Task The_start_page_explains_how_to_sign_in()
     {
-        // Arrange
-        var pageUri = factory.GeneratePath("Start", "Start");
-
-        // Act
-        var response = await _client.GetAsync(pageUri, TestContext.Current.CancellationToken);
-        var page = await AngleSharpPage.FromResponseAsync<CommonPage>(
+        // Arrange & Act
+        var response = await _client.GetAsync(StartUrl, Current.CancellationToken);
+        var startPage = await AngleSharpPage.FromResponseAsync<CommonPage>(
             response,
-            TestContext.Current.CancellationToken
+            Current.CancellationToken
         );
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeTrue();
-        page.ShouldNotBeNull();
 
-        var pageTitle = page.GetTitle();
+        var pageTitle = startPage.GetPageTitle();
         pageTitle.ShouldNotBeNull();
         pageTitle.ShouldBeEquivalentTo("Home Page");
 
-        var bodyElement = page.GetFirstBody();
+        var bodyElement = startPage.GetFirstBody();
         bodyElement.ShouldNotBeNull();
         bodyElement.ShouldContainWithoutWhitespace("Sign in to School Account");
         bodyElement.ShouldContainWithoutWhitespace(

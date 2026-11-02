@@ -1,4 +1,3 @@
-using System.Net;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.FeatureManagement;
 using NSubstitute;
@@ -10,6 +9,8 @@ using SchoolAccount.SharedKernel;
 using SchoolAccount.TestCommon.Stubs;
 using SchoolAccount.Web.Mvc.Infrastructure;
 using Shouldly;
+using static System.Net.HttpStatusCode;
+using static SchoolAccount.TestCommon.Constants.UrlConstants;
 
 namespace SchoolAccount.IntegrationTests.Features.Feedback;
 
@@ -36,39 +37,47 @@ public class FeedbackControllerTests : IClassFixture<SchoolAccountWebApplication
     public async Task A_successful_feedback_submission_shows_the_thank_you_message()
     {
         // Arrange
-        var pageUri = _factory.GeneratePath("Feedback", "Submit");
         _feedbackCommandHandler
             .Handle(Arg.Any<FeedbackCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success());
 
         // Act
         using var content = FeedbackForm("test-feedback");
-        var result = await _authenticatedClient.PostAsync(pageUri, content, _cancellationToken);
+        var response = await _authenticatedClient.PostAsync(
+            FeedbackSubmissionUrl,
+            content,
+            _cancellationToken
+        );
 
         // Assert
-        result.Headers.Location.ShouldNotBeNull().OriginalString.ShouldEndWith("#feedback-thanks");
+        response
+            .Headers.Location.ShouldNotBeNull()
+            .OriginalString.ShouldEndWith(FeedbackFooterThanksUrl);
     }
 
     [Fact]
     public async Task Empty_feedback_returns_the_user_to_the_form()
     {
         // Arrange
-        var pageUri = _factory.GeneratePath("Feedback", "Submit");
         using var content = FeedbackForm(string.Empty);
 
         // Act
-        var result = await _authenticatedClient.PostAsync(pageUri, content, _cancellationToken);
+        var response = await _authenticatedClient.PostAsync(
+            FeedbackSubmissionUrl,
+            content,
+            _cancellationToken
+        );
 
         // Assert
-        result.Headers.Location.ShouldNotBeNull().OriginalString.ShouldBe("/");
+        response.Headers.Location.ShouldNotBeNull().OriginalString.ShouldBe(StartUrl);
         await _feedbackCommandHandler
             .DidNotReceive()
             .Handle(Arg.Any<FeedbackCommand>(), Arg.Any<CancellationToken>());
     }
 
     [Theory]
-    [InlineData("/Journey")]
-    [InlineData("/Feedback")]
+    [InlineData(JourneyUrl)]
+    [InlineData(FeedbackUrl)]
     public async Task The_page_shows_an_error_summary_and_message_when_the_message_is_empty(
         string returnUrl
     )
@@ -81,15 +90,11 @@ public class FeedbackControllerTests : IClassFixture<SchoolAccountWebApplication
 
         // Act
         using var content = FeedbackForm(string.Empty, returnUrl);
-        var response = await client.PostAsync(
-            _factory.GeneratePath("Feedback", "Submit"),
-            content,
-            _cancellationToken
-        );
+        var response = await client.PostAsync(FeedbackSubmissionUrl, content, _cancellationToken);
         var html = await response.Content.ReadAsStringAsync(_cancellationToken);
 
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(OK);
         html.ShouldContain("<title>Error: ");
         html.ShouldContain("govuk-error-summary");
         html.IndexOf("govuk-error-summary", StringComparison.Ordinal)
@@ -113,10 +118,7 @@ public class FeedbackControllerTests : IClassFixture<SchoolAccountWebApplication
     public async Task The_feedback_section_is_shown_when_the_feature_flag_is_enabled()
     {
         // Arrange & Act
-        var html = await _authenticatedClient.GetStringAsync(
-            _factory.GeneratePath("Journey", "Journey"),
-            _cancellationToken
-        );
+        var html = await _authenticatedClient.GetStringAsync(JourneyUrl, _cancellationToken);
 
         // Assert
         html.ShouldContain("id=\"page-feedback\"");
@@ -133,10 +135,7 @@ public class FeedbackControllerTests : IClassFixture<SchoolAccountWebApplication
         });
 
         // Act
-        var html = await client.GetStringAsync(
-            _factory.GeneratePath("Journey", "Journey"),
-            _cancellationToken
-        );
+        var html = await client.GetStringAsync(JourneyUrl, _cancellationToken);
 
         // Assert
         html.ShouldNotContain("id=\"page-feedback\"");
@@ -154,14 +153,10 @@ public class FeedbackControllerTests : IClassFixture<SchoolAccountWebApplication
 
         // Act
         using var content = FeedbackForm("test-feedback");
-        var result = await client.PostAsync(
-            _factory.GeneratePath("Feedback", "Submit"),
-            content,
-            _cancellationToken
-        );
+        var response = await client.PostAsync(FeedbackSubmissionUrl, content, _cancellationToken);
 
         // Assert
-        result.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(NotFound);
         await _feedbackCommandHandler
             .DidNotReceive()
             .Handle(Arg.Any<FeedbackCommand>(), Arg.Any<CancellationToken>());
@@ -174,30 +169,26 @@ public class FeedbackControllerTests : IClassFixture<SchoolAccountWebApplication
         var client = _factory.CreateAuthorisedClient(services => services.DisableFeedbackFeature());
 
         // Act
-        var result = await client.GetAsync(
-            _factory.GeneratePath("Feedback", "Feedback"),
-            _cancellationToken
-        );
+        var response = await client.GetAsync(FeedbackUrl, _cancellationToken);
 
         // Assert
-        result.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(NotFound);
     }
 
     [Fact]
     public async Task The_feedback_form_page_is_shown()
     {
         // Arrange
-        var pageUri = _factory.GeneratePath("Feedback", "Feedback");
         _feedbackCommandHandler
             .Handle(Arg.Any<FeedbackCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success());
 
         // Act
-        var result = await _authenticatedClient.GetAsync(pageUri, _cancellationToken);
-        var html = await result.Content.ReadAsStringAsync(_cancellationToken);
+        var response = await _authenticatedClient.GetAsync(FeedbackUrl, _cancellationToken);
+        var html = await response.Content.ReadAsStringAsync(_cancellationToken);
 
         // Assert
-        result.StatusCode.ShouldBe(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(OK);
         html.ShouldContain("<title>Feedback");
         html.ShouldContain("id=\"non-js-feedback-form\"");
         html.ShouldNotContain("id=\"page-feedback\"");
@@ -207,20 +198,21 @@ public class FeedbackControllerTests : IClassFixture<SchoolAccountWebApplication
     public async Task The_feedback_thanks_page_is_shown_on_a_successful_submission_from_the_feedback_form_page()
     {
         // Arrange
-        var pageUri = _factory.GeneratePath("Feedback", "Submit");
         _feedbackCommandHandler
             .Handle(Arg.Any<FeedbackCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success());
 
         // Act
-        using var content = FeedbackForm("test-feedback", "/Feedback");
-        var result = await _authenticatedClient.PostAsync(pageUri, content, _cancellationToken);
+        using var content = FeedbackForm("test-feedback", FeedbackUrl);
+        var response = await _authenticatedClient.PostAsync(
+            FeedbackSubmissionUrl,
+            content,
+            _cancellationToken
+        );
 
         // Assert
-        result.StatusCode.ShouldBe(HttpStatusCode.Redirect);
-        result
-            .Headers.Location.ShouldNotBeNull()
-            .OriginalString.ShouldBe("/Feedback#feedback-thanks");
+        response.StatusCode.ShouldBe(Redirect);
+        response.Headers.Location.ShouldNotBeNull().OriginalString.ShouldBe(FeedbackPageThanksUrl);
     }
 
     private static FormUrlEncodedContent FeedbackForm(string message, string? returnUrl = null)

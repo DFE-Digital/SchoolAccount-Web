@@ -1,6 +1,8 @@
-using System.Net;
 using SchoolAccount.IntegrationTests.Common;
 using Shouldly;
+using static System.Net.HttpStatusCode;
+using static SchoolAccount.IntegrationTests.Common.MockOidcHandler;
+using static SchoolAccount.TestCommon.Constants.UrlConstants;
 
 namespace SchoolAccount.IntegrationTests.Features.Account;
 
@@ -14,16 +16,15 @@ public class LoginActionTests(SchoolAccountWebApplicationFactory<Program> factor
     {
         // Arrange
         var client = factory.CreateUnauthenticatedClient();
-        var requestUri = factory.GeneratePath("Account", "Login");
 
         // Act
-        var response = await client.GetAsync(requestUri, _cancellationToken);
+        var response = await client.GetAsync(LoginUrl, _cancellationToken);
 
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
+        response.StatusCode.ShouldBe(Redirect);
         response
             .Headers.Location.ShouldNotBeNull()
-            .OriginalString.ShouldStartWith(MockOidcHandler.AuthoriserRedirectUrl);
+            .OriginalString.ShouldStartWith(AuthoriserRedirectUrl);
     }
 
     [Fact]
@@ -31,14 +32,13 @@ public class LoginActionTests(SchoolAccountWebApplicationFactory<Program> factor
     {
         // Arrange
         var client = factory.CreateAuthorisedClient();
-        var requestUri = factory.GeneratePath("Account", "Login");
 
         // Act
-        var response = await client.GetAsync(requestUri, _cancellationToken);
+        var response = await client.GetAsync(LoginUrl, _cancellationToken);
 
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
-        response.Headers.Location.ShouldNotBeNull().OriginalString.ShouldBe("/Journey");
+        response.StatusCode.ShouldBe(Redirect);
+        response.Headers.Location.ShouldNotBeNull().OriginalString.ShouldBe(JourneyUrl);
     }
 
     [Fact]
@@ -46,17 +46,12 @@ public class LoginActionTests(SchoolAccountWebApplicationFactory<Program> factor
     {
         // Arrange
         var client = factory.CreateAuthorisedClient();
-        var requestUri = factory.GeneratePath(
-            "Account",
-            "Login",
-            new { returnUrl = "https://www.google.com" }
-        );
 
         // Act
-        var response = await client.GetAsync(requestUri, _cancellationToken);
+        var response = await client.GetAsync(LoginWithExternalReturnUrl, _cancellationToken);
 
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(BadRequest);
     }
 
     [Fact]
@@ -64,16 +59,11 @@ public class LoginActionTests(SchoolAccountWebApplicationFactory<Program> factor
     {
         // Arrange
         var client = factory.CreateAuthorisedClient();
-        var requestUri = factory.GeneratePath(
-            "Account",
-            "Login",
-            new { returnUrl = factory.GeneratePath("Journey", "Journey") }
-        );
 
         // Act
-        var response = await client.GetAsync(requestUri, _cancellationToken);
+        var response = await client.GetAsync(LoginWithJourneyReturnUrl, _cancellationToken);
 
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.Found);
+        response.StatusCode.ShouldBe(Found);
     }
 }

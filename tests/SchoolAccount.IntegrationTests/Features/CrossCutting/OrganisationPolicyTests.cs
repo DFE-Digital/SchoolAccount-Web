@@ -1,11 +1,13 @@
-using System.Net;
 using System.Security.Claims;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SchoolAccount.IntegrationTests.Common;
 using SchoolAccount.IntegrationTests.Common.Extensions;
 using SchoolAccount.TestCommon.Stubs;
 using Shouldly;
+using static System.Net.HttpStatusCode;
+using static SchoolAccount.TestCommon.Constants.UrlConstants;
 using static SchoolAccount.Web.Mvc.Authentication.ClaimConstants;
+using static Xunit.TestContext;
 
 namespace SchoolAccount.IntegrationTests.Features.CrossCutting;
 
@@ -46,13 +48,10 @@ public class OrganisationPolicyTests(SchoolAccountWebApplicationFactory<Program>
         var client = CreateClientOrganisationClaims(value);
 
         // Act
-        var response = await client.GetAsync(
-            factory.GeneratePath("Journey", "Journey"),
-            TestContext.Current.CancellationToken
-        );
+        var response = await client.GetAsync(JourneyUrl, Current.CancellationToken);
 
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(Forbidden);
     }
 
     [Fact]
@@ -64,12 +63,9 @@ public class OrganisationPolicyTests(SchoolAccountWebApplicationFactory<Program>
         );
 
         // Act
-        var response = await client.GetAsync(
-            factory.GeneratePath("Journey", "Journey"),
-            TestContext.Current.CancellationToken
-        );
+        var response = await client.GetAsync(JourneyUrl, Current.CancellationToken);
 
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(OK);
     }
 }
