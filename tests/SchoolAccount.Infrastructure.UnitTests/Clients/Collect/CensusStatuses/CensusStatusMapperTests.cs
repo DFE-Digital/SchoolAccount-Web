@@ -13,11 +13,11 @@ public class CensusStatusMapperTests
         var organisation = new OrganisationResponse { Id = "123", Interesting = true };
 
         // Act
-        var censusStatus = CensusStatusMapper.ToResponse(organisation);
+        var result = CensusStatusMapper.ToResponse(organisation);
 
         // Assert
-        censusStatus.Id.ShouldBe("123");
-        censusStatus.Interesting.ShouldBeTrue();
+        result.Id.ShouldBe("123");
+        result.Interesting.ShouldBeTrue();
     }
 
     [Fact]
@@ -38,25 +38,25 @@ public class CensusStatusMapperTests
         };
 
         // Act
-        var censusStatus = CensusStatusMapper.ToResponse(organisation);
+        var result = CensusStatusMapper.ToResponse(organisation);
 
         // Assert
-        censusStatus.Actions.Count.ShouldBe(3);
-        censusStatus.Actions[0].Name.ShouldBe("Autumn School Census");
-        censusStatus.Actions[0].Status.Name.ShouldBe("Unavailable");
-        censusStatus.Actions[0].Errors.ShouldBeNull();
-        censusStatus.Actions[0].Queries.ShouldBeNull();
-        censusStatus.Actions[0].UpdatedAt.ShouldBeNull();
-        censusStatus.Actions[1].Name.ShouldBe("Autumn School Census");
-        censusStatus.Actions[1].Status.Name.ShouldBe("Not Started");
-        censusStatus.Actions[1].Errors.ShouldBe(1);
-        censusStatus.Actions[1].Queries.ShouldBe(2);
-        censusStatus.Actions[1].UpdatedAt.ShouldBe(octoberThird2026);
-        censusStatus.Actions[2].Name.ShouldBe("Spring School Census");
-        censusStatus.Actions[2].Status.Name.ShouldBe("Complete");
-        censusStatus.Actions[2].Errors.ShouldBe(3);
-        censusStatus.Actions[2].Queries.ShouldBe(4);
-        censusStatus.Actions[2].UpdatedAt.ShouldBe(octoberFirst2026);
+        result.Actions.Count.ShouldBe(3);
+        result.Actions[0].Name.ShouldBe("Autumn School Census");
+        result.Actions[0].Status.Name.ShouldBe("Unavailable");
+        result.Actions[0].Errors.ShouldBeNull();
+        result.Actions[0].Queries.ShouldBeNull();
+        result.Actions[0].UpdatedAt.ShouldBeNull();
+        result.Actions[1].Name.ShouldBe("Autumn School Census");
+        result.Actions[1].Status.Name.ShouldBe("Not Started");
+        result.Actions[1].Errors.ShouldBe(1);
+        result.Actions[1].Queries.ShouldBe(2);
+        result.Actions[1].UpdatedAt.ShouldBe(octoberThird2026);
+        result.Actions[2].Name.ShouldBe("Spring School Census");
+        result.Actions[2].Status.Name.ShouldBe("Complete");
+        result.Actions[2].Errors.ShouldBe(3);
+        result.Actions[2].Queries.ShouldBe(4);
+        result.Actions[2].UpdatedAt.ShouldBe(octoberFirst2026);
     }
 
     [Fact]
@@ -66,10 +66,10 @@ public class CensusStatusMapperTests
         var organisation = new OrganisationResponse { Id = "123" };
 
         // Act
-        var censusStatus = CensusStatusMapper.ToResponse(organisation);
+        var result = CensusStatusMapper.ToResponse(organisation);
 
         // Assert
-        censusStatus.Actions.ShouldBeEmpty();
+        result.Actions.ShouldBeEmpty();
     }
 
     [Fact]
