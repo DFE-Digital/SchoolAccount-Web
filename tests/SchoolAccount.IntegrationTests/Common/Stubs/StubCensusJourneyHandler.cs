@@ -2,7 +2,7 @@ using SchoolAccount.Application.Features.Collect.GetCensusJourney;
 using SchoolAccount.Application.Features.Collect.GetCensusJourney.Responses;
 using static SchoolAccount.TestCommon.Builders.GetCensusJourney.GetCensusJourneyResponseBuilder;
 
-namespace SchoolAccount.TestCommon.Stubs;
+namespace SchoolAccount.IntegrationTests.Common.Stubs;
 
 public sealed class StubCensusJourneyHandler
     : StubQueryHandler<GetCensusJourneyQuery, GetCensusJourneyResponse>

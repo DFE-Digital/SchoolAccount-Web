@@ -1,7 +1,7 @@
 using SchoolAccount.Application.Abstractions.Messaging;
 using SchoolAccount.SharedKernel;
 
-namespace SchoolAccount.TestCommon.Stubs;
+namespace SchoolAccount.IntegrationTests.Common.Stubs;
 
 /// <summary>
 /// A query handler that returns whatever the test configures, in place of the real one.

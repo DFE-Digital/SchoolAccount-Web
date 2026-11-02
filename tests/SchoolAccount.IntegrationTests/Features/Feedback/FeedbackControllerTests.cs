@@ -6,9 +6,9 @@ using SchoolAccount.Application.Abstractions.Messaging;
 using SchoolAccount.Application.Features.Feedback;
 using SchoolAccount.IntegrationTests.Common;
 using SchoolAccount.IntegrationTests.Common.Extensions;
+using SchoolAccount.IntegrationTests.Common.Stubs;
 using SchoolAccount.SharedKernel;
 using SchoolAccount.TestCommon.Constants;
-using SchoolAccount.TestCommon.Stubs;
 using SchoolAccount.Web.Mvc.Infrastructure;
 using Shouldly;
 
