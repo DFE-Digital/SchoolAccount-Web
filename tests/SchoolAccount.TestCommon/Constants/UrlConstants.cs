@@ -2,9 +2,9 @@ namespace SchoolAccount.TestCommon.Constants;
 
 public static class UrlConstants
 {
-    public const string BaseUrl = "/";
-
-    public const string Error404Url = "/Error/404";
+    public const string StartUrl = "/";
+    public const string ErrorForbiddenUrl = "/Error/403";
+    public const string ErrorNotFoundUrl = "/Error/404";
     public const string Error500Url = "/Error/500";
     public const string FeedbackUrl = "/Feedback";
     public const string FeedbackFooterThanksUrl = "#feedback-thanks";

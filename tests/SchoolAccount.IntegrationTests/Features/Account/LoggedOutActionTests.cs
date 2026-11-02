@@ -1,7 +1,8 @@
 using System.Net;
 using SchoolAccount.IntegrationTests.Common;
-using SchoolAccount.TestCommon.Constants;
 using Shouldly;
+using static SchoolAccount.TestCommon.Constants.UrlConstants;
+using static Xunit.TestContext;
 
 namespace SchoolAccount.IntegrationTests.Features.Account;
 
@@ -13,14 +14,13 @@ public class LoggedOutActionTests(SchoolAccountWebApplicationFactory<Program> fa
     {
         // Arrange
         var client = factory.CreateAuthorisedClient();
-        var requestUri = UrlConstants.LoggedOutUrl;
 
         // Act
-        var response = await client.GetAsync(requestUri, TestContext.Current.CancellationToken);
+        var response = await client.GetAsync(LoggedOutUrl, Current.CancellationToken);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
-        response.Headers.Location.ShouldNotBeNull().OriginalString.ShouldBe(UrlConstants.BaseUrl);
+        response.Headers.Location.ShouldNotBeNull().OriginalString.ShouldBe(StartUrl);
     }
 
     [Fact]
@@ -28,13 +28,12 @@ public class LoggedOutActionTests(SchoolAccountWebApplicationFactory<Program> fa
     {
         // Arrange
         var client = factory.CreateUnauthenticatedClient();
-        var requestUri = UrlConstants.LoggedOutUrl;
 
         // Act
-        var response = await client.GetAsync(requestUri, TestContext.Current.CancellationToken);
+        var response = await client.GetAsync(LoggedOutUrl, Current.CancellationToken);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
-        response.Headers.Location.ShouldNotBeNull().OriginalString.ShouldBe(UrlConstants.BaseUrl);
+        response.Headers.Location.ShouldNotBeNull().OriginalString.ShouldBe(StartUrl);
     }
 }
