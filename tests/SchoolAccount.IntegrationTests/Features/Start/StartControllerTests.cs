@@ -26,7 +26,7 @@ public class StartControllerTests(SchoolAccountWebApplicationFactory<Program> fa
 
         var pageTitle = startPage.GetPageTitle();
         pageTitle.ShouldNotBeNull();
-        pageTitle.ShouldBeEquivalentTo("Home Page");
+        pageTitle.ShouldBe("Home Page");
 
         var bodyElement = startPage.GetFirstBody();
         bodyElement.ShouldNotBeNull();

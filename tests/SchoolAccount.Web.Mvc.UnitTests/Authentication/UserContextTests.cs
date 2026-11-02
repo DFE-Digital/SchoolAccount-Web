@@ -67,7 +67,7 @@ public class UserContextTests
         context.Organisation.Category.Id.ShouldBe("001");
         context.Organisation.Category.Name.ShouldBe("Establishment");
         context.Organisation.Ukprn.ShouldBe("10037611");
-        context.Organisation.EstablishmentNumber?.ShouldBe("2091");
+        context.Organisation.EstablishmentNumber.ShouldBe("2091");
         context.Organisation.LocalAuthority.ShouldNotBeNull();
         context.Organisation.LocalAuthority.Id.ShouldBe("502EF2E9-2CA6-4905-9BF7-E80695BD5717");
         context.Organisation.LocalAuthority.Name.ShouldBe(

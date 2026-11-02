@@ -6,7 +6,7 @@ using static SchoolAccount.TestCommon.Builders.CensusStatusesResponseBuilder;
 using static SchoolAccount.TestCommon.Builders.GetAcademyTrustResponseBuilder.GetAcademyEstablishmentResponseBuilder;
 using static SchoolAccount.TestCommon.Builders.GetCensusJourney.GetCensusJourneyContentResponseBuilder;
 
-namespace SchoolAccount.ApplicationTests.Collect.GetCensusJourney;
+namespace SchoolAccount.ApplicationTests.Features.Collect.GetCensusJourney;
 
 public static class GetCensusJourneyMapperTests
 {
@@ -43,11 +43,13 @@ public static class GetCensusJourneyMapperTests
             var result = TrustEstablishmentToOrganisation(establishment);
 
             // Assert
-            result.Id.ShouldBe("test-ukprn");
-            result.Ukprn.ShouldBe("test-ukprn");
-            result.Name.ShouldBe("Test Establishment");
-            result.Category.Id.ShouldBe("001");
-            result.Category.Name.ShouldBe("Establishment");
+            result.ShouldSatisfyAllConditions(
+                organisation => organisation.Id.ShouldBe("test-ukprn"),
+                organisation => organisation.Ukprn.ShouldBe("test-ukprn"),
+                organisation => organisation.Name.ShouldBe("Test Establishment"),
+                organisation => organisation.Category.Id.ShouldBe("001"),
+                organisation => organisation.Category.Name.ShouldBe("Establishment")
+            );
         }
 
         [Fact]
@@ -63,9 +65,11 @@ public static class GetCensusJourneyMapperTests
             var result = TrustEstablishmentToOrganisation(establishment);
 
             // Assert
-            result.LocalAuthority!.Id.ShouldBe("test-la-code");
-            result.LocalAuthority.Code.ShouldBe("test-la-code");
-            result.LocalAuthority.Name.ShouldBe("Test Local Authority");
+            result.ShouldSatisfyAllConditions(
+                organisation => organisation.LocalAuthority!.Id.ShouldBe("test-la-code"),
+                organisation => organisation.LocalAuthority!.Code.ShouldBe("test-la-code"),
+                organisation => organisation.LocalAuthority!.Name.ShouldBe("Test Local Authority")
+            );
         }
 
         [Fact]
@@ -78,7 +82,7 @@ public static class GetCensusJourneyMapperTests
             var result = TrustEstablishmentToOrganisation(establishment);
 
             // Assert
-            result.LocalAuthority.ShouldBe(
+            result.LocalAuthority.ShouldBeEquivalentTo(
                 new LocalAuthority
                 {
                     Id = string.Empty,

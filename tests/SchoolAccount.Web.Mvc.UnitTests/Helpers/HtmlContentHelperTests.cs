@@ -23,7 +23,7 @@ public class HtmlContentHelperTests
         var document = Parse(corrected);
         var paragraph = document.QuerySelector(".govuk-paragraph");
         paragraph.ShouldNotBeNull();
-        paragraph.TextContent.ShouldBeEquivalentTo("Test");
+        paragraph.TextContent.ShouldBe("Test");
     }
 
     [Fact]
