@@ -12,17 +12,17 @@ using static SchoolAccount.TestCommon.Builders.GetCensusJourney.GetCensusJourney
 using static SchoolAccount.TestCommon.Builders.GetCensusJourney.GetCensusJourneyResponseBuilder;
 using static SchoolAccount.TestCommon.Builders.GetCensusJourney.GetCensusJourneyResponseImportantDateBuilder;
 using static SchoolAccount.TestCommon.Builders.GetCensusJourney.GetCensusJourneyResponseUnderstandStatusBuilder;
+using static SchoolAccount.TestCommon.Constants.UrlConstants;
 using static SchoolAccount.Web.Mvc.Authentication.ClaimConstants;
 
 namespace SchoolAccount.IntegrationTests.Features.Journey;
 
 public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
 {
-    private readonly CancellationToken _cancellationToken = TestContext.Current.CancellationToken;
     private readonly HttpClient _client;
     private readonly SchoolAccountWebApplicationFactory<Program> _factory;
+    private readonly CancellationToken _cancellationToken = TestContext.Current.CancellationToken;
     private readonly StubCensusJourneyHandler _getCensusJourneyHandler = new();
-    private readonly string _journeyUri;
     private readonly Uri _testUri = new("https://www.gov.uk/");
 
     public JourneyControllerTests(SchoolAccountWebApplicationFactory<Program> factory)
@@ -31,7 +31,6 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         _client = factory.CreateAuthorisedClient(services =>
             services.StubQueryHandler(_getCensusJourneyHandler)
         );
-        _journeyUri = _factory.GeneratePath("Journey", "Journey");
     }
 
     [Fact]
@@ -46,44 +45,24 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
                     .WithOverview("This is a test overview")
                     .WithStatus("Test Status")
                     .WithSupportServiceTitle("Test Support Service")
-                    .WithCallToActionLabel("Test Call To Action")
-                    .WithCallToActionUrl(_testUri)
-                    .WithImportantDate(
-                        AnImportantDate().WithLabel("Test Important Date").WithDate(2026, 10, 1)
-                    )
             )
             .AsSuccess();
 
         _getCensusJourneyHandler.Returns(journeyResult);
 
         // Act
-        var message = await _client.GetAsync(_journeyUri, _cancellationToken);
-        var page = await AngleSharpPage.FromResponseAsync<CommonPage>(message, _cancellationToken);
+        var message = await _client.GetAsync(JourneyUrl, _cancellationToken);
+        var page = await AngleSharpPage.FromResponseAsync<JourneyPage>(message, _cancellationToken);
 
         // Assert
         message.StatusCode.ShouldBe(HttpStatusCode.OK);
-        page.GetTitle().ShouldBe("Journey");
+        page.GetPageTitle().ShouldBe("Journey");
         page.GetFirstHeading().ShouldBe("Test Journey Title");
         page.GetFirstBodyParagraph().ShouldBe("This is a test overview");
         page.GetFirstCaption().ShouldBe("This is a test caption");
         page.GetFirstTag().ShouldBe("Test Status");
-        page.GetFirstCaption().ShouldBe("This is a test caption");
-        page.GetFirstTag().ShouldBe("Test Status");
-        page.GetFirstTag().ShouldBe("Test Status");
-        page.GetComponentTextByContent(".govuk-heading-m", "Test Support Service")
+        page.GetElementContentByText(".govuk-heading-m", "Test Support Service")
             .ShouldBe("Test Support Service");
-
-        var pageImportantDates = page.GetSummaryListPairs();
-        pageImportantDates.ShouldNotBeNull();
-        pageImportantDates.Count.ShouldBe(1);
-        pageImportantDates.ShouldContainKeyAndValue<string, string>(
-            "Test Important Date",
-            "1 October 2026"
-        );
-
-        var callToActionButton = page.GetButtonByLink(_testUri.ToString());
-        callToActionButton.ShouldNotBeNull();
-        callToActionButton.TextContent.Trim().ShouldStartWith("Test Call To Action");
     }
 
     [Theory]
@@ -99,18 +78,49 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         _getCensusJourneyHandler.Returns(journeyResult);
 
         // Act
-        var message = await _client.GetAsync(_journeyUri, _cancellationToken);
-        var page = await AngleSharpPage.FromResponseAsync<CommonPage>(message, _cancellationToken);
+        var message = await _client.GetAsync(JourneyUrl, _cancellationToken);
+        var page = await AngleSharpPage.FromResponseAsync<JourneyPage>(message, _cancellationToken);
 
         // Assert
         message.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-        var overviewHeading = page.GetComponentTextByContent(".govuk-heading-m", "Overview");
+        var overviewHeading = page.GetElementContentByText(".govuk-heading-m", "Overview");
         overviewHeading.ShouldBeNull();
     }
 
     [Fact]
-    public async Task ImportantDates_does_not_render_when_empty()
+    public async Task Important_dates_are_visible_on_the_journey_page()
+    {
+        // Arrange
+        var journeyResult = AGetCensusJourneyResponse()
+            .WithContent(
+                ACensusJourneyContentResponse()
+                    .WithImportantDate(
+                        AnImportantDate().WithLabel("Test Important Date").WithDate(2026, 10, 1)
+                    )
+            )
+            .AsSuccess();
+
+        _getCensusJourneyHandler.Returns(journeyResult);
+
+        // Act
+        var message = await _client.GetAsync(JourneyUrl, _cancellationToken);
+        var page = await AngleSharpPage.FromResponseAsync<JourneyPage>(message, _cancellationToken);
+
+        // Assert
+        message.StatusCode.ShouldBe(HttpStatusCode.OK);
+
+        var pageImportantDates = page.GetSummaryListPairs();
+        pageImportantDates.ShouldNotBeNull();
+        pageImportantDates.Count.ShouldBe(1);
+        pageImportantDates.ShouldContainKeyAndValue<string, string>(
+            "Test Important Date",
+            "1 October 2026"
+        );
+    }
+
+    [Fact]
+    public async Task Important_dates_do_not_render_when_empty()
     {
         // Arrange
         var journeyResult = AGetCensusJourneyResponse()
@@ -120,8 +130,8 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         _getCensusJourneyHandler.Returns(journeyResult);
 
         // Act
-        var message = await _client.GetAsync(_journeyUri, _cancellationToken);
-        var page = await AngleSharpPage.FromResponseAsync<CommonPage>(message, _cancellationToken);
+        var message = await _client.GetAsync(JourneyUrl, _cancellationToken);
+        var page = await AngleSharpPage.FromResponseAsync<JourneyPage>(message, _cancellationToken);
 
         // Assert
         message.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -147,8 +157,8 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         _getCensusJourneyHandler.Returns(journeyResult);
 
         // Act
-        var message = await _client.GetAsync(_journeyUri, _cancellationToken);
-        var page = await AngleSharpPage.FromResponseAsync<CommonPage>(message, _cancellationToken);
+        var message = await _client.GetAsync(JourneyUrl, _cancellationToken);
+        var page = await AngleSharpPage.FromResponseAsync<JourneyPage>(message, _cancellationToken);
 
         // Assert
         message.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -180,8 +190,8 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         _getCensusJourneyHandler.Returns(journeyResult);
 
         // Act
-        var message = await _client.GetAsync(_journeyUri, _cancellationToken);
-        var page = await AngleSharpPage.FromResponseAsync<CommonPage>(message, _cancellationToken);
+        var message = await _client.GetAsync(JourneyUrl, _cancellationToken);
+        var page = await AngleSharpPage.FromResponseAsync<JourneyPage>(message, _cancellationToken);
 
         // Assert
         message.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -193,28 +203,53 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     }
 
     [Fact]
+    public async Task Call_to_action_button_is_visible_on_the_journey_page()
+    {
+        // Arrange
+        var journeyResult = AGetCensusJourneyResponse()
+            .WithContent(
+                ACensusJourneyContentResponse()
+                    .WithCallToActionLabel("Test Call To Action")
+                    .WithCallToActionUrl(_testUri)
+            )
+            .AsSuccess();
+
+        _getCensusJourneyHandler.Returns(journeyResult);
+
+        // Act
+        var message = await _client.GetAsync(JourneyUrl, _cancellationToken);
+        var page = await AngleSharpPage.FromResponseAsync<JourneyPage>(message, _cancellationToken);
+
+        // Assert
+        message.StatusCode.ShouldBe(HttpStatusCode.OK);
+
+        var callToActionButton = page.GetElementByHref("a.govuk-button", _testUri.ToString());
+
+        callToActionButton.ShouldNotBeNull();
+        page.GetTextOf(callToActionButton).ShouldBe("Test Call To Action opens in new tab");
+    }
+
+    [Fact]
     public async Task Call_to_action_button_has_hidden_opens_in_new_tab_text_for_screen_readers()
     {
         // Arrange
         _getCensusJourneyHandler.Returns(AGetCensusJourneyResponse().AsSuccess());
 
         // Act
-        var message = await _client.GetAsync(_journeyUri, _cancellationToken);
-        var page = await AngleSharpPage.FromResponseAsync<CommonPage>(message, _cancellationToken);
+        var message = await _client.GetAsync(JourneyUrl, _cancellationToken);
+        var page = await AngleSharpPage.FromResponseAsync<JourneyPage>(message, _cancellationToken);
 
         // Assert
         message.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-        var callToActionButton = page.GetButtonByLink(
+        var callToActionButton = page.GetElementByHref(
+            "a.govuk-button",
             "https://www.gov.uk/guidance/complete-the-school-census/generate-and-submit-your-return"
         );
-        var hiddenSpan = callToActionButton?.QuerySelector("span.govuk-visually-hidden");
 
         callToActionButton.ShouldNotBeNull();
-        hiddenSpan.ShouldNotBeNull();
-        callToActionButton.TextContent.Trim().ShouldStartWith("Go to Autumn Census 2026");
-        callToActionButton.TextContent.Trim().ShouldEndWith("opens in new tab");
-        hiddenSpan.TextContent.Trim().ShouldStartWith("opens in new tab");
+        page.GetTextOf(callToActionButton).ShouldBe("Go to Autumn Census 2026 opens in new tab");
+        page.GetVisuallyHiddenTextOnElement(callToActionButton).ShouldBe("opens in new tab");
     }
 
     [Fact]
@@ -255,20 +290,18 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         _getCensusJourneyHandler.Returns(AGetCensusJourneyResponse().AsSuccess());
 
         // Act
-        var message = await client.GetAsync(_journeyUri, _cancellationToken);
+        var message = await client.GetAsync(JourneyUrl, _cancellationToken);
         var page = await AngleSharpPage.FromResponseAsync<JourneyPage>(message, _cancellationToken);
 
         // Assert
         message.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-        var callToActionButton = page.GetButtonByLink(
+        var callToActionButton = page.GetElementByHref(
+            "a.govuk-button",
             "https://www.gov.uk/guidance/complete-the-school-census/generate-and-submit-your-return"
         );
 
-        var hiddenSpan = callToActionButton?.QuerySelector("span.govuk-visually-hidden");
-
         callToActionButton.ShouldBeNull();
-        hiddenSpan.ShouldBeNull();
     }
 
     [Fact]
@@ -282,7 +315,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         );
 
         // Act
-        var message = await _client.GetAsync(_journeyUri, _cancellationToken);
+        var message = await _client.GetAsync(JourneyUrl, _cancellationToken);
         var page = await AngleSharpPage.FromResponseAsync<JourneyPage>(message, _cancellationToken);
 
         // Assert
@@ -319,7 +352,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         );
 
         // Act
-        var message = await _client.GetAsync(_journeyUri, _cancellationToken);
+        var message = await _client.GetAsync(JourneyUrl, _cancellationToken);
         var page = await AngleSharpPage.FromResponseAsync<JourneyPage>(message, _cancellationToken);
 
         // Assert
@@ -385,7 +418,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         );
 
         // Act
-        var message = await client.GetAsync(_journeyUri, _cancellationToken);
+        var message = await client.GetAsync(JourneyUrl, _cancellationToken);
         var page = await AngleSharpPage.FromResponseAsync<JourneyPage>(message, _cancellationToken);
 
         // Assert
@@ -443,12 +476,12 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         );
 
         // Act
-        var message = await _client.GetAsync(_journeyUri, _cancellationToken);
+        var message = await _client.GetAsync(JourneyUrl, _cancellationToken);
         var page = await AngleSharpPage.FromResponseAsync<JourneyPage>(message, _cancellationToken);
 
         // Assert
         message.StatusCode.ShouldBe(HttpStatusCode.OK);
-        page.GetComponentTextByContent("li", "Test Status")
+        page.GetElementContentByText("li", "Test Status")
             .ShouldBe("Test Status: Test status description.");
     }
 
@@ -471,12 +504,12 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         );
 
         // Act
-        var message = await _client.GetAsync(_journeyUri, _cancellationToken);
+        var message = await _client.GetAsync(JourneyUrl, _cancellationToken);
         var page = await AngleSharpPage.FromResponseAsync<JourneyPage>(message, _cancellationToken);
 
         // Assert
         message.StatusCode.ShouldBe(HttpStatusCode.OK);
-        page.GetComponentTextByContent("li", "Test Status").ShouldBeNull();
+        page.GetElementContentByText("li", "Test Status").ShouldBeNull();
     }
 
     [Fact]
@@ -528,12 +561,12 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         );
 
         // Act
-        var message = await client.GetAsync(_journeyUri, _cancellationToken);
+        var message = await client.GetAsync(JourneyUrl, _cancellationToken);
         var page = await AngleSharpPage.FromResponseAsync<JourneyPage>(message, _cancellationToken);
 
         // Assert
         message.StatusCode.ShouldBe(HttpStatusCode.OK);
-        page.GetComponentTextByContent("li", "Test Status")
+        page.GetElementContentByText("li", "Test Status")
             .ShouldBe("Test Status: Test status description.");
     }
 }

@@ -6,7 +6,7 @@ public class ErrorPage : AngleSharpPage
 {
     public bool IsNotFoundPageTitle()
     {
-        var pageTitle = GetTitle();
+        var pageTitle = GetPageTitle();
 
         return pageTitle?.Equals(ErrorViewModel.NotFoundTitle, StringComparison.Ordinal) == true;
     }
@@ -20,7 +20,7 @@ public class ErrorPage : AngleSharpPage
 
     public bool IsServerErrorPageTitle()
     {
-        var pageTitle = GetTitle();
+        var pageTitle = GetPageTitle();
 
         return pageTitle?.Equals(ErrorViewModel.ErrorTitle, StringComparison.Ordinal) == true;
     }
