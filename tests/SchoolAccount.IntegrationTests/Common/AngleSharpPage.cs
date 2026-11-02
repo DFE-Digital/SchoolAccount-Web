@@ -16,17 +16,17 @@ public abstract class AngleSharpPage
     }
 
     public static async Task<T> FromResponseAsync<T>(
-        HttpResponseMessage responseMessage,
+        HttpResponseMessage response,
         CancellationToken cancellationToken = default
     )
         where T : AngleSharpPage, new()
     {
-        var html = await responseMessage.Content.ReadAsStringAsync(cancellationToken);
+        var html = await response.Content.ReadAsStringAsync(cancellationToken);
 
-        var document = new T();
-        document.Initialise(html);
+        var page = new T();
+        page.Initialise(html);
 
-        return document;
+        return page;
     }
 
     public string? GetElementContentByText(string querySelector, string text)
