@@ -1,6 +1,6 @@
-using System.Net;
 using SchoolAccount.IntegrationTests.Common;
 using Shouldly;
+using static System.Net.HttpStatusCode;
 using static SchoolAccount.TestCommon.Constants.UrlConstants;
 using static Xunit.TestContext;
 
@@ -19,7 +19,7 @@ public class LoggedOutActionTests(SchoolAccountWebApplicationFactory<Program> fa
         var response = await client.GetAsync(LoggedOutUrl, Current.CancellationToken);
 
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
+        response.StatusCode.ShouldBe(Redirect);
         response.Headers.Location.ShouldNotBeNull().OriginalString.ShouldBe(StartUrl);
     }
 
@@ -33,7 +33,7 @@ public class LoggedOutActionTests(SchoolAccountWebApplicationFactory<Program> fa
         var response = await client.GetAsync(LoggedOutUrl, Current.CancellationToken);
 
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
+        response.StatusCode.ShouldBe(Redirect);
         response.Headers.Location.ShouldNotBeNull().OriginalString.ShouldBe(StartUrl);
     }
 }
