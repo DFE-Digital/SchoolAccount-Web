@@ -13,29 +13,6 @@ namespace SchoolAccount.IntegrationTests.Features.CrossCutting;
 public class OrganisationPolicyTests(SchoolAccountWebApplicationFactory<Program> factory)
     : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
 {
-    private HttpClient CreateClientOrganisationClaims(string? organisationValue)
-    {
-        var claims = new List<Claim>
-        {
-            new(GivenName, "Test user"),
-            new(FamilyName, "Test surname"),
-        };
-        if (organisationValue is not null)
-        {
-            claims.Add(new Claim(Organisation, organisationValue));
-        }
-
-        return factory.CreateAuthorisedClient(
-            services =>
-            {
-                services.RemoveAll<MockAuthClaimsOptions>();
-                services.AddSingleton(new MockAuthClaimsOptions { Claims = claims });
-                services.StubQueryHandler(StubCensusJourneyHandler.Succeeding());
-            },
-            new ClientOptions { AllowAutoRedirect = false }
-        );
-    }
-
     [Theory]
     [InlineData("{}")]
     [InlineData("[]")]
@@ -72,5 +49,28 @@ public class OrganisationPolicyTests(SchoolAccountWebApplicationFactory<Program>
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
+    }
+
+    private HttpClient CreateClientOrganisationClaims(string? organisationValue)
+    {
+        var claims = new List<Claim>
+        {
+            new(GivenName, "Test user"),
+            new(FamilyName, "Test surname"),
+        };
+        if (organisationValue is not null)
+        {
+            claims.Add(new Claim(Organisation, organisationValue));
+        }
+
+        return factory.CreateAuthorisedClient(
+            services =>
+            {
+                services.RemoveAll<MockAuthClaimsOptions>();
+                services.AddSingleton(new MockAuthClaimsOptions { Claims = claims });
+                services.StubQueryHandler(StubCensusJourneyHandler.Succeeding());
+            },
+            new ClientOptions { AllowAutoRedirect = false }
+        );
     }
 }
