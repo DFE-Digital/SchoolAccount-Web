@@ -1,6 +1,6 @@
 using SchoolAccount.Application.Features.Collect.GetCensusJourney.Responses;
 
-namespace SchoolAccount.TestCommon.Builders.GetCensusJourney;
+namespace SchoolAccount.TestCommon.Builders.Features.Collect.GetCensusJourney.Responses;
 
 public class GetCensusJourneyResponseUnderstandStatusBuilder
 {

@@ -4,6 +4,7 @@ using SchoolAccount.Application.Features.Collect.CensusStatuses;
 using SchoolAccount.SharedKernel;
 using SchoolAccount.SharedKernel.Authentication;
 using SchoolAccount.TestCommon.Builders;
+using SchoolAccount.TestCommon.Builders.Features.Collect.CensusStatuses;
 using Shouldly;
 
 namespace SchoolAccount.ApplicationTests.Collect;

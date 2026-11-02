@@ -2,9 +2,9 @@ using SchoolAccount.Application.Features.Collect.CensusStatuses;
 using SchoolAccount.SharedKernel.Authentication;
 using Shouldly;
 using static SchoolAccount.Application.Features.Collect.GetCensusJourney.GetCensusJourneyMapper;
-using static SchoolAccount.TestCommon.Builders.CensusStatusesResponseBuilder;
-using static SchoolAccount.TestCommon.Builders.GetAcademyTrustResponseBuilder.GetAcademyEstablishmentResponseBuilder;
-using static SchoolAccount.TestCommon.Builders.GetCensusJourney.GetCensusJourneyContentResponseBuilder;
+using static SchoolAccount.TestCommon.Builders.Features.Collect.CensusStatuses.CensusStatusesResponseBuilder;
+using static SchoolAccount.TestCommon.Builders.Features.Collect.GetCensusJourney.Responses.GetAcademyEstablishmentResponseBuilder;
+using static SchoolAccount.TestCommon.Builders.Features.Collect.GetCensusJourney.Responses.GetCensusJourneyContentResponseBuilder;
 
 namespace SchoolAccount.ApplicationTests.Collect.GetCensusJourney;
 

@@ -8,11 +8,11 @@ using SchoolAccount.IntegrationTests.Common.Stubs;
 using SchoolAccount.SharedKernel;
 using SchoolAccount.TestCommon.Constants;
 using Shouldly;
-using static SchoolAccount.TestCommon.Builders.CensusStatusesResponseBuilder;
-using static SchoolAccount.TestCommon.Builders.GetCensusJourney.GetCensusJourneyContentResponseBuilder;
-using static SchoolAccount.TestCommon.Builders.GetCensusJourney.GetCensusJourneyResponseBuilder;
-using static SchoolAccount.TestCommon.Builders.GetCensusJourney.GetCensusJourneyResponseImportantDateBuilder;
-using static SchoolAccount.TestCommon.Builders.GetCensusJourney.GetCensusJourneyResponseUnderstandStatusBuilder;
+using static SchoolAccount.TestCommon.Builders.Features.Collect.CensusStatuses.CensusStatusesResponseBuilder;
+using static SchoolAccount.TestCommon.Builders.Features.Collect.GetCensusJourney.Responses.GetCensusJourneyContentResponseBuilder;
+using static SchoolAccount.TestCommon.Builders.Features.Collect.GetCensusJourney.Responses.GetCensusJourneyResponseBuilder;
+using static SchoolAccount.TestCommon.Builders.Features.Collect.GetCensusJourney.Responses.GetCensusJourneyResponseImportantDateBuilder;
+using static SchoolAccount.TestCommon.Builders.Features.Collect.GetCensusJourney.Responses.GetCensusJourneyResponseUnderstandStatusBuilder;
 using static SchoolAccount.TestCommon.Constants.UrlConstants;
 using static SchoolAccount.Web.Mvc.Authentication.ClaimConstants;
 
