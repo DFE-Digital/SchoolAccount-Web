@@ -4,6 +4,20 @@ namespace SchoolAccount.IntegrationTests.Common.Pages;
 
 public class ErrorPage : AngleSharpPage
 {
+    public bool IsForbiddenPageTitle()
+    {
+        var pageTitle = GetPageTitle();
+
+        return pageTitle?.Equals(ErrorViewModel.ForbiddenTitle, StringComparison.Ordinal) == true;
+    }
+
+    public bool IsForbiddenPageHeading()
+    {
+        var pageHeading = GetFirstHeading();
+
+        return pageHeading?.Equals("Access denied", StringComparison.Ordinal) == true;
+    }
+
     public bool IsNotFoundPageTitle()
     {
         var pageTitle = GetPageTitle();
