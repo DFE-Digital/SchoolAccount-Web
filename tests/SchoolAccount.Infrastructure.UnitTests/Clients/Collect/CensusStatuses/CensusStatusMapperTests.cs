@@ -2,7 +2,7 @@ using SchoolAccount.Infrastructure.Clients.Collect.CensusStatuses;
 using SchoolAccount.SharedKernel.Authentication;
 using Shouldly;
 
-namespace SchoolAccount.Infrastructure.UnitTests.Collect.CensusStatuses;
+namespace SchoolAccount.Infrastructure.UnitTests.Clients.Collect.CensusStatuses;
 
 public class CensusStatusMapperTests
 {

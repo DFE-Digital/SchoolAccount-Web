@@ -4,7 +4,7 @@ using SchoolAccount.Application.Features.Feedback;
 using SchoolAccount.SharedKernel;
 using Shouldly;
 
-namespace SchoolAccount.ApplicationTests.Feedback;
+namespace SchoolAccount.ApplicationTests.Features.Feedback;
 
 public class FeedbackHandlerTests
 {
