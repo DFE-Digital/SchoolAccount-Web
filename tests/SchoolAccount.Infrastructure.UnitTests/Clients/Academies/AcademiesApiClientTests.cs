@@ -7,7 +7,7 @@ using Shouldly;
 using static System.Net.HttpStatusCode;
 using static System.Net.Mime.MediaTypeNames.Application;
 
-namespace SchoolAccount.Infrastructure.UnitTests.Academies;
+namespace SchoolAccount.Infrastructure.UnitTests.Clients.Academies;
 
 public class AcademiesApiClientTests : IDisposable
 {

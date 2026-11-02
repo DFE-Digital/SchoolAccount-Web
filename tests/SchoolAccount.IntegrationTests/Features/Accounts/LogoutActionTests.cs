@@ -3,7 +3,7 @@ using Shouldly;
 using static System.Net.HttpStatusCode;
 using static SchoolAccount.TestCommon.Constants.UrlConstants;
 
-namespace SchoolAccount.IntegrationTests.Features.Account;
+namespace SchoolAccount.IntegrationTests.Features.Accounts;
 
 public class LogoutActionTests(SchoolAccountWebApplicationFactory<Program> factory)
     : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
