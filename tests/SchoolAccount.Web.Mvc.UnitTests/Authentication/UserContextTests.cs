@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Testing;
 using NSubstitute;
+using SchoolAccount.TestCommon.Constants;
 using SchoolAccount.Web.Mvc.Authentication;
 using Shouldly;
 using static SchoolAccount.Web.Mvc.Authentication.ClaimConstants;
@@ -22,23 +23,7 @@ public class UserContextTests
         var givenName = "John";
         var familyName = "Jones";
         var email = "john.jones@testing.world";
-        var organisationJson = """
-            {
-             "id": "2E774B32-E4DB-445B-B915-736C777FF5A4",
-             "name": "East Herrington Primary Academy",
-             "category": {
-                 "id": "001",
-                 "name": "Establishment"
-             },
-             "ukprn": "10037611",
-             "establishmentNumber": "2091",
-             "localAuthority": {
-                 "id": "502EF2E9-2CA6-4905-9BF7-E80695BD5717",
-                 "name": "SUNDERLAND CITY METROPOLITAN BOROUGH COUNCIL",
-                 "code": "394"
-             }
-            }
-            """;
+        var organisationJson = OrganisationConstants.ValidAcademyJson;
 
         var claimsDictionary = new Dictionary<string, string>
         {
@@ -63,7 +48,7 @@ public class UserContextTests
         context.Name.ShouldBe(givenName + " " + familyName);
         context.Organisation.ShouldNotBeNull();
         context.Organisation.Id.ShouldBe("2E774B32-E4DB-445B-B915-736C777FF5A4");
-        context.Organisation.Name.ShouldBe("East Herrington Primary Academy");
+        context.Organisation.Name.ShouldBe("Test School");
         context.Organisation.Category.Id.ShouldBe("001");
         context.Organisation.Category.Name.ShouldBe("Establishment");
         context.Organisation.Ukprn.ShouldBe("10037611");
@@ -84,17 +69,7 @@ public class UserContextTests
         var givenName = "John";
         var familyName = "Jones";
         var email = "john.jones@testing.world";
-        var organisationJson = """
-             {
-              "id": "DD9F7BD6-2828-4FE7-B6DA-7C7C028ED479",
-              "name": "BALMORAL LEARNING TRUST",
-              "category": {
-                "id": "010",
-                "name": "Multi-Academy Trust"
-              },
-              "ukprn": "10059806"
-            }
-            """;
+        var organisationJson = OrganisationConstants.ValidTrustJson;
 
         var claimsDictionary = new Dictionary<string, string>
         {
@@ -118,11 +93,11 @@ public class UserContextTests
         context.EmailAddress.ShouldBe(email);
         context.Name.ShouldBe(givenName + " " + familyName);
         context.Organisation.ShouldNotBeNull();
-        context.Organisation.Id.ShouldBe("DD9F7BD6-2828-4FE7-B6DA-7C7C028ED479");
-        context.Organisation.Name.ShouldBe("BALMORAL LEARNING TRUST");
+        context.Organisation.Id.ShouldBe("2E774B32-E4DB-445B-B915-736C777FF5A4");
+        context.Organisation.Name.ShouldBe("Test Multi Academy Trust");
         context.Organisation.Category.Id.ShouldBe("010");
-        context.Organisation.Category.Name.ShouldBe("Multi-Academy Trust");
-        context.Organisation.Ukprn.ShouldBe("10059806");
+        context.Organisation.Category.Name.ShouldBe("Multi Academy Trust");
+        context.Organisation.Ukprn.ShouldBe("10037611");
         context.Organisation.EstablishmentNumber.ShouldBeNull();
         context.Organisation.LocalAuthority.ShouldBeNull();
     }

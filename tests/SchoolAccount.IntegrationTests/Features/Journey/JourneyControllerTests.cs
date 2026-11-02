@@ -6,6 +6,7 @@ using SchoolAccount.IntegrationTests.Common.Extensions;
 using SchoolAccount.IntegrationTests.Common.Pages;
 using SchoolAccount.IntegrationTests.Common.Stubs;
 using SchoolAccount.SharedKernel;
+using SchoolAccount.TestCommon.Constants;
 using Shouldly;
 using static SchoolAccount.TestCommon.Builders.CensusStatusesResponseBuilder;
 using static SchoolAccount.TestCommon.Builders.GetCensusJourney.GetCensusJourneyContentResponseBuilder;
@@ -256,18 +257,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     public async Task Call_to_action_button_is_hidden_for_MAT_users()
     {
         // Arrange
-        var trustJson = """
-            {
-             "id": "2E774B32-E4DB-445B-B915-736C777FF5A4",
-             "name": "Test Multi Academy Trust",
-             "category": { "id": "010", "name": "Multi Academy Trust" },
-             "ukprn": "10037611",
-             "establishments": [
-                 { "urn": "100001", "name": "Test School 1" },
-                 { "urn": "100002", "name": "Test School 2" }
-             ]
-            }
-            """;
+        var trustJson = OrganisationConstants.ValidTrustJson;
 
         var client = _factory.CreateAuthorisedClient(services =>
         {
@@ -370,18 +360,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         var octoberFirst2026 = new DateTime(2026, 10, 1, 2, 0, 0, DateTimeKind.Utc);
         var octoberFourth2026 = new DateTime(2026, 10, 4, 9, 0, 0, DateTimeKind.Utc);
 
-        var trustJson = """
-            {
-             "id": "2E774B32-E4DB-445B-B915-736C777FF5A4",
-             "name": "Test Multi Academy Trust",
-             "category": { "id": "010", "name": "Multi Academy Trust" },
-             "ukprn": "10037611",
-             "establishments": [
-                 { "urn": "100001", "name": "Test School 1" },
-                 { "urn": "100002", "name": "Test School 2" }
-             ]
-            }
-            """;
+        var trustJson = OrganisationConstants.ValidTrustJson;
 
         var dateTimeProvider = Substitute.For<IDateTimeProvider>();
         dateTimeProvider.UtcNow.Returns(octoberFourth2026);
@@ -516,18 +495,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     public async Task Status_explanations_are_shown_for_a_multi_academy_trust()
     {
         // Arrange
-        var trustJson = """
-            {
-             "id": "2E774B32-E4DB-445B-B915-736C777FF5A4",
-             "name": "Test Multi Academy Trust",
-             "category": { "id": "010", "name": "Multi Academy Trust" },
-             "ukprn": "10037611",
-             "establishments": [
-                 { "urn": "100001", "name": "Test School 1" },
-                 { "urn": "100002", "name": "Test School 2" }
-             ]
-            }
-            """;
+        var trustJson = OrganisationConstants.ValidTrustJson;
 
         var client = _factory.CreateAuthorisedClient(services =>
         {

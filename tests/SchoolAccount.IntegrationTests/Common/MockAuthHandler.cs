@@ -2,6 +2,7 @@
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
+using SchoolAccount.TestCommon.Constants;
 using static SchoolAccount.Web.Mvc.Authentication.ClaimConstants;
 
 namespace SchoolAccount.IntegrationTests.Common;
@@ -21,23 +22,7 @@ public class MockAuthHandler(
 
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
-        var organisationJson = $$"""
-            {
-             "id": "2E774B32-E4DB-445B-B915-736C777FF5A4",
-             "name": "{{FakeOrganisationName}}",
-             "category": {
-                 "id": "001",
-                 "name": "Establishment"
-             },
-             "ukprn": "10037611",
-             "establishmentNumber": "2091",
-             "localAuthority": {
-                 "id": "502EF2E9-2CA6-4905-9BF7-E80695BD5717",
-                 "name": "SUNDERLAND CITY METROPOLITAN BOROUGH COUNCIL",
-                 "code": "394"
-             }
-            }
-            """;
+        var organisationJson = OrganisationConstants.ValidAcademyJson;
 
         var claims =
             claimsOptions.Claims?.ToArray()
