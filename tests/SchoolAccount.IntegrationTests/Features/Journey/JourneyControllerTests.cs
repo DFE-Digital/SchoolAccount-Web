@@ -19,9 +19,9 @@ namespace SchoolAccount.IntegrationTests.Features.Journey;
 
 public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
 {
+    private readonly CancellationToken _cancellationToken = TestContext.Current.CancellationToken;
     private readonly HttpClient _client;
     private readonly SchoolAccountWebApplicationFactory<Program> _factory;
-    private readonly CancellationToken _cancellationToken = TestContext.Current.CancellationToken;
     private readonly StubCensusJourneyHandler _getCensusJourneyHandler = new();
     private readonly Uri _testUri = new("https://www.gov.uk/");
 
@@ -37,18 +37,18 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     public async Task The_journey_page_shows_the_census_content()
     {
         // Arrange
-        var result = AGetCensusJourneyResponse()
-            .WithContent(
-                ACensusJourneyContentResponse()
-                    .WithTitle("Test Journey Title")
-                    .WithCaption("This is a test caption")
-                    .WithOverview("This is a test overview")
-                    .WithStatus("Test Status")
-                    .WithSupportServiceTitle("Test Support Service")
-            )
-            .AsSuccess();
-
-        _getCensusJourneyHandler.Returns(result);
+        _getCensusJourneyHandler.Returns(
+            AGetCensusJourneyResponse()
+                .WithContent(
+                    ACensusJourneyContentResponse()
+                        .WithTitle("Test Journey Title")
+                        .WithCaption("This is a test caption")
+                        .WithOverview("This is a test overview")
+                        .WithStatus("Test Status")
+                        .WithSupportServiceTitle("Test Support Service")
+                )
+                .AsSuccess()
+        );
 
         // Act
         var response = await _client.GetAsync(JourneyUrl, _cancellationToken);
@@ -75,11 +75,11 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     public async Task The_overview_is_hidden_when_it_is_blank(string overview)
     {
         // Arrange
-        var result = AGetCensusJourneyResponse()
-            .WithContent(ACensusJourneyContentResponse().WithOverview(overview))
-            .AsSuccess();
-
-        _getCensusJourneyHandler.Returns(result);
+        _getCensusJourneyHandler.Returns(
+            AGetCensusJourneyResponse()
+                .WithContent(ACensusJourneyContentResponse().WithOverview(overview))
+                .AsSuccess()
+        );
 
         // Act
         var response = await _client.GetAsync(JourneyUrl, _cancellationToken);
@@ -99,16 +99,16 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     public async Task Important_dates_are_visible_on_the_journey_page()
     {
         // Arrange
-        var result = AGetCensusJourneyResponse()
-            .WithContent(
-                ACensusJourneyContentResponse()
-                    .WithImportantDate(
-                        AnImportantDate().WithLabel("Test Important Date").WithDate(2026, 10, 1)
-                    )
-            )
-            .AsSuccess();
-
-        _getCensusJourneyHandler.Returns(result);
+        _getCensusJourneyHandler.Returns(
+            AGetCensusJourneyResponse()
+                .WithContent(
+                    ACensusJourneyContentResponse()
+                        .WithImportantDate(
+                            AnImportantDate().WithLabel("Test Important Date").WithDate(2026, 10, 1)
+                        )
+                )
+                .AsSuccess()
+        );
 
         // Act
         var response = await _client.GetAsync(JourneyUrl, _cancellationToken);
@@ -133,11 +133,9 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     public async Task Important_dates_do_not_render_when_empty()
     {
         // Arrange
-        var result = AGetCensusJourneyResponse()
-            .WithContent(ACensusJourneyContentResponse())
-            .AsSuccess();
-
-        _getCensusJourneyHandler.Returns(result);
+        _getCensusJourneyHandler.Returns(
+            AGetCensusJourneyResponse().WithContent(ACensusJourneyContentResponse()).AsSuccess()
+        );
 
         // Act
         var response = await _client.GetAsync(JourneyUrl, _cancellationToken);
@@ -157,17 +155,17 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     public async Task Every_important_date_is_shown()
     {
         // Arrange
-        var result = AGetCensusJourneyResponse()
-            .WithContent(
-                ACensusJourneyContentResponse()
-                    .WithImportantDates(
-                        AnImportantDate().WithLabel("Census due").WithDate(2026, 10, 1),
-                        AnImportantDate().WithLabel("Return date").WithDate(2026, 10, 28)
-                    )
-            )
-            .AsSuccess();
-
-        _getCensusJourneyHandler.Returns(result);
+        _getCensusJourneyHandler.Returns(
+            AGetCensusJourneyResponse()
+                .WithContent(
+                    ACensusJourneyContentResponse()
+                        .WithImportantDates(
+                            AnImportantDate().WithLabel("Census due").WithDate(2026, 10, 1),
+                            AnImportantDate().WithLabel("Return date").WithDate(2026, 10, 28)
+                        )
+                )
+                .AsSuccess()
+        );
 
         // Act
         var response = await _client.GetAsync(JourneyUrl, _cancellationToken);
@@ -190,17 +188,17 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     public async Task Important_dates_are_shown_earliest_first()
     {
         // Arrange
-        var result = AGetCensusJourneyResponse()
-            .WithContent(
-                ACensusJourneyContentResponse()
-                    .WithImportantDates(
-                        AnImportantDate().WithLabel("Later").WithDate(2026, 11, 15),
-                        AnImportantDate().WithLabel("Earlier").WithDate(2026, 10, 1)
-                    )
-            )
-            .AsSuccess();
-
-        _getCensusJourneyHandler.Returns(result);
+        _getCensusJourneyHandler.Returns(
+            AGetCensusJourneyResponse()
+                .WithContent(
+                    ACensusJourneyContentResponse()
+                        .WithImportantDates(
+                            AnImportantDate().WithLabel("Later").WithDate(2026, 11, 15),
+                            AnImportantDate().WithLabel("Earlier").WithDate(2026, 10, 1)
+                        )
+                )
+                .AsSuccess()
+        );
 
         // Act
         var response = await _client.GetAsync(JourneyUrl, _cancellationToken);
@@ -222,15 +220,15 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     public async Task Call_to_action_button_is_visible_on_the_journey_page()
     {
         // Arrange
-        var result = AGetCensusJourneyResponse()
-            .WithContent(
-                ACensusJourneyContentResponse()
-                    .WithCallToActionLabel("Test Call To Action")
-                    .WithCallToActionUrl(_testUri)
-            )
-            .AsSuccess();
-
-        _getCensusJourneyHandler.Returns(result);
+        _getCensusJourneyHandler.Returns(
+            AGetCensusJourneyResponse()
+                .WithContent(
+                    ACensusJourneyContentResponse()
+                        .WithCallToActionLabel("Test Call To Action")
+                        .WithCallToActionUrl(_testUri)
+                )
+                .AsSuccess()
+        );
 
         // Act
         var response = await _client.GetAsync(JourneyUrl, _cancellationToken);
