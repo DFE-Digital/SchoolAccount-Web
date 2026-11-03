@@ -105,18 +105,17 @@ public class CollectApiClientTests : IDisposable
         await act.ShouldThrowAsync<HttpRequestException>();
 
         // Assert
-        _logger.ShouldSatisfyAllConditions(
-            logger => logger.Collector.Count.ShouldBe(1),
-            logger => logger.Collector.LatestRecord.Level.ShouldBe(LogLevel.Error),
-            logger => logger.Collector.LatestRecord.StructuredState.ShouldNotBeNull(),
-            logger =>
-                logger.Collector.LatestRecord.StructuredState!.ShouldContain(property =>
+        _logger.Collector.Count.ShouldBe(1);
+        var latestRecord = _logger.Collector.LatestRecord;
+        var structuredState = latestRecord.StructuredState.ShouldNotBeNull();
+
+        latestRecord.Level.ShouldBe(LogLevel.Error);
+        structuredState.ShouldSatisfyAllConditions(
+            state =>
+                state.ShouldContain(property =>
                     property.Key == "ValidationErrorCount" && property.Value == "1"
                 ),
-            logger =>
-                logger.Collector.LatestRecord.StructuredState!.ShouldContain(property =>
-                    property.Key == "@ValidationErrors"
-                )
+            state => state.ShouldContain(property => property.Key == "@ValidationErrors")
         );
     }
 
