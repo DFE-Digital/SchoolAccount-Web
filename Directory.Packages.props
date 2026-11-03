@@ -8,10 +8,10 @@
     group here and make sure a pattern in that Dependabot group matches its name. See "Dependency Updates" in README.md.
   -->
   <ItemGroup Label="test-tooling">
-    <PackageVersion Include="Microsoft.Extensions.Diagnostics.Testing" Version="10.10.0" />
+    <PackageVersion Include="Microsoft.Extensions.Diagnostics.Testing" Version="10.11.0" />
     <PackageVersion Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.12.0" />
-    <PackageVersion Include="Microsoft.Testing.Extensions.GitHubActionsReport" Version="2.5.1" />
-    <PackageVersion Include="Microsoft.Testing.Extensions.TrxReport" Version="2.5.1" />
+    <PackageVersion Include="Microsoft.Testing.Extensions.GitHubActionsReport" Version="2.5.2" />
+    <PackageVersion Include="Microsoft.Testing.Extensions.TrxReport" Version="2.5.2" />
     <PackageVersion Include="NetArchTest.Rules" Version="1.3.2" />
     <PackageVersion Include="NSubstitute" Version="6.2.0" />
     <PackageVersion Include="RichardSzalay.MockHttp" Version="7.1.0" />
