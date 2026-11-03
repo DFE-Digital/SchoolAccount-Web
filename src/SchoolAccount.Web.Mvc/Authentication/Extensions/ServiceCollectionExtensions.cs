@@ -33,8 +33,13 @@ public static class ServiceCollectionExtensions
                 options.Authority = settings.Authority;
                 options.ClientId = settings.ClientId;
 
+                if (!string.IsNullOrWhiteSpace(settings.ClientSecret))
+                {
+                    options.ClientSecret = settings.ClientSecret;
+                }
+
                 options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.ResponseType = OpenIdConnectResponseType.IdToken;
+                options.ResponseType = OpenIdConnectResponseType.Code;
 
                 options.Scope.Add(Organisation);
                 options.Scope.Add(Email);

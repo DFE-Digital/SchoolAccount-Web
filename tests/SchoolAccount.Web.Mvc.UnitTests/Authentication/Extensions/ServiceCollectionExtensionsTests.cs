@@ -32,7 +32,7 @@ public class ServiceCollectionExtensionsTests
         oidc.Authority.ShouldBe(UrlConstants.OidcAuthorityUrl);
         oidc.ClientId.ShouldBe("test-client-id");
         oidc.SignInScheme.ShouldBe(CookieAuthenticationDefaults.AuthenticationScheme);
-        oidc.ResponseType.ShouldBe(OpenIdConnectResponseType.IdToken);
+        oidc.ResponseType.ShouldBe(OpenIdConnectResponseType.Code);
         oidc.Scope.ShouldContain("organisation");
         oidc.Scope.ShouldContain("email");
         oidc.SaveTokens.ShouldBeTrue();
