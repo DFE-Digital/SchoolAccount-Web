@@ -2,7 +2,20 @@
 @{
     ViewData["Title"] = "Journey";
     ViewData["EnableApplicationInsights"] = true;
+
+    var organisation = Model.Organisation;
+
+    var organisationId = organisation.IsEstablishment
+        ? $"{organisation.LocalAuthority?.Code}{organisation.EstablishmentNumber}"
+        : organisation.Ukprn;
+
+    ViewData["AnalyticsOrganisationId"] = organisationId;
+    ViewData["AnalyticsOrganisationType"] =
+        organisation.IsEstablishment ? "LAESTAB" : "UKPRN";
+    ViewData["AnalyticsOrganisationCategory"] =
+        organisation.Category.Id;
 }
+
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
         <span class="govuk-caption-xl census-title">@Model.Caption</span>

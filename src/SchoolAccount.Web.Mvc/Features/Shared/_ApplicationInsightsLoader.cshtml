@@ -1,9 +1,22 @@
 @using System.Text.Json
 @inject IConfiguration Configuration
+@using SchoolAccount.Application.Abstractions.Messaging
+@using SchoolAccount.SharedKernel
+@inject IUserContext UserContext
 
 @{
     var connectionString =
         Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"];
+    
+    var analyticsUserId = UserContext.Id;
+
+    var organisationId =
+        ViewData["AnalyticsOrganisationId"]?.ToString();
+    var organisationType =
+        ViewData["AnalyticsOrganisationType"]?.ToString();
+
+    var organisationCategory =
+        ViewData["AnalyticsOrganisationCategory"]?.ToString();
 }
 
 @if (!string.IsNullOrWhiteSpace(connectionString))
@@ -37,6 +50,44 @@
 
             appInsights.loadAppInsights();
 
+
+            const organisationType =
+                @Html.Raw(JsonSerializer.Serialize(organisationType));
+
+            const organisationCategory =
+                @Html.Raw(JsonSerializer.Serialize(organisationCategory));
+
+            appInsights.addTelemetryInitializer(envelope => {
+                if (!envelope.baseData) {
+                    envelope.baseData = {};
+                }
+
+                if (!envelope.baseData.properties) {
+                    envelope.baseData.properties = {};
+                }
+
+                Object.assign(envelope.baseData.properties, {
+                    organisationType,
+                    organisationCategory
+                });
+            });
+
+            const userId = @Html.Raw(JsonSerializer.Serialize(analyticsUserId));
+            const organisationId = @Html.Raw(JsonSerializer.Serialize(organisationId));
+
+            if (userId && organisationId) {
+                appInsights.setAuthenticatedUserContext(
+                    userId,
+                    organisationId,
+                    false
+                );
+            }
+
+            appInsights.trackPageView({
+                name: document.title,
+                uri: window.location.href
+            });
+            
             window.appInsights = appInsights;
         })();
     </script>

@@ -9,7 +9,8 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "OTEL_SERVICE_NAME": "schoolaccount-web",
-        "OTEL_RESOURCE_ATTRIBUTES": "service.instance.id=local"
+        "OTEL_RESOURCE_ATTRIBUTES": "service.instance.id=local",
+        "APPLICATIONINSIGHTS_CONNECTION_STRING": "InstrumentationKey=1034081c-239a-428d-b61f-cde67d127a08;IngestionEndpoint=https://uksouth-1.in.applicationinsights.azure.com/;LiveEndpoint=https://uksouth.livediagnostics.monitor.azure.com/;ApplicationId=9ec83deb-f6fb-4a5f-892d-d582a996940f"
       }
     }
   }
