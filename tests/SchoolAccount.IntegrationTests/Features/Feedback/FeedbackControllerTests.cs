@@ -229,6 +229,7 @@ public class FeedbackControllerTests : IClassFixture<SchoolAccountWebApplication
 
         // Assert
         response.StatusCode.ShouldBe(OK);
+        html.ShouldContain("class=\"header-navigation__school\"");
         html.ShouldNotContain("Sign out");
     }
 
