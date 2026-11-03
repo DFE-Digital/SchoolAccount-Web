@@ -4,7 +4,7 @@ using static System.Net.HttpStatusCode;
 using static SchoolAccount.TestCommon.Constants.UrlConstants;
 using static Xunit.TestContext;
 
-namespace SchoolAccount.IntegrationTests.Features.Account;
+namespace SchoolAccount.IntegrationTests.Features.Accounts;
 
 public class LoggedOutActionTests(SchoolAccountWebApplicationFactory<Program> factory)
     : IClassFixture<SchoolAccountWebApplicationFactory<Program>>

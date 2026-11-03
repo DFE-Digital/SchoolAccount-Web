@@ -6,86 +6,80 @@ using static SchoolAccount.TestCommon.Builders.CensusStatusesResponseBuilder;
 using static SchoolAccount.TestCommon.Builders.GetAcademyTrustResponseBuilder.GetAcademyEstablishmentResponseBuilder;
 using static SchoolAccount.TestCommon.Builders.GetCensusJourney.GetCensusJourneyContentResponseBuilder;
 
-namespace SchoolAccount.ApplicationTests.Collect.GetCensusJourney;
+namespace SchoolAccount.ApplicationTests.Features.Collect.GetCensusJourney;
 
-public static class GetCensusJourneyMapperTests
+public class GetCensusJourneyMapperTests
 {
-    public class CreateGetCensusJourneyResponseTests
+    [Fact]
+    public void The_content_and_status_are_mapped_onto_the_response()
     {
-        [Fact]
-        public void The_content_and_status_are_mapped_onto_the_response()
-        {
-            // Arrange
-            var content = ACensusJourneyContentResponse().Build();
-            var statuses = new List<GetCensusStatusesResponse> { ACensusStatusResponse().Build() };
+        // Arrange
+        var content = ACensusJourneyContentResponse().Build();
+        var statuses = new List<GetCensusStatusesResponse> { ACensusStatusResponse().Build() };
 
-            // Act
-            var result = CreateGetCensusJourneyResponse(content, statuses);
+        // Act
+        var result = CreateGetCensusJourneyResponse(content, statuses);
 
-            // Assert
-            result.Content.ShouldBe(content);
-            result.SchoolStatuses.ShouldBe(statuses);
-        }
+        // Assert
+        result.Content.ShouldBe(content);
+        result.SchoolStatuses.ShouldBe(statuses);
     }
 
-    public class TrustEstablishmentToOrganisationTests
+    [Fact]
+    public void The_establishment_is_mapped_correctly()
     {
-        [Fact]
-        public void The_establishment_is_mapped_correctly()
-        {
-            // Arrange
-            var establishment = AnAcademyEstablishment()
-                .WithUkprn("test-ukprn")
-                .WithName("Test Establishment")
-                .Build();
+        // Arrange
+        var establishment = AnAcademyEstablishment()
+            .WithUkprn("test-ukprn")
+            .WithName("Test Establishment")
+            .Build();
 
-            // Act
-            var result = TrustEstablishmentToOrganisation(establishment);
+        // Act
+        var result = TrustEstablishmentToOrganisation(establishment);
 
-            // Assert
-            result.Id.ShouldBe("test-ukprn");
-            result.Ukprn.ShouldBe("test-ukprn");
-            result.Name.ShouldBe("Test Establishment");
-            result.Category.Id.ShouldBe("001");
-            result.Category.Name.ShouldBe("Establishment");
-        }
+        // Assert
+        result.Id.ShouldBe("test-ukprn");
+        result.Ukprn.ShouldBe("test-ukprn");
+        result.Name.ShouldBe("Test Establishment");
+        result.Category.Id.ShouldBe("001");
+        result.Category.Name.ShouldBe("Establishment");
+    }
 
-        [Fact]
-        public void The_local_authority_is_mapped_when_both_the_name_and_code_are_present()
-        {
-            // Arrange
-            var establishment = AnAcademyEstablishment()
-                .WithLocalAuthorityCode("test-la-code")
-                .WithLocalAuthorityName("Test Local Authority")
-                .Build();
+    [Fact]
+    public void The_local_authority_is_mapped_when_both_the_name_and_code_are_present()
+    {
+        // Arrange
+        var establishment = AnAcademyEstablishment()
+            .WithLocalAuthorityCode("test-la-code")
+            .WithLocalAuthorityName("Test Local Authority")
+            .Build();
 
-            // Act
-            var result = TrustEstablishmentToOrganisation(establishment);
+        // Act
+        var result = TrustEstablishmentToOrganisation(establishment);
 
-            // Assert
-            result.LocalAuthority!.Id.ShouldBe("test-la-code");
-            result.LocalAuthority.Code.ShouldBe("test-la-code");
-            result.LocalAuthority.Name.ShouldBe("Test Local Authority");
-        }
+        // Assert
+        result.LocalAuthority!.Id.ShouldBe("test-la-code");
+        result.LocalAuthority.Code.ShouldBe("test-la-code");
+        result.LocalAuthority.Name.ShouldBe("Test Local Authority");
+    }
 
-        [Fact]
-        public void An_empty_local_authority_is_used_when_the_name_and_code_are_missing()
-        {
-            // Arrange
-            var establishment = AnAcademyEstablishment().Build();
+    [Fact]
+    public void An_empty_local_authority_is_used_when_the_name_and_code_are_missing()
+    {
+        // Arrange
+        var establishment = AnAcademyEstablishment().Build();
 
-            // Act
-            var result = TrustEstablishmentToOrganisation(establishment);
+        // Act
+        var result = TrustEstablishmentToOrganisation(establishment);
 
-            // Assert
-            result.LocalAuthority.ShouldBe(
-                new LocalAuthority
-                {
-                    Id = string.Empty,
-                    Name = string.Empty,
-                    Code = string.Empty,
-                }
-            );
-        }
+        // Assert
+        result.LocalAuthority.ShouldBe(
+            new LocalAuthority
+            {
+                Id = string.Empty,
+                Name = string.Empty,
+                Code = string.Empty,
+            }
+        );
     }
 }

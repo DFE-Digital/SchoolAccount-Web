@@ -4,7 +4,7 @@ using static System.Net.HttpStatusCode;
 using static SchoolAccount.IntegrationTests.Common.MockOidcHandler;
 using static SchoolAccount.TestCommon.Constants.UrlConstants;
 
-namespace SchoolAccount.IntegrationTests.Features.Account;
+namespace SchoolAccount.IntegrationTests.Features.Accounts;
 
 public class LoginActionTests(SchoolAccountWebApplicationFactory<Program> factory)
     : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
