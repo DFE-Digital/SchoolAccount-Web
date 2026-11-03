@@ -146,16 +146,10 @@ public class CollectApiClientTests : IDisposable
 
         // Assert
         _logger.Collector.Count.ShouldBe(1);
-        var latestRecord = _logger.Collector.LatestRecord;
-        var structuredState = latestRecord.StructuredState.ShouldNotBeNull();
-
-        latestRecord.Level.ShouldBe(LogLevel.Error);
-        structuredState.ShouldSatisfyAllConditions(
-            state =>
-                state.ShouldContain(property =>
-                    property.Key == "ValidationErrorCount" && property.Value == "1"
-                ),
-            state => state.ShouldContain(property => property.Key == "@ValidationErrors")
+        _logger.ShouldSatisfyAllConditions(
+            logger => logger.Collector.LatestRecord.Level.ShouldBe(LogLevel.Error),
+            logger => logger.Collector.LatestRecord.StructuredState.ShouldNotBeNull(),
+            logger => logger.LatestRecord.Message.ShouldContain("Response from /status was empty")
         );
     }
 
