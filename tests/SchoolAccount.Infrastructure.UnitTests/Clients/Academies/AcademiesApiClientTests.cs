@@ -29,6 +29,12 @@ public class AcademiesApiClientTests : IDisposable
     private readonly FakeLogger<AcademiesApiClient> _logger = new();
     private readonly MockHttpMessageHandler _mockHttp = new();
 
+    public void Dispose()
+    {
+        _mockHttp.Dispose();
+        GC.SuppressFinalize(this);
+    }
+
     [Fact]
     public async Task A_trust_and_its_establishments_are_mapped_from_the_api_response()
     {
@@ -51,13 +57,16 @@ public class AcademiesApiClientTests : IDisposable
         var result = await client.GetTrustDetails(_ukprn, _cancellationToken);
 
         // Assert
-        result.IsSuccess.ShouldBeTrue();
-        result.Value.Ukprn.ShouldBe("10012345");
-        result.Value.Name.ShouldBe("Test Trust");
-        result.Value.GroupUid.ShouldBe("TR00123");
-        result
-            .Value.Establishments.ShouldHaveSingleItem()
-            .EstablishmentName.ShouldBe("Test School");
+        result.ShouldSatisfyAllConditions(
+            trust => trust.IsSuccess.ShouldBeTrue(),
+            trust => trust.Value.Ukprn.ShouldBe("10012345"),
+            trust => trust.Value.Name.ShouldBe("Test Trust"),
+            trust => trust.Value.GroupUid.ShouldBe("TR00123"),
+            trust =>
+                trust
+                    .Value.Establishments.ShouldHaveSingleItem()
+                    .EstablishmentName.ShouldBe("Test School")
+        );
     }
 
     [Fact]
@@ -77,10 +86,12 @@ public class AcademiesApiClientTests : IDisposable
         var result = await client.GetEstablishmentDetails("10011111", _cancellationToken);
 
         // Assert
-        result.IsSuccess.ShouldBeTrue();
-        result.Value.Ukprn.ShouldBe("10011111");
-        result.Value.EstablishmentName.ShouldBe("Test School");
-        result.Value.Urn.ShouldBe("100001");
+        result.ShouldSatisfyAllConditions(
+            establishment => establishment.IsSuccess.ShouldBeTrue(),
+            establishment => establishment.Value.Ukprn.ShouldBe("10011111"),
+            establishment => establishment.Value.EstablishmentName.ShouldBe("Test School"),
+            establishment => establishment.Value.Urn.ShouldBe("100001")
+        );
     }
 
     [Fact]
@@ -118,12 +129,6 @@ public class AcademiesApiClientTests : IDisposable
         _logger.Collector.LatestRecord.ShouldNotBeNull();
         _logger.Collector.LatestRecord.Level.ShouldBe(LogLevel.Error);
         _logger.Collector.LatestRecord.StructuredState.ShouldNotBeNull();
-    }
-
-    public void Dispose()
-    {
-        _mockHttp.Dispose();
-        GC.SuppressFinalize(this);
     }
 
     private AcademiesApiClient ClientRespondingWith()

@@ -59,14 +59,16 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
 
         // Assert
         response.StatusCode.ShouldBe(OK);
-        journeyPage.GetPageTitle().ShouldBe("Journey");
-        journeyPage.GetFirstHeading().ShouldBe("Test Journey Title");
-        journeyPage.GetFirstBodyParagraph().ShouldBe("This is a test overview");
-        journeyPage.GetFirstCaption().ShouldBe("This is a test caption");
-        journeyPage.GetFirstTag().ShouldBe("Test Status");
-        journeyPage
-            .GetElementContentByText(".govuk-heading-m", "Test Support Service")
-            .ShouldBe("Test Support Service");
+        journeyPage.ShouldSatisfyAllConditions(
+            page => page.GetPageTitle().ShouldBe("Journey"),
+            page => page.GetFirstHeading().ShouldBe("Test Journey Title"),
+            page => page.GetFirstBodyParagraph().ShouldBe("This is a test overview"),
+            page => page.GetFirstCaption().ShouldBe("This is a test caption"),
+            page => page.GetFirstTag().ShouldBe("Test Status"),
+            page =>
+                page.GetElementContentByText(".govuk-heading-m", "Test Support Service")
+                    .ShouldBe("Test Support Service")
+        );
     }
 
     [Theory]
@@ -178,10 +180,14 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         response.StatusCode.ShouldBe(OK);
 
         var importantDates = journeyPage.GetSummaryListPairs();
-        importantDates.ShouldNotBeNull();
-        importantDates.Count.ShouldBe(2);
-        importantDates.ShouldContainKeyAndValue<string, string>("Census due", "1 October 2026");
-        importantDates.ShouldContainKeyAndValue<string, string>("Return date", "28 October 2026");
+        importantDates.ShouldSatisfyAllConditions(
+            dateList => dateList.ShouldNotBeNull(),
+            dateList => dateList.Count.ShouldBe(2),
+            dateList =>
+                dateList.ShouldContainKeyAndValue<string, string>("Census due", "1 October 2026"),
+            dateList =>
+                dateList.ShouldContainKeyAndValue<string, string>("Return date", "28 October 2026")
+        );
     }
 
     [Fact]
@@ -462,12 +468,14 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         response.StatusCode.ShouldBe(OK);
 
         var tableHeadings = journeyPage.GetTableHeaders();
-        tableHeadings.ShouldNotBeNull();
-        tableHeadings[0].ShouldBe("Name");
-        tableHeadings[1].ShouldBe("Status");
-        tableHeadings[2].ShouldBe("Last Changed");
-        tableHeadings[3].ShouldBe("Errors");
-        tableHeadings[4].ShouldBe("Queries");
+        tableHeadings.ShouldSatisfyAllConditions(
+            headings => headings.ShouldNotBeNull(),
+            headings => headings[0].ShouldBe("Name"),
+            headings => headings[1].ShouldBe("Status"),
+            headings => headings[2].ShouldBe("Last Changed"),
+            headings => headings[3].ShouldBe("Errors"),
+            headings => headings[4].ShouldBe("Queries")
+        );
 
         var tableRows = journeyPage.GetTableRows();
         tableRows.ShouldNotBeNull();
@@ -478,19 +486,19 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         schoolStatus.Count.ShouldBe(2);
         schoolStatus[0]
             .ShouldSatisfyAllConditions(
-                s => s["Name"].ShouldBe("Test School 1"),
-                s => s["Status"].ShouldBe("Unknown"),
-                s => s["Last Changed"].ShouldBe(""),
-                s => s["Errors"].ShouldBe(""),
-                s => s["Queries"].ShouldBe("")
+                status => status["Name"].ShouldBe("Test School 1"),
+                status => status["Status"].ShouldBe("Unknown"),
+                status => status["Last Changed"].ShouldBe(""),
+                status => status["Errors"].ShouldBe(""),
+                status => status["Queries"].ShouldBe("")
             );
         schoolStatus[1]
             .ShouldSatisfyAllConditions(
-                s => s["Name"].ShouldBe("Test School 2"),
-                s => s["Status"].ShouldBe("Submitted"),
-                s => s["Last Changed"].ShouldBe("4 days ago"),
-                s => s["Errors"].ShouldBe("1"),
-                s => s["Queries"].ShouldBe("2")
+                status => status["Name"].ShouldBe("Test School 2"),
+                status => status["Status"].ShouldBe("Submitted"),
+                status => status["Last Changed"].ShouldBe("4 days ago"),
+                status => status["Errors"].ShouldBe("1"),
+                status => status["Queries"].ShouldBe("2")
             );
     }
 

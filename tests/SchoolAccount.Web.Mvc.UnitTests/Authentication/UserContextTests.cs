@@ -55,25 +55,31 @@ public class UserContextTests
         var context = new UserContext(accessor, _logger);
 
         // Assert
-        context.IsAuthenticated.ShouldBeTrue();
-        context.GivenName.ShouldBe(givenName);
-        context.Surname.ShouldBe(familyName);
-        context.Id.ShouldBe(id);
-        context.EmailAddress.ShouldBe(email);
-        context.Name.ShouldBe(givenName + " " + familyName);
-        context.Organisation.ShouldNotBeNull();
-        context.Organisation.Id.ShouldBe("2E774B32-E4DB-445B-B915-736C777FF5A4");
-        context.Organisation.Name.ShouldBe("East Herrington Primary Academy");
-        context.Organisation.Category.Id.ShouldBe("001");
-        context.Organisation.Category.Name.ShouldBe("Establishment");
-        context.Organisation.Ukprn.ShouldBe("10037611");
-        context.Organisation.EstablishmentNumber.ShouldBe("2091");
-        context.Organisation.LocalAuthority.ShouldNotBeNull();
-        context.Organisation.LocalAuthority.Id.ShouldBe("502EF2E9-2CA6-4905-9BF7-E80695BD5717");
-        context.Organisation.LocalAuthority.Name.ShouldBe(
-            "SUNDERLAND CITY METROPOLITAN BOROUGH COUNCIL"
+        context.ShouldSatisfyAllConditions(
+            user => user.IsAuthenticated.ShouldBeTrue(),
+            user => user.GivenName.ShouldBe(givenName),
+            user => user.Surname.ShouldBe(familyName),
+            user => user.Id.ShouldBe(id),
+            user => user.EmailAddress.ShouldBe(email),
+            user => user.Name.ShouldBe(givenName + " " + familyName),
+            user => user.Organisation.ShouldNotBeNull(),
+            user => user.Organisation!.Id.ShouldBe("2E774B32-E4DB-445B-B915-736C777FF5A4"),
+            user => user.Organisation!.Name.ShouldBe("East Herrington Primary Academy"),
+            user => user.Organisation!.Category.Id.ShouldBe("001"),
+            user => user.Organisation!.Category.Name.ShouldBe("Establishment"),
+            user => user.Organisation!.Ukprn.ShouldBe("10037611"),
+            user => user.Organisation!.EstablishmentNumber.ShouldBe("2091"),
+            user => user.Organisation!.LocalAuthority.ShouldNotBeNull(),
+            user =>
+                user.Organisation!.LocalAuthority!.Id.ShouldBe(
+                    "502EF2E9-2CA6-4905-9BF7-E80695BD5717"
+                ),
+            user =>
+                user.Organisation!.LocalAuthority!.Name.ShouldBe(
+                    "SUNDERLAND CITY METROPOLITAN BOROUGH COUNCIL"
+                ),
+            user => user.Organisation!.LocalAuthority!.Code.ShouldBe("394")
         );
-        context.Organisation.LocalAuthority.Code.ShouldBe("394");
     }
 
     [Fact]
@@ -111,20 +117,22 @@ public class UserContextTests
         var context = new UserContext(accessor, _logger);
 
         // Assert
-        context.IsAuthenticated.ShouldBeTrue();
-        context.GivenName.ShouldBe(givenName);
-        context.Surname.ShouldBe(familyName);
-        context.Id.ShouldBe(id);
-        context.EmailAddress.ShouldBe(email);
-        context.Name.ShouldBe(givenName + " " + familyName);
-        context.Organisation.ShouldNotBeNull();
-        context.Organisation.Id.ShouldBe("DD9F7BD6-2828-4FE7-B6DA-7C7C028ED479");
-        context.Organisation.Name.ShouldBe("BALMORAL LEARNING TRUST");
-        context.Organisation.Category.Id.ShouldBe("010");
-        context.Organisation.Category.Name.ShouldBe("Multi-Academy Trust");
-        context.Organisation.Ukprn.ShouldBe("10059806");
-        context.Organisation.EstablishmentNumber.ShouldBeNull();
-        context.Organisation.LocalAuthority.ShouldBeNull();
+        context.ShouldSatisfyAllConditions(
+            user => user.IsAuthenticated.ShouldBeTrue(),
+            user => user.GivenName.ShouldBe(givenName),
+            user => user.Surname.ShouldBe(familyName),
+            user => user.Id.ShouldBe(id),
+            user => user.EmailAddress.ShouldBe(email),
+            user => user.Name.ShouldBe(givenName + " " + familyName),
+            user => user.Organisation.ShouldNotBeNull(),
+            user => user.Organisation!.Id.ShouldBe("DD9F7BD6-2828-4FE7-B6DA-7C7C028ED479"),
+            user => user.Organisation!.Name.ShouldBe("BALMORAL LEARNING TRUST"),
+            user => user.Organisation!.Category.Id.ShouldBe("010"),
+            user => user.Organisation!.Category.Name.ShouldBe("Multi-Academy Trust"),
+            user => user.Organisation!.Ukprn.ShouldBe("10059806"),
+            user => user.Organisation!.EstablishmentNumber.ShouldBeNull(),
+            user => user.Organisation!.LocalAuthority.ShouldBeNull()
+        );
     }
 
     [Fact]
@@ -137,12 +145,14 @@ public class UserContextTests
         var context = new UserContext(accessor, _logger);
 
         // Assert
-        context.IsAuthenticated.ShouldBeFalse();
-        context.GivenName.ShouldBeNullOrEmpty();
-        context.Surname.ShouldBeNullOrEmpty();
-        context.EmailAddress.ShouldBeNullOrEmpty();
-        context.Name.ShouldBeNullOrWhiteSpace();
-        context.Organisation.ShouldBeNull();
+        context.ShouldSatisfyAllConditions(
+            user => user.IsAuthenticated.ShouldBeFalse(),
+            user => user.GivenName.ShouldBeNullOrEmpty(),
+            user => user.Surname.ShouldBeNullOrEmpty(),
+            user => user.EmailAddress.ShouldBeNullOrEmpty(),
+            user => user.Name.ShouldBeNullOrWhiteSpace(),
+            user => user.Organisation.ShouldBeNull()
+        );
     }
 
     [Fact]
@@ -171,11 +181,14 @@ public class UserContextTests
 
         // Assert
         context.Organisation.ShouldBeNull();
-        _logger.Collector.LatestRecord.ShouldNotBeNull();
-        _logger.Collector.LatestRecord.Level.ShouldBe(LogLevel.Warning);
-        _logger.Collector.LatestRecord.Exception.ShouldBeOfType<JsonException>();
-        _logger.Collector.LatestRecord.Message.ShouldContain(
-            "Failed to deserialize organisation claim"
+        _logger.ShouldSatisfyAllConditions(
+            logger => logger.Collector.LatestRecord.ShouldNotBeNull(),
+            logger => logger.Collector.LatestRecord.Level.ShouldBe(LogLevel.Warning),
+            logger => logger.Collector.LatestRecord.Exception.ShouldBeOfType<JsonException>(),
+            logger =>
+                logger.Collector.LatestRecord.Message.ShouldContain(
+                    "Failed to deserialize organisation claim"
+                )
         );
     }
 

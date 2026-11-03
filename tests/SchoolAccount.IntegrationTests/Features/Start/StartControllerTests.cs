@@ -29,11 +29,14 @@ public class StartControllerTests(SchoolAccountWebApplicationFactory<Program> fa
         pageTitle.ShouldBe("Home Page");
 
         var bodyElement = startPage.GetFirstBody();
-        bodyElement.ShouldNotBeNull();
-        bodyElement.ShouldContainWithoutWhitespace("Sign in to School Account");
-        bodyElement.ShouldContainWithoutWhitespace(
-            "School Account brings DfE services and guidance"
+        bodyElement.ShouldSatisfyAllConditions(
+            body => body.ShouldNotBeNull(),
+            body => body!.ShouldContainWithoutWhitespace("Sign in to School Account"),
+            body =>
+                body!.ShouldContainWithoutWhitespace(
+                    "School Account brings DfE services and guidance"
+                ),
+            body => body!.ShouldContainWithoutWhitespace("You'll need a DfE Sign-in account")
         );
-        bodyElement.ShouldContainWithoutWhitespace("You'll need a DfE Sign-in account");
     }
 }
