@@ -88,6 +88,61 @@
                 uri: window.location.href
             });
             
+            const statusDetails = document.querySelector(
+                ".govuk-details"
+            );
+
+            if (statusDetails) {
+                statusDetails.addEventListener("toggle", () => {
+                    appInsights.trackEvent({
+                        name: statusDetails.open
+                            ? "census_status_expanded"
+                            : "census_status_collapsed"
+                    });
+                });
+            }
+
+            const scrollMilestones = [25, 50, 75, 100];
+            const trackedMilestones = new Set();
+
+            function trackScrollDepth() {
+                const documentHeight = Math.max(
+                    document.body.scrollHeight,
+                    document.documentElement.scrollHeight
+                );
+
+                const viewportHeight = window.innerHeight;
+                const scrollableHeight = documentHeight - viewportHeight;
+
+                if (scrollableHeight <= 0) {
+                    return;
+                }
+
+                const scrollDepth = Math.min(
+                    100,
+                    Math.floor((window.scrollY / scrollableHeight) * 100)
+                );
+
+                for (const milestone of scrollMilestones) {
+                    if (scrollDepth >= milestone && !trackedMilestones.has(milestone)) {
+                        trackedMilestones.add(milestone);
+
+                        appInsights.trackEvent({
+                            name: "census_scroll_depth",
+                            properties: {
+                                scrollDepth: milestone,
+                                pageName: document.title
+                            }
+                        });
+                    }
+                }
+            }
+
+            window.addEventListener("scroll", trackScrollDepth, {
+                passive: true
+            });
+
+
             window.appInsights = appInsights;
         })();
     </script>
