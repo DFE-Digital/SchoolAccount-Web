@@ -56,7 +56,7 @@ public void Laestab_is_separated_into_localAuthorityCode_and_establishmentNumber
 }
 ```
 
-When the Act is a single expression, Act and Assert can be combined on one line:
+When the Act is a single expression, Act and Assert can be combined on one line using an ampersand:
 
 ```csharp
 [Fact]
@@ -77,7 +77,44 @@ public void Organisation_is_closed_at_exact_closing_time_on_a_weekday()
 Each test should verify a single behaviour. If a test fails, it should be immediately clear what broke.
 
 Avoid multiple Act tasks in one test. If you find yourself asserting several different outcomes, split into separate
-tests or use a parameterised `[Theory]`.
+tests or use a parameterised `[Theory]` when testing the same behaviour for similar inputs.
+
+---
+
+## Keep assertions purposeful
+
+Each assertion should use the most specific method for the value being checked (for example, `ShouldBe` for strings rather than `ShouldBeEquivalentTo`).
+
+```csharp
+// Good
+headingElement.ShouldBe($"Hello {FakeGivenName} {FakeFamilyName}");
+
+// Avoid
+headingElement.ShouldBeEquivalentTo($"Hello {FakeGivenName} {FakeFamilyName}");
+```
+
+Assertions should never be skipped by null-conditional calls such as `?.ShouldBe`, which would let a test pass silently on null.
+
+```csharp
+// Good
+context.Organisation.EstablishmentNumber!.ShouldBe("2091");
+
+// Avoid
+context.Organisation.EstablishmentNumber?.ShouldBe("2091");
+```
+
+Avoid redundant assertions that restate something already guaranteed or already covered by a stricter check (such as `ShouldNotBeNull` on a value that can’t be null).
+
+```csharp
+// Good
+response.StatusCode.ShouldBe(HttpStatusCode.OK);
+
+// Avoid
+response.StatusCode.ShouldNotBe(HttpStatusCode.Redirect);
+response.StatusCode.ShouldBe(HttpStatusCode.OK);
+```
+
+Where several assertions genuinely target the same object, group them with `ShouldSatisfyAllConditions` so every failure is reported together and the test stays readable.
 
 ---
 
