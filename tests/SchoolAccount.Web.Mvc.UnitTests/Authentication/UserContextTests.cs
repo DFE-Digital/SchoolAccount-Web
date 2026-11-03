@@ -182,7 +182,6 @@ public class UserContextTests
         // Assert
         context.Organisation.ShouldBeNull();
         _logger.ShouldSatisfyAllConditions(
-            logger => logger.Collector.LatestRecord.ShouldNotBeNull(),
             logger => logger.Collector.LatestRecord.Level.ShouldBe(LogLevel.Warning),
             logger => logger.Collector.LatestRecord.Exception.ShouldBeOfType<JsonException>(),
             logger =>

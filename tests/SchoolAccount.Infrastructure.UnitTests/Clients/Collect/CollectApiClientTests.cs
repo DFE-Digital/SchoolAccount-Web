@@ -107,7 +107,6 @@ public class CollectApiClientTests : IDisposable
         // Assert
         _logger.ShouldSatisfyAllConditions(
             logger => logger.Collector.Count.ShouldBe(1),
-            logger => logger.Collector.LatestRecord.ShouldNotBeNull(),
             logger => logger.Collector.LatestRecord.Level.ShouldBe(LogLevel.Error),
             logger => logger.Collector.LatestRecord.StructuredState.ShouldNotBeNull(),
             logger =>
@@ -149,7 +148,6 @@ public class CollectApiClientTests : IDisposable
         // Assert
         _logger.ShouldSatisfyAllConditions(
             logger => logger.Collector.Count.ShouldBe(1),
-            logger => logger.Collector.LatestRecord.ShouldNotBeNull(),
             logger => logger.Collector.LatestRecord.Level.ShouldBe(LogLevel.Error),
             logger => logger.Collector.LatestRecord.StructuredState.ShouldNotBeNull(),
             logger => logger.LatestRecord.Message.ShouldContain("Response from /status was empty")

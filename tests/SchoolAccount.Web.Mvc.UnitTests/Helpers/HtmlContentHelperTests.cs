@@ -45,12 +45,13 @@ public class HtmlContentHelperTests
         var unorderedList = document.QuerySelector<IHtmlUnorderedListElement>(
             ".govuk-unsorted-list"
         );
+
+        unorderedList.ShouldNotBeNull();
         unorderedList.ShouldSatisfyAllConditions(
-            list => list.ShouldNotBeNull(),
-            list => list!.Children.ShouldNotBeEmpty(),
-            list => list!.Children.Count.ShouldBe(3),
+            list => list.Children.ShouldNotBeEmpty(),
+            list => list.Children.Count.ShouldBe(3),
             list =>
-                list!.Children.ShouldAllBe(x => x.ClassList.Contains("govuk-unsorted-list__item"))
+                list.Children.ShouldAllBe(x => x.ClassList.Contains("govuk-unsorted-list__item"))
         );
     }
 

@@ -90,8 +90,8 @@ public class GetAcademiesMapperTests
         var result = ToTrustResponse(trustDto, establishments);
 
         // Assert
+        result.Establishments.ShouldNotBeNull();
         result.ShouldSatisfyAllConditions(
-            trust => trust.Establishments.ShouldNotBeNull(),
             trust => trust.Establishments.Count.ShouldBe(2),
             trust => trust.Establishments[0].EstablishmentName.ShouldBe("First School"),
             trust => trust.Establishments[1].EstablishmentName.ShouldBe("Second School")

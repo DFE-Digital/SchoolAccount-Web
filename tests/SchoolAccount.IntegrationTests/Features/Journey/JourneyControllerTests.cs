@@ -181,7 +181,6 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
 
         var importantDates = journeyPage.GetSummaryListPairs();
         importantDates.ShouldSatisfyAllConditions(
-            dateList => dateList.ShouldNotBeNull(),
             dateList => dateList.Count.ShouldBe(2),
             dateList =>
                 dateList.ShouldContainKeyAndValue<string, string>("Census due", "1 October 2026"),
@@ -469,7 +468,6 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
 
         var tableHeadings = journeyPage.GetTableHeaders();
         tableHeadings.ShouldSatisfyAllConditions(
-            headings => headings.ShouldNotBeNull(),
             headings => headings[0].ShouldBe("Name"),
             headings => headings[1].ShouldBe("Status"),
             headings => headings[2].ShouldBe("Last Changed"),
@@ -478,11 +476,9 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         );
 
         var tableRows = journeyPage.GetTableRows();
-        tableRows.ShouldNotBeNull();
         tableRows.Count.ShouldBe(2);
 
         var schoolStatus = journeyPage.GetTableCellByHeader();
-        schoolStatus.ShouldNotBeNull();
         schoolStatus.Count.ShouldBe(2);
         schoolStatus[0]
             .ShouldSatisfyAllConditions(

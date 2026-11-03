@@ -57,8 +57,8 @@ public class AcademiesApiClientTests : IDisposable
         var result = await client.GetTrustDetails(_ukprn, _cancellationToken);
 
         // Assert
+        result.IsSuccess.ShouldBeTrue();
         result.ShouldSatisfyAllConditions(
-            trust => trust.IsSuccess.ShouldBeTrue(),
             trust => trust.Value.Ukprn.ShouldBe("10012345"),
             trust => trust.Value.Name.ShouldBe("Test Trust"),
             trust => trust.Value.GroupUid.ShouldBe("TR00123"),
@@ -86,8 +86,8 @@ public class AcademiesApiClientTests : IDisposable
         var result = await client.GetEstablishmentDetails("10011111", _cancellationToken);
 
         // Assert
+        result.IsSuccess.ShouldBeTrue();
         result.ShouldSatisfyAllConditions(
-            establishment => establishment.IsSuccess.ShouldBeTrue(),
             establishment => establishment.Value.Ukprn.ShouldBe("10011111"),
             establishment => establishment.Value.EstablishmentName.ShouldBe("Test School"),
             establishment => establishment.Value.Urn.ShouldBe("100001")

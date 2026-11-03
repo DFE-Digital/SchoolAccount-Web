@@ -114,7 +114,7 @@ response.StatusCode.ShouldNotBe(HttpStatusCode.Redirect);
 response.StatusCode.ShouldBe(HttpStatusCode.OK);
 ```
 
-Where several assertions genuinely target the same object, group them with `ShouldSatisfyAllConditions` so every failure is reported together and the test stays readable.
+Where several assertions genuinely target the same object, group them with `ShouldSatisfyAllConditions` so every failure is reported together and the test stays readable. Note to check the success first then group the checks around value assertions to not hide the route cause of a failure.
 
 ---
 
