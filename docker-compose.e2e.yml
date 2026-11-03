@@ -1,0 +1,50 @@
+# Runs the web app against oidc-server-mock instead of DfE Sign-in.
+# Use it on top of the other compose files:
+#   docker compose -f docker-compose.yml -f docker-compose.override.yml -f docker-compose.e2e.yml up --build
+services:
+  web:
+    ports:
+      # oidc-server-mock shares this container's network, so its port is published here.
+      - "5200:5200"
+    environment:
+      - OpenIDConnectSettings__Authority=http://localhost:5200
+      - OpenIDConnectSettings__ClientId=school-account-local
+      # The mock speaks plain HTTP.
+      - Authentication__Schemes__OpenIdConnect__RequireHttpsMetadata=false
+
+  oidc-server-mock:
+    image: ghcr.io/soluto/oidc-server-mock:0.12.1
+    # The arm64 build of 0.12.1 crashes on startup, so Apple silicon runs the
+    # amd64 build under emulation.
+    platform: linux/amd64
+    container_name: oidc-server-mock
+    # IdentityServer builds its URLs from the request's host. Sharing the web
+    # container's network means the app and the browser both reach the mock at
+    # http://localhost:5200, so the issuer and sign-in page addresses match.
+    network_mode: "service:web"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:5200
+      SERVER_OPTIONS_INLINE: |
+        {
+          "Endpoints": {
+            "EnablePushedAuthorizationEndpoint": false
+          },
+          "Authentication": {
+            "CookieSameSiteMode": "Lax",
+            "CheckSessionCookieSameSiteMode": "Lax"
+          }
+        }
+      LOGIN_OPTIONS_INLINE: |
+        {
+          "AllowRememberLogin": false
+        }
+      LOGOUT_OPTIONS_INLINE: |
+        {
+          "AutomaticRedirectAfterSignOut": true
+        }
+      CLIENTS_CONFIGURATION_PATH: /config/clients.json
+      IDENTITY_RESOURCES_PATH: /config/identity-resources.json
+      USERS_CONFIGURATION_PATH: /config/users.json
+    volumes:
+      - ./tests/oidc-server-mock:/config:ro

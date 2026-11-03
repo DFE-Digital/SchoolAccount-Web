@@ -1,0 +1,13 @@
+[
+  {
+    "ClientId": "school-account-local",
+    "Description": "School Account web app, using the same implicit flow as DfE Sign-in",
+    "AllowedGrantTypes": ["implicit"],
+    "RedirectUris": ["http://localhost:5100/signin-oidc"],
+    "PostLogoutRedirectUris": ["http://localhost:5100/signout-callback-oidc"],
+    "AllowedScopes": ["openid", "profile", "email", "organisation"],
+    "RequireConsent": false,
+    "AlwaysIncludeUserClaimsInIdToken": true,
+    "IdentityTokenLifetime": 3600
+  }
+]

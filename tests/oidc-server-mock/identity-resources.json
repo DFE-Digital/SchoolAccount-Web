@@ -1,0 +1,6 @@
+[
+  {
+    "Name": "organisation",
+    "ClaimTypes": ["organisation"]
+  }
+]
