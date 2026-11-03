@@ -5,7 +5,7 @@ using NSubstitute.ExceptionExtensions;
 using SchoolAccount.Infrastructure.Clients.Azure;
 using Shouldly;
 
-namespace SchoolAccount.Infrastructure.UnitTests.Azure;
+namespace SchoolAccount.Infrastructure.UnitTests.Clients.Azure;
 
 public class AzureTableClientTests
 {

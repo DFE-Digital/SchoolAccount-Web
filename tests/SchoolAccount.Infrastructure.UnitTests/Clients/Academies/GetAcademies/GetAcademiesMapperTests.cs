@@ -3,7 +3,7 @@ using SchoolAccount.Application.Features.Collect.GetCensusJourney.Responses;
 using Shouldly;
 using static SchoolAccount.Infrastructure.Clients.Academies.GetAcademies.GetAcademiesMapper;
 
-namespace SchoolAccount.Infrastructure.UnitTests.Academies.GetAcademies;
+namespace SchoolAccount.Infrastructure.UnitTests.Clients.Academies.GetAcademies;
 
 public class GetAcademiesMapperTests
 {

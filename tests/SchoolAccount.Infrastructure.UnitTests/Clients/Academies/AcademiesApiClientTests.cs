@@ -7,7 +7,7 @@ using Shouldly;
 using static System.Net.HttpStatusCode;
 using static System.Net.Mime.MediaTypeNames.Application;
 
-namespace SchoolAccount.Infrastructure.UnitTests.Academies;
+namespace SchoolAccount.Infrastructure.UnitTests.Clients.Academies;
 
 public class AcademiesApiClientTests : IDisposable
 {
@@ -28,12 +28,6 @@ public class AcademiesApiClientTests : IDisposable
     private readonly CancellationToken _cancellationToken = TestContext.Current.CancellationToken;
     private readonly FakeLogger<AcademiesApiClient> _logger = new();
     private readonly MockHttpMessageHandler _mockHttp = new();
-
-    public void Dispose()
-    {
-        _mockHttp.Dispose();
-        GC.SuppressFinalize(this);
-    }
 
     [Fact]
     public async Task A_trust_and_its_establishments_are_mapped_from_the_api_response()
@@ -124,6 +118,12 @@ public class AcademiesApiClientTests : IDisposable
         _logger.Collector.LatestRecord.ShouldNotBeNull();
         _logger.Collector.LatestRecord.Level.ShouldBe(LogLevel.Error);
         _logger.Collector.LatestRecord.StructuredState.ShouldNotBeNull();
+    }
+
+    public void Dispose()
+    {
+        _mockHttp.Dispose();
+        GC.SuppressFinalize(this);
     }
 
     private AcademiesApiClient ClientRespondingWith()

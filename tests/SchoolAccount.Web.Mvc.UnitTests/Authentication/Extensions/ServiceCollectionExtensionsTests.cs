@@ -13,22 +13,6 @@ namespace SchoolAccount.Web.Mvc.UnitTests.Authentication.Extensions;
 
 public class ServiceCollectionExtensionsTests
 {
-    private static ConfigurationManager BuildConfiguration()
-    {
-        var configManager = new ConfigurationManager();
-        configManager.AddInMemoryCollection(
-            new Dictionary<string, string?>
-            {
-                [$"{AuthenticationSettings.SectionName}:Authority"] = "https://idp.example.com",
-                [$"{AuthenticationSettings.SectionName}:ClientId"] = "test-client-id",
-                [$"{AuthenticationSettings.SectionName}:MetadataAddress"] =
-                    "https://idp.example.com/.well-known/openid-configuration",
-            }
-        );
-
-        return configManager;
-    }
-
     [Fact]
     public void Configures_oidc_options_from_settings()
     {
@@ -73,5 +57,21 @@ public class ServiceCollectionExtensionsTests
 
         // Assert
         oidc.CallbackPath.Value.ShouldBe(UrlConstants.OidcSignInUrl);
+    }
+
+    private static ConfigurationManager BuildConfiguration()
+    {
+        var configManager = new ConfigurationManager();
+        configManager.AddInMemoryCollection(
+            new Dictionary<string, string?>
+            {
+                [$"{AuthenticationSettings.SectionName}:Authority"] = "https://idp.example.com",
+                [$"{AuthenticationSettings.SectionName}:ClientId"] = "test-client-id",
+                [$"{AuthenticationSettings.SectionName}:MetadataAddress"] =
+                    "https://idp.example.com/.well-known/openid-configuration",
+            }
+        );
+
+        return configManager;
     }
 }
