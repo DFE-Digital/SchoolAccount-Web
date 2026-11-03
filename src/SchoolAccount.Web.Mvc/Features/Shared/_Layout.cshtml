@@ -32,7 +32,6 @@
                     
                     @if (ViewData["HideSignOutLink"] is not true)
                     {
-                        @Html.AntiForgeryToken()
                         @using (Html.BeginForm("Logout", "Account", FormMethod.Post))
                         {
                             <button type="submit" class="header-navigation__link">
