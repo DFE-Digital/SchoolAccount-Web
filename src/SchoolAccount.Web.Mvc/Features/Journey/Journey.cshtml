@@ -5,13 +5,10 @@
 
     var organisation = Model.Organisation;
 
-    var organisationId = organisation.IsEstablishment
-        ? $"{organisation.LocalAuthority?.Code}{organisation.EstablishmentNumber}"
-        : organisation.Ukprn;
+    var organisationId = organisation.Ukprn;
 
     ViewData["AnalyticsOrganisationId"] = organisationId;
-    ViewData["AnalyticsOrganisationType"] =
-        organisation.IsEstablishment ? "LAESTAB" : "UKPRN";
+    ViewData["AnalyticsOrganisationType"] = "UKPRN";
     ViewData["AnalyticsOrganisationCategory"] =
         organisation.Category.Id;
 }
