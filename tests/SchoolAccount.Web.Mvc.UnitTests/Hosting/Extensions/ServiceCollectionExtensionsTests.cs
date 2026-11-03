@@ -308,12 +308,11 @@ public class ServiceCollectionExtensionsTests
         var options = provider.GetRequiredService<IOptions<KeyManagementOptions>>().Value;
 
         // Assert
-        options.ShouldSatisfyAllConditions(
-            option => option.XmlRepository.ShouldNotBeNull(),
-            option => option.XmlRepository!.GetType().Name.ShouldBe("AzureBlobXmlRepository"),
-            option => option.XmlEncryptor.ShouldNotBeNull(),
-            option => option.XmlEncryptor!.GetType().Name.ShouldBe("AzureKeyVaultXmlEncryptor")
-        );
+        var xmlRepository = options.XmlRepository.ShouldNotBeNull();
+        var xmlEncryptor = options.XmlEncryptor.ShouldNotBeNull();
+
+        xmlRepository.GetType().Name.ShouldBe("AzureBlobXmlRepository");
+        xmlEncryptor.GetType().Name.ShouldBe("AzureKeyVaultXmlEncryptor");
     }
 
     [Theory]

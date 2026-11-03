@@ -60,10 +60,13 @@ public class GetCensusJourneyMapperTests
         var result = TrustEstablishmentToOrganisation(establishment);
 
         // Assert
-        result.ShouldSatisfyAllConditions(
-            organisation => organisation.LocalAuthority!.Id.ShouldBe("test-la-code"),
-            organisation => organisation.LocalAuthority!.Code.ShouldBe("test-la-code"),
-            organisation => organisation.LocalAuthority!.Name.ShouldBe("Test Local Authority")
+        result.LocalAuthority.ShouldBe(
+            new LocalAuthority
+            {
+                Id = "test-la-code",
+                Name = "Test Local Authority",
+                Code = "test-la-code",
+            }
         );
     }
 

@@ -114,7 +114,44 @@ response.StatusCode.ShouldNotBe(HttpStatusCode.Redirect);
 response.StatusCode.ShouldBe(HttpStatusCode.OK);
 ```
 
-Where several assertions genuinely target the same object, group them with `ShouldSatisfyAllConditions` so every failure is reported together and the test stays readable. Note to check the success first then group the checks around value assertions to not hide the route cause of a failure.
+Where several assertions genuinely target the same object, group them with `ShouldSatisfyAllConditions` so every failure is reported together and the test stays readable. When using `ShouldSatisfyAllConditions` move success checks above to not hide the root cause.
+Additionally, do not use null suppression `!` and instead move the check outside of the condition, you can split into multiple `ShouldSatisfyAllConditions` if needed.
+
+```csharp
+// Good
+var organisation = context.Organisation.ShouldNotBeNull();
+var localAuthority = organisation.LocalAuthority.ShouldNotBeNull();
+
+context.ShouldSatisfyAllConditions(
+    user => user.IsAuthenticated.ShouldBeTrue(),
+    user => user.GivenName.ShouldBe(givenName),
+);
+
+organisation.ShouldSatisfyAllConditions(
+    org => org.Id.ShouldBe("2E774B32-E4DB-445B-B915-736C777FF5A4"),
+    org => org.Name.ShouldBe("East Herrington Primary Academy"),
+);
+
+localAuthority.ShouldSatisfyAllConditions(
+    la => la.Id.ShouldBe("502EF2E9-2CA6-4905-9BF7-E80695BD5717"),
+    la => la.Code.ShouldBe("394")
+);
+
+// Avoid
+context.ShouldSatisfyAllConditions(
+            user => user.IsAuthenticated.ShouldBeTrue(),
+            user => user.GivenName.ShouldBe(givenName),
+            user => user.Organisation.ShouldNotBeNull(),
+            user => user.Organisation!.Id.ShouldBe("2E774B32-E4DB-445B-B915-736C777FF5A4"),
+            user => user.Organisation!.Name.ShouldBe("East Herrington Primary Academy"),
+            user => user.Organisation!.LocalAuthority.ShouldNotBeNull(),
+            user =>
+                user.Organisation!.LocalAuthority!.Id.ShouldBe(
+                    "502EF2E9-2CA6-4905-9BF7-E80695BD5717"
+                ),
+            user => user.Organisation!.LocalAuthority!.Code.ShouldBe("394")
+        );
+```
 
 ---
 

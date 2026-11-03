@@ -55,30 +55,31 @@ public class UserContextTests
         var context = new UserContext(accessor, _logger);
 
         // Assert
+        var organisation = context.Organisation.ShouldNotBeNull();
+        var localAuthority = organisation.LocalAuthority.ShouldNotBeNull();
+
         context.ShouldSatisfyAllConditions(
             user => user.IsAuthenticated.ShouldBeTrue(),
             user => user.GivenName.ShouldBe(givenName),
             user => user.Surname.ShouldBe(familyName),
             user => user.Id.ShouldBe(id),
             user => user.EmailAddress.ShouldBe(email),
-            user => user.Name.ShouldBe(givenName + " " + familyName),
-            user => user.Organisation.ShouldNotBeNull(),
-            user => user.Organisation!.Id.ShouldBe("2E774B32-E4DB-445B-B915-736C777FF5A4"),
-            user => user.Organisation!.Name.ShouldBe("East Herrington Primary Academy"),
-            user => user.Organisation!.Category.Id.ShouldBe("001"),
-            user => user.Organisation!.Category.Name.ShouldBe("Establishment"),
-            user => user.Organisation!.Ukprn.ShouldBe("10037611"),
-            user => user.Organisation!.EstablishmentNumber.ShouldBe("2091"),
-            user => user.Organisation!.LocalAuthority.ShouldNotBeNull(),
-            user =>
-                user.Organisation!.LocalAuthority!.Id.ShouldBe(
-                    "502EF2E9-2CA6-4905-9BF7-E80695BD5717"
-                ),
-            user =>
-                user.Organisation!.LocalAuthority!.Name.ShouldBe(
-                    "SUNDERLAND CITY METROPOLITAN BOROUGH COUNCIL"
-                ),
-            user => user.Organisation!.LocalAuthority!.Code.ShouldBe("394")
+            user => user.Name.ShouldBe(givenName + " " + familyName)
+        );
+
+        organisation.ShouldSatisfyAllConditions(
+            org => org.Id.ShouldBe("2E774B32-E4DB-445B-B915-736C777FF5A4"),
+            org => org.Name.ShouldBe("East Herrington Primary Academy"),
+            org => org.Category.Id.ShouldBe("001"),
+            org => org.Category.Name.ShouldBe("Establishment"),
+            org => org.Ukprn.ShouldBe("10037611"),
+            org => org.EstablishmentNumber.ShouldBe("2091")
+        );
+
+        localAuthority.ShouldSatisfyAllConditions(
+            la => la.Id.ShouldBe("502EF2E9-2CA6-4905-9BF7-E80695BD5717"),
+            la => la.Name.ShouldBe("SUNDERLAND CITY METROPOLITAN BOROUGH COUNCIL"),
+            la => la.Code.ShouldBe("394")
         );
     }
 
@@ -117,21 +118,25 @@ public class UserContextTests
         var context = new UserContext(accessor, _logger);
 
         // Assert
+        var organisation = context.Organisation.ShouldNotBeNull();
+
         context.ShouldSatisfyAllConditions(
             user => user.IsAuthenticated.ShouldBeTrue(),
             user => user.GivenName.ShouldBe(givenName),
             user => user.Surname.ShouldBe(familyName),
             user => user.Id.ShouldBe(id),
             user => user.EmailAddress.ShouldBe(email),
-            user => user.Name.ShouldBe(givenName + " " + familyName),
-            user => user.Organisation.ShouldNotBeNull(),
-            user => user.Organisation!.Id.ShouldBe("DD9F7BD6-2828-4FE7-B6DA-7C7C028ED479"),
-            user => user.Organisation!.Name.ShouldBe("BALMORAL LEARNING TRUST"),
-            user => user.Organisation!.Category.Id.ShouldBe("010"),
-            user => user.Organisation!.Category.Name.ShouldBe("Multi-Academy Trust"),
-            user => user.Organisation!.Ukprn.ShouldBe("10059806"),
-            user => user.Organisation!.EstablishmentNumber.ShouldBeNull(),
-            user => user.Organisation!.LocalAuthority.ShouldBeNull()
+            user => user.Name.ShouldBe(givenName + " " + familyName)
+        );
+
+        organisation.ShouldSatisfyAllConditions(
+            org => org.Id.ShouldBe("DD9F7BD6-2828-4FE7-B6DA-7C7C028ED479"),
+            org => org.Name.ShouldBe("BALMORAL LEARNING TRUST"),
+            org => org.Category.Id.ShouldBe("010"),
+            org => org.Category.Name.ShouldBe("Multi-Academy Trust"),
+            org => org.Ukprn.ShouldBe("10059806"),
+            org => org.EstablishmentNumber.ShouldBeNull(),
+            org => org.LocalAuthority.ShouldBeNull()
         );
     }
 

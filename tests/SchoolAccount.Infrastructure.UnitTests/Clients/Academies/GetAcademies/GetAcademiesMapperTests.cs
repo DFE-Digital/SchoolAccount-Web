@@ -23,13 +23,17 @@ public class GetAcademiesMapperTests
         var result = ToTrustResponse(trustDto, []);
 
         // Assert
+        var trustType = result.Type.ShouldNotBeNull();
+
         result.ShouldSatisfyAllConditions(
             trust => trust.Ukprn.ShouldBe("10012345"),
             trust => trust.Name.ShouldBe("Test Trust"),
-            trust => trust.GroupUid.ShouldBe("TR00123"),
-            trust => trust.Type.ShouldNotBeNull(),
-            trust => trust.Type!.Name.ShouldBe("Multi-academy trust"),
-            trust => trust.Type!.Code.ShouldBe("MAT")
+            trust => trust.GroupUid.ShouldBe("TR00123")
+        );
+
+        trustType.ShouldSatisfyAllConditions(
+            type => type.Name.ShouldBe("Multi-academy trust"),
+            type => type.Code.ShouldBe("MAT")
         );
     }
 
