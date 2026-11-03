@@ -1,0 +1,25 @@
+# Runs the web app against a mock identity provider instead of DfE Sign-in.
+# Use it on top of the other compose files:
+#   docker compose -f docker-compose.yml -f docker-compose.override.yml -f docker-compose.e2e.yml up --build
+services:
+  web:
+    environment:
+      - OpenIDConnectSettings__Authority=http://mock-identity-provider:8080
+      - OpenIDConnectSettings__ClientId=school-account-local
+      # The mock speaks plain HTTP inside the Docker network.
+      - Authentication__Schemes__OpenIdConnect__RequireHttpsMetadata=false
+    depends_on:
+      - mock-identity-provider
+
+  mock-identity-provider:
+    image: ${DOCKER_REGISTRY-}mock-identity-provider
+    container_name: mock-identity-provider
+    build:
+      context: .
+      dockerfile: tests/SchoolAccount.MockIdentityProvider/Dockerfile
+    ports:
+      - "5200:8080"
+    environment:
+      # The web app reaches the mock by container name; the browser uses localhost.
+      - MockIdentityProvider__Issuer=http://mock-identity-provider:8080
+      - MockIdentityProvider__PublicUrl=http://localhost:5200
