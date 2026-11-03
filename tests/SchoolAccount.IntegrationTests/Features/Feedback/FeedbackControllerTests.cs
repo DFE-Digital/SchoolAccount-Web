@@ -225,6 +225,24 @@ public class FeedbackControllerTests : IClassFixture<SchoolAccountWebApplication
         response.Headers.Location.ShouldNotBeNull().OriginalString.ShouldBe(FeedbackPageThanksUrl);
     }
 
+    [Fact]
+    public async Task The_feedback_form_page_does_not_show_the_sign_out_link()
+    {
+        // Arrange
+        _feedbackCommandHandler
+            .Handle(Arg.Any<FeedbackCommand>(), Arg.Any<CancellationToken>())
+            .Returns(Result.Success());
+
+        // Act
+        var response = await _authenticatedClient.GetAsync(FeedbackUrl, _cancellationToken);
+        var html = await response.Content.ReadAsStringAsync(_cancellationToken);
+
+        // Assert
+        response.StatusCode.ShouldBe(OK);
+        html.ShouldContain("class=\"header-navigation__school\"");
+        html.ShouldNotContain("Sign out");
+    }
+
     private static FormUrlEncodedContent FeedbackForm(string message, string? returnUrl = null)
     {
         var fields = new Dictionary<string, string> { ["feedbackMessage"] = message };
