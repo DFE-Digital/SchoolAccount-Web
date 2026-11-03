@@ -1,0 +1,71 @@
+# Authelia as a stand-in for DfE Sign-in. Secrets come from files generated
+# by generate-secrets.sh; see the *_FILE variables in docker-compose.e2e.yml.
+server:
+  address: 'tcp://:5200/'
+  tls:
+    certificate: '/secrets/tls/public.crt'
+    key: '/secrets/tls/private.pem'
+
+log:
+  level: 'info'
+
+authentication_backend:
+  password_reset:
+    disable: true
+  file:
+    path: '/config/users.yml'
+    extra_attributes:
+      organisation:
+        multi_valued: false
+        value_type: 'string'
+
+access_control:
+  default_policy: 'one_factor'
+
+session:
+  cookies:
+    # Authelia needs HTTPS and a cookie domain with a period, so localhost
+    # won't do. localtest.me is public DNS that always resolves to 127.0.0.1.
+    - domain: 'localtest.me'
+      authelia_url: 'https://auth.localtest.me:5200'
+
+storage:
+  local:
+    path: '/tmp/authelia.sqlite3'
+
+notifier:
+  filesystem:
+    filename: '/tmp/notification.txt'
+
+identity_providers:
+  oidc:
+    jwks:
+      - key_id: 'main'
+        algorithm: 'RS256'
+        use: 'sig'
+        key: {{ secret "/secrets/jwks/private.pem" | mindent 10 "|" | msquote }}
+    claims_policies:
+      dsi:
+        # The implicit flow has no access token, so the app never calls
+        # userinfo: every claim it needs must be in the ID token.
+        id_token: ['given_name', 'family_name', 'email', 'organisation']
+        custom_claims:
+          organisation:
+            attribute: 'organisation'
+    scopes:
+      organisation:
+        claims: ['organisation']
+    clients:
+      - client_id: 'school-account-local'
+        client_name: 'School Account'
+        public: true
+        authorization_policy: 'one_factor'
+        consent_mode: 'implicit'
+        claims_policy: 'dsi'
+        redirect_uris:
+          - 'http://localhost:5100/signin-oidc'
+        scopes: ['openid', 'profile', 'email', 'organisation']
+        grant_types: ['implicit']
+        response_types: ['id_token']
+        response_modes: ['form_post']
+        id_token_signed_response_alg: 'RS256'

@@ -1,0 +1,47 @@
+# Runs the web app against Authelia instead of DfE Sign-in.
+# Use it on top of the other compose files:
+#   docker compose -f docker-compose.yml -f docker-compose.override.yml -f docker-compose.e2e.yml up --build
+services:
+  web:
+    ports:
+      # Authelia shares this container's network, so its port is published here.
+      - "5200:5200"
+    extra_hosts:
+      - "auth.localtest.me:127.0.0.1"
+    environment:
+      - OpenIDConnectSettings__Authority=https://auth.localtest.me:5200
+      - OpenIDConnectSettings__ClientId=school-account-local
+      # Trust Authelia's generated certificate as well as the usual CAs.
+      - SSL_CERT_DIR=/etc/ssl/certs:/authelia-secrets/trust
+    volumes:
+      - authelia-secrets:/authelia-secrets:ro
+    depends_on:
+      authelia-secrets:
+        condition: service_completed_successfully
+
+  authelia-secrets:
+    image: authelia/authelia:4.39.28
+    entrypoint: ["/bin/sh", "/config/generate-secrets.sh"]
+    volumes:
+      - ./tests/authelia:/config:ro
+      - authelia-secrets:/secrets
+
+  authelia:
+    image: authelia/authelia:4.39.28
+    container_name: authelia
+    # Sharing the web container's network means the app and the browser both
+    # reach Authelia at https://auth.localtest.me:5200.
+    network_mode: "service:web"
+    environment:
+      X_AUTHELIA_CONFIG: /config/configuration.yml
+      X_AUTHELIA_CONFIG_FILTERS: template
+      AUTHELIA_SESSION_SECRET_FILE: /secrets/session
+      AUTHELIA_STORAGE_ENCRYPTION_KEY_FILE: /secrets/storage
+      AUTHELIA_IDENTITY_PROVIDERS_OIDC_HMAC_SECRET_FILE: /secrets/hmac
+      AUTHELIA_IDENTITY_VALIDATION_RESET_PASSWORD_JWT_SECRET_FILE: /secrets/jwt
+    volumes:
+      - ./tests/authelia:/config:ro
+      - authelia-secrets:/secrets:ro
+
+volumes:
+  authelia-secrets:

@@ -1,0 +1,20 @@
+# Test users, one per academy. Every password is "password".
+# The organisation claim is a JSON string: Authelia's custom attributes can
+# only be strings, integers or booleans.
+users:
+  academy-a:
+    displayname: 'Alex Tester'
+    given_name: 'Alex'
+    family_name: 'Tester'
+    email: 'alex.tester@example.com'
+    password: '$argon2id$v=19$m=65536,t=3,p=4$4l2uQNUpbWHpHEsj4cd66Q$RPcBNivOdKEBmREOo/6Twsxx2fbvyYNCDpUCHGGRvXQ'
+    extra:
+      organisation: '{"id":"0B5D6A7E-2C1F-4E3A-9D8B-7A6C5B4E3D2F","name":"Test Academy A","category":{"id":"001","name":"Establishment"},"ukprn":"10000001","establishmentNumber":"4001","localAuthority":{"id":"502EF2E9-2CA6-4905-9BF7-E80695BD5717","name":"SUNDERLAND CITY METROPOLITAN BOROUGH COUNCIL","code":"394"}}'
+  academy-b:
+    displayname: 'Sam Tester'
+    given_name: 'Sam'
+    family_name: 'Tester'
+    email: 'sam.tester@example.com'
+    password: '$argon2id$v=19$m=65536,t=3,p=4$4l2uQNUpbWHpHEsj4cd66Q$RPcBNivOdKEBmREOo/6Twsxx2fbvyYNCDpUCHGGRvXQ'
+    extra:
+      organisation: '{"id":"1C6E7B8F-3D2A-4F4B-8E9C-8B7D6C5F4E3A","name":"Test Academy B","category":{"id":"001","name":"Establishment"},"ukprn":"10000002","establishmentNumber":"4002","localAuthority":{"id":"502EF2E9-2CA6-4905-9BF7-E80695BD5717","name":"SUNDERLAND CITY METROPOLITAN BOROUGH COUNCIL","code":"394"}}'
