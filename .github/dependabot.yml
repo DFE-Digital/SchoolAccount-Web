@@ -12,6 +12,7 @@ updates:
         patterns:
           - "Microsoft.Testing.*"
           - "Microsoft.Extensions.Diagnostics.Testing"
+          - "Microsoft.Playwright"
           - "xunit*"
           - "NSubstitute"
           - "Shouldly"
