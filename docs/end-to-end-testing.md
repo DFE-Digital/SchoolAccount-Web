@@ -32,11 +32,13 @@ The same AppHost runs the app locally, signed in through the mock by default, so
 dotnet run --project src/SchoolAccount.AppHost
 ```
 
-To sign in through DfE Sign-in instead, run it with `UseMockSignIn=false`. The app then uses its own launch profile and settings, as if it were run directly. The tests always ask for the mock.
+To sign in through DfE Sign-in instead, use the `https-dfe-sign-in` launch profile. The app then uses its own launch profile and settings, as if it were run directly. The tests always ask for the mock.
 
 ```bash
-dotnet run --project src/SchoolAccount.AppHost -- UseMockSignIn=false
+dotnet run --project src/SchoolAccount.AppHost --launch-profile https-dfe-sign-in
 ```
+
+In Rider or Visual Studio, pick the `https` or `https-dfe-sign-in` profile from the run configurations. Either way the Aspire dashboard is at `https://localhost:17041`; the console prints a login link for it.
 
 The compose overlay, `docker-compose.e2e.yml`, still works for running the app's Docker image against the mock.
 
