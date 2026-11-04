@@ -58,13 +58,13 @@ public class AcademiesApiClientTests : IDisposable
 
         // Assert
         result.IsSuccess.ShouldBeTrue();
-        result.ShouldSatisfyAllConditions(
-            trust => trust.Value.Ukprn.ShouldBe("10012345"),
-            trust => trust.Value.Name.ShouldBe("Test Trust"),
-            trust => trust.Value.GroupUid.ShouldBe("TR00123"),
-            trust =>
-                trust
-                    .Value.Establishments.ShouldHaveSingleItem()
+        result.Value.ShouldSatisfyAllConditions(
+            trustResponse => trustResponse.Ukprn.ShouldBe("10012345"),
+            trustResponse => trustResponse.Name.ShouldBe("Test Trust"),
+            trustResponse => trustResponse.GroupUid.ShouldBe("TR00123"),
+            trustResponse =>
+                trustResponse
+                    .Establishments.ShouldHaveSingleItem()
                     .EstablishmentName.ShouldBe("Test School")
         );
     }
