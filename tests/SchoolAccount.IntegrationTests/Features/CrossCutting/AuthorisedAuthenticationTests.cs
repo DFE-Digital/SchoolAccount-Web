@@ -2,7 +2,6 @@
 using SchoolAccount.IntegrationTests.Common.Extensions;
 using SchoolAccount.IntegrationTests.Common.Pages;
 using SchoolAccount.IntegrationTests.Common.Stubs;
-using SchoolAccount.TestCommon.Constants;
 using Shouldly;
 using static System.Net.HttpStatusCode;
 using static SchoolAccount.IntegrationTests.Common.MockAuthHandler;
