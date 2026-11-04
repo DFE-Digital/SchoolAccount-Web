@@ -1,10 +1,12 @@
-﻿using System.Net;
-using SchoolAccount.IntegrationTests.Common;
+﻿using SchoolAccount.IntegrationTests.Common;
 using SchoolAccount.IntegrationTests.Common.Extensions;
 using SchoolAccount.IntegrationTests.Common.Pages;
 using SchoolAccount.IntegrationTests.Common.Stubs;
 using SchoolAccount.TestCommon.Constants;
 using Shouldly;
+using static System.Net.HttpStatusCode;
+using static SchoolAccount.IntegrationTests.Common.MockAuthHandler;
+using static SchoolAccount.TestCommon.Constants.UrlConstants;
 
 namespace SchoolAccount.IntegrationTests.Features.CrossCutting;
 
@@ -18,48 +20,48 @@ public class AuthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<Pr
     );
 
     [Theory]
-    [InlineData(UrlConstants.BaseUrl)]
-    [InlineData(UrlConstants.JourneyUrl)]
+    [InlineData(StartUrl)]
+    [InlineData(JourneyUrl)]
     public async Task Signed_in_users_can_access_a_page(string path)
     {
         // Arrange & Act
         var response = await _client.GetAsync(path, _cancellationToken);
 
         // Assert
-        response.StatusCode.ShouldNotBe(HttpStatusCode.Redirect);
-        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        response.StatusCode.ShouldNotBe(Redirect);
+        response.StatusCode.ShouldBe(OK);
     }
 
     [Fact]
     public async Task Signed_in_users_see_the_sign_out_link()
     {
-        // Arrange
-        var pageUri = UrlConstants.JourneyUrl;
-
-        // Act
-        var response = await _client.GetAsync(pageUri, _cancellationToken);
-        var page = await AngleSharpPage.FromResponseAsync<CommonPage>(response, _cancellationToken);
+        // Arrange & Act
+        var response = await _client.GetAsync(JourneyUrl, _cancellationToken);
+        var journeyPage = await AngleSharpPage.FromResponseAsync<CommonPage>(
+            response,
+            _cancellationToken
+        );
 
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.OK);
-        page.GetElementContainingText("button", "Sign out").ShouldNotBeNull();
+        response.StatusCode.ShouldBe(OK);
+        journeyPage.GetElementContainingText("button", "Sign out").ShouldNotBeNull();
     }
 
     [Fact]
     public async Task Signed_in_users_see_their_organisation_name()
     {
-        // Arrange
-        var pageUri = UrlConstants.JourneyUrl;
-
-        // Act
-        var response = await _client.GetAsync(pageUri, _cancellationToken);
-        var page = await AngleSharpPage.FromResponseAsync<CommonPage>(response, _cancellationToken);
+        // Arrange & Act
+        var response = await _client.GetAsync(JourneyUrl, _cancellationToken);
+        var journeyPage = await AngleSharpPage.FromResponseAsync<CommonPage>(
+            response,
+            _cancellationToken
+        );
 
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(OK);
 
-        var pageOrganisationName = page.GetOrganisationName();
-        pageOrganisationName.ShouldNotBeNull();
-        pageOrganisationName.ShouldContainWithoutWhitespace(MockAuthHandler.FakeOrganisationName);
+        var organisationName = journeyPage.GetOrganisationName();
+        organisationName.ShouldNotBeNull();
+        organisationName.ShouldContainWithoutWhitespace(FakeOrganisationName);
     }
 }

@@ -1,18 +1,51 @@
-using System.Net;
 using System.Security.Claims;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SchoolAccount.IntegrationTests.Common;
 using SchoolAccount.IntegrationTests.Common.Extensions;
 using SchoolAccount.IntegrationTests.Common.Stubs;
-using SchoolAccount.TestCommon.Constants;
 using Shouldly;
+using static System.Net.HttpStatusCode;
+using static SchoolAccount.TestCommon.Constants.UrlConstants;
 using static SchoolAccount.Web.Mvc.Authentication.ClaimConstants;
+using static Xunit.TestContext;
 
 namespace SchoolAccount.IntegrationTests.Features.CrossCutting;
 
 public class OrganisationPolicyTests(SchoolAccountWebApplicationFactory<Program> factory)
     : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
 {
+    [Theory]
+    [InlineData("{}")]
+    [InlineData("[]")]
+    [InlineData("")]
+    [InlineData(null)]
+    public async Task User_is_Forbidden_when_Organisation_Claim_is_empty(string? value)
+    {
+        // Arrange
+        var client = CreateClientOrganisationClaims(value);
+
+        // Act
+        var response = await client.GetAsync(JourneyUrl, Current.CancellationToken);
+
+        // Assert
+        response.StatusCode.ShouldBe(Forbidden);
+    }
+
+    [Fact]
+    public async Task User_is_accepted_when_organisation_is_not_empty()
+    {
+        // Arrange
+        var client = factory.CreateAuthorisedClient(services =>
+            services.StubQueryHandler(StubCensusJourneyHandler.Succeeding())
+        );
+
+        // Act
+        var response = await client.GetAsync(JourneyUrl, Current.CancellationToken);
+
+        // Assert
+        response.StatusCode.ShouldBe(OK);
+    }
+
     private HttpClient CreateClientOrganisationClaims(string? organisationValue)
     {
         var claims = new List<Claim>
@@ -34,43 +67,5 @@ public class OrganisationPolicyTests(SchoolAccountWebApplicationFactory<Program>
             },
             new ClientOptions { AllowAutoRedirect = false }
         );
-    }
-
-    [Theory]
-    [InlineData("{}")]
-    [InlineData("[]")]
-    [InlineData("")]
-    [InlineData(null)]
-    public async Task User_is_Forbidden_when_Organisation_Claim_is_empty(string? value)
-    {
-        // Arrange
-        var client = CreateClientOrganisationClaims(value);
-
-        // Act
-        var response = await client.GetAsync(
-            UrlConstants.JourneyUrl,
-            TestContext.Current.CancellationToken
-        );
-
-        // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
-    }
-
-    [Fact]
-    public async Task User_is_accepted_when_organisation_is_not_empty()
-    {
-        // Arrange
-        var client = factory.CreateAuthorisedClient(services =>
-            services.StubQueryHandler(StubCensusJourneyHandler.Succeeding())
-        );
-
-        // Act
-        var response = await client.GetAsync(
-            UrlConstants.JourneyUrl,
-            TestContext.Current.CancellationToken
-        );
-
-        // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 }

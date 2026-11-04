@@ -3,9 +3,8 @@ using SchoolAccount.Application.Abstractions.Clients;
 using SchoolAccount.Application.Features.Feedback;
 using SchoolAccount.SharedKernel;
 using Shouldly;
-using Xunit.Sdk;
 
-namespace SchoolAccount.ApplicationTests.Feedback;
+namespace SchoolAccount.ApplicationTests.Features.Feedback;
 
 public class FeedbackHandlerTests
 {

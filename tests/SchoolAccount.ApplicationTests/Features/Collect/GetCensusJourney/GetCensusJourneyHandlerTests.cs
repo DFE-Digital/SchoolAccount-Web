@@ -11,7 +11,7 @@ using static SchoolAccount.ApplicationTests.Common.Builders.Features.Collect.Get
 using static SchoolAccount.TestCommon.Builders.Features.Collect.CensusStatuses.CensusStatusesResponseBuilder;
 using static SchoolAccount.TestCommon.Builders.Features.Collect.GetCensusJourney.Responses.GetCensusJourneyContentResponseBuilder;
 
-namespace SchoolAccount.ApplicationTests.Collect.GetCensusJourney;
+namespace SchoolAccount.ApplicationTests.Features.Collect.GetCensusJourney;
 
 public class GetCensusJourneyHandlerTests
 {

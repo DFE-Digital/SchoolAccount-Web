@@ -1,13 +1,13 @@
-using System.Net;
 using AngleSharp.Html.Dom;
 using SchoolAccount.IntegrationTests.Common;
 using SchoolAccount.IntegrationTests.Common.Extensions;
 using SchoolAccount.IntegrationTests.Common.Pages;
 using SchoolAccount.IntegrationTests.Common.Stubs;
-using SchoolAccount.TestCommon.Constants;
 using Shouldly;
+using static System.Net.HttpStatusCode;
+using static SchoolAccount.TestCommon.Constants.UrlConstants;
 
-namespace SchoolAccount.IntegrationTests.Features.Footer;
+namespace SchoolAccount.IntegrationTests.Features.Shared;
 
 public class FooterTests(SchoolAccountWebApplicationFactory<Program> factory)
     : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
@@ -19,17 +19,17 @@ public class FooterTests(SchoolAccountWebApplicationFactory<Program> factory)
     private readonly CancellationToken _cancellationToken = TestContext.Current.CancellationToken;
 
     [Theory]
-    [InlineData(UrlConstants.JourneyUrl)]
-    [InlineData(UrlConstants.BaseUrl)]
-    public async Task Footer_is_displayed_on_pages_across_the_service(string pageUri)
+    [InlineData(JourneyUrl)]
+    [InlineData(StartUrl)]
+    public async Task Footer_is_displayed_on_pages_across_the_service(string pageUrl)
     {
         // Arrange & Act
-        var response = await _client.GetAsync(pageUri, _cancellationToken);
+        var response = await _client.GetAsync(pageUrl, _cancellationToken);
 
         var page = await AngleSharpPage.FromResponseAsync<CommonPage>(response, _cancellationToken);
 
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(OK);
         page.ShouldNotBeNull();
         page.GetFooter().ShouldNotBeNull();
     }
@@ -37,16 +37,13 @@ public class FooterTests(SchoolAccountWebApplicationFactory<Program> factory)
     [Fact]
     public async Task Footer_includes_an_accessibility_statement()
     {
-        // Arrange
-        var pageUri = UrlConstants.JourneyUrl;
-
-        // Act
-        var response = await _client.GetAsync(pageUri, _cancellationToken);
+        // Arrange & Act
+        var response = await _client.GetAsync(JourneyUrl, _cancellationToken);
 
         var page = await AngleSharpPage.FromResponseAsync<CommonPage>(response, _cancellationToken);
 
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(OK);
 
         var accessibilityLink =
             page.GetElementContainingText(".govuk-footer__link", "Accessibility statement")
@@ -62,16 +59,13 @@ public class FooterTests(SchoolAccountWebApplicationFactory<Program> factory)
     [Fact]
     public async Task Footer_includes_a_privacy_notice()
     {
-        // Arrange
-        var pageUri = UrlConstants.JourneyUrl;
-
-        // Act
-        var response = await _client.GetAsync(pageUri, _cancellationToken);
+        // Arrange & Act
+        var response = await _client.GetAsync(JourneyUrl, _cancellationToken);
 
         var page = await AngleSharpPage.FromResponseAsync<CommonPage>(response, _cancellationToken);
 
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(OK);
 
         var privacyNoticeLink =
             page.GetElementContainingText(".govuk-footer__link", "Privacy notice")
