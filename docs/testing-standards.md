@@ -201,6 +201,30 @@ obscure what each test depends on, and xUnit creates a new class instance per te
 
 ---
 
+## Avoid null suppression
+
+When a value is nullable, use the return value of Shouldly’s `ShouldNotBeNull()` instead of the null-forgiving operator `!`. It asserts the value isn’t null and returns it as the non-nullable type.
+
+```csharp
+// Good
+var organisation = context.Organisation.ShouldNotBeNull();
+organisation.ShouldSatisfyAllConditions(
+            org => org.Id.ShouldBe("2E774B32-E4DB-445B-B915-736C777FF5A4"),
+            org => org.Name.ShouldBe("East Herrington Primary Academy"),
+        );
+
+// Avoid
+context.ShouldSatisfyAllConditions(
+            user => user.Organisation.ShouldNotBeNull(),
+            user => user.Organisation!.Id.ShouldBe("2E774B32-E4DB-445B-B915-736C777FF5A4"),
+            user => user.Organisation!.Name.ShouldBe("East Herrington Primary Academy"),
+        );
+```
+
+From the above example the not null assertion happens on a variable which allows us to remove the `!` null suppression from within the `ShouldSatisfyAllConditions` block.
+
+---
+
 ## Parameterised tests
 
 When multiple test cases share the same logic and differ only in their inputs, use `[Theory]` with `[InlineData]`
