@@ -1,11 +1,11 @@
 using System.Collections.Concurrent;
 using Aspire.Hosting;
+using Aspire.Hosting.ApplicationModel;
 using Aspire.Hosting.Testing;
 using Microsoft.Playwright;
-using SchoolAccount.EndToEndTests.Common;
 using static Aspire.Hosting.Testing.DistributedApplicationTestingBuilder;
 
-[assembly: AssemblyFixture(typeof(EndToEndApp))]
+[assembly: AssemblyFixture(typeof(SchoolAccount.EndToEndTests.Common.EndToEndApp))]
 
 namespace SchoolAccount.EndToEndTests.Common;
 
@@ -17,7 +17,14 @@ namespace SchoolAccount.EndToEndTests.Common;
 /// </summary>
 public sealed class EndToEndApp : IAsyncLifetime
 {
+    private const string NotRunningMessage =
+        "The end-to-end app isn't running. Skip the test when EndToEndSettings.IsEnabled is false.";
+
     private static readonly TimeSpan _startTimeout = TimeSpan.FromMinutes(5);
+
+    // In start-up order. Waiting on each in turn means a failure names the
+    // resource at fault, rather than the web app waiting forever.
+    private static readonly string[] _resources = ["mock-oauth2-server", "web"];
 
     private readonly ConcurrentDictionary<string, Lazy<Task<string>>> _sessions = new();
     private DistributedApplication? _app;
@@ -34,17 +41,64 @@ public sealed class EndToEndApp : IAsyncLifetime
             return;
         }
 
-        using var timeout = new CancellationTokenSource(_startTimeout);
+        // Stopping the run, for example from the IDE, also stops start-up.
+        var runCancelled = TestContext.Current.CancellationToken;
+        using var timeout = CancellationTokenSource.CreateLinkedTokenSource(runCancelled);
 
-        var appHost = await CreateAsync<Projects.SchoolAccount_AppHost>(timeout.Token);
+        timeout.CancelAfter(_startTimeout);
 
-        _app = await appHost.BuildAsync(timeout.Token);
+        // Installed before the app starts, so a failure here leaves nothing running.
+        InstallChromium();
 
-        await _app.StartAsync(timeout.Token);
-        await _app.ResourceNotifications.WaitForResourceHealthyAsync("web", timeout.Token);
+        try
+        {
+            await StartAppAsync(timeout.Token);
+
+            _playwright = await Playwright.CreateAsync();
+            _browser = await _playwright.Chromium.LaunchAsync();
+        }
+        catch (OperationCanceledException exception)
+            when (timeout.IsCancellationRequested && !runCancelled.IsCancellationRequested)
+        {
+            await DisposeAsync();
+            throw new TimeoutException(
+                $"The end-to-end stack didn't start within {_startTimeout.TotalMinutes} minutes. "
+                    + "Check Docker is running.",
+                exception
+            );
+        }
+        catch
+        {
+            await DisposeAsync();
+            throw;
+        }
+    }
+
+    private async Task StartAppAsync(CancellationToken cancellationToken)
+    {
+        var appHost = await CreateAsync<Projects.SchoolAccount_AppHost>(cancellationToken);
+
+        _app = await appHost.BuildAsync(cancellationToken);
+
+        await _app.StartAsync(cancellationToken);
+
+        foreach (var resource in _resources)
+        {
+            // Throws straight away if the resource fails to start, for example
+            // when Docker isn't running, instead of waiting for the timeout.
+            await _app.ResourceNotifications.WaitForResourceHealthyAsync(
+                resource,
+                WaitBehavior.StopOnResourceUnavailable,
+                cancellationToken
+            );
+        }
 
         BaseUrl = _app.GetEndpoint("web", "http").ToString().TrimEnd('/');
+    }
 
+    // Downloads Chromium on first run; a no-op once it is installed.
+    private static void InstallChromium()
+    {
         var exitCode = Microsoft.Playwright.Program.Main(["install", "chromium"]);
 
         if (exitCode != 0)
@@ -53,18 +107,23 @@ public sealed class EndToEndApp : IAsyncLifetime
                 $"Installing Chromium failed with exit code {exitCode}."
             );
         }
-
-        _playwright = await Playwright.CreateAsync();
-        _browser = await _playwright.Chromium.LaunchAsync();
     }
 
     /// <summary>A fresh browser context that isn't signed in.</summary>
     public Task<IBrowserContext> NewContextAsync(string? storageState = null)
     {
-        var browser = _browser ?? throw new InvalidOperationException(EndToEndSettings.SkipReason);
-        return browser.NewContextAsync(
-            new BrowserNewContextOptions { BaseURL = BaseUrl, StorageState = storageState }
-        );
+        if (_browser is null)
+        {
+            throw new InvalidOperationException(NotRunningMessage);
+        }
+
+        var options = new BrowserNewContextOptions
+        {
+            BaseURL = BaseUrl,
+            StorageState = storageState,
+        };
+
+        return _browser.NewContextAsync(options);
     }
 
     /// <summary>
@@ -73,9 +132,24 @@ public sealed class EndToEndApp : IAsyncLifetime
     /// </summary>
     public async Task<IBrowserContext> NewSignedInContextAsync(string username)
     {
-        var storageState = await _sessions
-            .GetOrAdd(username, user => new Lazy<Task<string>>(() => SignInAsync(user)))
-            .Value;
+        var session = _sessions.GetOrAdd(
+            username,
+            user => new Lazy<Task<string>>(() => SignInAsync(user))
+        );
+
+        string storageState;
+
+        try
+        {
+            storageState = await session.Value;
+        }
+        catch
+        {
+            // Forget the failed sign-in, so the next test for this user tries
+            // again. Only this attempt is removed, never a newer one.
+            _sessions.TryRemove(KeyValuePair.Create(username, session));
+            throw;
+        }
 
         return await NewContextAsync(storageState);
     }
@@ -90,18 +164,30 @@ public sealed class EndToEndApp : IAsyncLifetime
         return await context.StorageStateAsync();
     }
 
+    // Safe to call more than once: start-up failures dispose straight away, and
+    // xUnit may dispose again at the end of the run.
     public async ValueTask DisposeAsync()
     {
-        if (_browser is not null)
+        var browser = Interlocked.Exchange(ref _browser, null);
+        var playwright = Interlocked.Exchange(ref _playwright, null);
+        var app = Interlocked.Exchange(ref _app, null);
+
+        // Stop the app even if closing the browser fails, so no containers are left running.
+        try
         {
-            await _browser.DisposeAsync();
+            if (browser is not null)
+            {
+                await browser.DisposeAsync();
+            }
+
+            playwright?.Dispose();
         }
-
-        _playwright?.Dispose();
-
-        if (_app is not null)
+        finally
         {
-            await _app.DisposeAsync();
+            if (app is not null)
+            {
+                await app.DisposeAsync();
+            }
         }
     }
 }
