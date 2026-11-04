@@ -100,22 +100,17 @@ public class CollectApiClientTests : IDisposable
         var client = ClientRespondingWith(BadRequest, ProblemJson, _validValidationErrorResponse);
 
         // Act
-        var act = async () =>
-            await client.GetCensusStatuses(string.Empty, string.Empty, [], _cancellationToken);
-        await act.ShouldThrowAsync<HttpRequestException>();
+        await Should.ThrowAsync<HttpRequestException>(() =>
+            client.GetCensusStatuses(string.Empty, string.Empty, [], _cancellationToken)
+        );
 
         // Assert
-        _logger.Collector.Count.ShouldBe(1);
-        var latestRecord = _logger.Collector.LatestRecord;
-        var structuredState = latestRecord.StructuredState.ShouldNotBeNull();
+        var record = _logger.Collector.GetSnapshot().ShouldHaveSingleItem();
 
-        latestRecord.Level.ShouldBe(LogLevel.Error);
-        structuredState.ShouldSatisfyAllConditions(
-            state =>
-                state.ShouldContain(property =>
-                    property.Key == "ValidationErrorCount" && property.Value == "1"
-                ),
-            state => state.ShouldContain(property => property.Key == "@ValidationErrors")
+        record.ShouldSatisfyAllConditions(
+            log => log.Level.ShouldBe(LogLevel.Error),
+            log => log.GetStructuredStateValue("ValidationErrorCount").ShouldBe("2"),
+            log => log.GetStructuredStateValue("@ValidationErrors").ShouldNotBeNull()
         );
     }
 
