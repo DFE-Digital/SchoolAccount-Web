@@ -10,7 +10,7 @@ namespace SchoolAccount.IntegrationTests.Features.Accounts;
 public class AccountControllerTests(SchoolAccountWebApplicationFactory<Program> factory)
     : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
 {
-    private readonly CancellationToken _cancellationToken = TestContext.Current.CancellationToken;
+    private readonly CancellationToken _cancellationToken = Current.CancellationToken;
 
     [Fact]
     public async Task Ensure_an_authenticated_user_accessing_LoggedOut_are_redirected_to_the_start_page()
@@ -19,7 +19,7 @@ public class AccountControllerTests(SchoolAccountWebApplicationFactory<Program> 
         var client = factory.CreateAuthorisedClient();
 
         // Act
-        var response = await client.GetAsync(LoggedOutUrl, Current.CancellationToken);
+        var response = await client.GetAsync(LoggedOutUrl, _cancellationToken);
 
         // Assert
         response.StatusCode.ShouldBe(Redirect);
@@ -33,7 +33,7 @@ public class AccountControllerTests(SchoolAccountWebApplicationFactory<Program> 
         var client = factory.CreateUnauthenticatedClient();
 
         // Act
-        var response = await client.GetAsync(LoggedOutUrl, Current.CancellationToken);
+        var response = await client.GetAsync(LoggedOutUrl, _cancellationToken);
 
         // Assert
         response.StatusCode.ShouldBe(Redirect);
