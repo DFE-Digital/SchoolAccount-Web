@@ -28,7 +28,7 @@ Run the tests against it:
 E2E_BASE_URL=http://localhost:5100 dotnet test --project tests/SchoolAccount.EndToEndTests
 ```
 
-Without `E2E_BASE_URL` the tests skip, so `dotnet test` on the solution stays green. The first run downloads Chromium.
+Without `E2E_BASE_URL` the tests skip, so `dotnet test` on the solution stays green. Debugging a test from Rider or Visual Studio runs it against `http://localhost:5100` without setting anything. The first run downloads Chromium.
 
 ## Signing in once
 
