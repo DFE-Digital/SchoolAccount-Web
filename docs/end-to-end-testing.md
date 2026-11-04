@@ -22,14 +22,20 @@ Docker must be running. Then:
 dotnet test --project tests/SchoolAccount.EndToEndTests
 ```
 
-That's all. The tests start the app and the mock through the Aspire AppHost in `tests/SchoolAccount.AppHost`, run against them, and stop them at the end. Running or debugging a test from Rider or Visual Studio works the same way, with nothing to set up. The first run downloads Chromium and the mock's image.
+That's all. The tests start the app and the mock through the app's Aspire AppHost, `src/SchoolAccount.AppHost`,, run against them, and stop them at the end. Running or debugging a test from Rider or Visual Studio works the same way, with nothing to set up. The first run downloads Chromium and the mock's image.
 
 The tests skip when the `CI` environment variable is set, because the pipeline has no step for them yet.
 
-To run the stack on its own, for example to click around while signed in as a test academy, run the AppHost:
+The same AppHost runs the app locally, signed in through the mock by default, so you can click around as any test academy:
 
 ```bash
-dotnet run --project tests/SchoolAccount.AppHost
+dotnet run --project src/SchoolAccount.AppHost
+```
+
+To sign in through DfE Sign-in instead, run it with `UseMockSignIn=false`. The app then uses its own launch profile and settings, as if it were run directly. The tests always ask for the mock.
+
+```bash
+dotnet run --project src/SchoolAccount.AppHost -- UseMockSignIn=false
 ```
 
 The compose overlay, `docker-compose.e2e.yml`, still works for running the app's Docker image against the mock.

@@ -76,7 +76,11 @@ public sealed class EndToEndApp : IAsyncLifetime
 
     private async Task StartAppAsync(CancellationToken cancellationToken)
     {
-        var appHost = await CreateAsync<Projects.SchoolAccount_AppHost>(cancellationToken);
+        // Asked for explicitly, so the tests don't depend on the AppHost's default.
+        var appHost = await CreateAsync<Projects.SchoolAccount_AppHost>(
+            ["UseMockSignIn=true"],
+            cancellationToken
+        );
 
         _app = await appHost.BuildAsync(cancellationToken);
 
