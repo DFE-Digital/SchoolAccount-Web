@@ -18,11 +18,11 @@ public class GetCensusJourneyMapperTests
         var statuses = new List<GetCensusStatusesResponse> { ACensusStatusResponse().Build() };
 
         // Act
-        var result = CreateGetCensusJourneyResponse(content, statuses);
+        var censusJourneyResponse = CreateGetCensusJourneyResponse(content, statuses);
 
         // Assert
-        result.Content.ShouldBe(content);
-        result.SchoolStatuses.ShouldBe(statuses);
+        censusJourneyResponse.Content.ShouldBe(content);
+        censusJourneyResponse.SchoolStatuses.ShouldBe(statuses);
     }
 
     [Fact]
@@ -35,10 +35,10 @@ public class GetCensusJourneyMapperTests
             .Build();
 
         // Act
-        var result = TrustEstablishmentToOrganisation(establishment);
+        var organisationResponse = TrustEstablishmentToOrganisation(establishment);
 
         // Assert
-        result.ShouldSatisfyAllConditions(
+        organisationResponse.ShouldSatisfyAllConditions(
             organisation => organisation.Id.ShouldBe("test-ukprn"),
             organisation => organisation.Ukprn.ShouldBe("test-ukprn"),
             organisation => organisation.Name.ShouldBe("Test Establishment"),
@@ -57,10 +57,10 @@ public class GetCensusJourneyMapperTests
             .Build();
 
         // Act
-        var result = TrustEstablishmentToOrganisation(establishment);
+        var organisationResponse = TrustEstablishmentToOrganisation(establishment);
 
         // Assert
-        result.LocalAuthority.ShouldBe(
+        organisationResponse.LocalAuthority.ShouldBe(
             new LocalAuthority
             {
                 Id = "test-la-code",
@@ -77,10 +77,10 @@ public class GetCensusJourneyMapperTests
         var establishment = AnAcademyEstablishment().Build();
 
         // Act
-        var result = TrustEstablishmentToOrganisation(establishment);
+        var organisationResponse = TrustEstablishmentToOrganisation(establishment);
 
         // Assert
-        result.LocalAuthority.ShouldBe(
+        organisationResponse.LocalAuthority.ShouldBe(
             new LocalAuthority
             {
                 Id = string.Empty,

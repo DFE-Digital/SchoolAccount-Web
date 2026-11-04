@@ -20,12 +20,12 @@ public class GetAcademiesMapperTests
         };
 
         // Act
-        var result = ToTrustResponse(trustDto, []);
+        var trustResponse = ToTrustResponse(trustDto, []);
 
         // Assert
-        var trustType = result.Type.ShouldNotBeNull();
+        var trustType = trustResponse.Type.ShouldNotBeNull();
 
-        result.ShouldSatisfyAllConditions(
+        trustResponse.ShouldSatisfyAllConditions(
             trust => trust.Ukprn.ShouldBe("10012345"),
             trust => trust.Name.ShouldBe("Test Trust"),
             trust => trust.GroupUid.ShouldBe("TR00123")
@@ -49,10 +49,10 @@ public class GetAcademiesMapperTests
         };
 
         // Act
-        var result = ToTrustResponse(trustDto, []);
+        var trustResponse = ToTrustResponse(trustDto, []);
 
         // Assert
-        result.Type.ShouldBeNull();
+        trustResponse.Type.ShouldBeNull();
     }
 
     [Fact]
@@ -91,14 +91,15 @@ public class GetAcademiesMapperTests
         };
 
         // Act
-        var result = ToTrustResponse(trustDto, establishments);
+        var trustResponse = ToTrustResponse(trustDto, establishments);
 
         // Assert
-        result.Establishments.ShouldNotBeNull();
-        result.ShouldSatisfyAllConditions(
-            trust => trust.Establishments.Count.ShouldBe(2),
-            trust => trust.Establishments[0].EstablishmentName.ShouldBe("First School"),
-            trust => trust.Establishments[1].EstablishmentName.ShouldBe("Second School")
+        trustResponse.Establishments.Count.ShouldBe(2);
+        trustResponse.Establishments.ShouldSatisfyAllConditions(
+            establishment => establishment[0].EstablishmentName.ShouldBe("First School"),
+            establishment => establishment[0].Ukprn.ShouldBe("10011111"),
+            establishment => establishment[1].EstablishmentName.ShouldBe("Second School"),
+            establishment => establishment[1].Ukprn.ShouldBe("10022222")
         );
     }
 
@@ -109,10 +110,10 @@ public class GetAcademiesMapperTests
         var trustDto = new TrustDto { Ukprn = "10012345", Name = "Test Trust" };
 
         // Act
-        var result = ToTrustResponse(trustDto, []);
+        var trustResponse = ToTrustResponse(trustDto, []);
 
         // Assert
-        result.Establishments.ShouldBeEmpty();
+        trustResponse.Establishments.ShouldBeEmpty();
     }
 
     [Fact]
@@ -130,10 +131,10 @@ public class GetAcademiesMapperTests
         };
 
         // Act
-        var result = ToEstablishmentResponse(establishmentDto);
+        var establishmentResponse = ToEstablishmentResponse(establishmentDto);
 
         // Assert
-        result.ShouldSatisfyAllConditions(
+        establishmentResponse.ShouldSatisfyAllConditions(
             establishment => establishment.Ukprn.ShouldBe("10011111"),
             establishment => establishment.EstablishmentName.ShouldBe("Test School"),
             establishment => establishment.Urn.ShouldBe("100001"),
@@ -178,10 +179,10 @@ public class GetAcademiesMapperTests
         };
 
         // Act
-        var result = ToEstablishmentResponse(establishmentDto);
+        var establishmentResponse = ToEstablishmentResponse(establishmentDto);
 
         // Assert
-        result.ShouldSatisfyAllConditions(
+        establishmentResponse.ShouldSatisfyAllConditions(
             establishment => establishment.Ukprn.ShouldBe("10011111"),
             establishment => establishment.EstablishmentName.ShouldBe("Test School"),
             establishment => establishment.Urn.ShouldBeNull(),
@@ -209,17 +210,26 @@ public class GetAcademiesMapperTests
         };
 
         // Act
-        var result = ToEstablishmentResponse(establishmentDto);
+        var establishmentResponse = ToEstablishmentResponse(establishmentDto);
 
         // Assert
-        result.ShouldSatisfyAllConditions(
-            establishment => establishment.EstablishmentType!.Name.ShouldBe("Academy"),
-            establishment => establishment.EstablishmentType!.Code.ShouldBe("AC"),
-            establishment =>
-                establishment.EstablishmentGroupType!.Name.ShouldBe("Academy sponsor led"),
-            establishment => establishment.EstablishmentGroupType!.Code.ShouldBe("ASL"),
-            establishment => establishment.PhaseOfEducation!.Name.ShouldBe("Primary"),
-            establishment => establishment.PhaseOfEducation!.Code.ShouldBe("PR")
+        var establishmentType = establishmentResponse.EstablishmentType.ShouldNotBeNull();
+        var establishmentGroupType = establishmentResponse.EstablishmentGroupType.ShouldNotBeNull();
+        var phaseOfEducation = establishmentResponse.PhaseOfEducation.ShouldNotBeNull();
+
+        establishmentType.ShouldSatisfyAllConditions(
+            type => type.Name.ShouldBe("Academy"),
+            type => type.Code.ShouldBe("AC")
+        );
+
+        establishmentGroupType.ShouldSatisfyAllConditions(
+            groupType => groupType.Name.ShouldBe("Academy sponsor led"),
+            groupType => groupType.Code.ShouldBe("ASL")
+        );
+
+        phaseOfEducation.ShouldSatisfyAllConditions(
+            phase => phase.Name.ShouldBe("Primary"),
+            phase => phase.Code.ShouldBe("PR")
         );
     }
 
@@ -237,12 +247,12 @@ public class GetAcademiesMapperTests
         };
 
         // Act
-        var result = ToEstablishmentResponse(establishmentDto);
+        var establishmentResponse = ToEstablishmentResponse(establishmentDto);
 
         // Assert
-        result.EstablishmentType.ShouldBeNull();
-        result.EstablishmentGroupType.ShouldBeNull();
-        result.PhaseOfEducation.ShouldBeNull();
+        establishmentResponse.EstablishmentType.ShouldBeNull();
+        establishmentResponse.EstablishmentGroupType.ShouldBeNull();
+        establishmentResponse.PhaseOfEducation.ShouldBeNull();
     }
 
     [Fact]
@@ -257,10 +267,10 @@ public class GetAcademiesMapperTests
         };
 
         // Act
-        var result = ToTrustResponse(trustDto, []);
+        var trustResponse = ToTrustResponse(trustDto, []);
 
         // Assert
-        result.Type.ShouldBeNull();
+        trustResponse.Type.ShouldBeNull();
     }
 
     [Fact]
@@ -275,10 +285,10 @@ public class GetAcademiesMapperTests
         };
 
         // Act
-        var result = ToTrustResponse(trustDto, []);
+        var trustResponse = ToTrustResponse(trustDto, []);
 
         // Assert
-        result.Type.ShouldBeNull();
+        trustResponse.Type.ShouldBeNull();
     }
 
     [Fact]
@@ -293,9 +303,9 @@ public class GetAcademiesMapperTests
         };
 
         // Act
-        var result = ToTrustResponse(trustDto, []);
+        var trustResponse = ToTrustResponse(trustDto, []);
 
         // Assert
-        result.Type.ShouldBeNull();
+        trustResponse.Type.ShouldBeNull();
     }
 }

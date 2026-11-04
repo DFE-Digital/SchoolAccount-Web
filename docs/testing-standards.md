@@ -56,7 +56,7 @@ public void Laestab_is_separated_into_localAuthorityCode_and_establishmentNumber
 }
 ```
 
-When the Act is a single expression, Act and Assert can be combined on one line using an ampersand:
+Use and ampersand when joining two stages together i.e when the Act is a single expression, Act and Assert can be combined on one line:
 
 ```csharp
 [Fact]

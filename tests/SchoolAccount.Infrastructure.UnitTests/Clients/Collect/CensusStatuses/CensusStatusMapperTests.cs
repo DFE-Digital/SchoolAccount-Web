@@ -13,11 +13,11 @@ public class CensusStatusMapperTests
         var organisation = new OrganisationResponse { Id = "123", Interesting = true };
 
         // Act
-        var result = CensusStatusMapper.ToResponse(organisation);
+        var statusesResponse = CensusStatusMapper.ToResponse(organisation);
 
         // Assert
-        result.Id.ShouldBe("123");
-        result.Interesting.ShouldBeTrue();
+        statusesResponse.Id.ShouldBe("123");
+        statusesResponse.Interesting.ShouldBeTrue();
     }
 
     [Fact]
@@ -38,10 +38,10 @@ public class CensusStatusMapperTests
         };
 
         // Act
-        var result = CensusStatusMapper.ToResponse(organisation);
+        var statusesResponse = CensusStatusMapper.ToResponse(organisation);
 
         // Assert
-        result.ShouldSatisfyAllConditions(
+        statusesResponse.ShouldSatisfyAllConditions(
             censusStatus => censusStatus.Actions.Count.ShouldBe(3),
             censusStatus => censusStatus.Actions[0].Name.ShouldBe("Autumn School Census"),
             censusStatus => censusStatus.Actions[0].Status.Name.ShouldBe("Unavailable"),
@@ -68,10 +68,10 @@ public class CensusStatusMapperTests
         var organisation = new OrganisationResponse { Id = "123" };
 
         // Act
-        var result = CensusStatusMapper.ToResponse(organisation);
+        var statusesResponse = CensusStatusMapper.ToResponse(organisation);
 
         // Assert
-        result.Actions.ShouldBeEmpty();
+        statusesResponse.Actions.ShouldBeEmpty();
     }
 
     [Fact]
