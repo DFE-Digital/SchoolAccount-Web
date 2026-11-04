@@ -83,7 +83,7 @@ tests or use a parameterised `[Theory]` when testing the same behaviour for simi
 
 ## Keep assertions purposeful
 
-Each assertion should use the most specific method for the value being checked (for example, `ShouldBe` for strings rather than `ShouldBeEquivalentTo`).
+Each assertion should use the most specific method for the value being checked i.e. use ShouldBe for primitives, strings and records, use ShouldBeEquivalentTo for classes that don’t override equality.
 
 ```csharp
 // Good

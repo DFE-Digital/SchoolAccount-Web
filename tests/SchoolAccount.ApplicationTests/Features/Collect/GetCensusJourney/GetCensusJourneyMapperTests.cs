@@ -80,7 +80,7 @@ public class GetCensusJourneyMapperTests
         var result = TrustEstablishmentToOrganisation(establishment);
 
         // Assert
-        result.LocalAuthority.ShouldBeEquivalentTo(
+        result.LocalAuthority.ShouldBe(
             new LocalAuthority
             {
                 Id = string.Empty,
