@@ -34,6 +34,8 @@ Without `E2E_BASE_URL` the tests skip, so `dotnet test` on the solution stays gr
 
 A test can skip the login page entirely. Sign in once, save the session with `StorageStateAsync`, and pass it to `BrowserFixture.NewContextAsync`. `SignInTests` shows both approaches.
 
+`SignedInSessions` does this for the whole run. It signs in once per test user, the first time a test asks for them, and every later test gets a browser that starts already signed in. `StartPageTests` shows how to use it.
+
 ## How the compose file is set up
 
 - **Shared network.** The mock builds its issuer from the host name of each request. It therefore runs inside the web container's network (`network_mode: "service:web"`), so the app and the browser both reach it at `http://localhost:5200` and the issuer always matches. Port 5200 is published on the `web` service for the same reason.
