@@ -1,0 +1,10 @@
+<Project Sdk="Aspire.AppHost.Sdk/13.6.3">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\SchoolAccount.Web.Mvc\SchoolAccount.Web.Mvc.csproj" />
+  </ItemGroup>
+</Project>

@@ -39,6 +39,7 @@
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests\SchoolAccount.Web.Mvc.UnitTests\SchoolAccount.Web.Mvc.UnitTests.csproj" />
+    <Project Path="tests/SchoolAccount.AppHost/SchoolAccount.AppHost.csproj" />
     <Project Path="tests/SchoolAccount.EndToEndTests/SchoolAccount.EndToEndTests.csproj" />
     <Project Path="tests/SchoolAccount.Infrastructure.UnitTests/SchoolAccount.Infrastructure.UnitTests.csproj" />
     <Project Path="tests\SchoolAccount.ApplicationTests\SchoolAccount.ApplicationTests.csproj" />
