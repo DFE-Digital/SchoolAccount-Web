@@ -3,8 +3,8 @@ using static Microsoft.Playwright.Assertions;
 
 namespace SchoolAccount.EndToEndTests.Features;
 
-// SignedInSessions is an assembly fixture, so xUnit passes in the one shared instance.
-public class StartPageTests(SignedInSessions sessions)
+// EndToEndApp is an assembly fixture, so xUnit passes in the one shared instance.
+public class StartPageTests(EndToEndApp app)
 {
     private const string HeaderSchool = ".header-navigation__school";
 
@@ -19,7 +19,7 @@ public class StartPageTests(SignedInSessions sessions)
         Assert.SkipUnless(EndToEndSettings.IsEnabled, EndToEndSettings.SkipReason);
 
         // Arrange: no sign-in here; the context already has this academy's cookies.
-        await using var context = await sessions.NewContextAsync(username);
+        await using var context = await app.NewSignedInContextAsync(username);
         var page = await context.NewPageAsync();
 
         // Act
@@ -35,7 +35,7 @@ public class StartPageTests(SignedInSessions sessions)
         Assert.SkipUnless(EndToEndSettings.IsEnabled, EndToEndSettings.SkipReason);
 
         // Arrange: academy A has already signed in for an earlier test, or signs in now.
-        await using var context = await sessions.NewContextAsync(TestUsers.AcademyA);
+        await using var context = await app.NewSignedInContextAsync(TestUsers.AcademyA);
         var page = await context.NewPageAsync();
 
         // Act

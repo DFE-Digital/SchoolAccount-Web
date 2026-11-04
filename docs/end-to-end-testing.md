@@ -16,33 +16,37 @@ If DfE Sign-in issues the app a client secret, set `OpenIDConnectSettings:Client
 
 ## Running the tests
 
-Start the app and the mock:
+Docker must be running. Then:
 
 ```bash
-docker compose -f docker-compose.yml -f docker-compose.override.yml -f docker-compose.e2e.yml up --build -d
+dotnet test --project tests/SchoolAccount.EndToEndTests
 ```
 
-Run the tests against it:
+That's all. The tests start the app and the mock through the Aspire AppHost in `tests/SchoolAccount.AppHost`, run against them, and stop them at the end. Running or debugging a test from Rider or Visual Studio works the same way, with nothing to set up. The first run downloads Chromium and the mock's image.
+
+The tests skip when the `CI` environment variable is set, because the pipeline has no step for them yet.
+
+To run the stack on its own, for example to click around while signed in as a test academy, run the AppHost:
 
 ```bash
-E2E_BASE_URL=http://localhost:5100 dotnet test --project tests/SchoolAccount.EndToEndTests
+dotnet run --project tests/SchoolAccount.AppHost
 ```
 
-Without `E2E_BASE_URL` the tests skip, so `dotnet test` on the solution stays green. The first run downloads Chromium.
+The compose overlay, `docker-compose.e2e.yml`, still works for running the app's Docker image against the mock.
 
 ## Signing in once
 
-A test can skip the login page entirely. Sign in once, save the session with `StorageStateAsync`, and pass it to `BrowserFixture.NewContextAsync`. `SignInTests` shows both approaches.
+`EndToEndApp` is shared by every test in the run. It signs in once per test user, the first time a test asks for them, and every later test gets a browser that starts already signed in. `StartPageTests` shows how to use it. `SignInTests` shows signing in through the login page, and reusing a saved session by hand.
 
-`SignedInSessions` does this for the whole run. It signs in once per test user, the first time a test asks for them, and every later test gets a browser that starts already signed in. `StartPageTests` shows how to use it.
+## How the AppHost is set up
 
-## How the compose file is set up
-
-- **Shared network.** The mock builds its issuer from the host name of each request. It therefore runs inside the web container's network (`network_mode: "service:web"`), so the app and the browser both reach it at `http://localhost:5200` and the issuer always matches. Port 5200 is published on the `web` service for the same reason.
-- **One issuer per path.** The mock serves a separate issuer for each URL path. The app uses `http://localhost:5200/default`.
+- **Same address for the app and the browser.** The mock builds its issuer from the host name of each request. The app runs as a normal process on this machine, like the browser, so both reach the mock at the same `localhost` address and the issuer always matches. No shared Docker network is needed.
+- **Ports.** Aspire picks free ports each run. The tests read the app's address from Aspire, and the mock accepts any redirect address, so nothing depends on a fixed port.
+- **Ready before the tests start.** The app waits for the mock's discovery document, and the tests wait for the app to serve a static file, so the first test never races start-up.
+- **One issuer per path.** The mock serves a separate issuer for each URL path. The app uses `/default`.
 - **Plain HTTP.** The mock speaks plain HTTP. `Authentication__Schemes__OpenIdConnect__RequireHttpsMetadata=false` allows that. ASP.NET Core binds it from configuration, so no app code changes are needed for it.
 
 ## Limitations
 
-- The Collect and Academies APIs are not part of this compose setup. Pages that call them, such as the journey page, fail until those services are added or stubbed. The sample tests land on the start page, which needs neither.
+- The Collect and Academies APIs are not part of the AppHost yet. Pages that call them, such as the journey page, fail until those services are added, as containers or projects, or stubbed. The sample tests land on the start page, which needs neither.
 - The mock is deliberately permissive: it accepts any client, redirect address and secret. It tests the app's sign-in wiring, not DfE Sign-in's rules.

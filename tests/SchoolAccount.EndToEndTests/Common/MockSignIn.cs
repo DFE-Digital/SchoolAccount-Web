@@ -71,6 +71,6 @@ internal static class MockSignIn
         await page.Locator("input[name=username]").FillAsync(username);
         await page.Locator("textarea[name=claims]").FillAsync(TestUsers.ClaimsFor(username));
         await page.Locator("input[type=submit]").ClickAsync();
-        await page.WaitForURLAsync($"{EndToEndSettings.BaseUrl}/");
+        await page.WaitForURLAsync(url => new Uri(url).AbsolutePath == "/");
     }
 }

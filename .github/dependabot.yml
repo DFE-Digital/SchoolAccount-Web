@@ -18,6 +18,9 @@ updates:
           - "Shouldly"
           - "NetArchTest.Rules"
           - "RichardSzalay.MockHttp"
+      aspire:
+        patterns:
+          - "Aspire.*"
       dotnet:
         patterns:
           - "Microsoft.AspNetCore.*"
