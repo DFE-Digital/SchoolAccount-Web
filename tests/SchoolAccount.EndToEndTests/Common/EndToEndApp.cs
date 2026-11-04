@@ -3,6 +3,7 @@ using Aspire.Hosting;
 using Aspire.Hosting.Testing;
 using Microsoft.Playwright;
 using SchoolAccount.EndToEndTests.Common;
+using static Aspire.Hosting.Testing.DistributedApplicationTestingBuilder;
 
 [assembly: AssemblyFixture(typeof(EndToEndApp))]
 
@@ -35,17 +36,17 @@ public sealed class EndToEndApp : IAsyncLifetime
 
         using var timeout = new CancellationTokenSource(_startTimeout);
 
-        var appHost =
-            await DistributedApplicationTestingBuilder.CreateAsync<Projects.SchoolAccount_AppHost>(
-                timeout.Token
-            );
+        var appHost = await CreateAsync<Projects.SchoolAccount_AppHost>(timeout.Token);
+
         _app = await appHost.BuildAsync(timeout.Token);
+
         await _app.StartAsync(timeout.Token);
         await _app.ResourceNotifications.WaitForResourceHealthyAsync("web", timeout.Token);
+
         BaseUrl = _app.GetEndpoint("web", "http").ToString().TrimEnd('/');
 
-        // Downloads Chromium on first run; a no-op once it is installed.
         var exitCode = Microsoft.Playwright.Program.Main(["install", "chromium"]);
+
         if (exitCode != 0)
         {
             throw new InvalidOperationException(
