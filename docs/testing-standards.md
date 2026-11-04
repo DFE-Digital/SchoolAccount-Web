@@ -115,7 +115,7 @@ response.StatusCode.ShouldBe(HttpStatusCode.OK);
 ```
 
 Where several assertions genuinely target the same object, group them with `ShouldSatisfyAllConditions` so every failure is reported together and the test stays readable. When using `ShouldSatisfyAllConditions` move success checks above to not hide the root cause.
-Additionally, do not use null suppression `!` and instead move the check outside of the condition, you can split into multiple `ShouldSatisfyAllConditions` if needed.
+Additionally, do not use null suppression `!` and instead move the check outside the condition, you can split into multiple `ShouldSatisfyAllConditions` if needed.
 
 ```csharp
 // Good
