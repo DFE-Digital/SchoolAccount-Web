@@ -109,7 +109,7 @@ public class CollectApiClientTests : IDisposable
 
         record.ShouldSatisfyAllConditions(
             log => log.Level.ShouldBe(LogLevel.Error),
-            log => log.GetStructuredStateValue("ValidationErrorCount").ShouldBe("2"),
+            log => log.GetStructuredStateValue("ValidationErrorCount").ShouldBe("1"),
             log => log.GetStructuredStateValue("@ValidationErrors").ShouldNotBeNull()
         );
     }
