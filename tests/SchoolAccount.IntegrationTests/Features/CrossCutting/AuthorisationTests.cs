@@ -122,7 +122,7 @@ public class AuthorisationTests(SchoolAccountWebApplicationFactory<Program> fact
     }
 
     [Fact]
-    public async Task Signed_in_users_logging_out_are_redirected_to_the_start_page()
+    public async Task Signed_in_users_are_redirected_to_the_start_page_when_logged_out()
     {
         // Arrange & Act
         var response = await _authorisedClient.GetAsync(LoggedOutUrl, _cancellationToken);
@@ -133,7 +133,7 @@ public class AuthorisationTests(SchoolAccountWebApplicationFactory<Program> fact
     }
 
     [Fact]
-    public async Task Signed_out_users_reaching_the_logged_out_url_are_redirected_to_the_start_page()
+    public async Task Signed_out_users_are_redirected_to_the_start_page_while_logged_out()
     {
         // Arrange & Act
         var response = await _unauthorisedClient.GetAsync(LoggedOutUrl, _cancellationToken);
