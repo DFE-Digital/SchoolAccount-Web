@@ -19,10 +19,7 @@ else
 {
     // Uses the web project's own launch profile and settings, exactly as if it
     // were run directly, so its address matches the one registered with DfE Sign-in.
-    builder
-        .AddProject<Projects.SchoolAccount_Web_Mvc>("web")
-        // A static file, so the check needs no sign-in or backing APIs.
-        .WithHttpHealthCheck("/assets/manifest.json");
+    builder.AddProject<Projects.SchoolAccount_Web_Mvc>("web").WithHttpHealthCheck("/health");
 }
 
 await builder.Build().RunAsync();
@@ -44,8 +41,7 @@ static void AddWebWithMockSignIn(IDistributedApplicationBuilder builder)
     builder
         .AddProject<Projects.SchoolAccount_Web_Mvc>("web", launchProfileName: null)
         .WithHttpEndpoint(name: "http")
-        // A static file, so the check needs no sign-in or backing APIs.
-        .WithHttpHealthCheck("/assets/manifest.json")
+        .WithHttpHealthCheck("/health")
         .WithEnvironment("ASPNETCORE_ENVIRONMENT", "Development")
         // The mock serves one issuer per path; "default" is used here.
         .WithEnvironment(
