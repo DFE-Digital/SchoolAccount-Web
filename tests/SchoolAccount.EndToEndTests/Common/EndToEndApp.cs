@@ -76,7 +76,7 @@ public sealed class EndToEndApp : IAsyncLifetime
 
     private async Task StartAppAsync(CancellationToken cancellationToken)
     {
-        // Asked for explicitly, so the tests don't depend on the AppHost's default.
+        // The AppHost signs in through DfE Sign-in by default; the tests need the mock.
         var appHost = await CreateAsync<Projects.SchoolAccount_AppHost>(
             ["UseMockSignIn=true"],
             cancellationToken

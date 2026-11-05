@@ -22,23 +22,23 @@ Docker must be running. Then:
 dotnet test --project tests/SchoolAccount.EndToEndTests
 ```
 
-That's all. The tests start the app and the mock through the app's Aspire AppHost, `src/SchoolAccount.AppHost`,, run against them, and stop them at the end. Running or debugging a test from Rider or Visual Studio works the same way, with nothing to set up. The first run downloads Chromium and the mock's image.
+That's all. The tests start the app and the mock through the app's Aspire AppHost, `src/SchoolAccount.AppHost`, run against them, and stop them at the end. Running or debugging a test from Rider or Visual Studio works the same way, with nothing to set up. The first run downloads Chromium and the mock's image.
 
 The tests skip when the `CI` environment variable is set, because the pipeline has no step for them yet.
 
-The same AppHost runs the app locally, signed in through the mock by default, so you can click around as any test academy:
+The same AppHost runs the app locally. By default it signs in through DfE Sign-in, using the app's own launch profile and settings, as if it were run directly:
 
 ```bash
 dotnet run --project src/SchoolAccount.AppHost
 ```
 
-To sign in through DfE Sign-in instead, use the `https-dfe-sign-in` launch profile. The app then uses its own launch profile and settings, as if it were run directly. The tests always ask for the mock.
+The tests switch it to the mock with `UseMockSignIn=true`. To do the same by hand, for example to click around as a test academy, use the `https-mock-sign-in` launch profile:
 
 ```bash
-dotnet run --project src/SchoolAccount.AppHost --launch-profile https-dfe-sign-in
+dotnet run --project src/SchoolAccount.AppHost --launch-profile https-mock-sign-in
 ```
 
-In Rider or Visual Studio, pick the `https` or `https-dfe-sign-in` profile from the run configurations. Either way the Aspire dashboard is at `https://localhost:17041`; the console prints a login link for it.
+In Rider or Visual Studio, pick the `https` or `https-mock-sign-in` profile from the run configurations. Either way the Aspire dashboard is at `https://localhost:17041`; the console prints a login link for it.
 
 The compose overlay, `docker-compose.e2e.yml`, still works for running the app's Docker image against the mock.
 

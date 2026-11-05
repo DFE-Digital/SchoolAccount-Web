@@ -6,7 +6,7 @@
       "dotnetRunMessages": true,
       "launchBrowser": true,
       "applicationUrl": "https://localhost:17041",
-      "commandLineArgs": "UseMockSignIn=true",
+      "commandLineArgs": "UseMockSignIn=false",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "DOTNET_ENVIRONMENT": "Development",
@@ -14,12 +14,12 @@
         "ASPIRE_RESOURCE_SERVICE_ENDPOINT_URL": "https://localhost:22041"
       }
     },
-    "https-dfe-sign-in": {
+    "https-mock-sign-in": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
       "applicationUrl": "https://localhost:17041",
-      "commandLineArgs": "UseMockSignIn=false",
+      "commandLineArgs": "UseMockSignIn=true",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "DOTNET_ENVIRONMENT": "Development",
