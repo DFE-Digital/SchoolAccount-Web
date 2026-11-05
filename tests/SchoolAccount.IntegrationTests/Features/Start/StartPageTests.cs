@@ -6,7 +6,7 @@ using static Xunit.TestContext;
 
 namespace SchoolAccount.IntegrationTests.Features.Start;
 
-public class StartControllerTests(SchoolAccountWebApplicationFactory<Program> factory)
+public class StartPageTests(SchoolAccountWebApplicationFactory<Program> factory)
     : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
 {
     private readonly HttpClient _client = factory.CreateUnauthenticatedClient();
