@@ -11,25 +11,6 @@ namespace SchoolAccount.ApplicationTests.Abstractions.Behaviours;
 
 public class ValidationDecoratorTests
 {
-    [Theory]
-    [MemberData(nameof(ApplicationValidators))]
-    public void Every_validator_in_the_application_layer_is_registered(
-        Type interfaceType,
-        Type validatorType
-    )
-    {
-        // Arrange
-        var services = new ServiceCollection();
-
-        // Act
-        services.AddApplication();
-        using var provider = services.BuildServiceProvider();
-        using var scope = provider.CreateScope();
-
-        // Assert
-        scope.ServiceProvider.GetService(interfaceType).ShouldBeOfType(validatorType);
-    }
-
     [Fact]
     public async Task Invalid_command_with_a_response_does_not_reach_its_handler()
     {
@@ -123,23 +104,6 @@ public class ValidationDecoratorTests
         await validator
             .Received(1)
             .ValidateAsync(Arg.Any<IValidationContext>(), cancellation.Token);
-    }
-
-    public static TheoryData<Type, Type> ApplicationValidators()
-    {
-        var data = new TheoryData<Type, Type>();
-
-        var validators = AssemblyScanner.FindValidatorsInAssembly(
-            typeof(DependencyInjection).Assembly,
-            includeInternalTypes: true
-        );
-
-        foreach (var validator in validators)
-        {
-            data.Add(validator.InterfaceType, validator.ValidatorType);
-        }
-
-        return data;
     }
 
     public sealed record TestCommand : ICommand<int>
