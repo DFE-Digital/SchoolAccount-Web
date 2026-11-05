@@ -1,4 +1,5 @@
 ﻿@model SchoolAccount.Web.Mvc.Features.Journey.JourneyViewModel
+@using SchoolAccount.Web.Mvc.Infrastructure
 @{
     ViewData["Title"] = "Journey";
 }
@@ -21,8 +22,10 @@
 
         @if (Model.DisplaySchoolStatuses)
         {
-            <partial name="~/Features/Shared/MultipleSchoolsStatusTable/MultipleSchoolsStatusTable.cshtml"
-                     model="@Model.MatSchoolsStatuses"/>
+            <feature name="@FeatureFlags.MultipleSchoolsStatusTable">
+                <partial name="~/Features/Shared/MultipleSchoolsStatusTable/MultipleSchoolsStatusTable.cshtml"
+                         model="@Model.MatSchoolsStatuses"/>
+            </feature>
         }
 
         @if (Model.TryGetSteps(out var steps))
