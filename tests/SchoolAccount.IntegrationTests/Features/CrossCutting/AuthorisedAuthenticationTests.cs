@@ -27,7 +27,6 @@ public class AuthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<Pr
         var response = await _client.GetAsync(path, _cancellationToken);
 
         // Assert
-        response.StatusCode.ShouldNotBe(Redirect);
         response.StatusCode.ShouldBe(OK);
     }
 

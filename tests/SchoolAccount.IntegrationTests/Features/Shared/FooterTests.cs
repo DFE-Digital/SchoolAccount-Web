@@ -30,7 +30,6 @@ public class FooterTests(SchoolAccountWebApplicationFactory<Program> factory)
 
         // Assert
         response.StatusCode.ShouldBe(OK);
-        page.ShouldNotBeNull();
         page.GetFooter().ShouldNotBeNull();
     }
 
