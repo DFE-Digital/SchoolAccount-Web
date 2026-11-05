@@ -3,6 +3,7 @@ using Aspire.Hosting;
 using Aspire.Hosting.ApplicationModel;
 using Aspire.Hosting.Testing;
 using Microsoft.Playwright;
+using SchoolAccount.AppHost;
 using static Aspire.Hosting.Testing.DistributedApplicationTestingBuilder;
 
 [assembly: AssemblyFixture(typeof(SchoolAccount.EndToEndTests.Common.EndToEndApp))]
@@ -24,7 +25,7 @@ public sealed class EndToEndApp : IAsyncLifetime
 
     // In start-up order. Waiting on each in turn means a failure names the
     // resource at fault, rather than the web app waiting forever.
-    private static readonly string[] _resources = ["mock-oauth2-server", "web"];
+    private static readonly string[] _resources = [ResourceNames.MockSignIn, ResourceNames.Web];
 
     private readonly ConcurrentDictionary<string, Lazy<Task<string>>> _sessions = new();
     private DistributedApplication? _app;
@@ -97,7 +98,7 @@ public sealed class EndToEndApp : IAsyncLifetime
             );
         }
 
-        BaseUrl = _app.GetEndpoint("web", "http").ToString().TrimEnd('/');
+        BaseUrl = _app.GetEndpoint(ResourceNames.Web, "http").ToString().TrimEnd('/');
     }
 
     // Downloads Chromium on first run; a no-op once it is installed.
