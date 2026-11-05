@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using SchoolAccount.Application;
 using SchoolAccount.Application.Abstractions.Messaging;
-using SchoolAccount.Application.Features.Feedback;
 using SchoolAccount.SharedKernel;
 using Shouldly;
 
@@ -12,20 +11,23 @@ namespace SchoolAccount.ApplicationTests.Abstractions.Behaviours;
 
 public class ValidationDecoratorTests
 {
-    [Fact]
-    public void Validator_is_registered()
+    [Theory]
+    [MemberData(nameof(ApplicationValidators))]
+    public void Every_validator_in_the_application_layer_is_registered(
+        Type interfaceType,
+        Type validatorType
+    )
     {
         // Arrange
         var services = new ServiceCollection();
 
         // Act
         services.AddApplication();
-        var provider = services.BuildServiceProvider();
+        using var provider = services.BuildServiceProvider();
+        using var scope = provider.CreateScope();
 
         // Assert
-        var validator = provider.GetRequiredService<IValidator<FeedbackCommand>>();
-        validator.ShouldNotBeNull();
-        validator.ShouldBeOfType<FeedbackCommandValidator>();
+        scope.ServiceProvider.GetService(interfaceType).ShouldBeOfType(validatorType);
     }
 
     [Fact]
@@ -121,6 +123,23 @@ public class ValidationDecoratorTests
         await validator
             .Received(1)
             .ValidateAsync(Arg.Any<IValidationContext>(), cancellation.Token);
+    }
+
+    public static TheoryData<Type, Type> ApplicationValidators()
+    {
+        var data = new TheoryData<Type, Type>();
+
+        var validators = AssemblyScanner.FindValidatorsInAssembly(
+            typeof(DependencyInjection).Assembly,
+            includeInternalTypes: true
+        );
+
+        foreach (var validator in validators)
+        {
+            data.Add(validator.InterfaceType, validator.ValidatorType);
+        }
+
+        return data;
     }
 
     public sealed record TestCommand : ICommand<int>
