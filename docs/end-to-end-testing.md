@@ -16,13 +16,13 @@ If DfE Sign-in issues the app a client secret, set `OpenIDConnectSettings:Client
 
 ## Running the tests
 
-Docker must be running. Then:
+Docker must be running, and the [Collect API repository](https://github.com/DFE-Digital/SchoolAccount-CollectAPI) must be cloned next to this one, as `../SchoolAccount-CollectAPI`. Then:
 
 ```bash
 dotnet test --project tests/SchoolAccount.EndToEndTests
 ```
 
-That's all. The tests start the app and the mock through the app's Aspire AppHost, `src/SchoolAccount.AppHost`, run against them, and stop them at the end. Running or debugging a test from Rider or Visual Studio works the same way, with nothing to set up. The first run downloads Chromium and the mock's image.
+That's all. The tests start the app, the Collect API and the mock through the app's Aspire AppHost, `src/SchoolAccount.AppHost`, run against them, and stop them at the end. Running or debugging a test from Rider or Visual Studio works the same way, with nothing to set up. The first run downloads Chromium and the mock's image.
 
 The tests skip when the `CI` environment variable is set, because the pipeline has no step for them yet.
 
@@ -56,5 +56,6 @@ The compose overlay, `docker-compose.e2e.yml`, still works for running the app's
 
 ## Limitations
 
-- The Collect and Academies APIs are not part of the AppHost yet. Pages that call them, such as the journey page, fail until those services are added, as containers or projects, or stubbed. The sample tests land on the start page, which needs neither.
+- The Collect API runs with its own Development settings, so its census data comes from the LocalDevTools SQL Server. Without that running, pages that show census data fail. The SQL Server isn't part of the AppHost yet.
+- The Academies API isn't part of the AppHost yet. Pages that call it fail until it's added or stubbed. The sample tests land on the start page, which needs neither.
 - The mock is deliberately permissive: it accepts any client, redirect address and secret. It tests the app's sign-in wiring, not DfE Sign-in's rules.

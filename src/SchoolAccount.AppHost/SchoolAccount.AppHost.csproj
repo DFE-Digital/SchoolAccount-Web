@@ -2,9 +2,22 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <IsPackable>false</IsPackable>
+    <!-- The Collect API lives in its own repository, cloned next to this one. -->
+    <CollectApiProjectPath>$(MSBuildThisFileDirectory)..\..\..\SchoolAccount-CollectAPI\src\SchoolAccount.Collect.Api\SchoolAccount.Collect.Api.csproj</CollectApiProjectPath>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\SchoolAccount.Web.Mvc\SchoolAccount.Web.Mvc.csproj" />
+    <!-- Only built, so the AppHost can run it; skipped when the clone is missing, as in CI. -->
+    <ProjectReference
+      Include="$(CollectApiProjectPath)"
+      Condition="Exists('$(CollectApiProjectPath)')"
+      IsAspireProjectResource="false"
+      ReferenceOutputAssembly="false"
+    />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AssemblyMetadata Include="CollectApiProjectPath" Value="$(CollectApiProjectPath)" />
   </ItemGroup>
 </Project>

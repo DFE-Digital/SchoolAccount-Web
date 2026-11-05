@@ -25,7 +25,12 @@ public sealed class EndToEndApp : IAsyncLifetime
 
     // In start-up order. Waiting on each in turn means a failure names the
     // resource at fault, rather than the web app waiting forever.
-    private static readonly string[] _resources = [ResourceNames.MockSignIn, ResourceNames.Web];
+    private static readonly string[] _resources =
+    [
+        ResourceNames.MockSignIn,
+        ResourceNames.CollectApi,
+        ResourceNames.Web,
+    ];
 
     private readonly ConcurrentDictionary<string, Lazy<Task<string>>> _sessions = new();
     private DistributedApplication? _app;
