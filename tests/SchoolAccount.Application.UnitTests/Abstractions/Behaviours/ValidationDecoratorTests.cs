@@ -7,7 +7,7 @@ using SchoolAccount.Application.Abstractions.Messaging;
 using SchoolAccount.SharedKernel;
 using Shouldly;
 
-namespace SchoolAccount.ApplicationTests.Abstractions.Behaviours;
+namespace SchoolAccount.Application.UnitTests.Abstractions.Behaviours;
 
 public class ValidationDecoratorTests
 {

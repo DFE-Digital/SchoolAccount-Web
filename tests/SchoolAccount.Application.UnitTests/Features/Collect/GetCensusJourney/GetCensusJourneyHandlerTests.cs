@@ -11,7 +11,7 @@ using static SchoolAccount.TestCommon.Builders.GetAcademyTrustResponseBuilder.Ge
 using static SchoolAccount.TestCommon.Builders.GetAcademyTrustResponseBuilder.GetAcademyTrustResponseBuilder;
 using static SchoolAccount.TestCommon.Builders.GetCensusJourney.GetCensusJourneyContentResponseBuilder;
 
-namespace SchoolAccount.ApplicationTests.Features.Collect.GetCensusJourney;
+namespace SchoolAccount.Application.UnitTests.Features.Collect.GetCensusJourney;
 
 public class GetCensusJourneyHandlerTests
 {

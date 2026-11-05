@@ -6,7 +6,7 @@ using static SchoolAccount.TestCommon.Builders.CensusStatusesResponseBuilder;
 using static SchoolAccount.TestCommon.Builders.GetAcademyTrustResponseBuilder.GetAcademyEstablishmentResponseBuilder;
 using static SchoolAccount.TestCommon.Builders.GetCensusJourney.GetCensusJourneyContentResponseBuilder;
 
-namespace SchoolAccount.ApplicationTests.Features.Collect.GetCensusJourney;
+namespace SchoolAccount.Application.UnitTests.Features.Collect.GetCensusJourney;
 
 public class GetCensusJourneyMapperTests
 {

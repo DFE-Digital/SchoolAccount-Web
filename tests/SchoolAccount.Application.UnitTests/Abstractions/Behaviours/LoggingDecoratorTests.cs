@@ -7,7 +7,7 @@ using SchoolAccount.Application.Abstractions.Messaging;
 using SchoolAccount.Application.Features.Feedback;
 using Shouldly;
 
-namespace SchoolAccount.ApplicationTests.Abstractions.Behaviours;
+namespace SchoolAccount.Application.UnitTests.Abstractions.Behaviours;
 
 public class LoggingDecoratorTests
 {
