@@ -29,21 +29,20 @@ public sealed class JourneyViewModel
 
     public CallToAction CallToAction { get; init; }
 
+    public bool MatView => !Organisation.IsEstablishment;
+
     public bool DisplayImportantDates => ImportantDates.Any();
 
     public bool DisplayOverview => !string.IsNullOrWhiteSpace(Overview);
 
     public bool DisplayUnderstandStatuses =>
-        UnderstandStatuses.Any() && (Status != "Unavailable" || DisplaySchoolStatuses);
+        UnderstandStatuses.Any() && (Status != "Unavailable" || MatView);
 
     public bool TryGetSteps(out StepByStepViewModelCollection steps)
     {
         steps = Steps!;
         return Steps?.HasItems() == true;
     }
-
-    public bool DisplaySchoolStatuses =>
-        MatSchoolsStatuses is not null && MatSchoolsStatuses.SchoolStatuses.Any();
 }
 
 public sealed class ImportantDate
