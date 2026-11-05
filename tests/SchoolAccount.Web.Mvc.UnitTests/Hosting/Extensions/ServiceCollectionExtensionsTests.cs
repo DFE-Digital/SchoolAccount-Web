@@ -42,11 +42,23 @@ public class ServiceCollectionExtensionsTests
         services.AddConfiguredOpenTelemetry(configuration, HostEnvironment("Prod"));
 
         // Assert
-        services.ShouldContain(descriptor => descriptor.ServiceType == typeof(LoggerProvider));
-        services.ShouldContain(descriptor => descriptor.ServiceType == typeof(TracerProvider));
-        services.ShouldContain(descriptor => descriptor.ServiceType == typeof(MeterProvider));
-        services.ShouldNotContain(descriptor =>
-            descriptor.ServiceType == typeof(IOptionsFactory<OtlpExporterOptions>)
+        services.ShouldSatisfyAllConditions(
+            serviceCollection =>
+                serviceCollection.ShouldContain(descriptor =>
+                    descriptor.ServiceType == typeof(LoggerProvider)
+                ),
+            serviceCollection =>
+                serviceCollection.ShouldContain(descriptor =>
+                    descriptor.ServiceType == typeof(TracerProvider)
+                ),
+            serviceCollection =>
+                serviceCollection.ShouldContain(descriptor =>
+                    descriptor.ServiceType == typeof(MeterProvider)
+                ),
+            serviceCollection =>
+                serviceCollection.ShouldNotContain(descriptor =>
+                    descriptor.ServiceType == typeof(IOptionsFactory<OtlpExporterOptions>)
+                )
         );
     }
 
@@ -65,11 +77,23 @@ public class ServiceCollectionExtensionsTests
         services.AddConfiguredOpenTelemetry(configuration, HostEnvironment("Development"));
 
         // Assert
-        services.ShouldContain(descriptor => descriptor.ServiceType == typeof(LoggerProvider));
-        services.ShouldContain(descriptor => descriptor.ServiceType == typeof(TracerProvider));
-        services.ShouldContain(descriptor => descriptor.ServiceType == typeof(MeterProvider));
-        services.ShouldContain(descriptor =>
-            descriptor.ServiceType == typeof(IOptionsFactory<OtlpExporterOptions>)
+        services.ShouldSatisfyAllConditions(
+            serviceCollection =>
+                serviceCollection.ShouldContain(descriptor =>
+                    descriptor.ServiceType == typeof(LoggerProvider)
+                ),
+            serviceCollection =>
+                serviceCollection.ShouldContain(descriptor =>
+                    descriptor.ServiceType == typeof(TracerProvider)
+                ),
+            serviceCollection =>
+                serviceCollection.ShouldContain(descriptor =>
+                    descriptor.ServiceType == typeof(MeterProvider)
+                ),
+            serviceCollection =>
+                serviceCollection.ShouldContain(descriptor =>
+                    descriptor.ServiceType == typeof(IOptionsFactory<OtlpExporterOptions>)
+                )
         );
     }
 
@@ -89,12 +113,24 @@ public class ServiceCollectionExtensionsTests
         services.AddConfiguredOpenTelemetry(configuration, HostEnvironment("Development"));
 
         // Assert
-        services.ShouldContain(descriptor =>
-            descriptor.ServiceType == typeof(IOptionsFactory<OtlpExporterOptions>)
+        services.ShouldSatisfyAllConditions(
+            serviceCollection =>
+                serviceCollection.ShouldContain(descriptor =>
+                    descriptor.ServiceType == typeof(IOptionsFactory<OtlpExporterOptions>)
+                ),
+            serviceCollection =>
+                serviceCollection
+                    .Count(descriptor => descriptor.ServiceType == typeof(LoggerProvider))
+                    .ShouldBe(1),
+            serviceCollection =>
+                serviceCollection
+                    .Count(descriptor => descriptor.ServiceType == typeof(TracerProvider))
+                    .ShouldBe(1),
+            serviceCollection =>
+                serviceCollection
+                    .Count(descriptor => descriptor.ServiceType == typeof(MeterProvider))
+                    .ShouldBe(1)
         );
-        services.Count(descriptor => descriptor.ServiceType == typeof(LoggerProvider)).ShouldBe(1);
-        services.Count(descriptor => descriptor.ServiceType == typeof(TracerProvider)).ShouldBe(1);
-        services.Count(descriptor => descriptor.ServiceType == typeof(MeterProvider)).ShouldBe(1);
     }
 
     [Fact]
@@ -272,10 +308,11 @@ public class ServiceCollectionExtensionsTests
         var options = provider.GetRequiredService<IOptions<KeyManagementOptions>>().Value;
 
         // Assert
-        options.XmlRepository.ShouldNotBeNull();
-        options.XmlRepository.GetType().Name.ShouldBe("AzureBlobXmlRepository");
-        options.XmlEncryptor.ShouldNotBeNull();
-        options.XmlEncryptor.GetType().Name.ShouldBe("AzureKeyVaultXmlEncryptor");
+        var xmlRepository = options.XmlRepository.ShouldNotBeNull();
+        var xmlEncryptor = options.XmlEncryptor.ShouldNotBeNull();
+
+        xmlRepository.GetType().Name.ShouldBe("AzureBlobXmlRepository");
+        xmlEncryptor.GetType().Name.ShouldBe("AzureKeyVaultXmlEncryptor");
     }
 
     [Theory]
@@ -331,11 +368,13 @@ public class ServiceCollectionExtensionsTests
     private static ConfigurationManager BuildDataProtectionConfiguration(
         string? keyRingBlobUri,
         string? keyEncryptionKeyUri
-    ) =>
-        BuildConfiguration(
+    )
+    {
+        return BuildConfiguration(
             ($"{DataProtectionSettings.SectionName}:KeyRingBlobUri", keyRingBlobUri),
             ($"{DataProtectionSettings.SectionName}:KeyEncryptionKeyUri", keyEncryptionKeyUri)
         );
+    }
 
     private static ConfigurationManager BuildConfiguration(
         params (string Key, string? Value)[] entries

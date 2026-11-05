@@ -23,7 +23,7 @@ public class HtmlContentHelperTests
         var document = Parse(corrected);
         var paragraph = document.QuerySelector(".govuk-paragraph");
         paragraph.ShouldNotBeNull();
-        paragraph.TextContent.ShouldBeEquivalentTo("Test");
+        paragraph.TextContent.ShouldBe("Test");
     }
 
     [Fact]
@@ -42,11 +42,14 @@ public class HtmlContentHelperTests
 
         // Assert
         var document = Parse(corrected);
-        var list = document.QuerySelector<IHtmlUnorderedListElement>(".govuk-unsorted-list");
-        list.ShouldNotBeNull();
-        list.Children.ShouldNotBeEmpty();
-        list.Children.Count.ShouldBe(3);
-        list.Children.ShouldAllBe(x => x.ClassList.Contains("govuk-unsorted-list__item"));
+        var list = document
+            .QuerySelector<IHtmlUnorderedListElement>(".govuk-unsorted-list")
+            .ShouldNotBeNull();
+
+        list.Children.ShouldSatisfyAllConditions(
+            items => items.Count.ShouldBe(3),
+            items => items.ShouldAllBe(x => x.ClassList.Contains("govuk-unsorted-list__item"))
+        );
     }
 
     private static IDocument Parse(IHtmlContent html)
