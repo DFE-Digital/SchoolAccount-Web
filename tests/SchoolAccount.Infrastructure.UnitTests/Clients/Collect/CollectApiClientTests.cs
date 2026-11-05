@@ -33,6 +33,12 @@ public class CollectApiClientTests : IDisposable
     private readonly FakeLogger<CollectApiClient> _logger = new();
     private readonly MockHttpMessageHandler _mockHttp = new();
 
+    public void Dispose()
+    {
+        _mockHttp.Dispose();
+        GC.SuppressFinalize(this);
+    }
+
     [Fact]
     public async Task Census_statuses_are_mapped_from_the_api_response()
     {
@@ -63,11 +69,14 @@ public class CollectApiClientTests : IDisposable
 
         // Assert
         result.IsSuccess.ShouldBeTrue();
-        var status = result.Value.ShouldHaveSingleItem();
-        status.Id.ShouldBe("123");
-        status.Interesting.ShouldBeTrue();
-        status.Actions.ShouldHaveSingleItem().Name.ShouldBe("Autumn School Census");
-        status.Actions[0].Status.Name.ShouldBe("Not Started");
+        var censusStatus = result.Value.ShouldHaveSingleItem();
+
+        censusStatus.ShouldSatisfyAllConditions(
+            status => status.Id.ShouldBe("123"),
+            status => status.Interesting.ShouldBeTrue(),
+            status => status.Actions.ShouldHaveSingleItem().Name.ShouldBe("Autumn School Census"),
+            status => status.Actions[0].Status.Name.ShouldBe("Not Started")
+        );
     }
 
     [Fact]
@@ -91,20 +100,17 @@ public class CollectApiClientTests : IDisposable
         var client = ClientRespondingWith(BadRequest, ProblemJson, _validValidationErrorResponse);
 
         // Act
-        var act = async () =>
-            await client.GetCensusStatuses(string.Empty, string.Empty, [], _cancellationToken);
-        await act.ShouldThrowAsync<HttpRequestException>();
+        await Should.ThrowAsync<HttpRequestException>(() =>
+            client.GetCensusStatuses(string.Empty, string.Empty, [], _cancellationToken)
+        );
 
         // Assert
-        _logger.Collector.Count.ShouldBe(1);
-        _logger.Collector.LatestRecord.ShouldNotBeNull();
-        _logger.Collector.LatestRecord.Level.ShouldBe(LogLevel.Error);
-        _logger.Collector.LatestRecord.StructuredState.ShouldNotBeNull();
-        _logger.Collector.LatestRecord.StructuredState.ShouldContain(property =>
-            property.Key == "ValidationErrorCount" && property.Value == "1"
-        );
-        _logger.Collector.LatestRecord.StructuredState.ShouldContain(property =>
-            property.Key == "@ValidationErrors"
+        var record = _logger.Collector.GetSnapshot().ShouldHaveSingleItem();
+
+        record.ShouldSatisfyAllConditions(
+            log => log.Level.ShouldBe(LogLevel.Error),
+            log => log.GetStructuredStateValue("ValidationErrorCount").ShouldBe("1"),
+            log => log.GetStructuredStateValue("@ValidationErrors").ShouldNotBeNull()
         );
     }
 
@@ -135,10 +141,11 @@ public class CollectApiClientTests : IDisposable
 
         // Assert
         _logger.Collector.Count.ShouldBe(1);
-        _logger.Collector.LatestRecord.ShouldNotBeNull();
-        _logger.Collector.LatestRecord.Level.ShouldBe(LogLevel.Error);
-        _logger.Collector.LatestRecord.StructuredState.ShouldNotBeNull();
-        _logger.LatestRecord.Message.ShouldContain("Response from /status was empty");
+        _logger.ShouldSatisfyAllConditions(
+            logger => logger.Collector.LatestRecord.Level.ShouldBe(LogLevel.Error),
+            logger => logger.Collector.LatestRecord.StructuredState.ShouldNotBeNull(),
+            logger => logger.LatestRecord.Message.ShouldContain("Response from /status was empty")
+        );
     }
 
     [Fact]
@@ -199,12 +206,6 @@ public class CollectApiClientTests : IDisposable
         // Assert
         act.ShouldThrow<HttpRequestException>();
         _logger.Collector.Count.ShouldBe(0);
-    }
-
-    public void Dispose()
-    {
-        _mockHttp.Dispose();
-        GC.SuppressFinalize(this);
     }
 
     private CollectApiClient ClientRespondingWith(

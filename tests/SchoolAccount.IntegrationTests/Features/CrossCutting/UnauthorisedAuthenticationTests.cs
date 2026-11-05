@@ -20,9 +20,7 @@ public class UnauthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<
 
         // Assert
         response.StatusCode.ShouldBe(Redirect);
-        response
-            .Headers.Location.ShouldNotBeNull()
-            .OriginalString.ShouldBeEquivalentTo(JourneyReturnUrl);
+        response.Headers.Location.ShouldNotBeNull().OriginalString.ShouldBe(JourneyReturnUrl);
     }
 
     [Fact]
@@ -32,7 +30,6 @@ public class UnauthorisedAuthenticationTests(SchoolAccountWebApplicationFactory<
         var response = await _client.GetAsync(StartUrl, _cancellationToken);
 
         // Assert
-        response.StatusCode.ShouldNotBe(Redirect);
         response.StatusCode.ShouldBe(OK);
     }
 

@@ -44,7 +44,6 @@ public class ErrorControllerTests : IClassFixture<SchoolAccountWebApplicationFac
         // Assert
         forbiddenErrorPage.IsForbiddenPageTitle().ShouldBeTrue();
         forbiddenErrorPage.IsForbiddenPageHeading().ShouldBeTrue();
-        response.IsSuccessStatusCode.ShouldBeFalse();
         response.StatusCode.ShouldBe(Forbidden);
     }
 
@@ -61,7 +60,6 @@ public class ErrorControllerTests : IClassFixture<SchoolAccountWebApplicationFac
         // Assert
         notFoundErrorPage.IsNotFoundPageTitle().ShouldBeTrue();
         notFoundErrorPage.IsNotFoundPageHeading().ShouldBeTrue();
-        response.IsSuccessStatusCode.ShouldBeFalse();
         response.StatusCode.ShouldBe(NotFound);
     }
 
@@ -77,7 +75,6 @@ public class ErrorControllerTests : IClassFixture<SchoolAccountWebApplicationFac
 
         // Assert
         errorPage.IsServerErrorPageTitle().ShouldBeTrue();
-        response.IsSuccessStatusCode.ShouldBeFalse();
         response.StatusCode.ShouldBe(InternalServerError);
     }
 
@@ -97,7 +94,6 @@ public class ErrorControllerTests : IClassFixture<SchoolAccountWebApplicationFac
         // Assert
         notFoundErrorPage.IsNotFoundPageTitle().ShouldBeTrue();
         notFoundErrorPage.IsNotFoundPageHeading().ShouldBeTrue();
-        response.IsSuccessStatusCode.ShouldBeFalse();
         response.StatusCode.ShouldBe(NotFound);
     }
 
@@ -118,9 +114,8 @@ public class ErrorControllerTests : IClassFixture<SchoolAccountWebApplicationFac
 
         // Assert
         var errorPageTitle = errorPage.GetPageTitle();
-        errorPageTitle.ShouldBeEquivalentTo(ErrorTitle);
+        errorPageTitle.ShouldBe(ErrorTitle);
 
-        response.IsSuccessStatusCode.ShouldBeFalse();
         response.StatusCode.ShouldBe(InternalServerError);
     }
 
