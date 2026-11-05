@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using SchoolAccount.Application;
 using SchoolAccount.Application.Abstractions.Messaging;
+using SchoolAccount.Application.Features.Feedback;
 using SchoolAccount.SharedKernel;
 using Shouldly;
 
@@ -11,6 +12,22 @@ namespace SchoolAccount.ApplicationTests.Abstractions.Behaviours;
 
 public class ValidationDecoratorTests
 {
+    [Fact]
+    public void Validator_is_registered()
+    {
+        // Arrange
+        var services = new ServiceCollection();
+
+        // Act
+        services.AddApplication();
+        var provider = services.BuildServiceProvider();
+
+        // Assert
+        var validator = provider.GetRequiredService<IValidator<FeedbackCommand>>();
+        validator.ShouldNotBeNull();
+        validator.ShouldBeOfType<FeedbackCommandValidator>();
+    }
+
     [Fact]
     public async Task Invalid_command_with_a_response_does_not_reach_its_handler()
     {
