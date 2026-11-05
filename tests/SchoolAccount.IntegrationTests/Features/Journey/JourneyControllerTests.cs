@@ -19,6 +19,19 @@ namespace SchoolAccount.IntegrationTests.Features.Journey;
 
 public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
 {
+    private const string matJson = """
+        {
+         "id": "2E774B32-E4DB-445B-B915-736C777FF5A4",
+         "name": "Test Multi Academy Trust",
+         "category": { "id": "010", "name": "Multi Academy Trust" },
+         "ukprn": "10037611",
+         "establishments": [
+             { "urn": "100001", "name": "Test School 1" },
+             { "urn": "100002", "name": "Test School 2" }
+         ]
+        }
+        """;
+
     private readonly CancellationToken _cancellationToken = TestContext.Current.CancellationToken;
     private readonly HttpClient _client;
     private readonly SchoolAccountWebApplicationFactory<Program> _factory;
@@ -286,36 +299,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     public async Task Call_to_action_button_is_hidden_for_MAT_users()
     {
         // Arrange
-        var trustJson = """
-            {
-             "id": "2E774B32-E4DB-445B-B915-736C777FF5A4",
-             "name": "Test Multi Academy Trust",
-             "category": { "id": "010", "name": "Multi Academy Trust" },
-             "ukprn": "10037611",
-             "establishments": [
-                 { "urn": "100001", "name": "Test School 1" },
-                 { "urn": "100002", "name": "Test School 2" }
-             ]
-            }
-            """;
-
-        var client = _factory.CreateAuthorisedClient(services =>
-        {
-            services.StubQueryHandler(_getCensusJourneyHandler);
-            services.AddSingleton(
-                new MockAuthClaimsOptions
-                {
-                    Claims =
-                    [
-                        new Claim(GivenName, MockAuthHandler.FakeGivenName),
-                        new Claim(FamilyName, MockAuthHandler.FakeFamilyName),
-                        new Claim(Sub, "1159ee82-d515-4d34-b28d-ac138cb1506b"),
-                        new Claim(Email, "test@example.com"),
-                        new Claim(Organisation, trustJson),
-                    ],
-                }
-            );
-        });
+        var client = CreateMatClient();
 
         _getCensusJourneyHandler.Returns(AGetCensusJourneyResponse().AsSuccess());
 
@@ -409,39 +393,10 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         var octoberFirst2026 = new DateTime(2026, 10, 1, 2, 0, 0, DateTimeKind.Utc);
         var octoberFourth2026 = new DateTime(2026, 10, 4, 9, 0, 0, DateTimeKind.Utc);
 
-        var trustJson = """
-            {
-             "id": "2E774B32-E4DB-445B-B915-736C777FF5A4",
-             "name": "Test Multi Academy Trust",
-             "category": { "id": "010", "name": "Multi Academy Trust" },
-             "ukprn": "10037611",
-             "establishments": [
-                 { "urn": "100001", "name": "Test School 1" },
-                 { "urn": "100002", "name": "Test School 2" }
-             ]
-            }
-            """;
-
         var dateTimeProvider = Substitute.For<IDateTimeProvider>();
         dateTimeProvider.UtcNow.Returns(octoberFourth2026);
-        var client = _factory.CreateAuthorisedClient(services =>
-        {
-            services.AddSingleton(dateTimeProvider);
-            services.StubQueryHandler(_getCensusJourneyHandler);
-            services.AddSingleton(
-                new MockAuthClaimsOptions
-                {
-                    Claims =
-                    [
-                        new Claim(GivenName, MockAuthHandler.FakeGivenName),
-                        new Claim(FamilyName, MockAuthHandler.FakeFamilyName),
-                        new Claim(Sub, "1159ee82-d515-4d34-b28d-ac138cb1506b"),
-                        new Claim(Email, "test@example.com"),
-                        new Claim(Organisation, trustJson),
-                    ],
-                }
-            );
-        });
+
+        var client = CreateMatClient(services => services.AddSingleton(dateTimeProvider));
 
         _getCensusJourneyHandler.Returns(
             AGetCensusJourneyResponse()
@@ -496,6 +451,40 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
                 status => status["Errors"].ShouldBe("1"),
                 status => status["Queries"].ShouldBe("2")
             );
+    }
+
+    [Fact]
+    public async Task No_schools_message_is_displayed_when_trust_has_no_schools()
+    {
+        // Arrange
+        var client = CreateMatClient();
+
+        _getCensusJourneyHandler.Returns(AGetCensusJourneyResponse().AsSuccess());
+
+        // Act
+        var response = await client.GetAsync(JourneyUrl, _cancellationToken);
+        var journeyPage = await AngleSharpPage.FromResponseAsync<JourneyPage>(
+            response,
+            _cancellationToken
+        );
+
+        // Assert
+        response.StatusCode.ShouldBe(OK);
+
+        journeyPage.HasTable().ShouldBeFalse();
+        journeyPage
+            .GetElementContentByText(
+                ".govuk-inset-text p",
+                "There are currently no schools to display for Test Multi Academy Trust."
+            )
+            .ShouldNotBeNull();
+
+        var contactLink = journeyPage
+            .GetElementByHref("a.govuk-link", "https://help.signin.education.gov.uk/contact-us")
+            .ShouldNotBeNull();
+        journeyPage
+            .GetTextOf(contactLink)
+            .ShouldBe("contact the DfE Sign In team (opens in a new tab)");
     }
 
     [Fact]
@@ -564,36 +553,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     public async Task Status_explanations_are_shown_for_a_multi_academy_trust()
     {
         // Arrange
-        var trustJson = """
-            {
-             "id": "2E774B32-E4DB-445B-B915-736C777FF5A4",
-             "name": "Test Multi Academy Trust",
-             "category": { "id": "010", "name": "Multi Academy Trust" },
-             "ukprn": "10037611",
-             "establishments": [
-                 { "urn": "100001", "name": "Test School 1" },
-                 { "urn": "100002", "name": "Test School 2" }
-             ]
-            }
-            """;
-
-        var client = _factory.CreateAuthorisedClient(services =>
-        {
-            services.StubQueryHandler(_getCensusJourneyHandler);
-            services.AddSingleton(
-                new MockAuthClaimsOptions
-                {
-                    Claims =
-                    [
-                        new Claim(GivenName, MockAuthHandler.FakeGivenName),
-                        new Claim(FamilyName, MockAuthHandler.FakeFamilyName),
-                        new Claim(Sub, "1159ee82-d515-4d34-b28d-ac138cb1506b"),
-                        new Claim(Email, "test@example.com"),
-                        new Claim(Organisation, trustJson),
-                    ],
-                }
-            );
-        });
+        var client = CreateMatClient();
 
         _getCensusJourneyHandler.Returns(
             AGetCensusJourneyResponse()
@@ -620,5 +580,28 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
         journeyPage
             .GetElementContentByText("li", "Test Status")
             .ShouldBe("Test Status: Test status description.");
+    }
+
+    private HttpClient CreateMatClient(Action<IServiceCollection>? configureServices = null)
+    {
+        return _factory.CreateAuthorisedClient(services =>
+        {
+            services.StubQueryHandler(_getCensusJourneyHandler);
+            services.AddSingleton(
+                new MockAuthClaimsOptions
+                {
+                    Claims =
+                    [
+                        new Claim(GivenName, MockAuthHandler.FakeGivenName),
+                        new Claim(FamilyName, MockAuthHandler.FakeFamilyName),
+                        new Claim(Sub, "1159ee82-d515-4d34-b28d-ac138cb1506b"),
+                        new Claim(Email, "test@example.com"),
+                        new Claim(Organisation, matJson),
+                    ],
+                }
+            );
+
+            configureServices?.Invoke(services);
+        });
     }
 }

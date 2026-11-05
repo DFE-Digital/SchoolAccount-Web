@@ -39,6 +39,11 @@ public class JourneyPage : AngleSharpPage
         return GetSummaryListRows().ToDictionary(row => row.Key, row => row.Value);
     }
 
+    public bool HasTable()
+    {
+        return Document.QuerySelector(".govuk-table") is not null;
+    }
+
     public IReadOnlyList<string> GetTableHeaders()
     {
         return Document
