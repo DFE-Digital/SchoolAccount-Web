@@ -3,4 +3,17 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=8080
+      - ASPNETCORE_HTTPS_PORTS=7041
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/schoolaccount.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=localdev
       - Serilog__WriteTo__Seq__Args__serverUrl=http://seq
+      - OpenIDConnectSettings__Authority=https://test-oidc.signin.education.gov.uk
+      - OpenIDConnectSettings__ClientId=SCHOOLACCOUNT
+      - CommonApiSettings__CollectApiUrl=http://host.docker.internal:5101
+      - AcademiesApiClient__BaseUrl=https://api.academies.education.gov.uk
+    env_file:
+      - /Users/kcorbishley/.aspnet/schoolaccount-web.env
+    ports:
+      - "127.0.0.1:7041:7041"
+    volumes:
+      - ~/.aspnet/https:/https:ro
