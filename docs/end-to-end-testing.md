@@ -75,10 +75,13 @@ reusing a saved session by hand.
   each request. The app runs as a normal process on this machine, like the browser, so both reach
   the mock at the same `localhost` address and the issuer always matches. No shared Docker network
   is needed.
-- **Ports.** Aspire picks free ports each run. The tests read the app's address from Aspire, and the
-  mock accepts any redirect address, so nothing depends on a fixed port.
-- **Ready before the tests start.** The app waits for the mock's discovery document, and the tests
-  wait for the app to serve a static file, so the first test never races start-up.
+- **Ports.** With the mock, as in the tests, the web app and the Collect API get free ports each
+  run, so they never clash with a stack that is already running. The tests read the app's address
+  from Aspire, and the mock accepts any redirect address, so nothing depends on a fixed port. With
+  DfE Sign-in, both keep the ports from their own launch profiles.
+- **Ready before the tests start.** The web app waits for the mock's discovery document and the
+  Collect API's `/health`. The tests then wait for the web app's `/health`, so the first test never
+  races start-up.
 - **One issuer per path.** The mock serves a separate issuer for each URL path. The app uses
   `/default`.
 - **Plain HTTP.** The mock speaks plain HTTP.
