@@ -45,10 +45,14 @@ public class FeatureFlagsTests
             .AddInMemoryCollection(
                 new Dictionary<string, string?>
                 {
-                    ["feature_management:feature_flags:0:id"] = FeatureFlags.MultiSchoolsStatusTableErrorsAndQueries,
+                    ["feature_management:feature_flags:0:id"] =
+                        FeatureFlags.MultiSchoolsStatusTableErrorsAndQueries,
                     ["feature_management:feature_flags:0:enabled"] = "true",
-                    ["feature_management:feature_flags:0:conditions:client_filters:0:name"] = "Microsoft.TimeWindow",
-                    ["feature_management:feature_flags:0:conditions:client_filters:0:parameters:Start"] = start,
+                    ["feature_management:feature_flags:0:conditions:client_filters:0:name"] =
+                        "Microsoft.TimeWindow",
+                    [
+                        "feature_management:feature_flags:0:conditions:client_filters:0:parameters:Start"
+                    ] = start,
                 }
             )
             .Build();
@@ -61,7 +65,9 @@ public class FeatureFlagsTests
         var featureManager = serviceProvider.GetRequiredService<IFeatureManager>();
 
         // Act
-        var isEnabled = await featureManager.IsEnabledAsync(FeatureFlags.MultiSchoolsStatusTableErrorsAndQueries);
+        var isEnabled = await featureManager.IsEnabledAsync(
+            FeatureFlags.MultiSchoolsStatusTableErrorsAndQueries
+        );
 
         // Assert
         isEnabled.ShouldBe(expectedIsEnabled);
