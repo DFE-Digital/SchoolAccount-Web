@@ -23,7 +23,7 @@ public class UserContextTests
         var givenName = "John";
         var familyName = "Jones";
         var email = "john.jones@testing.world";
-        var organisationJson = OrganisationConstants.ValidAcademyJson;
+        var organisationJson = OrganisationConstants.SingleSchoolJson;
 
         var claimsDictionary = new Dictionary<string, string>
         {
@@ -53,21 +53,21 @@ public class UserContextTests
         );
 
         organisation.ShouldSatisfyAllConditions(
-            org => org.Id.ShouldBe(OrganisationConstants.FakeOrganisationId),
-            org => org.Name.ShouldBe(OrganisationConstants.FakeOrganisationName),
+            org => org.Id.ShouldBe(OrganisationConstants.FakeSchoolId),
+            org => org.Name.ShouldBe(OrganisationConstants.FakeSchoolName),
             org => org.Category.Id.ShouldBe(OrganisationConstants.FakeCategoryEstablishmentId),
             org => org.Category.Name.ShouldBe(OrganisationConstants.FakeCategoryEstablishmentName),
-            org => org.Ukprn.ShouldBe(OrganisationConstants.FakeOrganisationUkprn),
+            org => org.Ukprn.ShouldBe(OrganisationConstants.FakeSchoolUkprn),
             org =>
                 org.EstablishmentNumber.ShouldBe(
-                    OrganisationConstants.FakeAcademyEstablishmentNumber
+                    OrganisationConstants.FakeSchoolEstablishmentNumber
                 )
         );
 
         localAuthority.ShouldSatisfyAllConditions(
-            la => la.Id.ShouldBe(OrganisationConstants.FakeAcademyLocalAuthorityId),
-            la => la.Name.ShouldBe(OrganisationConstants.FakeAcademyLocalAuthorityName),
-            la => la.Code.ShouldBe(OrganisationConstants.FakeAcademyLocalAuthorityCode)
+            la => la.Id.ShouldBe(OrganisationConstants.FakeSchoolLocalAuthorityId),
+            la => la.Name.ShouldBe(OrganisationConstants.FakeSchoolLocalAuthorityName),
+            la => la.Code.ShouldBe(OrganisationConstants.FakeSchoolLocalAuthorityCode)
         );
     }
 
@@ -79,7 +79,7 @@ public class UserContextTests
         var givenName = "John";
         var familyName = "Jones";
         var email = "john.jones@testing.world";
-        var organisationJson = OrganisationConstants.ValidTrustJson;
+        var organisationJson = OrganisationConstants.TrustJson;
 
         var claimsDictionary = new Dictionary<string, string>
         {

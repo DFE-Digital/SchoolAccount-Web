@@ -21,7 +21,7 @@ public class MockAuthHandler(
 
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
-        var organisationJson = OrganisationConstants.ValidAcademyJson;
+        var organisationJson = OrganisationConstants.SingleSchoolJson;
 
         var claims =
             claimsOptions.Claims?.ToArray()

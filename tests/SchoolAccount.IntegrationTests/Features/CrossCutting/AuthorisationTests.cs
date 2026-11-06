@@ -63,7 +63,7 @@ public class AuthorisationTests(SchoolAccountWebApplicationFactory<Program> fact
 
         var organisationName = journeyPage.GetOrganisationName();
         organisationName.ShouldNotBeNull();
-        organisationName.ShouldContainWithoutWhitespace(OrganisationConstants.FakeOrganisationName);
+        organisationName.ShouldContainWithoutWhitespace(OrganisationConstants.FakeSchoolName);
     }
 
     [Fact]
