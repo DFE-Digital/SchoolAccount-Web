@@ -7,7 +7,7 @@ using Shouldly;
 using static System.Net.HttpStatusCode;
 using static SchoolAccount.TestCommon.Constants.UrlConstants;
 
-namespace SchoolAccount.IntegrationTests.Features.Shared;
+namespace SchoolAccount.IntegrationTests.Features.CrossCutting;
 
 public class FooterTests(SchoolAccountWebApplicationFactory<Program> factory)
     : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
