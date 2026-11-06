@@ -1,9 +1,6 @@
 namespace SchoolAccount.Web.Mvc.ComponentTests.Common;
 
-/// <summary>
-/// TempData keys that FeedbackController sets and the views read. These must match the
-/// controller exactly.
-/// </summary>
+// Must match the keys FeedbackController sets.
 internal static class TempDataKeys
 {
     public const string ErrorSummary = "ErrorSummary";
