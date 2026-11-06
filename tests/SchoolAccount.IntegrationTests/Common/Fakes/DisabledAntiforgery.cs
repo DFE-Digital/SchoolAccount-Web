@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Antiforgery;
-using Microsoft.AspNetCore.Http;
 
-namespace SchoolAccount.TestCommon.Fakes;
+namespace SchoolAccount.IntegrationTests.Common.Fakes;
 
 public class DisabledAntiforgery : IAntiforgery
 {

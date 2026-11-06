@@ -2,7 +2,7 @@ using AngleSharp.Html.Dom;
 using SchoolAccount.IntegrationTests.Common;
 using SchoolAccount.IntegrationTests.Common.Extensions;
 using SchoolAccount.IntegrationTests.Common.Pages;
-using SchoolAccount.TestCommon.Stubs;
+using SchoolAccount.IntegrationTests.Common.Stubs;
 using Shouldly;
 using static System.Net.HttpStatusCode;
 using static SchoolAccount.TestCommon.Constants.UrlConstants;

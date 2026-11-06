@@ -1,10 +1,10 @@
 using SchoolAccount.IntegrationTests.Common;
 using SchoolAccount.IntegrationTests.Common.Extensions;
 using SchoolAccount.IntegrationTests.Common.Pages;
-using SchoolAccount.TestCommon.Stubs;
+using SchoolAccount.IntegrationTests.Common.Stubs;
+using SchoolAccount.TestCommon.Constants;
 using Shouldly;
 using static System.Net.HttpStatusCode;
-using static SchoolAccount.IntegrationTests.Common.MockAuthHandler;
 using static SchoolAccount.IntegrationTests.Common.MockOidcHandler;
 using static SchoolAccount.TestCommon.Constants.UrlConstants;
 
@@ -63,7 +63,7 @@ public class AuthorisationTests(SchoolAccountWebApplicationFactory<Program> fact
 
         var organisationName = journeyPage.GetOrganisationName();
         organisationName.ShouldNotBeNull();
-        organisationName.ShouldContainWithoutWhitespace(FakeOrganisationName);
+        organisationName.ShouldContainWithoutWhitespace(OrganisationConstants.FakeSchoolName);
     }
 
     [Fact]

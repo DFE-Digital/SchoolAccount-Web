@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Testing;
 using NSubstitute;
+using SchoolAccount.TestCommon.Constants;
 using SchoolAccount.Web.Mvc.Authentication;
 using Shouldly;
 using static SchoolAccount.Web.Mvc.Authentication.ClaimConstants;
@@ -22,23 +23,7 @@ public class UserContextTests
         var givenName = "John";
         var familyName = "Jones";
         var email = "john.jones@testing.world";
-        var organisationJson = """
-            {
-             "id": "2E774B32-E4DB-445B-B915-736C777FF5A4",
-             "name": "East Herrington Primary Academy",
-             "category": {
-                 "id": "001",
-                 "name": "Establishment"
-             },
-             "ukprn": "10037611",
-             "establishmentNumber": "2091",
-             "localAuthority": {
-                 "id": "502EF2E9-2CA6-4905-9BF7-E80695BD5717",
-                 "name": "SUNDERLAND CITY METROPOLITAN BOROUGH COUNCIL",
-                 "code": "394"
-             }
-            }
-            """;
+        var organisationJson = OrganisationConstants.SingleSchoolJson;
 
         var claimsDictionary = new Dictionary<string, string>
         {
@@ -68,18 +53,21 @@ public class UserContextTests
         );
 
         organisation.ShouldSatisfyAllConditions(
-            org => org.Id.ShouldBe("2E774B32-E4DB-445B-B915-736C777FF5A4"),
-            org => org.Name.ShouldBe("East Herrington Primary Academy"),
-            org => org.Category.Id.ShouldBe("001"),
-            org => org.Category.Name.ShouldBe("Establishment"),
-            org => org.Ukprn.ShouldBe("10037611"),
-            org => org.EstablishmentNumber.ShouldBe("2091")
+            org => org.Id.ShouldBe(OrganisationConstants.FakeSchoolId),
+            org => org.Name.ShouldBe(OrganisationConstants.FakeSchoolName),
+            org => org.Category.Id.ShouldBe(OrganisationConstants.FakeCategoryEstablishmentId),
+            org => org.Category.Name.ShouldBe(OrganisationConstants.FakeCategoryEstablishmentName),
+            org => org.Ukprn.ShouldBe(OrganisationConstants.FakeSchoolUkprn),
+            org =>
+                org.EstablishmentNumber.ShouldBe(
+                    OrganisationConstants.FakeSchoolEstablishmentNumber
+                )
         );
 
         localAuthority.ShouldSatisfyAllConditions(
-            la => la.Id.ShouldBe("502EF2E9-2CA6-4905-9BF7-E80695BD5717"),
-            la => la.Name.ShouldBe("SUNDERLAND CITY METROPOLITAN BOROUGH COUNCIL"),
-            la => la.Code.ShouldBe("394")
+            la => la.Id.ShouldBe(OrganisationConstants.FakeSchoolLocalAuthorityId),
+            la => la.Name.ShouldBe(OrganisationConstants.FakeSchoolLocalAuthorityName),
+            la => la.Code.ShouldBe(OrganisationConstants.FakeSchoolLocalAuthorityCode)
         );
     }
 
@@ -91,17 +79,7 @@ public class UserContextTests
         var givenName = "John";
         var familyName = "Jones";
         var email = "john.jones@testing.world";
-        var organisationJson = """
-             {
-              "id": "DD9F7BD6-2828-4FE7-B6DA-7C7C028ED479",
-              "name": "BALMORAL LEARNING TRUST",
-              "category": {
-                "id": "010",
-                "name": "Multi-Academy Trust"
-              },
-              "ukprn": "10059806"
-            }
-            """;
+        var organisationJson = OrganisationConstants.TrustJson;
 
         var claimsDictionary = new Dictionary<string, string>
         {
@@ -130,11 +108,11 @@ public class UserContextTests
         );
 
         organisation.ShouldSatisfyAllConditions(
-            org => org.Id.ShouldBe("DD9F7BD6-2828-4FE7-B6DA-7C7C028ED479"),
-            org => org.Name.ShouldBe("BALMORAL LEARNING TRUST"),
-            org => org.Category.Id.ShouldBe("010"),
-            org => org.Category.Name.ShouldBe("Multi-Academy Trust"),
-            org => org.Ukprn.ShouldBe("10059806"),
+            org => org.Id.ShouldBe(OrganisationConstants.FakeTrustId),
+            org => org.Name.ShouldBe(OrganisationConstants.FakeTrustName),
+            org => org.Category.Id.ShouldBe(OrganisationConstants.FakeCategoryTrustId),
+            org => org.Category.Name.ShouldBe(OrganisationConstants.FakeCategoryTrustName),
+            org => org.Ukprn.ShouldBe(OrganisationConstants.FakeTrustUkprn),
             org => org.EstablishmentNumber.ShouldBeNull(),
             org => org.LocalAuthority.ShouldBeNull()
         );
