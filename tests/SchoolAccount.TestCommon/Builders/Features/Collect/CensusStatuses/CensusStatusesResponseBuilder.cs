@@ -1,7 +1,7 @@
 using SchoolAccount.Application.Features.Collect.CensusStatuses;
 using SchoolAccount.SharedKernel;
 
-namespace SchoolAccount.TestCommon.Builders;
+namespace SchoolAccount.TestCommon.Builders.Features.Collect.CensusStatuses;
 
 public class CensusStatusesResponseBuilder
 {

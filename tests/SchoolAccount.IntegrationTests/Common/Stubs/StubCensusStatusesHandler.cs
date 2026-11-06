@@ -1,7 +1,7 @@
 using SchoolAccount.Application.Features.Collect.CensusStatuses;
-using SchoolAccount.TestCommon.Builders;
+using SchoolAccount.TestCommon.Builders.Features.Collect.CensusStatuses;
 
-namespace SchoolAccount.TestCommon.Stubs;
+namespace SchoolAccount.IntegrationTests.Common.Stubs;
 
 public sealed class StubCensusStatusesHandler
     : StubQueryHandler<GetCensusStatusesQuery, List<GetCensusStatusesResponse>>

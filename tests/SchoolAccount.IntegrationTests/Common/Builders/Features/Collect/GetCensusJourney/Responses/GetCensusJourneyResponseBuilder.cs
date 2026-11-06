@@ -1,8 +1,10 @@
 using SchoolAccount.Application.Features.Collect.CensusStatuses;
 using SchoolAccount.Application.Features.Collect.GetCensusJourney.Responses;
 using SchoolAccount.SharedKernel;
+using SchoolAccount.TestCommon.Builders.Features.Collect.CensusStatuses;
+using SchoolAccount.TestCommon.Builders.Features.Collect.GetCensusJourney.Responses;
 
-namespace SchoolAccount.TestCommon.Builders.GetCensusJourney;
+namespace SchoolAccount.IntegrationTests.Common.Builders.Features.Collect.GetCensusJourney.Responses;
 
 public class GetCensusJourneyResponseBuilder
 {

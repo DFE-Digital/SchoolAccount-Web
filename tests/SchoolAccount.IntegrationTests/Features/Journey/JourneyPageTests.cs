@@ -3,17 +3,17 @@ using NSubstitute;
 using SchoolAccount.IntegrationTests.Common;
 using SchoolAccount.IntegrationTests.Common.Extensions;
 using SchoolAccount.IntegrationTests.Common.Pages;
+using SchoolAccount.IntegrationTests.Common.Stubs;
 using SchoolAccount.SharedKernel;
-using SchoolAccount.TestCommon.Stubs;
-using SchoolAccount.Web.Mvc.Features.Journey;
+using SchoolAccount.TestCommon.Constants;
 using Shouldly;
 using static System.Net.HttpStatusCode;
 using static SchoolAccount.Application.Features.Collect.GetCensusJourney.Responses.GetCensusJourneyContentResponse;
-using static SchoolAccount.TestCommon.Builders.CensusStatusesResponseBuilder;
-using static SchoolAccount.TestCommon.Builders.GetCensusJourney.GetCensusJourneyContentResponseBuilder;
-using static SchoolAccount.TestCommon.Builders.GetCensusJourney.GetCensusJourneyResponseBuilder;
-using static SchoolAccount.TestCommon.Builders.GetCensusJourney.GetCensusJourneyResponseImportantDateBuilder;
-using static SchoolAccount.TestCommon.Builders.GetCensusJourney.GetCensusJourneyResponseUnderstandStatusBuilder;
+using static SchoolAccount.IntegrationTests.Common.Builders.Features.Collect.GetCensusJourney.Responses.GetCensusJourneyResponseBuilder;
+using static SchoolAccount.TestCommon.Builders.Features.Collect.CensusStatuses.CensusStatusesResponseBuilder;
+using static SchoolAccount.TestCommon.Builders.Features.Collect.GetCensusJourney.Responses.GetCensusJourneyContentResponseBuilder;
+using static SchoolAccount.TestCommon.Builders.Features.Collect.GetCensusJourney.Responses.GetCensusJourneyResponseImportantDateBuilder;
+using static SchoolAccount.TestCommon.Builders.Features.Collect.GetCensusJourney.Responses.GetCensusJourneyResponseUnderstandStatusBuilder;
 using static SchoolAccount.TestCommon.Constants.UrlConstants;
 using static SchoolAccount.Web.Mvc.Authentication.ClaimConstants;
 
@@ -21,19 +21,6 @@ namespace SchoolAccount.IntegrationTests.Features.Journey;
 
 public class JourneyPageTests : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
 {
-    private const string matJson = """
-        {
-         "id": "2E774B32-E4DB-445B-B915-736C777FF5A4",
-         "name": "Test Multi Academy Trust",
-         "category": { "id": "010", "name": "Multi Academy Trust" },
-         "ukprn": "10037611",
-         "establishments": [
-             { "urn": "100001", "name": "Test School 1" },
-             { "urn": "100002", "name": "Test School 2" }
-         ]
-        }
-        """;
-
     private readonly CancellationToken _cancellationToken = TestContext.Current.CancellationToken;
     private readonly HttpClient _client;
     private readonly SchoolAccountWebApplicationFactory<Program> _factory;
@@ -598,7 +585,7 @@ public class JourneyPageTests : IClassFixture<SchoolAccountWebApplicationFactory
                         new Claim(FamilyName, MockAuthHandler.FakeFamilyName),
                         new Claim(Sub, "1159ee82-d515-4d34-b28d-ac138cb1506b"),
                         new Claim(Email, "test@example.com"),
-                        new Claim(Organisation, matJson),
+                        new Claim(Organisation, OrganisationConstants.TrustJson),
                     ],
                 }
             );

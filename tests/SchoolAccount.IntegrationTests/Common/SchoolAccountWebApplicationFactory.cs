@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
-using SchoolAccount.TestCommon.Fakes;
+using SchoolAccount.IntegrationTests.Common.Fakes;
 
 namespace SchoolAccount.IntegrationTests.Common;
 
