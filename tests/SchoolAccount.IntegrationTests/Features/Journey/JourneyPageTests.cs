@@ -8,6 +8,7 @@ using SchoolAccount.SharedKernel;
 using SchoolAccount.TestCommon.Constants;
 using Shouldly;
 using static System.Net.HttpStatusCode;
+using static SchoolAccount.Application.Features.Collect.GetCensusJourney.Responses.GetCensusJourneyContentResponse;
 using static SchoolAccount.IntegrationTests.Common.Builders.Features.Collect.GetCensusJourney.Responses.GetCensusJourneyResponseBuilder;
 using static SchoolAccount.TestCommon.Builders.Features.Collect.CensusStatuses.CensusStatusesResponseBuilder;
 using static SchoolAccount.TestCommon.Builders.Features.Collect.GetCensusJourney.Responses.GetCensusJourneyContentResponseBuilder;
@@ -287,25 +288,7 @@ public class JourneyPageTests : IClassFixture<SchoolAccountWebApplicationFactory
     public async Task Call_to_action_button_is_hidden_for_MAT_users()
     {
         // Arrange
-        var trustJson = OrganisationConstants.ValidTrustJson;
-
-        var client = _factory.CreateAuthorisedClient(services =>
-        {
-            services.StubQueryHandler(_getCensusJourneyHandler);
-            services.AddSingleton(
-                new MockAuthClaimsOptions
-                {
-                    Claims =
-                    [
-                        new Claim(GivenName, MockAuthHandler.FakeGivenName),
-                        new Claim(FamilyName, MockAuthHandler.FakeFamilyName),
-                        new Claim(Sub, "1159ee82-d515-4d34-b28d-ac138cb1506b"),
-                        new Claim(Email, "test@example.com"),
-                        new Claim(Organisation, trustJson),
-                    ],
-                }
-            );
-        });
+        var client = CreateMatClient();
 
         _getCensusJourneyHandler.Returns(AGetCensusJourneyResponse().AsSuccess());
 
@@ -399,28 +382,10 @@ public class JourneyPageTests : IClassFixture<SchoolAccountWebApplicationFactory
         var octoberFirst2026 = new DateTime(2026, 10, 1, 2, 0, 0, DateTimeKind.Utc);
         var octoberFourth2026 = new DateTime(2026, 10, 4, 9, 0, 0, DateTimeKind.Utc);
 
-        var trustJson = OrganisationConstants.ValidTrustJson;
-
         var dateTimeProvider = Substitute.For<IDateTimeProvider>();
         dateTimeProvider.UtcNow.Returns(octoberFourth2026);
-        var client = _factory.CreateAuthorisedClient(services =>
-        {
-            services.AddSingleton(dateTimeProvider);
-            services.StubQueryHandler(_getCensusJourneyHandler);
-            services.AddSingleton(
-                new MockAuthClaimsOptions
-                {
-                    Claims =
-                    [
-                        new Claim(GivenName, MockAuthHandler.FakeGivenName),
-                        new Claim(FamilyName, MockAuthHandler.FakeFamilyName),
-                        new Claim(Sub, "1159ee82-d515-4d34-b28d-ac138cb1506b"),
-                        new Claim(Email, "test@example.com"),
-                        new Claim(Organisation, trustJson),
-                    ],
-                }
-            );
-        });
+
+        var client = CreateMatClient(services => services.AddSingleton(dateTimeProvider));
 
         _getCensusJourneyHandler.Returns(
             AGetCensusJourneyResponse()
@@ -478,6 +443,40 @@ public class JourneyPageTests : IClassFixture<SchoolAccountWebApplicationFactory
     }
 
     [Fact]
+    public async Task No_schools_message_is_displayed_when_trust_has_no_schools()
+    {
+        // Arrange
+        var client = CreateMatClient();
+
+        _getCensusJourneyHandler.Returns(AGetCensusJourneyResponse().AsSuccess());
+
+        // Act
+        var response = await client.GetAsync(JourneyUrl, _cancellationToken);
+        var journeyPage = await AngleSharpPage.FromResponseAsync<JourneyPage>(
+            response,
+            _cancellationToken
+        );
+
+        // Assert
+        response.StatusCode.ShouldBe(OK);
+
+        journeyPage.HasTable().ShouldBeFalse();
+        journeyPage
+            .GetElementContentByText(
+                ".govuk-inset-text p",
+                "There are currently no schools to display for Test Multi Academy Trust."
+            )
+            .ShouldNotBeNull();
+
+        var contactLink = journeyPage
+            .GetElementByHref("a.govuk-link", "https://help.signin.education.gov.uk/contact-us")
+            .ShouldNotBeNull();
+        journeyPage
+            .GetTextOf(contactLink)
+            .ShouldBe("contact the DfE Sign In team (opens in a new tab)");
+    }
+
+    [Fact]
     public async Task Status_explanations_are_shown_when_the_census_is_available()
     {
         // Arrange
@@ -517,7 +516,7 @@ public class JourneyPageTests : IClassFixture<SchoolAccountWebApplicationFactory
             AGetCensusJourneyResponse()
                 .WithContent(
                     ACensusJourneyContentResponse()
-                        .WithStatus("Unavailable")
+                        .WithStatus(UnavailableStatus)
                         .WithUnderstandStatus(
                             AUnderstandStatus()
                                 .WithName("Test Status")
@@ -543,25 +542,7 @@ public class JourneyPageTests : IClassFixture<SchoolAccountWebApplicationFactory
     public async Task Status_explanations_are_shown_for_a_multi_academy_trust()
     {
         // Arrange
-        var trustJson = OrganisationConstants.ValidTrustJson;
-
-        var client = _factory.CreateAuthorisedClient(services =>
-        {
-            services.StubQueryHandler(_getCensusJourneyHandler);
-            services.AddSingleton(
-                new MockAuthClaimsOptions
-                {
-                    Claims =
-                    [
-                        new Claim(GivenName, MockAuthHandler.FakeGivenName),
-                        new Claim(FamilyName, MockAuthHandler.FakeFamilyName),
-                        new Claim(Sub, "1159ee82-d515-4d34-b28d-ac138cb1506b"),
-                        new Claim(Email, "test@example.com"),
-                        new Claim(Organisation, trustJson),
-                    ],
-                }
-            );
-        });
+        var client = CreateMatClient();
 
         _getCensusJourneyHandler.Returns(
             AGetCensusJourneyResponse()
@@ -588,5 +569,28 @@ public class JourneyPageTests : IClassFixture<SchoolAccountWebApplicationFactory
         journeyPage
             .GetElementContentByText("li", "Test Status")
             .ShouldBe("Test Status: Test status description.");
+    }
+
+    private HttpClient CreateMatClient(Action<IServiceCollection>? configureServices = null)
+    {
+        return _factory.CreateAuthorisedClient(services =>
+        {
+            services.StubQueryHandler(_getCensusJourneyHandler);
+            services.AddSingleton(
+                new MockAuthClaimsOptions
+                {
+                    Claims =
+                    [
+                        new Claim(GivenName, MockAuthHandler.FakeGivenName),
+                        new Claim(FamilyName, MockAuthHandler.FakeFamilyName),
+                        new Claim(Sub, "1159ee82-d515-4d34-b28d-ac138cb1506b"),
+                        new Claim(Email, "test@example.com"),
+                        new Claim(Organisation, OrganisationConstants.ValidTrustJson),
+                    ],
+                }
+            );
+
+            configureServices?.Invoke(services);
+        });
     }
 }

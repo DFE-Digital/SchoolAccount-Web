@@ -58,6 +58,7 @@ public class JourneyViewModelBuilder(IDateTimeProvider dateTimeProvider)
             MatSchoolsStatuses = !organisation.IsEstablishment
                 ? new MultipleSchoolsStatusTableViewModel
                 {
+                    OrganisationName = organisation.Name,
                     SchoolStatuses = getCensusJourneyResponse
                         .SchoolStatuses.SelectMany(a =>
                             a.Actions.Select(x => new SchoolStatus
