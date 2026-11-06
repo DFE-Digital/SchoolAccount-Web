@@ -1,0 +1,41 @@
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using NSubstitute;
+using SchoolAccount.Application.Abstractions.Clients;
+using SchoolAccount.Application.Abstractions.Messaging;
+using SchoolAccount.Application.Features.Feedback;
+using Shouldly;
+
+namespace SchoolAccount.Application.UnitTests.Abstractions.Behaviours;
+
+public class LoggingDecoratorTests
+{
+    [Fact]
+    public async Task Command_that_fails_validation_is_logged_as_an_error()
+    {
+        // Arrange
+        var services = new ServiceCollection();
+        services.AddFakeLogging();
+        services.AddApplication();
+        services.AddSingleton(Substitute.For<IFeedbackClient>());
+        var provider = services.BuildServiceProvider();
+        using var scope = provider.CreateScope();
+
+        var handler = scope.ServiceProvider.GetRequiredService<ICommandHandler<FeedbackCommand>>();
+
+        // Act
+        await handler.Handle(
+            new FeedbackCommand { Message = "test-message", OrganisationId = string.Empty },
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        provider
+            .GetFakeLogCollector()
+            .GetSnapshot()
+            .ShouldContain(record =>
+                record.Level == LogLevel.Error
+                && record.Message == "Failed command FeedbackCommand with error"
+            );
+    }
+}

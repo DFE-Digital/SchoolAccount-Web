@@ -1,5 +1,5 @@
 using SchoolAccount.Application.Abstractions.Messaging;
-using SchoolAccount.TestCommon.Stubs;
+using SchoolAccount.IntegrationTests.Common.Stubs;
 
 namespace SchoolAccount.IntegrationTests.Common.Extensions;
 

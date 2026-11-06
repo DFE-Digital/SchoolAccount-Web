@@ -9,6 +9,7 @@ using SchoolAccount.Application.Abstractions.Messaging;
 using SchoolAccount.Application.Features.Feedback;
 using SchoolAccount.SharedKernel;
 using SchoolAccount.SharedKernel.Authentication;
+using SchoolAccount.TestCommon.Constants;
 using SchoolAccount.Web.Mvc.Features.Feedback;
 using Shouldly;
 
@@ -23,7 +24,7 @@ public class FeedbackControllerTests
     private readonly IUserContext _userContext = Substitute.For<IUserContext>();
 
     [Fact]
-    public async Task Submit_redirects_to_the_thank_you_message_when_feedback_is_sent()
+    public async Task A_valid_submission_redirects_to_the_thank_you_message()
     {
         // Arrange
         HandlerReturns(Result.Success());
@@ -38,7 +39,7 @@ public class FeedbackControllerTests
     }
 
     [Fact]
-    public async Task Submit_redirects_back_to_the_form_with_its_errors_when_the_form_is_invalid()
+    public async Task An_invalid_submission_displays_errors_on_the_form()
     {
         // Arrange
         using var controller = CreateController();
@@ -51,7 +52,7 @@ public class FeedbackControllerTests
         var result = await controller.Submit(Form(string.Empty), _cancellationToken);
 
         // Assert
-        result.ShouldBeOfType<LocalRedirectResult>().Url.ShouldBe("/Submit");
+        result.ShouldBeOfType<LocalRedirectResult>().Url.ShouldBe(UrlConstants.SubmitRedirectUrl);
         controller
             .TempData["ErrorSummary"]
             .ShouldBeOfType<Dictionary<string, string>>()
@@ -69,7 +70,7 @@ public class FeedbackControllerTests
     }
 
     [Fact]
-    public async Task Submit_sends_the_message_and_organisation_to_the_handler()
+    public async Task Valid_feedback_is_successfully_submitted()
     {
         // Arrange
         HandlerReturns(Result.Success());
@@ -92,7 +93,7 @@ public class FeedbackControllerTests
     }
 
     [Fact]
-    public async Task Submit_redirects_back_to_the_form_with_an_error_when_the_handler_fails()
+    public async Task Error_is_displayed_on_the_form_when_the_handler_fails()
     {
         // Arrange
         HandlerReturns(Result.Failure(SharedKernel.Error.Failure("test", "test")));
@@ -102,7 +103,7 @@ public class FeedbackControllerTests
         var result = await controller.Submit(Form("test-feedback"), _cancellationToken);
 
         // Assert
-        result.ShouldBeOfType<LocalRedirectResult>().Url.ShouldBe("/Submit");
+        result.ShouldBeOfType<LocalRedirectResult>().Url.ShouldBe(UrlConstants.SubmitRedirectUrl);
         controller
             .TempData["ErrorSummary"]
             .ShouldBeOfType<Dictionary<string, string>>()
@@ -117,7 +118,7 @@ public class FeedbackControllerTests
     }
 
     [Fact]
-    public async Task Submit_redirects_to_root_when_return_url_is_not_local()
+    public async Task Default_url_is_returned_with_external_return_url()
     {
         // Arrange
         HandlerReturns(Result.Success());
@@ -138,8 +139,10 @@ public class FeedbackControllerTests
             .Handle(Arg.Any<FeedbackCommand>(), Arg.Any<CancellationToken>())
             .Returns(result);
 
-    private static FeedbackForm Form(string message, string returnUrl = "/Submit") =>
-        new() { FeedbackMessage = message, ReturnUrl = returnUrl };
+    private static FeedbackForm Form(
+        string message,
+        string returnUrl = UrlConstants.SubmitRedirectUrl
+    ) => new() { FeedbackMessage = message, ReturnUrl = returnUrl };
 
     private FeedbackController CreateController()
     {

@@ -1,0 +1,229 @@
+using System.Net;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Testing;
+using RichardSzalay.MockHttp;
+using SchoolAccount.Infrastructure.Clients.Collect;
+using Shouldly;
+using static System.Net.HttpStatusCode;
+using static System.Net.Mime.MediaTypeNames.Application;
+
+namespace SchoolAccount.Infrastructure.UnitTests.Clients.Collect;
+
+public class CollectApiClientTests : IDisposable
+{
+    private const string _baseAddress = "http://localhost";
+    private const string _nullResponse = "null";
+
+    private const string _validValidationErrorResponse = """
+        {
+          "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
+          "title": "One or more validation errors occurred.",
+          "status": 400,
+          "errors": {
+            "Email": [
+              "The Email field is required."
+            ]
+          }
+        }
+        """;
+
+    private const string _invalidValidationErrorResponse = """ { "type": "invalid" """;
+
+    private readonly CancellationToken _cancellationToken = TestContext.Current.CancellationToken;
+    private readonly FakeLogger<CollectApiClient> _logger = new();
+    private readonly MockHttpMessageHandler _mockHttp = new();
+
+    public void Dispose()
+    {
+        _mockHttp.Dispose();
+        GC.SuppressFinalize(this);
+    }
+
+    [Fact]
+    public async Task Census_statuses_are_mapped_from_the_api_response()
+    {
+        // Arrange
+        const string responseBody = """
+            {
+              "details": [
+                {
+                  "id": "123",
+                  "interesting": true,
+                  "actions": [
+                    { "name": "Autumn School Census", "status": { "name": "Not Started" } }
+                  ]
+                }
+              ]
+            }
+            """;
+
+        var client = ClientRespondingWith(OK, Json, responseBody);
+
+        // Act
+        var result = await client.GetCensusStatuses(
+            string.Empty,
+            string.Empty,
+            [],
+            _cancellationToken
+        );
+
+        // Assert
+        result.IsSuccess.ShouldBeTrue();
+        var censusStatus = result.Value.ShouldHaveSingleItem();
+
+        censusStatus.ShouldSatisfyAllConditions(
+            status => status.Id.ShouldBe("123"),
+            status => status.Interesting.ShouldBeTrue(),
+            status => status.Actions.ShouldHaveSingleItem().Name.ShouldBe("Autumn School Census"),
+            status => status.Actions[0].Status.Name.ShouldBe("Not Started")
+        );
+    }
+
+    [Fact]
+    public async Task A_validation_error_response_fails_the_request()
+    {
+        // Arrange
+        var client = ClientRespondingWith(BadRequest, ProblemJson, _validValidationErrorResponse);
+
+        // Act
+        var act = async () =>
+            await client.GetCensusStatuses(string.Empty, string.Empty, [], _cancellationToken);
+
+        // Assert
+        await act.ShouldThrowAsync<HttpRequestException>();
+    }
+
+    [Fact]
+    public async Task Validation_errors_are_logged()
+    {
+        // Arrange
+        var client = ClientRespondingWith(BadRequest, ProblemJson, _validValidationErrorResponse);
+
+        // Act
+        await Should.ThrowAsync<HttpRequestException>(() =>
+            client.GetCensusStatuses(string.Empty, string.Empty, [], _cancellationToken)
+        );
+
+        // Assert
+        var record = _logger.Collector.GetSnapshot().ShouldHaveSingleItem();
+
+        record.ShouldSatisfyAllConditions(
+            log => log.Level.ShouldBe(LogLevel.Error),
+            log => log.GetStructuredStateValue("ValidationErrorCount").ShouldBe("1"),
+            log => log.GetStructuredStateValue("@ValidationErrors").ShouldNotBeNull()
+        );
+    }
+
+    [Fact]
+    public async Task An_empty_response_fails_the_request()
+    {
+        // Arrange
+        var client = ClientRespondingWith(Accepted, Json, _nullResponse);
+
+        // Act
+        var act = async () =>
+            await client.GetCensusStatuses(string.Empty, string.Empty, [], _cancellationToken);
+
+        // Assert
+        await act.ShouldThrowAsync<Exception>();
+    }
+
+    [Fact]
+    public async Task An_empty_response_is_logged()
+    {
+        // Arrange
+        var client = ClientRespondingWith(Accepted, Json, _nullResponse);
+
+        // Act
+        var act = async () =>
+            await client.GetCensusStatuses(string.Empty, string.Empty, [], _cancellationToken);
+        await act.ShouldThrowAsync<Exception>();
+
+        // Assert
+        _logger.Collector.Count.ShouldBe(1);
+        _logger.ShouldSatisfyAllConditions(
+            logger => logger.Collector.LatestRecord.Level.ShouldBe(LogLevel.Error),
+            logger => logger.Collector.LatestRecord.StructuredState.ShouldNotBeNull(),
+            logger => logger.LatestRecord.Message.ShouldContain("Response from /status was empty")
+        );
+    }
+
+    [Fact]
+    public async Task A_non_json_response_fails_the_request_with_no_logs()
+    {
+        // Arrange
+        var client = ClientRespondingWith(BadRequest, Pdf, _nullResponse);
+
+        // Act
+        var act = async () =>
+            await client.GetCensusStatuses(string.Empty, string.Empty, [], _cancellationToken);
+
+        // Assert
+        await act.ShouldThrowAsync<HttpRequestException>();
+        _logger.Collector.Count.ShouldBe(0);
+    }
+
+    [Fact]
+    public async Task Null_problem_details_fails_the_request_with_no_logs()
+    {
+        // Arrange
+        var client = ClientRespondingWith(BadRequest, ProblemJson, _nullResponse);
+
+        // Act
+        var act = async () =>
+            await client.GetCensusStatuses(string.Empty, string.Empty, [], _cancellationToken);
+
+        // Assert
+        await act.ShouldThrowAsync<HttpRequestException>();
+        _logger.Collector.Count.ShouldBe(0);
+    }
+
+    [Fact]
+    public async Task A_failed_request_that_is_not_a_bad_request_fails_the_request_with_no_logs()
+    {
+        // Arrange
+        var client = ClientRespondingWith(InternalServerError, Json, _nullResponse);
+
+        // Act
+        var act = async () =>
+            await client.GetCensusStatuses(string.Empty, string.Empty, [], _cancellationToken);
+
+        // Assert
+        await act.ShouldThrowAsync<HttpRequestException>();
+        _logger.Collector.Count.ShouldBe(0);
+    }
+
+    [Fact]
+    public async Task A_failed_request_with_invalid_validation_problem_details_json_fails_the_request_with_no_logs()
+    {
+        // Arrange
+        var client = ClientRespondingWith(BadRequest, ProblemJson, _invalidValidationErrorResponse);
+
+        // Act
+        var act = async () =>
+            await client.GetCensusStatuses(string.Empty, string.Empty, [], _cancellationToken);
+
+        // Assert
+        act.ShouldThrow<HttpRequestException>();
+        _logger.Collector.Count.ShouldBe(0);
+    }
+
+    private CollectApiClient ClientRespondingWith(
+        HttpStatusCode statusCode,
+        string mediaType,
+        string content
+    )
+    {
+        _mockHttp.When($"{_baseAddress}/status").Respond(statusCode, mediaType, content);
+
+        return new CollectApiClient(CreateHttpClient(), _logger);
+    }
+
+    private HttpClient CreateHttpClient()
+    {
+        var httpClient = _mockHttp.ToHttpClient();
+        httpClient.BaseAddress = new Uri(_baseAddress);
+
+        return httpClient;
+    }
+}

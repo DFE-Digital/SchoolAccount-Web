@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using SchoolAccount.IntegrationTests.Common;
 using Shouldly;
+using static SchoolAccount.TestCommon.Constants.UrlConstants;
 
 namespace SchoolAccount.IntegrationTests.Features.CrossCutting;
 
@@ -31,19 +32,19 @@ public class AnonymousEndpointGuardrailTests(SchoolAccountWebApplicationFactory<
     // Adding a new anonymous endpoint should be a conscious, reviewed decision, not an accident.
     private readonly HashSet<string> _allowlistedAnonymousEndpoints =
     [
-        factory.GeneratePath("Start", "Start"),
-        factory.GeneratePath("Account", "Login"),
-        factory.GeneratePath("Account", "Logout"),
-        factory.GeneratePath("Account", "LoggedOut"),
+        StartUrl,
+        LoginUrl,
+        LogoutUrl,
     ];
 
     [Fact]
-    public void Endpoints_marked_as_AllowAnonymous_should_only_be_the_ones_on_the_allowlist()
+    public void Only_allowlisted_endpoints_can_be_used_without_signing_in()
     {
         // Arrange
         using var scope = factory.Services.CreateScope();
         var endpointDataSource = scope.ServiceProvider.GetRequiredService<EndpointDataSource>();
 
+        // Act
         var anonymousRoutes = endpointDataSource
             .Endpoints.OfType<RouteEndpoint>()
             .Where(e => e.Metadata.GetMetadata<IAllowAnonymous>() is not null)

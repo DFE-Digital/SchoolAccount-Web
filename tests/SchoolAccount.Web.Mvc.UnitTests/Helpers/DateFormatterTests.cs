@@ -8,7 +8,7 @@ namespace SchoolAccount.Web.Mvc.UnitTests.Helpers;
 public class DateFormatterTests
 {
     [Fact]
-    public void ToDaysAgo_returns_today_for_same_day()
+    public void Day_is_returned_as_today_for_the_same_day()
     {
         // Arrange
         var dateTimeProvider = Substitute.For<IDateTimeProvider>();
@@ -25,7 +25,7 @@ public class DateFormatterTests
     }
 
     [Fact]
-    public void ToDaysAgo_returns_day_singular_for_one_day_ago()
+    public void Day_singular_is_returned_for_one_day_ago()
     {
         // Arrange
         var dateTimeProvider = Substitute.For<IDateTimeProvider>();
@@ -42,7 +42,7 @@ public class DateFormatterTests
     }
 
     [Fact]
-    public void ToDaysAgo_applies_offset_days()
+    public void An_offset_day_adds_a_day_to_the_days_ago_count()
     {
         // Arrange
         var dateTimeProvider = Substitute.For<IDateTimeProvider>();
@@ -59,7 +59,7 @@ public class DateFormatterTests
     }
 
     [Fact]
-    public void ToDaysAgo_returns_days_plural_for_more_than_one_day_ago()
+    public void Days_plural_are_returned_for_more_than_one_day_ago()
     {
         // Arrange
         var dateTimeProvider = Substitute.For<IDateTimeProvider>();
@@ -76,7 +76,7 @@ public class DateFormatterTests
     }
 
     [Fact]
-    public void ToDaysMonthNameAndYear_returns_month_as_full_name_and_day_and_year_as_numbers()
+    public void Full_dates_are_returned_with_day_and_year_as_numbers_and_month_as_full_name()
     {
         // Arrange
         var dateTimeProvider = Substitute.For<IDateTimeProvider>();

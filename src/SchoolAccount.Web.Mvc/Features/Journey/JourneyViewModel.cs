@@ -1,12 +1,13 @@
-using SchoolAccount.Application.Features.Collect.GetCensusJourney.Responses;
+using SchoolAccount.SharedKernel.Authentication;
 using SchoolAccount.Web.Mvc.Features.Shared.MultipleSchoolsStatusTable;
 using SchoolAccount.Web.Mvc.Features.Shared.StepByStep;
+using static SchoolAccount.Application.Features.Collect.GetCensusJourney.Responses.GetCensusJourneyContentResponse;
 
 namespace SchoolAccount.Web.Mvc.Features.Journey;
 
 public sealed class JourneyViewModel
 {
-    public string? User { get; init; } = "Unknown";
+    public Organisation Organisation { get; init; }
 
     public string Title { get; init; }
 
@@ -28,21 +29,20 @@ public sealed class JourneyViewModel
 
     public CallToAction CallToAction { get; init; }
 
+    public bool MatView => !Organisation.IsEstablishment;
+
     public bool DisplayImportantDates => ImportantDates.Any();
 
     public bool DisplayOverview => !string.IsNullOrWhiteSpace(Overview);
 
     public bool DisplayUnderstandStatuses =>
-        UnderstandStatuses.Any() && (Status != "Unavailable" || IsMatOrLocalAuthority);
+        UnderstandStatuses.Any() && (Status != UnavailableStatus || MatView);
 
     public bool TryGetSteps(out StepByStepViewModelCollection steps)
     {
         steps = Steps!;
         return Steps?.HasItems() == true;
     }
-
-    public bool IsMatOrLocalAuthority =>
-        MatSchoolsStatuses is not null && MatSchoolsStatuses.SchoolStatuses.Any();
 }
 
 public sealed class ImportantDate
