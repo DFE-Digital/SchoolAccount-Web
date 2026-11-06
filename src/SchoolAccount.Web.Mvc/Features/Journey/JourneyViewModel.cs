@@ -1,7 +1,7 @@
-using SchoolAccount.Application.Features.Collect.GetCensusJourney.Responses;
 using SchoolAccount.SharedKernel.Authentication;
 using SchoolAccount.Web.Mvc.Features.Shared.MultipleSchoolsStatusTable;
 using SchoolAccount.Web.Mvc.Features.Shared.StepByStep;
+using static SchoolAccount.Application.Features.Collect.GetCensusJourney.Responses.GetCensusJourneyContentResponse;
 
 namespace SchoolAccount.Web.Mvc.Features.Journey;
 
@@ -36,7 +36,7 @@ public sealed class JourneyViewModel
     public bool DisplayOverview => !string.IsNullOrWhiteSpace(Overview);
 
     public bool DisplayUnderstandStatuses =>
-        UnderstandStatuses.Any() && (Status != "Unavailable" || MatView);
+        UnderstandStatuses.Any() && (Status != UnavailableStatus || MatView);
 
     public bool TryGetSteps(out StepByStepViewModelCollection steps)
     {

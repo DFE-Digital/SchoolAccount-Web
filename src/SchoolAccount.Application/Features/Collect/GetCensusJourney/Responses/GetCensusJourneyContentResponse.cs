@@ -2,6 +2,8 @@ namespace SchoolAccount.Application.Features.Collect.GetCensusJourney.Responses;
 
 public record GetCensusJourneyContentResponse
 {
+    public const string UnavailableStatus = "Unavailable";
+
     public string Title { get; init; }
 
     public string Caption { get; init; }

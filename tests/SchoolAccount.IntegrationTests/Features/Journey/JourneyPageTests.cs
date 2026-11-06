@@ -5,8 +5,10 @@ using SchoolAccount.IntegrationTests.Common.Extensions;
 using SchoolAccount.IntegrationTests.Common.Pages;
 using SchoolAccount.SharedKernel;
 using SchoolAccount.TestCommon.Stubs;
+using SchoolAccount.Web.Mvc.Features.Journey;
 using Shouldly;
 using static System.Net.HttpStatusCode;
+using static SchoolAccount.Application.Features.Collect.GetCensusJourney.Responses.GetCensusJourneyContentResponse;
 using static SchoolAccount.TestCommon.Builders.CensusStatusesResponseBuilder;
 using static SchoolAccount.TestCommon.Builders.GetCensusJourney.GetCensusJourneyContentResponseBuilder;
 using static SchoolAccount.TestCommon.Builders.GetCensusJourney.GetCensusJourneyResponseBuilder;
@@ -527,7 +529,7 @@ public class JourneyPageTests : IClassFixture<SchoolAccountWebApplicationFactory
             AGetCensusJourneyResponse()
                 .WithContent(
                     ACensusJourneyContentResponse()
-                        .WithStatus("Unavailable")
+                        .WithStatus(UnavailableStatus)
                         .WithUnderstandStatus(
                             AUnderstandStatus()
                                 .WithName("Test Status")
