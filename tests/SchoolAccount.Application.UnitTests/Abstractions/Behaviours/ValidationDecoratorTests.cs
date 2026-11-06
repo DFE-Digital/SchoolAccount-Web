@@ -2,7 +2,6 @@ using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
-using SchoolAccount.Application;
 using SchoolAccount.Application.Abstractions.Messaging;
 using SchoolAccount.SharedKernel;
 using Shouldly;

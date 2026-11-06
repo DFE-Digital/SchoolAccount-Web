@@ -1,6 +1,6 @@
 using SchoolAccount.Application.Features.Collect.GetCensusJourney.Responses;
 
-namespace SchoolAccount.ApplicationTests.Common.Builders.Features.Collect.GetCensusJourney.Responses;
+namespace SchoolAccount.Application.UnitTests.Common.Builders.Features.Collect.GetCensusJourney.Responses;
 
 public class GetAcademyEstablishmentResponseBuilder
 {

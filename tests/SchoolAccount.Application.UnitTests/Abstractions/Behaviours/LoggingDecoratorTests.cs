@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
-using SchoolAccount.Application;
 using SchoolAccount.Application.Abstractions.Clients;
 using SchoolAccount.Application.Abstractions.Messaging;
 using SchoolAccount.Application.Features.Feedback;
