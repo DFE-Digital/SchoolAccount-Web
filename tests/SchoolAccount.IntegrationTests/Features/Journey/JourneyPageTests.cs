@@ -585,7 +585,7 @@ public class JourneyPageTests : IClassFixture<SchoolAccountWebApplicationFactory
                         new Claim(FamilyName, MockAuthHandler.FakeFamilyName),
                         new Claim(Sub, "1159ee82-d515-4d34-b28d-ac138cb1506b"),
                         new Claim(Email, "test@example.com"),
-                        new Claim(Organisation, OrganisationConstants.ValidTrustJson),
+                        new Claim(Organisation, OrganisationConstants.TrustJson),
                     ],
                 }
             );
