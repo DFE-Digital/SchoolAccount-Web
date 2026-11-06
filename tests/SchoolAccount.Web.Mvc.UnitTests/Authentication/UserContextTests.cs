@@ -108,11 +108,11 @@ public class UserContextTests
         );
 
         organisation.ShouldSatisfyAllConditions(
-            org => org.Id.ShouldBe(OrganisationConstants.FakeOrganisationId),
-            org => org.Name.ShouldBe(OrganisationConstants.FakeOrganisationName),
+            org => org.Id.ShouldBe(OrganisationConstants.FakeTrustId),
+            org => org.Name.ShouldBe(OrganisationConstants.FakeTrustName),
             org => org.Category.Id.ShouldBe(OrganisationConstants.FakeCategoryTrustId),
             org => org.Category.Name.ShouldBe(OrganisationConstants.FakeCategoryTrustName),
-            org => org.Ukprn.ShouldBe(OrganisationConstants.FakeOrganisationUkprn),
+            org => org.Ukprn.ShouldBe(OrganisationConstants.FakeTrustUkprn),
             org => org.EstablishmentNumber.ShouldBeNull(),
             org => org.LocalAuthority.ShouldBeNull()
         );
