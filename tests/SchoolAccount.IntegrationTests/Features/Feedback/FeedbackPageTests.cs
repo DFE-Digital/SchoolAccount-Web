@@ -14,7 +14,7 @@ using static SchoolAccount.TestCommon.Constants.UrlConstants;
 
 namespace SchoolAccount.IntegrationTests.Features.Feedback;
 
-public class FeedbackControllerTests : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
+public class FeedbackPageTests : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
 {
     private readonly CancellationToken _cancellationToken = TestContext.Current.CancellationToken;
     private readonly SchoolAccountWebApplicationFactory<Program> _factory;
@@ -23,7 +23,7 @@ public class FeedbackControllerTests : IClassFixture<SchoolAccountWebApplication
         ICommandHandler<FeedbackCommand>
     >();
 
-    public FeedbackControllerTests(SchoolAccountWebApplicationFactory<Program> factory)
+    public FeedbackPageTests(SchoolAccountWebApplicationFactory<Program> factory)
     {
         _factory = factory;
         _authenticatedClient = factory.CreateAuthorisedClient(services =>
@@ -58,10 +58,8 @@ public class FeedbackControllerTests : IClassFixture<SchoolAccountWebApplication
     [Fact]
     public async Task Empty_feedback_returns_the_user_to_the_form()
     {
-        // Arrange
+        // Arrange & Act
         using var content = FeedbackForm(string.Empty);
-
-        // Act
         var response = await _authenticatedClient.PostAsync(
             FeedbackSubmissionUrl,
             content,

@@ -17,7 +17,7 @@ using static SchoolAccount.Web.Mvc.Authentication.ClaimConstants;
 
 namespace SchoolAccount.IntegrationTests.Features.Journey;
 
-public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
+public class JourneyPageTests : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
 {
     private const string matJson = """
         {
@@ -38,7 +38,7 @@ public class JourneyControllerTests : IClassFixture<SchoolAccountWebApplicationF
     private readonly StubCensusJourneyHandler _getCensusJourneyHandler = new();
     private readonly Uri _testUri = new("https://www.gov.uk/");
 
-    public JourneyControllerTests(SchoolAccountWebApplicationFactory<Program> factory)
+    public JourneyPageTests(SchoolAccountWebApplicationFactory<Program> factory)
     {
         _factory = factory;
         _client = factory.CreateAuthorisedClient(services =>

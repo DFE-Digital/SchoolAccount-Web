@@ -11,7 +11,7 @@ using static SchoolAccount.Web.Mvc.Features.Error.ErrorViewModel;
 
 namespace SchoolAccount.IntegrationTests.Features.Error;
 
-public class ErrorControllerTests : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
+public class ErrorPageTests : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
 {
     private readonly CancellationToken _cancellationToken = TestContext.Current.CancellationToken;
     private readonly HttpClient _authenticatedClient;
@@ -22,7 +22,7 @@ public class ErrorControllerTests : IClassFixture<SchoolAccountWebApplicationFac
         IQueryHandler<GetCensusStatusesQuery, List<GetCensusStatusesResponse>>
     >();
 
-    public ErrorControllerTests(SchoolAccountWebApplicationFactory<Program> factory)
+    public ErrorPageTests(SchoolAccountWebApplicationFactory<Program> factory)
     {
         _authenticatedClient = factory.CreateAuthorisedClient(services =>
             services.AddScoped<
