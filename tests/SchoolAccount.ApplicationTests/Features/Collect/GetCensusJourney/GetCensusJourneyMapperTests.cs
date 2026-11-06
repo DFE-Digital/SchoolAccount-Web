@@ -18,11 +18,11 @@ public class GetCensusJourneyMapperTests
         var statuses = new List<GetCensusStatusesResponse> { ACensusStatusResponse().Build() };
 
         // Act
-        var result = CreateGetCensusJourneyResponse(content, statuses);
+        var censusJourneyResponse = CreateGetCensusJourneyResponse(content, statuses);
 
         // Assert
-        result.Content.ShouldBe(content);
-        result.SchoolStatuses.ShouldBe(statuses);
+        censusJourneyResponse.Content.ShouldBe(content);
+        censusJourneyResponse.SchoolStatuses.ShouldBe(statuses);
     }
 
     [Fact]
@@ -35,14 +35,16 @@ public class GetCensusJourneyMapperTests
             .Build();
 
         // Act
-        var result = TrustEstablishmentToOrganisation(establishment);
+        var organisationResponse = TrustEstablishmentToOrganisation(establishment);
 
         // Assert
-        result.Id.ShouldBe("test-ukprn");
-        result.Ukprn.ShouldBe("test-ukprn");
-        result.Name.ShouldBe("Test Establishment");
-        result.Category.Id.ShouldBe("001");
-        result.Category.Name.ShouldBe("Establishment");
+        organisationResponse.ShouldSatisfyAllConditions(
+            organisation => organisation.Id.ShouldBe("test-ukprn"),
+            organisation => organisation.Ukprn.ShouldBe("test-ukprn"),
+            organisation => organisation.Name.ShouldBe("Test Establishment"),
+            organisation => organisation.Category.Id.ShouldBe("001"),
+            organisation => organisation.Category.Name.ShouldBe("Establishment")
+        );
     }
 
     [Fact]
@@ -55,12 +57,17 @@ public class GetCensusJourneyMapperTests
             .Build();
 
         // Act
-        var result = TrustEstablishmentToOrganisation(establishment);
+        var organisationResponse = TrustEstablishmentToOrganisation(establishment);
 
         // Assert
-        result.LocalAuthority!.Id.ShouldBe("test-la-code");
-        result.LocalAuthority.Code.ShouldBe("test-la-code");
-        result.LocalAuthority.Name.ShouldBe("Test Local Authority");
+        organisationResponse.LocalAuthority.ShouldBe(
+            new LocalAuthority
+            {
+                Id = "test-la-code",
+                Name = "Test Local Authority",
+                Code = "test-la-code",
+            }
+        );
     }
 
     [Fact]
@@ -70,10 +77,10 @@ public class GetCensusJourneyMapperTests
         var establishment = AnAcademyEstablishment().Build();
 
         // Act
-        var result = TrustEstablishmentToOrganisation(establishment);
+        var organisationResponse = TrustEstablishmentToOrganisation(establishment);
 
         // Assert
-        result.LocalAuthority.ShouldBe(
+        organisationResponse.LocalAuthority.ShouldBe(
             new LocalAuthority
             {
                 Id = string.Empty,

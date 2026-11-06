@@ -56,7 +56,7 @@ public void Laestab_is_separated_into_localAuthorityCode_and_establishmentNumber
 }
 ```
 
-When the Act is a single expression, Act and Assert can be combined on one line:
+Use and ampersand when joining two stages together i.e when the Act is a single expression, Act and Assert can be combined on one line:
 
 ```csharp
 [Fact]
@@ -77,7 +77,81 @@ public void Organisation_is_closed_at_exact_closing_time_on_a_weekday()
 Each test should verify a single behaviour. If a test fails, it should be immediately clear what broke.
 
 Avoid multiple Act tasks in one test. If you find yourself asserting several different outcomes, split into separate
-tests or use a parameterised `[Theory]`.
+tests or use a parameterised `[Theory]` when testing the same behaviour for similar inputs.
+
+---
+
+## Keep assertions purposeful
+
+Each assertion should use the most specific method for the value being checked i.e. use ShouldBe for primitives, strings and records, use ShouldBeEquivalentTo for classes that don’t override equality.
+
+```csharp
+// Good
+headingElement.ShouldBe($"Hello {FakeGivenName} {FakeFamilyName}");
+
+// Avoid
+headingElement.ShouldBeEquivalentTo($"Hello {FakeGivenName} {FakeFamilyName}");
+```
+
+Assertions should never be skipped by null-conditional calls such as `?.ShouldBe`, which would let a test pass silently on null.
+
+```csharp
+// Good
+context.Organisation.EstablishmentNumber!.ShouldBe("2091");
+
+// Avoid
+context.Organisation.EstablishmentNumber?.ShouldBe("2091");
+```
+
+Avoid redundant assertions that restate something already guaranteed or already covered by a stricter check (such as `ShouldNotBeNull` on a value that can’t be null).
+
+```csharp
+// Good
+response.StatusCode.ShouldBe(HttpStatusCode.OK);
+
+// Avoid
+response.StatusCode.ShouldNotBe(HttpStatusCode.Redirect);
+response.StatusCode.ShouldBe(HttpStatusCode.OK);
+```
+
+Where several assertions genuinely target the same object, group them with `ShouldSatisfyAllConditions` so every failure is reported together and the test stays readable. When using `ShouldSatisfyAllConditions` move success checks above to not hide the root cause.
+Additionally, do not use null suppression `!` and instead move the check outside the condition, you can split into multiple `ShouldSatisfyAllConditions` if needed.
+
+```csharp
+// Good
+var organisation = context.Organisation.ShouldNotBeNull();
+var localAuthority = organisation.LocalAuthority.ShouldNotBeNull();
+
+context.ShouldSatisfyAllConditions(
+    user => user.IsAuthenticated.ShouldBeTrue(),
+    user => user.GivenName.ShouldBe(givenName),
+);
+
+organisation.ShouldSatisfyAllConditions(
+    org => org.Id.ShouldBe("2E774B32-E4DB-445B-B915-736C777FF5A4"),
+    org => org.Name.ShouldBe("East Herrington Primary Academy"),
+);
+
+localAuthority.ShouldSatisfyAllConditions(
+    la => la.Id.ShouldBe("502EF2E9-2CA6-4905-9BF7-E80695BD5717"),
+    la => la.Code.ShouldBe("394")
+);
+
+// Avoid
+context.ShouldSatisfyAllConditions(
+            user => user.IsAuthenticated.ShouldBeTrue(),
+            user => user.GivenName.ShouldBe(givenName),
+            user => user.Organisation.ShouldNotBeNull(),
+            user => user.Organisation!.Id.ShouldBe("2E774B32-E4DB-445B-B915-736C777FF5A4"),
+            user => user.Organisation!.Name.ShouldBe("East Herrington Primary Academy"),
+            user => user.Organisation!.LocalAuthority.ShouldNotBeNull(),
+            user =>
+                user.Organisation!.LocalAuthority!.Id.ShouldBe(
+                    "502EF2E9-2CA6-4905-9BF7-E80695BD5717"
+                ),
+            user => user.Organisation!.LocalAuthority!.Code.ShouldBe("394")
+        );
+```
 
 ---
 
@@ -124,6 +198,30 @@ public void Organisation_is_open_during_school_hours_on_a_weekday()
 
 Prefer helper methods over constructor-based setup. Constructor setup runs for every test regardless of need, can
 obscure what each test depends on, and xUnit creates a new class instance per test anyway so the benefit is minimal.
+
+---
+
+## Avoid null suppression
+
+When a value is nullable, use the return value of Shouldly’s `ShouldNotBeNull()` instead of the null-forgiving operator `!`. It asserts the value isn’t null and returns it as the non-nullable type.
+
+```csharp
+// Good
+var organisation = context.Organisation.ShouldNotBeNull();
+organisation.ShouldSatisfyAllConditions(
+            org => org.Id.ShouldBe("2E774B32-E4DB-445B-B915-736C777FF5A4"),
+            org => org.Name.ShouldBe("East Herrington Primary Academy"),
+        );
+
+// Avoid
+context.ShouldSatisfyAllConditions(
+            user => user.Organisation.ShouldNotBeNull(),
+            user => user.Organisation!.Id.ShouldBe("2E774B32-E4DB-445B-B915-736C777FF5A4"),
+            user => user.Organisation!.Name.ShouldBe("East Herrington Primary Academy"),
+        );
+```
+
+From the above example the not null assertion happens on a variable which allows us to remove the `!` null suppression from within the `ShouldSatisfyAllConditions` block.
 
 ---
 

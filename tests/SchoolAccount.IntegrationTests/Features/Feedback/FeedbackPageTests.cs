@@ -14,7 +14,7 @@ using static SchoolAccount.TestCommon.Constants.UrlConstants;
 
 namespace SchoolAccount.IntegrationTests.Features.Feedback;
 
-public class FeedbackControllerTests : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
+public class FeedbackPageTests : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
 {
     private readonly CancellationToken _cancellationToken = TestContext.Current.CancellationToken;
     private readonly SchoolAccountWebApplicationFactory<Program> _factory;
@@ -23,7 +23,7 @@ public class FeedbackControllerTests : IClassFixture<SchoolAccountWebApplication
         ICommandHandler<FeedbackCommand>
     >();
 
-    public FeedbackControllerTests(SchoolAccountWebApplicationFactory<Program> factory)
+    public FeedbackPageTests(SchoolAccountWebApplicationFactory<Program> factory)
     {
         _factory = factory;
         _authenticatedClient = factory.CreateAuthorisedClient(services =>
@@ -58,10 +58,8 @@ public class FeedbackControllerTests : IClassFixture<SchoolAccountWebApplication
     [Fact]
     public async Task Empty_feedback_returns_the_user_to_the_form()
     {
-        // Arrange
+        // Arrange & Act
         using var content = FeedbackForm(string.Empty);
-
-        // Act
         var response = await _authenticatedClient.PostAsync(
             FeedbackSubmissionUrl,
             content,
@@ -89,28 +87,38 @@ public class FeedbackControllerTests : IClassFixture<SchoolAccountWebApplication
         );
 
         // Act
-        using var content = FeedbackForm(string.Empty, returnUrl);
-        var response = await client.PostAsync(FeedbackSubmissionUrl, content, _cancellationToken);
-        var html = await response.Content.ReadAsStringAsync(_cancellationToken);
+        using var formContent = FeedbackForm(string.Empty, returnUrl);
+        var response = await client.PostAsync(
+            FeedbackSubmissionUrl,
+            formContent,
+            _cancellationToken
+        );
+        var content = await response.Content.ReadAsStringAsync(_cancellationToken);
 
         // Assert
         response.StatusCode.ShouldBe(OK);
-        html.ShouldContain("<title>Error: ");
-        html.ShouldContain("govuk-error-summary");
-        html.IndexOf("govuk-error-summary", StringComparison.Ordinal)
-            .ShouldBeInRange(
-                html.IndexOf("<main", StringComparison.Ordinal),
-                html.IndexOf("<h1", StringComparison.Ordinal)
-            );
-        html.ShouldContain(
-            "<a href=\"#FeedbackMessage\">Enter your feedback or describe the problem</a>"
-        );
-        html.ShouldContain("data-has-errors=\"true\"");
-        html.ShouldContain("govuk-form-group--error");
-        html.ShouldContain("govuk-textarea--error");
-        html.ShouldContain("id=\"FeedbackMessage-error\"");
-        html.ShouldContain(
-            "aria-describedby=\"what-do-you-want-to-tell-us-hint FeedbackMessage-error\""
+
+        content.ShouldSatisfyAllConditions(
+            html => html.ShouldContain("<title>Error: "),
+            html => html.ShouldContain("govuk-error-summary"),
+            html =>
+                html.IndexOf("govuk-error-summary", StringComparison.Ordinal)
+                    .ShouldBeInRange(
+                        html.IndexOf("<main", StringComparison.Ordinal),
+                        html.IndexOf("<h1", StringComparison.Ordinal)
+                    ),
+            html =>
+                html.ShouldContain(
+                    "<a href=\"#FeedbackMessage\">Enter your feedback or describe the problem</a>"
+                ),
+            html => html.ShouldContain("data-has-errors=\"true\""),
+            html => html.ShouldContain("govuk-form-group--error"),
+            html => html.ShouldContain("govuk-textarea--error"),
+            html => html.ShouldContain("id=\"FeedbackMessage-error\""),
+            html =>
+                html.ShouldContain(
+                    "aria-describedby=\"what-do-you-want-to-tell-us-hint FeedbackMessage-error\""
+                )
         );
     }
 
