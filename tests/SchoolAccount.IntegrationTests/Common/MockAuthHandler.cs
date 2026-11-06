@@ -18,7 +18,6 @@ public class MockAuthHandler(
     public const string FakeFamilyName = "Test surname";
     private const string FakeSub = "1159ee82-d515-4d34-b28d-ac138cb1506b";
     private const string FakeEmail = "test@example.com";
-    public const string FakeOrganisationName = "Test School";
 
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {

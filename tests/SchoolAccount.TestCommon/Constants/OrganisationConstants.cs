@@ -2,32 +2,49 @@ namespace SchoolAccount.TestCommon.Constants;
 
 public static class OrganisationConstants
 {
-    public const string ValidAcademyJson = """
+    public const string FakeOrganisationId = "OOOOOOOO-OOOO-OOOO-OOOO-OOOOOOOOOOOO";
+    public const string FakeOrganisationName = "Test School";
+    public const string FakeCategoryEstablishmentId = "001";
+    public const string FakeCategoryEstablishmentName = "Establishment";
+    public const string FakeCategoryTrustId = "010";
+    public const string FakeCategoryTrustName = "Multi Academy Trust";
+    public const string FakeOrganisationUkprn = "12345678";
+    public const string FakeAcademyEstablishmentNumber = "4567";
+    public const string FakeAcademyLocalAuthorityId = "LALALALA-LALA-LALA-LALA-LALALALALALA";
+    public const string FakeAcademyLocalAuthorityName = "TEST COUNCIL";
+    public const string FakeAcademyLocalAuthorityCode = "123";
+    public const string FakeTrustFirstEstablishmentUrn = "123456";
+    public const string FakeTrustFirstEstablishmentName = "Test Establishment 1";
+    public const string FakeTrustSecondEstablishmentUrn = "456789";
+    public const string FakeTrustSecondEstablishmentName = "Test Establishment 2";
+
+    public const string ValidAcademyJson = $$"""
         {
-         "id": "2E774B32-E4DB-445B-B915-736C777FF5A4",
-         "name": "Test School",
+         "id": "{{FakeOrganisationId}}",
+         "name": "{{FakeOrganisationName}}",
          "category": {
-             "id": "001",
-             "name": "Establishment"
+             "id": "{{FakeCategoryEstablishmentId}}",
+             "name": "{{FakeCategoryEstablishmentName}}"
          },
-         "ukprn": "10037611",
-         "establishmentNumber": "2091",
+         "ukprn": "{{FakeOrganisationUkprn}}",
+         "establishmentNumber": "{{FakeAcademyEstablishmentNumber}}",
          "localAuthority": {
-             "id": "502EF2E9-2CA6-4905-9BF7-E80695BD5717",
-             "name": "SUNDERLAND CITY METROPOLITAN BOROUGH COUNCIL",
-             "code": "394"
+             "id": "{{FakeAcademyLocalAuthorityId}}",
+             "name": "{{FakeAcademyLocalAuthorityName}}",
+             "code": "{{FakeAcademyLocalAuthorityCode}}"
          }
         }
         """;
-    public const string ValidTrustJson = """
+
+    public const string ValidTrustJson = $$"""
         {
-         "id": "2E774B32-E4DB-445B-B915-736C777FF5A4",
-         "name": "Test Multi Academy Trust",
-         "category": { "id": "010", "name": "Multi Academy Trust" },
-         "ukprn": "10037611",
+         "id": "{{FakeOrganisationId}}",
+         "name": "{{FakeOrganisationName}}",
+         "category": { "id": "{{FakeCategoryTrustId}}", "name": "{{FakeCategoryTrustName}}" },
+         "ukprn": "{{FakeOrganisationUkprn}}",
          "establishments": [
-             { "urn": "100001", "name": "Test School 1" },
-             { "urn": "100002", "name": "Test School 2" }
+             { "urn": "{{FakeTrustFirstEstablishmentUrn}}", "name": "{{FakeTrustFirstEstablishmentName}}" },
+             { "urn": "{{FakeTrustSecondEstablishmentUrn}}", "name": "{{FakeTrustSecondEstablishmentName}}" }
          ]
         }
         """;

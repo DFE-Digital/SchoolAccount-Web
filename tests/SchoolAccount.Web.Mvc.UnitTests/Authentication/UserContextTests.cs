@@ -53,18 +53,21 @@ public class UserContextTests
         );
 
         organisation.ShouldSatisfyAllConditions(
-            org => org.Id.ShouldBe("2E774B32-E4DB-445B-B915-736C777FF5A4"),
-            org => org.Name.ShouldBe("Test School"),
-            org => org.Category.Id.ShouldBe("001"),
-            org => org.Category.Name.ShouldBe("Establishment"),
-            org => org.Ukprn.ShouldBe("10037611"),
-            org => org.EstablishmentNumber.ShouldBe("2091")
+            org => org.Id.ShouldBe(OrganisationConstants.FakeOrganisationId),
+            org => org.Name.ShouldBe(OrganisationConstants.FakeOrganisationName),
+            org => org.Category.Id.ShouldBe(OrganisationConstants.FakeCategoryEstablishmentId),
+            org => org.Category.Name.ShouldBe(OrganisationConstants.FakeCategoryEstablishmentName),
+            org => org.Ukprn.ShouldBe(OrganisationConstants.FakeOrganisationUkprn),
+            org =>
+                org.EstablishmentNumber.ShouldBe(
+                    OrganisationConstants.FakeAcademyEstablishmentNumber
+                )
         );
 
         localAuthority.ShouldSatisfyAllConditions(
-            la => la.Id.ShouldBe("502EF2E9-2CA6-4905-9BF7-E80695BD5717"),
-            la => la.Name.ShouldBe("SUNDERLAND CITY METROPOLITAN BOROUGH COUNCIL"),
-            la => la.Code.ShouldBe("394")
+            la => la.Id.ShouldBe(OrganisationConstants.FakeAcademyLocalAuthorityId),
+            la => la.Name.ShouldBe(OrganisationConstants.FakeAcademyLocalAuthorityName),
+            la => la.Code.ShouldBe(OrganisationConstants.FakeAcademyLocalAuthorityCode)
         );
     }
 
@@ -105,11 +108,11 @@ public class UserContextTests
         );
 
         organisation.ShouldSatisfyAllConditions(
-            org => org.Id.ShouldBe("2E774B32-E4DB-445B-B915-736C777FF5A4"),
-            org => org.Name.ShouldBe("Test Multi Academy Trust"),
-            org => org.Category.Id.ShouldBe("010"),
-            org => org.Category.Name.ShouldBe("Multi Academy Trust"),
-            org => org.Ukprn.ShouldBe("10037611"),
+            org => org.Id.ShouldBe(OrganisationConstants.FakeOrganisationId),
+            org => org.Name.ShouldBe(OrganisationConstants.FakeOrganisationName),
+            org => org.Category.Id.ShouldBe(OrganisationConstants.FakeCategoryTrustId),
+            org => org.Category.Name.ShouldBe(OrganisationConstants.FakeCategoryTrustName),
+            org => org.Ukprn.ShouldBe(OrganisationConstants.FakeOrganisationUkprn),
             org => org.EstablishmentNumber.ShouldBeNull(),
             org => org.LocalAuthority.ShouldBeNull()
         );
