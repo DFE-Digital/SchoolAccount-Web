@@ -2,11 +2,11 @@ using SchoolAccount.Application.Features.Collect.CensusStatuses;
 using SchoolAccount.SharedKernel.Authentication;
 using Shouldly;
 using static SchoolAccount.Application.Features.Collect.GetCensusJourney.GetCensusJourneyMapper;
-using static SchoolAccount.ApplicationTests.Common.Builders.Features.Collect.GetCensusJourney.Responses.GetAcademyEstablishmentResponseBuilder;
+using static SchoolAccount.Application.UnitTests.Common.Builders.Features.Collect.GetCensusJourney.Responses.GetAcademyEstablishmentResponseBuilder;
 using static SchoolAccount.TestCommon.Builders.Features.Collect.CensusStatuses.CensusStatusesResponseBuilder;
 using static SchoolAccount.TestCommon.Builders.Features.Collect.GetCensusJourney.Responses.GetCensusJourneyContentResponseBuilder;
 
-namespace SchoolAccount.ApplicationTests.Features.Collect.GetCensusJourney;
+namespace SchoolAccount.Application.UnitTests.Features.Collect.GetCensusJourney;
 
 public class GetCensusJourneyMapperTests
 {

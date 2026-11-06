@@ -1,9 +1,8 @@
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
-using SchoolAccount.Application;
 using Shouldly;
 
-namespace SchoolAccount.ApplicationTests;
+namespace SchoolAccount.Application.UnitTests;
 
 public class DependencyInjectionTests
 {

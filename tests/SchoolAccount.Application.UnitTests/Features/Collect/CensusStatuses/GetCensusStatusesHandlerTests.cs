@@ -6,7 +6,7 @@ using SchoolAccount.SharedKernel.Authentication;
 using SchoolAccount.TestCommon.Builders.Features.Collect.CensusStatuses;
 using Shouldly;
 
-namespace SchoolAccount.ApplicationTests.Features.Collect.CensusStatuses;
+namespace SchoolAccount.Application.UnitTests.Features.Collect.CensusStatuses;
 
 public class GetCensusStatusesHandlerTests
 {
