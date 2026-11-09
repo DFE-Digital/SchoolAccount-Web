@@ -1,31 +1,30 @@
 ﻿using System.Text.RegularExpressions;
+using AngleSharp;
 using AngleSharp.Dom;
-using AngleSharp.Html.Parser;
 
 namespace SchoolAccount.IntegrationTests.Common;
 
-public abstract class AngleSharpPage
+public abstract partial class AngleSharpPage
 {
-    protected IDocument Document = null!;
-
-    protected AngleSharpPage() { }
-
-    protected AngleSharpPage(string pageContent)
+    protected IDocument Document
     {
-        Initialise(pageContent);
+        get =>
+            field
+            ?? throw new InvalidOperationException(
+                $"{GetType().Name} has no content. Create it with {nameof(FromResponseAsync)}."
+            );
+        private set;
     }
 
     public static async Task<T> FromResponseAsync<T>(
-        HttpResponseMessage response,
+        HttpResponseMessage responseMessage,
         CancellationToken cancellationToken = default
     )
         where T : AngleSharpPage, new()
     {
-        var html = await response.Content.ReadAsStringAsync(cancellationToken);
-
+        var html = await responseMessage.Content.ReadAsStringAsync(cancellationToken);
         var page = new T();
-        page.Initialise(html);
-
+        await page.InitialiseAsync(html, cancellationToken);
         return page;
     }
 
@@ -88,14 +87,9 @@ public abstract class AngleSharpPage
         return GetNormalisedText(element);
     }
 
-    protected string? GetTextBySelector(string selector)
-    {
-        return GetNormalisedText(Document.QuerySelector(selector));
-    }
-
     protected static string Normalise(string text)
     {
-        return Regex.Replace(text, @"\s+", " ").Trim();
+        return Whitespace().Replace(text, " ").Trim();
     }
 
     protected static string? GetNormalisedText(IElement? element)
@@ -103,8 +97,20 @@ public abstract class AngleSharpPage
         return element is null ? null : Normalise(element.TextContent);
     }
 
-    private void Initialise(string pageContent)
+    protected string? GetTextBySelector(string selector)
     {
-        Document = new HtmlParser().ParseDocument(pageContent);
+        return GetNormalisedText(Document.QuerySelector(selector));
+    }
+
+    [GeneratedRegex(@"\s+")]
+    private static partial Regex Whitespace();
+
+    private async Task InitialiseAsync(
+        string pageContent,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var context = BrowsingContext.New(Configuration.Default);
+        Document = await context.OpenAsync(req => req.Content(pageContent), cancellationToken);
     }
 }
