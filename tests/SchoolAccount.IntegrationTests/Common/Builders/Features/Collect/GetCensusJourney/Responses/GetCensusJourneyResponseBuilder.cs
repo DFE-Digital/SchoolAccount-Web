@@ -9,6 +9,7 @@ namespace SchoolAccount.IntegrationTests.Common.Builders.Features.Collect.GetCen
 public class GetCensusJourneyResponseBuilder
 {
     private readonly List<GetCensusStatusesResponse> _schoolStatuses = [];
+
     private GetCensusJourneyContentResponse _content = GetCensusJourneyContentResponseBuilder
         .ACensusJourneyContentResponse()
         .Build();

@@ -16,13 +16,13 @@ namespace SchoolAccount.IntegrationTests.Features.Feedback;
 public class FeedbackPageTests(SchoolAccountWebApplicationFactory<Program> factory)
     : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
 {
-    private readonly CancellationToken _cancellationToken = TestContext.Current.CancellationToken;
-
     private readonly HttpClient _authorisedClient = factory.CreateAuthorisedClient(services =>
     {
         services.StubCommandHandler(StubFeedbackCommandHandler.Succeeding());
         services.StubQueryHandler(StubCensusJourneyHandler.Succeeding());
     });
+
+    private readonly CancellationToken _cancellationToken = TestContext.Current.CancellationToken;
 
     [Fact]
     public async Task A_successful_feedback_submission_shows_the_thank_you_message()
