@@ -12,11 +12,11 @@ namespace SchoolAccount.IntegrationTests.Features.CrossCutting;
 public class FooterTests(SchoolAccountWebApplicationFactory<Program> factory)
     : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
 {
-    private readonly CancellationToken _cancellationToken = TestContext.Current.CancellationToken;
-
     private readonly HttpClient _client = factory.CreateAuthorisedClient(services =>
         services.StubQueryHandler(StubCensusJourneyHandler.Succeeding())
     );
+
+    private readonly CancellationToken _cancellationToken = TestContext.Current.CancellationToken;
 
     [Theory]
     [InlineData(JourneyUrl)]
