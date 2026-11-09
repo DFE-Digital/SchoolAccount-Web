@@ -16,7 +16,7 @@ on:
         default: false
 
 env:
-  IMAGE_NAME: ghcr.io/dfe-digital/schoolaccount-web
+  IMAGE_NAME: ghcr.io/paulcustance-al/schoolaccount-web # FORK TEST
 
 jobs:
   deploy:
@@ -26,6 +26,7 @@ jobs:
 
     permissions:
       contents: read
+      packages: read # FORK TEST: to check the image exists
 
     concurrency:
       group: deploy-${{ inputs.environment }}
@@ -58,19 +59,26 @@ jobs:
           echo "image=$IMAGE_NAME:$TAG" >> "$GITHUB_OUTPUT"
           echo "suffix=$SUFFIX" >> "$GITHUB_OUTPUT"
 
-      - name: Azure Login
-        uses: azure/login@v3
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      # FORK TEST: no Azure deploy. Instead, prove the resolved image exists in GHCR
+      # and print the command that would have run.
+      # - name: Azure Login
+      #   uses: azure/login@v3
+      #   with:
+      #     creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Update ACA Image
+      - name: Log in to GHCR
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update ACA Image (dry run)
+        env:
+          IMAGE: ${{ steps.image.outputs.image }}
         run: |
-          az containerapp update \
-            --subscription ${{ vars.AZURE_SUBSCRIPTION_ID }} \
-            --name ${{ vars.CONTAINERAPP_NAME }} \
-            --resource-group ${{ vars.CONTAINERAPP_RESOURCE_GROUP }} \
-            --image ${{ steps.image.outputs.image }} \
-            --revision-suffix ${{ steps.image.outputs.suffix }}
+          docker buildx imagetools inspect "$IMAGE" | head -n 3
+          echo "Would run: az containerapp update --name ${{ vars.CONTAINERAPP_NAME }} --image $IMAGE --revision-suffix ${{ steps.image.outputs.suffix }}"
 
       - name: Summary
         env:
