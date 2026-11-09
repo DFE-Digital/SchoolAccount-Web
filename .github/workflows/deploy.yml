@@ -89,17 +89,24 @@ jobs:
         run: |
           echo "Deployed \`$IMAGE\` to **$ENVIRONMENT** as revision \`$REVISION\`" >> "$GITHUB_STEP_SUMMARY"
 
+  # After a successful deploy, dev and preprod start the next environment's deploy (when
+  # "promote" is ticked). Prod publishes the version's GitHub Release, so the Releases page
+  # lists what has gone to prod. Release notes cover every change since the previous
+  # release. Redeploys and rollbacks to an older version don't publish anything.
   promote:
-    name: Start next deploy
+    name: Promote
     needs: deploy
-    if: ${{ inputs.promote && inputs.environment != 'prod' }}
+    if: ${{ (inputs.promote && inputs.environment != 'prod') || (inputs.environment == 'prod' && github.ref_type == 'tag') }}
     runs-on: ubuntu-latest
 
+    # One job serves every environment, so it needs both: actions to start the next
+    # deploy, contents to publish the release
     permissions:
       actions: write
+      contents: write
 
     steps:
-      - name: Start deploy to next environment
+      - name: ${{ inputs.environment == 'prod' && 'Publish release' || 'Start next deploy' }}
         env:
           GH_TOKEN: ${{ github.token }}
           CURRENT: ${{ inputs.environment }}
@@ -107,27 +114,16 @@ jobs:
           case "$CURRENT" in
             dev) NEXT=preprod ;;
             preprod) NEXT=prod ;;
-            *) echo "::error::No environment after $CURRENT"; exit 1 ;;
+            prod) NEXT= ;;
+            *) echo "::error::Unknown environment $CURRENT"; exit 1 ;;
           esac
-          gh workflow run deploy.yml --repo "$GITHUB_REPOSITORY" --ref "$GITHUB_REF_NAME" -f environment="$NEXT" -f promote=true
-          echo "Started deploy of $GITHUB_REF_NAME to **$NEXT**" >> "$GITHUB_STEP_SUMMARY"
 
-  # The Releases page lists what has gone to prod. Notes cover every change since the
-  # previous release. Redeploys and rollbacks to an older version don't publish anything.
-  publish:
-    name: Publish release
-    needs: deploy
-    if: ${{ inputs.environment == 'prod' && github.ref_type == 'tag' }}
-    runs-on: ubuntu-latest
+          if [ -n "$NEXT" ]; then
+            gh workflow run deploy.yml --repo "$GITHUB_REPOSITORY" --ref "$GITHUB_REF_NAME" -f environment="$NEXT" -f promote=true
+            echo "Started deploy of $GITHUB_REF_NAME to **$NEXT**" >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
 
-    permissions:
-      contents: write
-
-    steps:
-      - name: Create GitHub release
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
           if gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
             echo "Release $GITHUB_REF_NAME already exists" | tee -a "$GITHUB_STEP_SUMMARY"
             exit 0
