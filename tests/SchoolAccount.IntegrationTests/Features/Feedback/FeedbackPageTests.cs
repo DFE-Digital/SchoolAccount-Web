@@ -6,7 +6,6 @@ using SchoolAccount.Application.Features.Feedback;
 using SchoolAccount.IntegrationTests.Common;
 using SchoolAccount.IntegrationTests.Common.Extensions;
 using SchoolAccount.IntegrationTests.Common.Stubs;
-using SchoolAccount.SharedKernel;
 using SchoolAccount.Web.Mvc.Infrastructure;
 using Shouldly;
 using static System.Net.HttpStatusCode;
@@ -28,12 +27,7 @@ public class FeedbackPageTests(SchoolAccountWebApplicationFactory<Program> facto
     [Fact]
     public async Task A_successful_feedback_submission_shows_the_thank_you_message()
     {
-        // Arrange
-        _feedbackCommandHandler
-            .Handle(Arg.Any<FeedbackCommand>(), Arg.Any<CancellationToken>())
-            .Returns(Result.Success());
-
-        // Act
+        // Arrange & Act
         using var content = FeedbackForm("test-feedback");
         var response = await _authorisedClient.PostAsync(
             FeedbackSubmissionUrl,
@@ -50,17 +44,21 @@ public class FeedbackPageTests(SchoolAccountWebApplicationFactory<Program> facto
     [Fact]
     public async Task Empty_feedback_returns_the_user_to_the_form()
     {
-        // Arrange & Act
+        // Arrange
+        var feedbackHandler = Substitute.For<ICommandHandler<FeedbackCommand>>();
+        var client = factory.CreateAuthorisedClient(services =>
+        {
+            services.AddScoped<ICommandHandler<FeedbackCommand>>(_ => feedbackHandler);
+            services.StubQueryHandler(StubCensusJourneyHandler.Succeeding());
+        });
+
+        // Act
         using var content = FeedbackForm(string.Empty);
-        var response = await _authorisedClient.PostAsync(
-            FeedbackSubmissionUrl,
-            content,
-            _cancellationToken
-        );
+        var response = await client.PostAsync(FeedbackSubmissionUrl, content, _cancellationToken);
 
         // Assert
         response.Headers.Location.ShouldNotBeNull().OriginalString.ShouldBe(StartUrl);
-        await _feedbackCommandHandler
+        await feedbackHandler
             .DidNotReceive()
             .Handle(Arg.Any<FeedbackCommand>(), Arg.Any<CancellationToken>());
     }
@@ -73,7 +71,7 @@ public class FeedbackPageTests(SchoolAccountWebApplicationFactory<Program> facto
     )
     {
         // Arrange
-        var client = _factory.CreateAuthorisedClient(
+        var client = factory.CreateAuthorisedClient(
             services => services.StubQueryHandler(StubCensusJourneyHandler.Succeeding()),
             ClientOptions.AllowRedirects
         );
@@ -128,7 +126,7 @@ public class FeedbackPageTests(SchoolAccountWebApplicationFactory<Program> facto
     public async Task The_feedback_section_is_hidden_when_the_feature_flag_is_disabled()
     {
         // Arrange
-        var client = _factory.CreateAuthorisedClient(services =>
+        var client = factory.CreateAuthorisedClient(services =>
         {
             services.StubQueryHandler(StubCensusJourneyHandler.Succeeding());
             services.DisableFeedbackFeature();
@@ -145,9 +143,10 @@ public class FeedbackPageTests(SchoolAccountWebApplicationFactory<Program> facto
     public async Task Submit_returns_not_found_when_the_feature_flag_is_disabled()
     {
         // Arrange
-        var client = _factory.CreateAuthorisedClient(services =>
+        var feedbackHandler = Substitute.For<ICommandHandler<FeedbackCommand>>();
+        var client = factory.CreateAuthorisedClient(services =>
         {
-            services.AddScoped<ICommandHandler<FeedbackCommand>>(_ => _feedbackCommandHandler);
+            services.AddScoped<ICommandHandler<FeedbackCommand>>(_ => feedbackHandler);
             services.DisableFeedbackFeature();
         });
 
@@ -157,7 +156,7 @@ public class FeedbackPageTests(SchoolAccountWebApplicationFactory<Program> facto
 
         // Assert
         response.StatusCode.ShouldBe(NotFound);
-        await _feedbackCommandHandler
+        await feedbackHandler
             .DidNotReceive()
             .Handle(Arg.Any<FeedbackCommand>(), Arg.Any<CancellationToken>());
     }
@@ -166,7 +165,7 @@ public class FeedbackPageTests(SchoolAccountWebApplicationFactory<Program> facto
     public async Task Feedback_form_page_shows_the_not_found_page_when_the_feature_flag_is_disabled()
     {
         // Arrange
-        var client = _factory.CreateAuthorisedClient(services => services.DisableFeedbackFeature());
+        var client = factory.CreateAuthorisedClient(services => services.DisableFeedbackFeature());
 
         // Act
         var response = await client.GetAsync(FeedbackUrl, _cancellationToken);
@@ -178,12 +177,7 @@ public class FeedbackPageTests(SchoolAccountWebApplicationFactory<Program> facto
     [Fact]
     public async Task The_feedback_form_page_is_shown()
     {
-        // Arrange
-        _feedbackCommandHandler
-            .Handle(Arg.Any<FeedbackCommand>(), Arg.Any<CancellationToken>())
-            .Returns(Result.Success());
-
-        // Act
+        // Arrange & Act
         var response = await _authorisedClient.GetAsync(FeedbackUrl, _cancellationToken);
         var html = await response.Content.ReadAsStringAsync(_cancellationToken);
 
@@ -197,12 +191,7 @@ public class FeedbackPageTests(SchoolAccountWebApplicationFactory<Program> facto
     [Fact]
     public async Task The_feedback_thanks_page_is_shown_on_a_successful_submission_from_the_feedback_form_page()
     {
-        // Arrange
-        _feedbackCommandHandler
-            .Handle(Arg.Any<FeedbackCommand>(), Arg.Any<CancellationToken>())
-            .Returns(Result.Success());
-
-        // Act
+        // Arrange & Act
         using var content = FeedbackForm("test-feedback", FeedbackUrl);
         var response = await _authorisedClient.PostAsync(
             FeedbackSubmissionUrl,
@@ -218,12 +207,7 @@ public class FeedbackPageTests(SchoolAccountWebApplicationFactory<Program> facto
     [Fact]
     public async Task The_feedback_form_page_does_not_show_the_sign_out_link()
     {
-        // Arrange
-        _feedbackCommandHandler
-            .Handle(Arg.Any<FeedbackCommand>(), Arg.Any<CancellationToken>())
-            .Returns(Result.Success());
-
-        // Act
+        // Arrange & Act
         var response = await _authorisedClient.GetAsync(FeedbackUrl, _cancellationToken);
         var html = await response.Content.ReadAsStringAsync(_cancellationToken);
 
