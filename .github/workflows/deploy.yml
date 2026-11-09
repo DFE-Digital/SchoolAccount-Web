@@ -1,8 +1,9 @@
 name: Web Deploy
 run-name: Deploy ${{ github.ref_name }} to ${{ inputs.environment }}
 
-# Run from a release tag (e.g. v2026.11.09.1) to deploy that release. Running from main
+# Run from a version tag (e.g. v2026.11.09.1) to deploy that version. Running from main
 # deploys main's latest commit. The Environments page shows the tag or commit deployed.
+# A version's GitHub Release is published when it first reaches prod.
 on:
   workflow_dispatch:
     inputs:
@@ -102,3 +103,36 @@ jobs:
           esac
           gh workflow run deploy.yml --repo "$GITHUB_REPOSITORY" --ref "$GITHUB_REF_NAME" -f environment="$NEXT" -f promote=true
           echo "Started deploy of $GITHUB_REF_NAME to **$NEXT**" >> "$GITHUB_STEP_SUMMARY"
+
+  # The Releases page lists what has gone to prod. Notes cover every change since the
+  # previous release. Redeploys and rollbacks to an older version don't publish anything.
+  publish:
+    name: Publish release
+    needs: deploy
+    if: ${{ inputs.environment == 'prod' && github.ref_type == 'tag' }}
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            echo "Release $GITHUB_REF_NAME already exists" | tee -a "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          PREVIOUS=$(gh release view --repo "$GITHUB_REPOSITORY" --json tagName --jq .tagName 2> /dev/null || true)
+          if [ -n "$PREVIOUS" ]; then
+            NEWEST=$(printf '%s\n%s\n' "$PREVIOUS" "$GITHUB_REF_NAME" | sort -V | tail -n 1)
+            if [ "$NEWEST" != "$GITHUB_REF_NAME" ]; then
+              echo "$GITHUB_REF_NAME is older than the latest release $PREVIOUS, so no release published" | tee -a "$GITHUB_STEP_SUMMARY"
+              exit 0
+            fi
+            gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --verify-tag --title "$GITHUB_REF_NAME" --generate-notes --notes-start-tag "$PREVIOUS"
+          else
+            gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --verify-tag --title "$GITHUB_REF_NAME" --generate-notes
+          fi
+          echo "Published release $GITHUB_REF_NAME" >> "$GITHUB_STEP_SUMMARY"

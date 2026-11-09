@@ -124,8 +124,10 @@ jobs:
         if: ${{ github.event_name == 'push' && github.ref == env.MAIN_BRANCH }}
         run: docker push --all-tags "$IMAGE_NAME"
 
-  release:
-    name: Create Release
+  # Every main build gets a version tag. The GitHub Release is only published when the
+  # version reaches prod (see deploy.yml), so the Releases page is the prod history.
+  version:
+    name: Create Version
     needs: image
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
@@ -137,9 +139,9 @@ jobs:
       contents: write
       packages: write
 
-    # One release at a time, so two pushes on the same day can't claim the same version
+    # One at a time, so two pushes on the same day can't claim the same version
     concurrency:
-      group: release
+      group: version
       cancel-in-progress: false
 
     steps:
@@ -153,7 +155,7 @@ jobs:
         run: |
           EXISTING=$(git tag --points-at HEAD --list 'v*' | head -n 1)
           if [ -n "$EXISTING" ]; then
-            echo "Commit is already released as $EXISTING"
+            echo "Commit is already versioned as $EXISTING"
             echo "version=$EXISTING" >> "$GITHUB_OUTPUT"
             echo "exists=true" >> "$GITHUB_OUTPUT"
             exit 0
@@ -161,7 +163,7 @@ jobs:
           TODAY="v$(date -u +%Y.%m.%d)"
           LAST=$(git tag --list "$TODAY.*" | awk -F. '{ print $NF }' | sort -n | tail -n 1)
           VERSION="$TODAY.$(( ${LAST:-0} + 1 ))"
-          echo "Releasing $VERSION"
+          echo "Versioning as $VERSION"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "exists=false" >> "$GITHUB_OUTPUT"
 
@@ -178,18 +180,19 @@ jobs:
           VERSION: ${{ steps.version.outputs.version }}
         run: docker buildx imagetools create --tag "$IMAGE_NAME:$VERSION" "$IMAGE"
 
-      - name: Create GitHub release
+      - name: Push version tag
         if: ${{ steps.version.outputs.exists == 'false' }}
         env:
-          GH_TOKEN: ${{ github.token }}
           VERSION: ${{ steps.version.outputs.version }}
-        run: gh release create "$VERSION" --target "$GITHUB_SHA" --title "$VERSION" --generate-notes
+        run: |
+          git tag "$VERSION"
+          git push origin "refs/tags/$VERSION"
 
-  # Each environment deploys in its own Web Deploy run from the release tag, so any
+  # Each environment deploys in its own Web Deploy run from the version tag, so any
   # deploy can be rerun on its own and the Environments page shows the version.
   deploy:
     name: Start Deploy To Dev
-    needs: release
+    needs: version
     runs-on: ubuntu-latest
 
     permissions:
@@ -199,7 +202,7 @@ jobs:
       - name: Start deploy
         env:
           GH_TOKEN: ${{ github.token }}
-          VERSION: ${{ needs.release.outputs.version }}
+          VERSION: ${{ needs.version.outputs.version }}
         run: |
           gh workflow run deploy.yml --repo "$GITHUB_REPOSITORY" --ref "$VERSION" -f environment=dev -f promote=true
           echo "Started deploy of $VERSION to **dev**. Pre-prod and prod follow as separate Web Deploy runs." >> "$GITHUB_STEP_SUMMARY"
