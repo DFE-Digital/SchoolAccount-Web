@@ -18,7 +18,10 @@ permissions:
   contents: read
   pull-requests: read
 
-engine: copilot
+# A named model rather than the default "auto", which not every Copilot plan supports
+engine:
+  id: copilot
+  model: claude-sonnet-5.5
 
 # One run per release at a time; runs for different releases don't wait for each other
 concurrency:
