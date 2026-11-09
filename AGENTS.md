@@ -5,7 +5,6 @@ ASP.NET Core 10, C# 14, Entity Framework Core.
 
 ## Language & Style
 - Use `var` with a descriptive variable name
-- Make types `internal sealed` by default unless there's a reason for public/unsealed
 - Use `is null` / `is not null` instead of `== null` / `!= null`
 - Prefer `record` types for immutable data
 - Use primary constructors for DI in services, use cases, handlers
