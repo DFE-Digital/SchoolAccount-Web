@@ -18,7 +18,7 @@
         <span class="govuk-caption-xl census-title">@Model.Caption</span>
         <h1 class="govuk-heading-l">@Model.Title</h1>
 
-        @if (Model.Organisation.IsEstablishment)
+        @if (!Model.MatView)
         {
             <strong
                 class="govuk-tag govuk-tag--grey status-tag govuk-!-margin-bottom-6 govuk-tag--wide">@Model.Status</strong>
@@ -30,19 +30,19 @@
             <p class="govuk-body">@Model.Overview</p>
         }
 
-        @if (Model.DisplaySchoolStatuses)
+        @if (Model.MatView)
         {
             <partial name="~/Features/Shared/MultipleSchoolsStatusTable/MultipleSchoolsStatusTable.cshtml"
                      model="@Model.MatSchoolsStatuses"/>
         }
-
+        
         @if (Model.TryGetSteps(out var steps))
         {
             <h2 class="govuk-heading-m">Step by step</h2>
             <partial name="~/Features/Shared/StepByStep/StepByStep.cshtml" model="@steps"/>
         }
 
-        @if (Model.Organisation.IsEstablishment)
+        @if (!Model.MatView)
         {
             <govuk-button-link
                 href="@Model.CallToAction.Url"
