@@ -121,6 +121,7 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
+      actions: write # to start the release notes summary workflow
       contents: write
 
     steps:
@@ -169,3 +170,12 @@ jobs:
         env:
           URL: ${{ steps.release.outputs.url }}
         run: echo "Published release [$GITHUB_REF_NAME]($URL)" >> "$GITHUB_STEP_SUMMARY"
+
+      # Adds a plain-English summary to the top of the release (see release-notes.md). It runs
+      # separately, so if it fails the release keeps GitHub's generated notes.
+      - name: Start release notes summary
+        if: ${{ steps.check.outputs.publish == 'true' }}
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run release-notes.lock.yml --repo "$GITHUB_REPOSITORY" --ref "$GITHUB_REF_NAME" -f tag="$GITHUB_REF_NAME"
