@@ -52,6 +52,13 @@ public class FeedbackController(
         return LocalRedirect($"{returnUrl}#feedback-thanks");
     }
 
+    [HttpGet]
+    [Route("/Feedback")]
+    public IActionResult Feedback()
+    {
+        return View("~/Features/Feedback/NonJavascript/FeedbackForm.cshtml");
+    }
+
     /// <summary>
     /// The form is on another page, so its errors go back there for the error summary.
     /// </summary>

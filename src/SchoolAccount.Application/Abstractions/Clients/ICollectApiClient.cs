@@ -8,7 +8,7 @@ namespace SchoolAccount.Application.Abstractions.Clients;
 
 public interface ICollectApiClient
 {
-    Task<List<GetCensusStatusesResponse>> GetCensusStatuses(
+    Task<Result<List<GetCensusStatusesResponse>>> GetCensusStatuses(
         string id,
         string emailAddress,
         IReadOnlyList<Organisation> organisations,

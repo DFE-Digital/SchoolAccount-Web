@@ -2,6 +2,8 @@ namespace SchoolAccount.Web.Mvc.Features.Shared.MultipleSchoolsStatusTable;
 
 public class MultipleSchoolsStatusTableViewModel
 {
+    public string OrganisationName { get; init; }
+
     public IReadOnlyList<SchoolStatus> SchoolStatuses { get; init; } = [];
 
     public string Title => "Schools in your trust";
