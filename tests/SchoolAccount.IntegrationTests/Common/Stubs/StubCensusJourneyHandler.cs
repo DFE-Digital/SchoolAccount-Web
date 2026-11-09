@@ -14,4 +14,12 @@ public sealed class StubCensusJourneyHandler
 
         return handler;
     }
+
+    public static StubCensusJourneyHandler Failing(Exception? exception = null)
+    {
+        var handler = new StubCensusJourneyHandler();
+        handler.Throws(exception ?? new ApplicationException("Bang!"));
+
+        return handler;
+    }
 }

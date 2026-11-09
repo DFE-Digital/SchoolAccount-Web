@@ -10,14 +10,24 @@ public class StubQueryHandler<TQuery, TResponse> : IQueryHandler<TQuery, TRespon
     where TQuery : IQuery<TResponse>
 {
     private Result<TResponse>? _result;
+    private Exception? _exception;
 
     public void Returns(Result<TResponse> result) => _result = result;
 
-    public Task<Result<TResponse>> Handle(TQuery query, CancellationToken cancellationToken) =>
-        Task.FromResult(
+    protected void Throws(Exception exception) => _exception = exception;
+
+    public Task<Result<TResponse>> Handle(TQuery query, CancellationToken cancellationToken)
+    {
+        if (_exception is not null)
+        {
+            throw _exception;
+        }
+
+        return Task.FromResult(
             _result
                 ?? throw new InvalidOperationException(
-                    $"No result configured for {typeof(TQuery).Name}. Call Returns before acting."
+                    $"{GetType().Name} was not configured. Call Returns or Throws."
                 )
         );
+    }
 }

@@ -14,24 +14,16 @@ using static SchoolAccount.TestCommon.Constants.UrlConstants;
 
 namespace SchoolAccount.IntegrationTests.Features.Feedback;
 
-public class FeedbackPageTests : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
+public class FeedbackPageTests(SchoolAccountWebApplicationFactory<Program> factory)
+    : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
 {
     private readonly CancellationToken _cancellationToken = TestContext.Current.CancellationToken;
-    private readonly SchoolAccountWebApplicationFactory<Program> _factory;
-    private readonly HttpClient _authenticatedClient;
-    private readonly ICommandHandler<FeedbackCommand> _feedbackCommandHandler = Substitute.For<
-        ICommandHandler<FeedbackCommand>
-    >();
 
-    public FeedbackPageTests(SchoolAccountWebApplicationFactory<Program> factory)
+    private readonly HttpClient _authorisedClient = factory.CreateAuthorisedClient(services =>
     {
-        _factory = factory;
-        _authenticatedClient = factory.CreateAuthorisedClient(services =>
-        {
-            services.AddScoped<ICommandHandler<FeedbackCommand>>(_ => _feedbackCommandHandler);
-            services.StubQueryHandler(StubCensusJourneyHandler.Succeeding());
-        });
-    }
+        services.StubCommandHandler(StubFeedbackCommandHandler.Succeeding());
+        services.StubQueryHandler(StubCensusJourneyHandler.Succeeding());
+    });
 
     [Fact]
     public async Task A_successful_feedback_submission_shows_the_thank_you_message()
@@ -43,7 +35,7 @@ public class FeedbackPageTests : IClassFixture<SchoolAccountWebApplicationFactor
 
         // Act
         using var content = FeedbackForm("test-feedback");
-        var response = await _authenticatedClient.PostAsync(
+        var response = await _authorisedClient.PostAsync(
             FeedbackSubmissionUrl,
             content,
             _cancellationToken
@@ -60,7 +52,7 @@ public class FeedbackPageTests : IClassFixture<SchoolAccountWebApplicationFactor
     {
         // Arrange & Act
         using var content = FeedbackForm(string.Empty);
-        var response = await _authenticatedClient.PostAsync(
+        var response = await _authorisedClient.PostAsync(
             FeedbackSubmissionUrl,
             content,
             _cancellationToken
@@ -126,7 +118,7 @@ public class FeedbackPageTests : IClassFixture<SchoolAccountWebApplicationFactor
     public async Task The_feedback_section_is_shown_when_the_feature_flag_is_enabled()
     {
         // Arrange & Act
-        var html = await _authenticatedClient.GetStringAsync(JourneyUrl, _cancellationToken);
+        var html = await _authorisedClient.GetStringAsync(JourneyUrl, _cancellationToken);
 
         // Assert
         html.ShouldContain("id=\"page-feedback\"");
@@ -192,7 +184,7 @@ public class FeedbackPageTests : IClassFixture<SchoolAccountWebApplicationFactor
             .Returns(Result.Success());
 
         // Act
-        var response = await _authenticatedClient.GetAsync(FeedbackUrl, _cancellationToken);
+        var response = await _authorisedClient.GetAsync(FeedbackUrl, _cancellationToken);
         var html = await response.Content.ReadAsStringAsync(_cancellationToken);
 
         // Assert
@@ -212,7 +204,7 @@ public class FeedbackPageTests : IClassFixture<SchoolAccountWebApplicationFactor
 
         // Act
         using var content = FeedbackForm("test-feedback", FeedbackUrl);
-        var response = await _authenticatedClient.PostAsync(
+        var response = await _authorisedClient.PostAsync(
             FeedbackSubmissionUrl,
             content,
             _cancellationToken
@@ -232,7 +224,7 @@ public class FeedbackPageTests : IClassFixture<SchoolAccountWebApplicationFactor
             .Returns(Result.Success());
 
         // Act
-        var response = await _authenticatedClient.GetAsync(FeedbackUrl, _cancellationToken);
+        var response = await _authorisedClient.GetAsync(FeedbackUrl, _cancellationToken);
         var html = await response.Content.ReadAsStringAsync(_cancellationToken);
 
         // Assert
