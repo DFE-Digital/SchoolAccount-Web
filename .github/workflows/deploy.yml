@@ -16,7 +16,7 @@ on:
         default: false
 
 env:
-  IMAGE_NAME: ghcr.io/paulcustance-al/schoolaccount-web # FORK TEST
+  IMAGE_NAME: ghcr.io/paulcustance-al/schoolaccount-web-forktest # FORK TEST
 
 jobs:
   deploy:

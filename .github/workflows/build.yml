@@ -13,7 +13,7 @@ env:
   MIN_LINE_COVERAGE: "70"
   WEB_SOLUTION_FILE: SchoolAccount.Web.slnx
   MAIN_BRANCH: refs/heads/main
-  IMAGE_NAME: ghcr.io/paulcustance-al/schoolaccount-web # FORK TEST
+  IMAGE_NAME: ghcr.io/paulcustance-al/schoolaccount-web-forktest # FORK TEST
 
 jobs:
   test:
