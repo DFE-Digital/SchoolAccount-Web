@@ -18,10 +18,11 @@ permissions:
   contents: read
   pull-requests: read
 
-# A named model rather than the default "auto", which not every Copilot plan supports
+# A named model, as "auto" needs a model-catalogue lookup that can fail. claude-sonnet-5
+# is what "auto" resolved to in DFE-Digital/SchoolAccount-AgenticWorkflowTest.
 engine:
   id: copilot
-  model: claude-sonnet-5.5
+  model: claude-sonnet-5
 
 # One run per release at a time; runs for different releases don't wait for each other
 concurrency:
