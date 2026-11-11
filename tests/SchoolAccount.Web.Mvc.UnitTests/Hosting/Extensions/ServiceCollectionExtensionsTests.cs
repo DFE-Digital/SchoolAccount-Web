@@ -27,22 +27,22 @@ public class ServiceCollectionExtensionsTests
         "InstrumentationKey=00000000-0000-0000-0000-000000000000;IngestionEndpoint=https://example."
         + "in.applicationinsights.azure.com/";
 
+    private readonly ServiceCollection _services = new();
+
     [Fact]
     public void Registers_the_distro_when_the_destination_is_azure_monitor()
     {
         // Arrange
-        var services = new ServiceCollection();
-
         using var configuration = BuildConfiguration(
             (_destination, nameof(TelemetryDestination.AzureMonitor)),
             (ConnectionStringEnvironmentVariable, _connectionString)
         );
 
         // Act
-        services.AddConfiguredOpenTelemetry(configuration, HostEnvironment("Prod"));
+        _services.AddConfiguredOpenTelemetry(configuration, HostEnvironment("Prod"));
 
         // Assert
-        services.ShouldSatisfyAllConditions(
+        _services.ShouldSatisfyAllConditions(
             serviceCollection =>
                 serviceCollection.ShouldContain(descriptor =>
                     descriptor.ServiceType == typeof(LoggerProvider)
@@ -66,18 +66,16 @@ public class ServiceCollectionExtensionsTests
     public void Exports_logs_traces_and_metrics_over_otlp_when_the_destination_is_otlp()
     {
         // Arrange
-        var services = new ServiceCollection();
-
         using var configuration = BuildConfiguration(
             (_destination, nameof(TelemetryDestination.Otlp)),
             (OtlpEndpointEnvironmentVariable, _otlpEndpoint)
         );
 
         // Act
-        services.AddConfiguredOpenTelemetry(configuration, HostEnvironment("Development"));
+        _services.AddConfiguredOpenTelemetry(configuration, HostEnvironment("Development"));
 
         // Assert
-        services.ShouldSatisfyAllConditions(
+        _services.ShouldSatisfyAllConditions(
             serviceCollection =>
                 serviceCollection.ShouldContain(descriptor =>
                     descriptor.ServiceType == typeof(LoggerProvider)
@@ -101,8 +99,6 @@ public class ServiceCollectionExtensionsTests
     public void Ignores_a_connection_string_when_the_destination_is_otlp()
     {
         // Arrange
-        var services = new ServiceCollection();
-
         using var configuration = BuildConfiguration(
             (_destination, nameof(TelemetryDestination.Otlp)),
             (OtlpEndpointEnvironmentVariable, _otlpEndpoint),
@@ -110,10 +106,10 @@ public class ServiceCollectionExtensionsTests
         );
 
         // Act
-        services.AddConfiguredOpenTelemetry(configuration, HostEnvironment("Development"));
+        _services.AddConfiguredOpenTelemetry(configuration, HostEnvironment("Development"));
 
         // Assert
-        services.ShouldSatisfyAllConditions(
+        _services.ShouldSatisfyAllConditions(
             serviceCollection =>
                 serviceCollection.ShouldContain(descriptor =>
                     descriptor.ServiceType == typeof(IOptionsFactory<OtlpExporterOptions>)
@@ -137,8 +133,6 @@ public class ServiceCollectionExtensionsTests
     public void Ignores_an_otlp_endpoint_when_the_destination_is_azure_monitor()
     {
         // Arrange
-        var services = new ServiceCollection();
-
         using var configuration = BuildConfiguration(
             (_destination, nameof(TelemetryDestination.AzureMonitor)),
             (ConnectionStringEnvironmentVariable, _connectionString),
@@ -146,10 +140,10 @@ public class ServiceCollectionExtensionsTests
         );
 
         // Act
-        services.AddConfiguredOpenTelemetry(configuration, HostEnvironment("Prod"));
+        _services.AddConfiguredOpenTelemetry(configuration, HostEnvironment("Prod"));
 
         // Assert
-        services.ShouldNotContain(descriptor =>
+        _services.ShouldNotContain(descriptor =>
             descriptor.ServiceType == typeof(IOptionsFactory<OtlpExporterOptions>)
         );
     }
@@ -183,18 +177,16 @@ public class ServiceCollectionExtensionsTests
     public void Includes_the_rendered_message_in_logs_sent_over_otlp()
     {
         // Arrange
-        var services = new ServiceCollection();
-
         using var configuration = BuildConfiguration(
             (_destination, nameof(TelemetryDestination.Otlp)),
             (OtlpEndpointEnvironmentVariable, _otlpEndpoint)
         );
 
-        services.AddSingleton<IConfiguration>(configuration);
-        services.AddLogging();
-        services.AddConfiguredOpenTelemetry(configuration, HostEnvironment("Development"));
+        _services.AddSingleton<IConfiguration>(configuration);
+        _services.AddLogging();
+        _services.AddConfiguredOpenTelemetry(configuration, HostEnvironment("Development"));
 
-        using var provider = services.BuildServiceProvider();
+        using var provider = _services.BuildServiceProvider();
 
         // Act
         var options = provider.GetRequiredService<IOptions<OpenTelemetryLoggerOptions>>().Value;
@@ -209,8 +201,6 @@ public class ServiceCollectionExtensionsTests
     public void Leaves_telemetry_off_when_the_destination_is_none_or_not_set(string? destination)
     {
         // Arrange
-        var services = new ServiceCollection();
-
         using var configuration = BuildConfiguration(
             (_destination, destination),
             (ConnectionStringEnvironmentVariable, _connectionString),
@@ -218,10 +208,10 @@ public class ServiceCollectionExtensionsTests
         );
 
         // Act
-        services.AddConfiguredOpenTelemetry(configuration, HostEnvironment("Prod"));
+        _services.AddConfiguredOpenTelemetry(configuration, HostEnvironment("Prod"));
 
         // Assert
-        services.ShouldBeEmpty();
+        _services.ShouldBeEmpty();
     }
 
     [Theory]
@@ -233,8 +223,6 @@ public class ServiceCollectionExtensionsTests
     )
     {
         // Arrange
-        var services = new ServiceCollection();
-
         using var configuration = BuildConfiguration(
             (_destination, nameof(TelemetryDestination.AzureMonitor)),
             (ConnectionStringEnvironmentVariable, connectionString)
@@ -243,7 +231,7 @@ public class ServiceCollectionExtensionsTests
         // Act & Assert
         Should
             .Throw<InvalidOperationException>(() =>
-                services.AddConfiguredOpenTelemetry(configuration, HostEnvironment("Development"))
+                _services.AddConfiguredOpenTelemetry(configuration, HostEnvironment("Development"))
             )
             .Message.ShouldContain(ConnectionStringEnvironmentVariable);
     }
@@ -252,8 +240,6 @@ public class ServiceCollectionExtensionsTests
     public void Fails_when_the_destination_is_otlp_without_an_endpoint_outside_development()
     {
         // Arrange
-        var services = new ServiceCollection();
-
         using var configuration = BuildConfiguration(
             (_destination, nameof(TelemetryDestination.Otlp))
         );
@@ -261,7 +247,7 @@ public class ServiceCollectionExtensionsTests
         // Act & Assert
         Should
             .Throw<InvalidOperationException>(() =>
-                services.AddConfiguredOpenTelemetry(configuration, HostEnvironment("Prod"))
+                _services.AddConfiguredOpenTelemetry(configuration, HostEnvironment("Prod"))
             )
             .Message.ShouldContain(OtlpEndpointEnvironmentVariable);
     }
@@ -275,34 +261,30 @@ public class ServiceCollectionExtensionsTests
     )
     {
         // Arrange
-        var services = new ServiceCollection();
-
         using var configuration = BuildConfiguration(
             (_destination, nameof(TelemetryDestination.Otlp)),
             (OtlpEndpointEnvironmentVariable, endpoint)
         );
 
         // Act
-        services.AddConfiguredOpenTelemetry(configuration, HostEnvironment("Development"));
+        _services.AddConfiguredOpenTelemetry(configuration, HostEnvironment("Development"));
 
         // Assert
-        services.ShouldBeEmpty();
+        _services.ShouldBeEmpty();
     }
 
     [Fact]
     public void Persists_the_key_ring_to_blob_storage_when_configured()
     {
         // Arrange
-        var services = new ServiceCollection();
-
         using var configuration = BuildDataProtectionConfiguration(
             "https://example.blob.core.windows.net/keys/schoolaccount.xml",
             "https://example.vault.azure.net/keys/data-protection"
         );
 
-        services.AddConfiguredDataProtection(configuration);
+        _services.AddConfiguredDataProtection(configuration);
 
-        var provider = services.BuildServiceProvider();
+        using var provider = _services.BuildServiceProvider();
 
         // Act
         var options = provider.GetRequiredService<IOptions<KeyManagementOptions>>().Value;
@@ -326,29 +308,25 @@ public class ServiceCollectionExtensionsTests
     )
     {
         // Arrange
-        var services = new ServiceCollection();
-
         using var configuration = BuildDataProtectionConfiguration(
             keyRingBlobUri,
             keyEncryptionKeyUri
         );
 
         // Act
-        services.AddConfiguredDataProtection(configuration);
+        _services.AddConfiguredDataProtection(configuration);
 
         // Assert - nothing registered, so the framework's own defaults apply
-        services.ShouldBeEmpty();
+        _services.ShouldBeEmpty();
     }
 
-    private static object? GetResourceAttribute(IConfiguration configuration, string key)
+    private object? GetResourceAttribute(IConfiguration configuration, string key)
     {
-        var services = new ServiceCollection();
+        _services.AddSingleton(configuration);
+        _services.AddLogging();
+        _services.AddConfiguredOpenTelemetry(configuration, HostEnvironment("Prod"));
 
-        services.AddSingleton(configuration);
-        services.AddLogging();
-        services.AddConfiguredOpenTelemetry(configuration, HostEnvironment("Prod"));
-
-        using var provider = services.BuildServiceProvider();
+        using var provider = _services.BuildServiceProvider();
 
         return provider
             .GetRequiredService<LoggerProvider>()
