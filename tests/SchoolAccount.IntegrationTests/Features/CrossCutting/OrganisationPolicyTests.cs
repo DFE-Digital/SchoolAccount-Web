@@ -1,5 +1,3 @@
-using System.Security.Claims;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using SchoolAccount.IntegrationTests.Common;
 using SchoolAccount.IntegrationTests.Common.Extensions;
 using SchoolAccount.IntegrationTests.Common.Stubs;
@@ -48,24 +46,17 @@ public class OrganisationPolicyTests(SchoolAccountWebApplicationFactory<Program>
 
     private HttpClient CreateClientOrganisationClaims(string? organisationValue)
     {
-        var claims = new List<Claim>
+        var client = factory.CreateAuthorisedClient(services =>
+            services.StubQueryHandler(StubCensusJourneyHandler.Succeeding())
+        );
+
+        if (organisationValue is null)
         {
-            new(GivenName, "Test user"),
-            new(FamilyName, "Test surname"),
-        };
-        if (organisationValue is not null)
-        {
-            claims.Add(new Claim(Organisation, organisationValue));
+            return client.WithClaims(
+                MockAuthHandler.DefaultClaims().Where(claim => claim.Type != Organisation)
+            );
         }
 
-        return factory.CreateAuthorisedClient(
-            services =>
-            {
-                services.RemoveAll<MockAuthClaimsOptions>();
-                services.AddSingleton(new MockAuthClaimsOptions { Claims = claims });
-                services.StubQueryHandler(StubCensusJourneyHandler.Succeeding());
-            },
-            new ClientOptions { AllowAutoRedirect = false }
-        );
+        return client.WithOrganisation(organisationValue);
     }
 }
