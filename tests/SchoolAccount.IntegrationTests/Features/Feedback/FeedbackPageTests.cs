@@ -85,23 +85,21 @@ public class FeedbackPageTests : IClassFixture<SchoolAccountWebApplicationFactor
             .Handle(Arg.Any<GetCensusJourneyQuery>(), Arg.Any<CancellationToken>())
             .Returns(AGetCensusJourneyResponse().AsSuccess());
 
-        // Known exception to one client per class: redirects are a client option, and each
-        // client gets its own app host.
-        var client = _factory.CreateAuthorisedClient(
-            services => services.StubQueryHandler(_getCensusJourneyHandler),
-            ClientOptions.AllowRedirects
-        );
-
         // Act
         using var formContent = FeedbackForm(string.Empty, returnUrl);
-        var response = await client.PostAsync(
+        var submitResponse = await _authenticatedClient.PostAsync(
             FeedbackSubmissionUrl,
             formContent,
+            _cancellationToken
+        );
+        var response = await _authenticatedClient.GetAsync(
+            submitResponse.Headers.Location,
             _cancellationToken
         );
         var content = await response.Content.ReadAsStringAsync(_cancellationToken);
 
         // Assert
+        submitResponse.StatusCode.ShouldBe(Redirect);
         response.StatusCode.ShouldBe(OK);
 
         content.ShouldSatisfyAllConditions(
