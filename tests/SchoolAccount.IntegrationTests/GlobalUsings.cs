@@ -3,3 +3,4 @@ global using CensusJourneyHandler = SchoolAccount.Application.Abstractions.Messa
     SchoolAccount.Application.Features.Collect.GetCensusJourney.GetCensusJourneyQuery,
     SchoolAccount.Application.Features.Collect.GetCensusJourney.Responses.GetCensusJourneyResponse
 >;
+global using FeedbackCommandHandler = SchoolAccount.Application.Abstractions.Messaging.ICommandHandler<SchoolAccount.Application.Features.Feedback.FeedbackCommand>;
