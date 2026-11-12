@@ -1,0 +1,142 @@
+using NSubstitute;
+using SchoolAccount.Application.Features.Collect.GetCensusJourney;
+using SchoolAccount.IntegrationTests.Common;
+using SchoolAccount.IntegrationTests.Common.Extensions;
+using SchoolAccount.IntegrationTests.Common.Pages;
+using SchoolAccount.IntegrationTests.Common.Stubs;
+using SchoolAccount.TestCommon.Constants;
+using Shouldly;
+using static System.Net.HttpStatusCode;
+using static SchoolAccount.IntegrationTests.Common.Builders.Features.Collect.GetCensusJourney.Responses.GetCensusJourneyResponseBuilder;
+using static SchoolAccount.IntegrationTests.Common.MockOidcHandler;
+using static SchoolAccount.TestCommon.Constants.UrlConstants;
+
+namespace SchoolAccount.IntegrationTests.Features.CrossCutting;
+
+public class SignedInAuthorisationTests : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
+{
+    private readonly CancellationToken _cancellationToken = TestContext.Current.CancellationToken;
+    private readonly HttpClient _client;
+    private readonly CensusJourneyHandler _getCensusJourneyHandler = Stub.CensusJourneyHandler();
+
+    public SignedInAuthorisationTests(SchoolAccountWebApplicationFactory<Program> factory)
+    {
+        _client = factory.CreateAuthorisedClient(services =>
+            services.StubQueryHandler(_getCensusJourneyHandler)
+        );
+    }
+
+    [Theory]
+    [InlineData(StartUrl)]
+    [InlineData(JourneyUrl)]
+    public async Task Signed_in_users_can_access_a_page(string path)
+    {
+        // Arrange
+        _getCensusJourneyHandler
+            .Handle(Arg.Any<GetCensusJourneyQuery>(), Arg.Any<CancellationToken>())
+            .Returns(AGetCensusJourneyResponse().AsSuccess());
+
+        // Act
+        var response = await _client.GetAsync(path, _cancellationToken);
+
+        // Assert
+        response.StatusCode.ShouldNotBe(Redirect);
+        response.StatusCode.ShouldBe(OK);
+    }
+
+    [Fact]
+    public async Task Signed_in_users_see_the_sign_out_link()
+    {
+        // Arrange
+        _getCensusJourneyHandler
+            .Handle(Arg.Any<GetCensusJourneyQuery>(), Arg.Any<CancellationToken>())
+            .Returns(AGetCensusJourneyResponse().AsSuccess());
+
+        // Act
+        var response = await _client.GetAsync(JourneyUrl, _cancellationToken);
+        var journeyPage = await AngleSharpPage.FromResponseAsync<CommonPage>(
+            response,
+            _cancellationToken
+        );
+
+        // Assert
+        response.StatusCode.ShouldBe(OK);
+        journeyPage.GetElementContainingText("button", "Sign out").ShouldNotBeNull();
+    }
+
+    [Fact]
+    public async Task Signed_in_users_see_their_organisation_name()
+    {
+        // Arrange
+        _getCensusJourneyHandler
+            .Handle(Arg.Any<GetCensusJourneyQuery>(), Arg.Any<CancellationToken>())
+            .Returns(AGetCensusJourneyResponse().AsSuccess());
+
+        // Act
+        var response = await _client.GetAsync(JourneyUrl, _cancellationToken);
+        var journeyPage = await AngleSharpPage.FromResponseAsync<CommonPage>(
+            response,
+            _cancellationToken
+        );
+
+        // Assert
+        response.StatusCode.ShouldBe(OK);
+
+        var organisationName = journeyPage.GetOrganisationName();
+        organisationName.ShouldNotBeNull();
+        organisationName.ShouldContainWithoutWhitespace(OrganisationConstants.FakeSchoolName);
+    }
+
+    [Fact]
+    public async Task Signed_in_users_are_redirected_to_the_start_page_when_logged_out()
+    {
+        // Arrange & Act
+        var response = await _client.GetAsync(LoggedOutUrl, _cancellationToken);
+
+        // Assert
+        response.StatusCode.ShouldBe(Redirect);
+        response.Headers.Location.ShouldNotBeNull().OriginalString.ShouldBe(StartUrl);
+    }
+
+    [Fact]
+    public async Task Signed_in_users_are_redirected_to_the_journey_page()
+    {
+        // Arrange & Act
+        var response = await _client.GetAsync(LoginUrl, _cancellationToken);
+
+        // Assert
+        response.StatusCode.ShouldBe(Redirect);
+        response.Headers.Location.ShouldNotBeNull().OriginalString.ShouldBe(JourneyUrl);
+    }
+
+    [Fact]
+    public async Task Signing_in_with_an_external_return_url_is_rejected()
+    {
+        // Arrange & Act
+        var response = await _client.GetAsync(LoginWithExternalReturnUrl, _cancellationToken);
+
+        // Assert
+        response.StatusCode.ShouldBe(BadRequest);
+    }
+
+    [Fact]
+    public async Task Signing_in_with_a_local_return_url_is_accepted()
+    {
+        // Arrange & Act
+        var response = await _client.GetAsync(LoginWithJourneyReturnUrl, _cancellationToken);
+
+        // Assert
+        response.StatusCode.ShouldBe(Found);
+    }
+
+    [Fact]
+    public async Task Signed_in_users_can_sign_out()
+    {
+        // Arrange & Act
+        using var content = new FormUrlEncodedContent(new Dictionary<string, string>());
+        var response = await _client.PostAsync(LogoutUrl, content, _cancellationToken);
+
+        // Assert
+        response.StatusCode.ShouldBe(OK);
+    }
+}
