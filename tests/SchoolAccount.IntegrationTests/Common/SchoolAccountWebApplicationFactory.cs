@@ -71,7 +71,6 @@ public class SchoolAccountWebApplicationFactory<TProgram> : WebApplicationFactor
                             OpenIdConnectDefaults.AuthenticationScheme,
                             _ => { }
                         );
-                    services.TryAddSingleton(new MockAuthClaimsOptions());
                     additionalConfigurableServices?.Invoke(services);
                 })
             )

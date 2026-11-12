@@ -10,14 +10,12 @@ namespace SchoolAccount.IntegrationTests.Common;
 
 /// <summary>
 /// Signs every request in as a test user. A client can choose the user with the
-/// <see cref="ClaimsHeader"/>; otherwise the claims come from <see cref="MockAuthClaimsOptions"/>,
-/// or the default single school user.
+/// <see cref="ClaimsHeader"/>; otherwise it is the default single school user.
 /// </summary>
 public class MockAuthHandler(
     IOptionsMonitor<AuthenticationSchemeOptions> options,
     ILoggerFactory logger,
-    UrlEncoder encoder,
-    MockAuthClaimsOptions claimsOptions
+    UrlEncoder encoder
 ) : SignOutAuthenticationHandler<AuthenticationSchemeOptions>(options, logger, encoder)
 {
     public const string ClaimsHeader = "X-Test-Claims";
@@ -52,7 +50,7 @@ public class MockAuthHandler(
                 .Deserialize<Dictionary<string, string>>(claimsJson)!
                 .Select(claim => new Claim(claim.Key, claim.Value))
                 .ToList()
-            : claimsOptions.Claims ?? DefaultClaims();
+            : DefaultClaims();
 
         var identity = new ClaimsIdentity(claims, "Test");
         var principal = new ClaimsPrincipal(identity);
