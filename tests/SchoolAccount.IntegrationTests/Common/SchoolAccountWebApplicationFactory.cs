@@ -20,29 +20,25 @@ public class SchoolAccountWebApplicationFactory<TProgram> : WebApplicationFactor
     }
 
     public HttpClient CreateAuthorisedClient(
-        Action<IServiceCollection>? additionalConfigurableServices = null,
-        ClientOptions? options = null
+        Action<IServiceCollection>? additionalConfigurableServices = null
     )
     {
-        return CreateClient<MockAuthHandler>(additionalConfigurableServices, options);
+        return CreateClient<MockAuthHandler>(additionalConfigurableServices);
     }
 
     public HttpClient CreateUnauthenticatedClient(
-        Action<IServiceCollection>? additionalConfigurableServices = null,
-        ClientOptions? options = null
+        Action<IServiceCollection>? additionalConfigurableServices = null
     )
     {
-        return CreateClient<MockOidcHandler>(additionalConfigurableServices, options);
+        return CreateClient<MockOidcHandler>(additionalConfigurableServices);
     }
 
     private HttpClient CreateClient<THandler>(
-        Action<IServiceCollection>? additionalConfigurableServices = null,
-        ClientOptions? options = null
+        Action<IServiceCollection>? additionalConfigurableServices = null
     )
         where THandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
         const string schemeName = CookieAuthenticationDefaults.AuthenticationScheme;
-        options ??= new ClientOptions();
 
         return WithWebHostBuilder(builder =>
                 builder.ConfigureTestServices(services =>
@@ -74,11 +70,6 @@ public class SchoolAccountWebApplicationFactory<TProgram> : WebApplicationFactor
                     additionalConfigurableServices?.Invoke(services);
                 })
             )
-            .CreateClient(
-                new WebApplicationFactoryClientOptions
-                {
-                    AllowAutoRedirect = options.AllowAutoRedirect,
-                }
-            );
+            .CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
     }
 }
