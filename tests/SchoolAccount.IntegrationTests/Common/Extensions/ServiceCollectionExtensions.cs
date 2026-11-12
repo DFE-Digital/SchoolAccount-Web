@@ -1,4 +1,7 @@
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.FeatureManagement;
 using SchoolAccount.Application.Abstractions.Messaging;
+using SchoolAccount.IntegrationTests.Common.Fakes;
 
 namespace SchoolAccount.IntegrationTests.Common.Extensions;
 
@@ -28,5 +31,24 @@ public static class ServiceCollectionExtensions
         where TCommand : ICommand
     {
         return services.AddScoped<ICommandHandler<TCommand>>(_ => handler);
+    }
+
+    /// <summary>
+    /// Lets the test switch feature flags off with <paramref name="featureFlags"/>. Flags it
+    /// leaves alone keep their values from configuration.
+    /// </summary>
+    public static IServiceCollection UseFeatureFlags(
+        this IServiceCollection services,
+        TestFeatureFlags featureFlags
+    )
+    {
+        return services.Replace(
+            ServiceDescriptor.Singleton<IFeatureDefinitionProvider>(provider =>
+                ActivatorUtilities.CreateInstance<OverridableFeatureDefinitionProvider>(
+                    provider,
+                    featureFlags
+                )
+            )
+        );
     }
 }
