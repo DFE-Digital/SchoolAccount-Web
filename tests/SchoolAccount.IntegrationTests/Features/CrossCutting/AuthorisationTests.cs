@@ -13,11 +13,11 @@ namespace SchoolAccount.IntegrationTests.Features.CrossCutting;
 public class AuthorisationTests(SchoolAccountWebApplicationFactory<Program> factory)
     : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
 {
-    private readonly CancellationToken _cancellationToken = TestContext.Current.CancellationToken;
-
     private readonly HttpClient _authorisedClient = factory.CreateAuthorisedClient(services =>
         services.StubQueryHandler(StubCensusJourneyHandler.Succeeding())
     );
+
+    private readonly CancellationToken _cancellationToken = TestContext.Current.CancellationToken;
     private readonly HttpClient _unauthorisedClient = factory.CreateUnauthenticatedClient();
 
     [Theory]

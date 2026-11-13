@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using SchoolAccount.Application.Abstractions.Messaging;
 using SchoolAccount.IntegrationTests.Common.Stubs;
 
@@ -16,5 +17,14 @@ public static class ServiceCollectionExtensions
         where TQuery : IQuery<TResponse>
     {
         return services.AddScoped<IQueryHandler<TQuery, TResponse>>(_ => handler);
+    }
+
+    public static IServiceCollection StubCommandHandler<TCommand>(
+        this IServiceCollection services,
+        StubCommandHandler<TCommand> handler
+    )
+        where TCommand : ICommand
+    {
+        return services.AddScoped<ICommandHandler<TCommand>>(_ => handler);
     }
 }

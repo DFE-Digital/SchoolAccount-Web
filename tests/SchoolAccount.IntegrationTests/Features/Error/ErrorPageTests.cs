@@ -1,9 +1,7 @@
-using NSubstitute;
-using NSubstitute.ExceptionExtensions;
-using SchoolAccount.Application.Abstractions.Messaging;
-using SchoolAccount.Application.Features.Collect.CensusStatuses;
 using SchoolAccount.IntegrationTests.Common;
+using SchoolAccount.IntegrationTests.Common.Extensions;
 using SchoolAccount.IntegrationTests.Common.Pages;
+using SchoolAccount.IntegrationTests.Common.Stubs;
 using Shouldly;
 using static System.Net.HttpStatusCode;
 using static SchoolAccount.TestCommon.Constants.UrlConstants;
@@ -11,31 +9,20 @@ using static SchoolAccount.Web.Mvc.Features.Error.ErrorViewModel;
 
 namespace SchoolAccount.IntegrationTests.Features.Error;
 
-public class ErrorPageTests : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
+public class ErrorPageTests(SchoolAccountWebApplicationFactory<Program> factory)
+    : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
 {
-    private readonly CancellationToken _cancellationToken = TestContext.Current.CancellationToken;
-    private readonly HttpClient _authenticatedClient;
-    private readonly IQueryHandler<
-        GetCensusStatusesQuery,
-        List<GetCensusStatusesResponse>
-    > _getCensusStatusesHandler = Substitute.For<
-        IQueryHandler<GetCensusStatusesQuery, List<GetCensusStatusesResponse>>
-    >();
+    private readonly HttpClient _authorisedClient = factory.CreateAuthorisedClient(services =>
+        services.StubQueryHandler(StubCensusJourneyHandler.Succeeding())
+    );
 
-    public ErrorPageTests(SchoolAccountWebApplicationFactory<Program> factory)
-    {
-        _authenticatedClient = factory.CreateAuthorisedClient(services =>
-            services.AddScoped<
-                IQueryHandler<GetCensusStatusesQuery, List<GetCensusStatusesResponse>>
-            >(_ => _getCensusStatusesHandler)
-        );
-    }
+    private readonly CancellationToken _cancellationToken = TestContext.Current.CancellationToken;
 
     [Fact]
     public async Task A_forbidden_error_shows_the_forbidden_page()
     {
         // Arrange & Act
-        var response = await _authenticatedClient.GetAsync(ErrorForbiddenUrl, _cancellationToken);
+        var response = await _authorisedClient.GetAsync(ErrorForbiddenUrl, _cancellationToken);
         var forbiddenErrorPage = await AngleSharpPage.FromResponseAsync<ErrorPage>(
             response,
             _cancellationToken
@@ -51,7 +38,7 @@ public class ErrorPageTests : IClassFixture<SchoolAccountWebApplicationFactory<P
     public async Task A_not_found_error_shows_the_not_found_page()
     {
         // Arrange & Act
-        var response = await _authenticatedClient.GetAsync(ErrorNotFoundUrl, _cancellationToken);
+        var response = await _authorisedClient.GetAsync(ErrorNotFoundUrl, _cancellationToken);
         var notFoundErrorPage = await AngleSharpPage.FromResponseAsync<ErrorPage>(
             response,
             _cancellationToken
@@ -67,7 +54,7 @@ public class ErrorPageTests : IClassFixture<SchoolAccountWebApplicationFactory<P
     public async Task A_service_error_shows_the_service_error_page()
     {
         // Arrange & Act
-        var response = await _authenticatedClient.GetAsync(Error500Url, _cancellationToken);
+        var response = await _authorisedClient.GetAsync(Error500Url, _cancellationToken);
         var errorPage = await AngleSharpPage.FromResponseAsync<ErrorPage>(
             response,
             _cancellationToken
@@ -85,7 +72,7 @@ public class ErrorPageTests : IClassFixture<SchoolAccountWebApplicationFactory<P
         var requestUri = "/this-errorPage-does-not-exist";
 
         // Act
-        var response = await _authenticatedClient.GetAsync(requestUri, _cancellationToken);
+        var response = await _authorisedClient.GetAsync(requestUri, _cancellationToken);
         var notFoundErrorPage = await AngleSharpPage.FromResponseAsync<ErrorPage>(
             response,
             _cancellationToken
@@ -101,21 +88,19 @@ public class ErrorPageTests : IClassFixture<SchoolAccountWebApplicationFactory<P
     public async Task A_failure_while_loading_a_page_shows_the_service_error_page()
     {
         // Arrange
-        _getCensusStatusesHandler
-            .Handle(Arg.Any<GetCensusStatusesQuery>(), Arg.Any<CancellationToken>())
-            .Throws(new ApplicationException("Bang!"));
+        var failingClient = factory.CreateAuthorisedClient(services =>
+            services.StubQueryHandler(StubCensusJourneyHandler.Failing())
+        );
 
         // Act
-        var response = await _authenticatedClient.GetAsync(JourneyUrl, _cancellationToken);
+        var response = await failingClient.GetAsync(JourneyUrl, _cancellationToken);
         var errorPage = await AngleSharpPage.FromResponseAsync<CommonPage>(
             response,
             _cancellationToken
         );
 
         // Assert
-        var errorPageTitle = errorPage.GetPageTitle();
-        errorPageTitle.ShouldBe(ErrorTitle);
-
+        errorPage.GetPageTitle().ShouldBe(ErrorTitle);
         response.StatusCode.ShouldBe(InternalServerError);
     }
 
@@ -123,12 +108,7 @@ public class ErrorPageTests : IClassFixture<SchoolAccountWebApplicationFactory<P
     public async Task A_service_error_shows_the_service_error_page_after_accepting_a_post()
     {
         // Arrange & Act
-        var response = await _authenticatedClient.PostAsync(
-            Error500Url,
-            content: null,
-            _cancellationToken
-        );
-
+        var response = await _authorisedClient.PostAsync(Error500Url, null, _cancellationToken);
         var errorPage = await AngleSharpPage.FromResponseAsync<ErrorPage>(
             response,
             _cancellationToken
@@ -146,12 +126,7 @@ public class ErrorPageTests : IClassFixture<SchoolAccountWebApplicationFactory<P
         var requestUri = "/this-errorPage-does-not-exist";
 
         // Act
-        var response = await _authenticatedClient.PostAsync(
-            requestUri,
-            content: null,
-            _cancellationToken
-        );
-
+        var response = await _authorisedClient.PostAsync(requestUri, null, _cancellationToken);
         var errorPage = await AngleSharpPage.FromResponseAsync<ErrorPage>(
             response,
             _cancellationToken
