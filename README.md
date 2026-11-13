@@ -184,8 +184,27 @@ The solution follows a clean architecture pattern with vertical slice features:
 
 ## Logging
 
-Structured logs are written via Serilog to [Seq](https://datalust.co/seq). When running via Docker Compose, the Seq UI
-is available at http://localhost:8081.
+Logs are written through Serilog, which writes to the console and forwards each event to
+OpenTelemetry so logs line up with their traces. Where telemetry (logs, traces and metrics) goes is
+set by `Telemetry:Destination`:
+
+| Environment       | Destination    | Where it goes                     |
+|-------------------|----------------|-----------------------------------|
+| Deployed          | `AzureMonitor` | Application Insights              |
+| Development       | `Otlp`         | Rider's OpenTelemetry tool window |
+| Integration tests | `None`         | Nowhere                           |
+
+Application Insights is reached using `APPLICATIONINSIGHTS_CONNECTION_STRING`, and OTLP using
+`OTEL_EXPORTER_OTLP_ENDPOINT`, which Rider sets. A deployed app fails at startup if its connection
+string is missing. In development, running without an OTLP endpoint, for example outside Rider,
+just leaves telemetry off.
+
+Serilog's request logging is off, because Application Insights already records each request.
+
+In development, logs are also written to [Seq](https://datalust.co/seq). When running via Docker
+Compose, the Seq UI is available at http://localhost:8081.
+
+See [ADR 0012](decisions/0012-use-azure-monitor-opentelemetry-distro.md) for the reasoning.
 
 ## Published Docker Image
 
