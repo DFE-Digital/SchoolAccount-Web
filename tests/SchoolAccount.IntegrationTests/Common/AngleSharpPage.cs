@@ -1,6 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using AngleSharp;
 using AngleSharp.Dom;
+using AngleSharp.Html.Parser;
 
 namespace SchoolAccount.IntegrationTests.Common;
 
@@ -22,9 +23,11 @@ public abstract partial class AngleSharpPage
     )
         where T : AngleSharpPage, new()
     {
-        var html = await responseMessage.Content.ReadAsStringAsync(cancellationToken);
+        await using var content = await responseMessage.Content.ReadAsStreamAsync(
+            cancellationToken
+        );
         var page = new T();
-        await page.InitialiseAsync(html, cancellationToken);
+        await page.InitialiseAsync(content, cancellationToken);
         return page;
     }
 
@@ -106,11 +109,10 @@ public abstract partial class AngleSharpPage
     private static partial Regex Whitespace();
 
     private async Task InitialiseAsync(
-        string pageContent,
+        Stream pageContent,
         CancellationToken cancellationToken = default
     )
     {
-        var context = BrowsingContext.New(Configuration.Default);
-        Document = await context.OpenAsync(req => req.Content(pageContent), cancellationToken);
+        Document = await new HtmlParser().ParseDocumentAsync(pageContent, cancellationToken);
     }
 }
