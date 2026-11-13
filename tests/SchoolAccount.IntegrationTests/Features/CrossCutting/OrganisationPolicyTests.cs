@@ -28,7 +28,7 @@ public class OrganisationPolicyTests : IClassFixture<SchoolAccountWebApplication
     [InlineData("{}")]
     [InlineData("[]")]
     [InlineData("")]
-    public async Task User_is_Forbidden_when_Organisation_Claim_is_empty(string value)
+    public async Task User_is_forbidden_when_organisation_claim_is_empty(string value)
     {
         // Arrange
         _client.WithOrganisation(value);
@@ -41,7 +41,7 @@ public class OrganisationPolicyTests : IClassFixture<SchoolAccountWebApplication
     }
 
     [Fact]
-    public async Task User_is_Forbidden_when_Organisation_Claim_is_missing()
+    public async Task User_is_forbidden_when_organisation_claim_is_missing()
     {
         // Arrange
         _client.WithClaims(
