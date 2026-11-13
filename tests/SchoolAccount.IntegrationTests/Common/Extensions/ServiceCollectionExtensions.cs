@@ -37,7 +37,7 @@ public static class ServiceCollectionExtensions
     /// Lets the test switch feature flags off with <paramref name="featureFlags"/>. Flags it
     /// leaves alone keep their values from configuration.
     /// </summary>
-    public static IServiceCollection UseFeatureFlags(
+    public static IServiceCollection UseTestFeatureFlags(
         this IServiceCollection services,
         TestFeatureFlags featureFlags
     )

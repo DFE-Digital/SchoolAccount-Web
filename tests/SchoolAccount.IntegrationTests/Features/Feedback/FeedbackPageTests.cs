@@ -28,7 +28,7 @@ public class FeedbackPageTests : IClassFixture<SchoolAccountWebApplicationFactor
         {
             services.StubCommandHandler(_feedbackCommandHandler);
             services.StubQueryHandler(_getCensusJourneyHandler);
-            services.UseFeatureFlags(_featureFlags);
+            services.UseTestFeatureFlags(_featureFlags);
         });
     }
 

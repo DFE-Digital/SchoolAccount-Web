@@ -97,7 +97,7 @@ public FeedbackPageTests(SchoolAccountWebApplicationFactory<Program> factory)
     _authenticatedClient = factory.CreateAuthorisedClient(services =>
     {
         // ... the class's other test doubles ...
-        services.UseFeatureFlags(_featureFlags);
+        services.UseTestFeatureFlags(_featureFlags);
     });
 }
 
