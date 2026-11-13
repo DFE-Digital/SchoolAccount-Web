@@ -4,12 +4,8 @@
 ASP.NET Core 10, C# 14, Entity Framework Core.
 
 ## Language & Style
-- Favor explicit typing — only use `var` when the type is evident from the right-hand side
-- Make types `internal sealed` by default unless there's a reason for public/unsealed
-- Use `is null` / `is not null` instead of `== null` / `!= null`
-- Prefer `record` types for immutable data
-- Use primary constructors for DI in services, use cases, handlers
-- Prefer `Guid` for identifiers unless told otherwise
+Follow [docs/coding-standards.md](docs/coding-standards.md). The `.editorconfig` is the
+source of truth and violations fail the build, so run `dotnet build` before finishing.
 
 ## Architecture
 - Follow SOLID principles
@@ -23,14 +19,13 @@ ASP.NET Core 10, C# 14, Entity Framework Core.
 - Strongly-typed config via `IOptions<T>`
 - Environment-specific `appsettings.{Environment}.json`
 
-## API
-- Version APIs
-- Document with Swagger/OpenAPI
-- Validate models (FluentValidation)
-- Enforce HTTPS; explicit CORS policy, never permissive-by-default
-- Auth/authz on every endpoint
+## Endpoints
+- MVC controllers under `Features/`; no API controllers or minimal APIs exist today
+- Mark every controller `[Authorize]` or `[AllowAnonymous]` explicitly
 
 ## Testing
+Follow our [docs/testing-standards.md](docs/testing-standards.md) for unit tests and
+[docs/integration-testing.md](docs/integration-testing.md) for endpoint tests.
 - Unit test business logic
 - Integration test API endpoints (WebApplicationFactory / AngleSharp / Playwright)
 - Test command: `dotnet test`
