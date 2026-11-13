@@ -28,20 +28,25 @@ public class OrganisationPolicyTests : IClassFixture<SchoolAccountWebApplication
     [InlineData("{}")]
     [InlineData("[]")]
     [InlineData("")]
-    [InlineData(null)]
-    public async Task User_is_Forbidden_when_Organisation_Claim_is_empty(string? value)
+    public async Task User_is_Forbidden_when_Organisation_Claim_is_empty(string value)
     {
         // Arrange
-        if (value is null)
-        {
-            _client.WithClaims(
-                MockAuthHandler.DefaultClaims().Where(claim => claim.Type != Organisation)
-            );
-        }
-        else
-        {
-            _client.WithOrganisation(value);
-        }
+        _client.WithOrganisation(value);
+
+        // Act
+        var response = await _client.GetAsync(JourneyUrl, Current.CancellationToken);
+
+        // Assert
+        response.StatusCode.ShouldBe(Forbidden);
+    }
+
+    [Fact]
+    public async Task User_is_Forbidden_when_Organisation_Claim_is_missing()
+    {
+        // Arrange
+        _client.WithClaims(
+            MockAuthHandler.DefaultClaims().Where(claim => claim.Type != Organisation)
+        );
 
         // Act
         var response = await _client.GetAsync(JourneyUrl, Current.CancellationToken);
