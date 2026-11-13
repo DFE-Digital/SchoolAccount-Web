@@ -28,5 +28,6 @@
 
   <ItemGroup>
     <Folder Include="Clients\" />
+    <Folder Include="Common\Builders\" />
   </ItemGroup>
 </Project>

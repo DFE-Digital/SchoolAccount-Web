@@ -49,17 +49,9 @@ public class GetCensusJourneyHandlerTests
     public async Task Academies_api_is_not_called_when_the_organisation_ukprn_is_null()
     {
         // Arrange
-        var query = new GetCensusJourneyQuery
+        var query = _matQuery with
         {
-            Id = "test-user-id",
-            EmailAddress = "test-user@example.com",
-            Organisation = new Organisation
-            {
-                Id = "test-org-id",
-                Name = "Test School",
-                Ukprn = null,
-                Category = new Category { Id = "010", Name = "Multi Academy Trust" },
-            },
+            Organisation = _matQuery.Organisation with { Ukprn = null },
         };
 
         var handler = CreateHandler();
@@ -77,18 +69,14 @@ public class GetCensusJourneyHandlerTests
     public async Task Academies_api_is_bypassed_when_the_organisation_is_of_establishment_category()
     {
         // Arrange
-        var query = new GetCensusJourneyQuery
+        var query = _matQuery with
         {
-            Id = "test-user-id",
-            EmailAddress = "test-user@example.com",
-            Organisation = new Organisation
+            Organisation = _matQuery.Organisation with
             {
-                Id = "test-org-id",
-                Name = "Test School",
-                Ukprn = "1234567",
                 Category = new Category { Id = "001", Name = "Establishment" },
             },
         };
+
         var handler = CreateHandler();
 
         // Act
@@ -97,7 +85,7 @@ public class GetCensusJourneyHandlerTests
         // Assert
         await _academiesApiClient
             .DidNotReceive()
-            .GetTrustDetails(query.Organisation.Ukprn, Arg.Any<CancellationToken>());
+            .GetTrustDetails(Arg.Any<string>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
