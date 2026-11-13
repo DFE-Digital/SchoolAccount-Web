@@ -3,6 +3,7 @@ using NSubstitute.ExceptionExtensions;
 using SchoolAccount.Application.Abstractions.Messaging;
 using SchoolAccount.Application.Features.Collect.GetCensusJourney;
 using SchoolAccount.Application.Features.Collect.GetCensusJourney.Responses;
+using SchoolAccount.Application.Features.Feedback;
 
 namespace SchoolAccount.IntegrationTests.Common.Stubs;
 
@@ -16,6 +17,22 @@ public static class Stub
     public static CensusJourneyHandler CensusJourneyHandler()
     {
         return QueryHandler<GetCensusJourneyQuery, GetCensusJourneyResponse>();
+    }
+
+    public static FeedbackCommandHandler FeedbackCommandHandler()
+    {
+        return CommandHandler<FeedbackCommand>();
+    }
+
+    private static ICommandHandler<TCommand> CommandHandler<TCommand>()
+        where TCommand : ICommand
+    {
+        var handler = Substitute.For<ICommandHandler<TCommand>>();
+
+        // A faulted task, for the same reason as in QueryHandler.
+        handler.Handle(default!, default).ThrowsAsyncForAnyArgs(NoResultConfigured<TCommand>());
+
+        return handler;
     }
 
     private static IQueryHandler<TQuery, TResponse> QueryHandler<TQuery, TResponse>()

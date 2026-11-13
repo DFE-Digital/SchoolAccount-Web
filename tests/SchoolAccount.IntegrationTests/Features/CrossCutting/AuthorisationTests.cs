@@ -1,3 +1,5 @@
+using NSubstitute;
+using SchoolAccount.Application.Features.Collect.GetCensusJourney;
 using SchoolAccount.IntegrationTests.Common;
 using SchoolAccount.IntegrationTests.Common.Extensions;
 using SchoolAccount.IntegrationTests.Common.Pages;
@@ -5,27 +7,38 @@ using SchoolAccount.IntegrationTests.Common.Stubs;
 using SchoolAccount.TestCommon.Constants;
 using Shouldly;
 using static System.Net.HttpStatusCode;
+using static SchoolAccount.IntegrationTests.Common.Builders.Features.Collect.GetCensusJourney.Responses.GetCensusJourneyResponseBuilder;
 using static SchoolAccount.IntegrationTests.Common.MockOidcHandler;
 using static SchoolAccount.TestCommon.Constants.UrlConstants;
 
 namespace SchoolAccount.IntegrationTests.Features.CrossCutting;
 
-public class AuthorisationTests(SchoolAccountWebApplicationFactory<Program> factory)
-    : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
+public class AuthorisationTests : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
 {
     private readonly CancellationToken _cancellationToken = TestContext.Current.CancellationToken;
+    private readonly HttpClient _authorisedClient;
+    private readonly CensusJourneyHandler _getCensusJourneyHandler = Stub.CensusJourneyHandler();
+    private readonly HttpClient _unauthorisedClient;
 
-    private readonly HttpClient _authorisedClient = factory.CreateAuthorisedClient(services =>
-        services.StubQueryHandler(StubCensusJourneyHandler.Succeeding())
-    );
-    private readonly HttpClient _unauthorisedClient = factory.CreateUnauthenticatedClient();
+    public AuthorisationTests(SchoolAccountWebApplicationFactory<Program> factory)
+    {
+        _authorisedClient = factory.CreateAuthorisedClient(services =>
+            services.StubQueryHandler(_getCensusJourneyHandler)
+        );
+        _unauthorisedClient = factory.CreateUnauthenticatedClient();
+    }
 
     [Theory]
     [InlineData(StartUrl)]
     [InlineData(JourneyUrl)]
     public async Task Signed_in_users_can_access_a_page(string path)
     {
-        // Arrange & Act
+        // Arrange
+        _getCensusJourneyHandler
+            .Handle(Arg.Any<GetCensusJourneyQuery>(), Arg.Any<CancellationToken>())
+            .Returns(AGetCensusJourneyResponse().AsSuccess());
+
+        // Act
         var response = await _authorisedClient.GetAsync(path, _cancellationToken);
 
         // Assert
@@ -36,7 +49,12 @@ public class AuthorisationTests(SchoolAccountWebApplicationFactory<Program> fact
     [Fact]
     public async Task Signed_in_users_see_the_sign_out_link()
     {
-        // Arrange & Act
+        // Arrange
+        _getCensusJourneyHandler
+            .Handle(Arg.Any<GetCensusJourneyQuery>(), Arg.Any<CancellationToken>())
+            .Returns(AGetCensusJourneyResponse().AsSuccess());
+
+        // Act
         var response = await _authorisedClient.GetAsync(JourneyUrl, _cancellationToken);
         var journeyPage = await AngleSharpPage.FromResponseAsync<CommonPage>(
             response,
@@ -51,7 +69,12 @@ public class AuthorisationTests(SchoolAccountWebApplicationFactory<Program> fact
     [Fact]
     public async Task Signed_in_users_see_their_organisation_name()
     {
-        // Arrange & Act
+        // Arrange
+        _getCensusJourneyHandler
+            .Handle(Arg.Any<GetCensusJourneyQuery>(), Arg.Any<CancellationToken>())
+            .Returns(AGetCensusJourneyResponse().AsSuccess());
+
+        // Act
         var response = await _authorisedClient.GetAsync(JourneyUrl, _cancellationToken);
         var journeyPage = await AngleSharpPage.FromResponseAsync<CommonPage>(
             response,

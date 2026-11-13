@@ -1,17 +1,29 @@
+using NSubstitute;
+using SchoolAccount.Application.Features.Collect.GetCensusJourney;
 using SchoolAccount.IntegrationTests.Common;
 using SchoolAccount.IntegrationTests.Common.Extensions;
 using SchoolAccount.IntegrationTests.Common.Stubs;
 using Shouldly;
 using static System.Net.HttpStatusCode;
+using static SchoolAccount.IntegrationTests.Common.Builders.Features.Collect.GetCensusJourney.Responses.GetCensusJourneyResponseBuilder;
 using static SchoolAccount.TestCommon.Constants.UrlConstants;
 using static SchoolAccount.Web.Mvc.Authentication.ClaimConstants;
 using static Xunit.TestContext;
 
 namespace SchoolAccount.IntegrationTests.Features.CrossCutting;
 
-public class OrganisationPolicyTests(SchoolAccountWebApplicationFactory<Program> factory)
-    : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
+public class OrganisationPolicyTests : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
 {
+    private readonly HttpClient _client;
+    private readonly CensusJourneyHandler _getCensusJourneyHandler = Stub.CensusJourneyHandler();
+
+    public OrganisationPolicyTests(SchoolAccountWebApplicationFactory<Program> factory)
+    {
+        _client = factory.CreateAuthorisedClient(services =>
+            services.StubQueryHandler(_getCensusJourneyHandler)
+        );
+    }
+
     [Theory]
     [InlineData("{}")]
     [InlineData("[]")]
@@ -20,10 +32,19 @@ public class OrganisationPolicyTests(SchoolAccountWebApplicationFactory<Program>
     public async Task User_is_Forbidden_when_Organisation_Claim_is_empty(string? value)
     {
         // Arrange
-        var client = CreateClientOrganisationClaims(value);
+        if (value is null)
+        {
+            _client.WithClaims(
+                MockAuthHandler.DefaultClaims().Where(claim => claim.Type != Organisation)
+            );
+        }
+        else
+        {
+            _client.WithOrganisation(value);
+        }
 
         // Act
-        var response = await client.GetAsync(JourneyUrl, Current.CancellationToken);
+        var response = await _client.GetAsync(JourneyUrl, Current.CancellationToken);
 
         // Assert
         response.StatusCode.ShouldBe(Forbidden);
@@ -33,30 +54,14 @@ public class OrganisationPolicyTests(SchoolAccountWebApplicationFactory<Program>
     public async Task User_is_accepted_when_organisation_is_not_empty()
     {
         // Arrange
-        var client = factory.CreateAuthorisedClient(services =>
-            services.StubQueryHandler(StubCensusJourneyHandler.Succeeding())
-        );
+        _getCensusJourneyHandler
+            .Handle(Arg.Any<GetCensusJourneyQuery>(), Arg.Any<CancellationToken>())
+            .Returns(AGetCensusJourneyResponse().AsSuccess());
 
         // Act
-        var response = await client.GetAsync(JourneyUrl, Current.CancellationToken);
+        var response = await _client.GetAsync(JourneyUrl, Current.CancellationToken);
 
         // Assert
         response.StatusCode.ShouldBe(OK);
-    }
-
-    private HttpClient CreateClientOrganisationClaims(string? organisationValue)
-    {
-        var client = factory.CreateAuthorisedClient(services =>
-            services.StubQueryHandler(StubCensusJourneyHandler.Succeeding())
-        );
-
-        if (organisationValue is null)
-        {
-            return client.WithClaims(
-                MockAuthHandler.DefaultClaims().Where(claim => claim.Type != Organisation)
-            );
-        }
-
-        return client.WithOrganisation(organisationValue);
     }
 }

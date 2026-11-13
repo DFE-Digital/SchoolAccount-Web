@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.FeatureManagement;
 using NSubstitute;
-using SchoolAccount.Application.Abstractions.Messaging;
 using SchoolAccount.Application.Features.Collect.GetCensusJourney;
 using SchoolAccount.Application.Features.Feedback;
 using SchoolAccount.IntegrationTests.Common;
@@ -21,9 +20,7 @@ public class FeedbackPageTests : IClassFixture<SchoolAccountWebApplicationFactor
     private readonly CancellationToken _cancellationToken = TestContext.Current.CancellationToken;
     private readonly SchoolAccountWebApplicationFactory<Program> _factory;
     private readonly HttpClient _authenticatedClient;
-    private readonly ICommandHandler<FeedbackCommand> _feedbackCommandHandler = Substitute.For<
-        ICommandHandler<FeedbackCommand>
-    >();
+    private readonly FeedbackCommandHandler _feedbackCommandHandler = Stub.FeedbackCommandHandler();
     private readonly CensusJourneyHandler _getCensusJourneyHandler = Stub.CensusJourneyHandler();
 
     public FeedbackPageTests(SchoolAccountWebApplicationFactory<Program> factory)
@@ -31,7 +28,7 @@ public class FeedbackPageTests : IClassFixture<SchoolAccountWebApplicationFactor
         _factory = factory;
         _authenticatedClient = factory.CreateAuthorisedClient(services =>
         {
-            services.AddScoped<ICommandHandler<FeedbackCommand>>(_ => _feedbackCommandHandler);
+            services.StubCommandHandler(_feedbackCommandHandler);
             services.StubQueryHandler(_getCensusJourneyHandler);
         });
     }
@@ -177,7 +174,7 @@ public class FeedbackPageTests : IClassFixture<SchoolAccountWebApplicationFactor
         // service, so it needs its own app host.
         var client = _factory.CreateAuthorisedClient(services =>
         {
-            services.AddScoped<ICommandHandler<FeedbackCommand>>(_ => _feedbackCommandHandler);
+            services.StubCommandHandler(_feedbackCommandHandler);
             services.DisableFeedbackFeature();
         });
 
@@ -210,12 +207,7 @@ public class FeedbackPageTests : IClassFixture<SchoolAccountWebApplicationFactor
     [Fact]
     public async Task The_feedback_form_page_is_shown()
     {
-        // Arrange
-        _feedbackCommandHandler
-            .Handle(Arg.Any<FeedbackCommand>(), Arg.Any<CancellationToken>())
-            .Returns(Result.Success());
-
-        // Act
+        // Arrange & Act
         var response = await _authenticatedClient.GetAsync(FeedbackUrl, _cancellationToken);
         var html = await response.Content.ReadAsStringAsync(_cancellationToken);
 
@@ -250,12 +242,7 @@ public class FeedbackPageTests : IClassFixture<SchoolAccountWebApplicationFactor
     [Fact]
     public async Task The_feedback_form_page_does_not_show_the_sign_out_link()
     {
-        // Arrange
-        _feedbackCommandHandler
-            .Handle(Arg.Any<FeedbackCommand>(), Arg.Any<CancellationToken>())
-            .Returns(Result.Success());
-
-        // Act
+        // Arrange & Act
         var response = await _authenticatedClient.GetAsync(FeedbackUrl, _cancellationToken);
         var html = await response.Content.ReadAsStringAsync(_cancellationToken);
 
