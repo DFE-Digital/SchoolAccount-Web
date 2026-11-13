@@ -85,29 +85,30 @@ where they fit.
 Write integration tests for both states. Flags are on in `appsettings.IntegrationTests.json`, so tests for the
 on state need nothing extra.
 
-For the off state, replace `IFeatureDefinitionProvider` in the test's services with one that reads an in-memory
-configuration where the flag is off. `FeedbackControllerTests` does this with its `DisableFeedbackFeature` helper:
+For the off state, the test class holds a `TestFeatureFlags` and registers it in its constructor with the rest of
+its test doubles. Every flag is on in that class unless a test switches it off. Switch the flag off in the test's
+Arrange step, before the first request:
 
 ```csharp
-var disabledFooter = new Dictionary<string, string?>
+private readonly TestFeatureFlags _featureFlags = new();
+
+public FeedbackPageTests(SchoolAccountWebApplicationFactory<Program> factory)
 {
-    ["feature_management:feature_flags:0:id"] = FeatureFlags.FeedbackFooter,
-    ["feature_management:feature_flags:0:enabled"] = "false",
-};
+    _authenticatedClient = factory.CreateAuthorisedClient(services =>
+    {
+        // ... the class's other test doubles ...
+        services.UseTestFeatureFlags(_featureFlags);
+    });
+}
 
-var configurationRoot = new ConfigurationBuilder()
-    .AddInMemoryCollection(disabledFooter)
-    .Build();
-
-services.Replace(
-    ServiceDescriptor.Singleton<IFeatureDefinitionProvider>(
-        _ => new ConfigurationFeatureDefinitionProvider(configurationRoot)
-    )
-);
+[Fact]
+public async Task Submit_returns_not_found_when_the_feature_flag_is_disabled()
+{
+    // Arrange
+    _featureFlags.Disable(FeatureFlags.FeedbackFooter);
+    ...
+}
 ```
-
-Use the factory overload (`_ => new ...`) so the container disposes the provider. Passing an instance fails the build
-with CA2000.
 
 If the feature has an endpoint gated with `[FeatureGate]`, test that it returns 404 when the flag is off.
 
