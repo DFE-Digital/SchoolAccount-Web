@@ -86,7 +86,7 @@ Write integration tests for both states. Flags are on in `appsettings.Integratio
 on state need nothing extra.
 
 For the off state, the test class holds a `TestFeatureFlags` and registers it in its constructor with the rest of
-its test doubles. Flags it leaves alone keep their values from configuration. Switch the flag off in the test's
+its test doubles. Every flag is on in that class unless a test switches it off. Switch the flag off in the test's
 Arrange step, before the first request:
 
 ```csharp

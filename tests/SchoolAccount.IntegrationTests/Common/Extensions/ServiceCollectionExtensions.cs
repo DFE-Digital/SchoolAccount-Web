@@ -34,8 +34,8 @@ public static class ServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Lets the test switch feature flags off with <paramref name="featureFlags"/>. Flags it
-    /// leaves alone keep their values from configuration.
+    /// Replaces the app's feature flag lookup with <paramref name="featureFlags"/>, which reports
+    /// every flag as on unless the test has switched it off.
     /// </summary>
     public static IServiceCollection UseTestFeatureFlags(
         this IServiceCollection services,
@@ -43,12 +43,7 @@ public static class ServiceCollectionExtensions
     )
     {
         return services.Replace(
-            ServiceDescriptor.Singleton<IFeatureDefinitionProvider>(provider =>
-                ActivatorUtilities.CreateInstance<OverridableFeatureDefinitionProvider>(
-                    provider,
-                    featureFlags
-                )
-            )
+            ServiceDescriptor.Singleton<IFeatureDefinitionProvider>(featureFlags)
         );
     }
 }
