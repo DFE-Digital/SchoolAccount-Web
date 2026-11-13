@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using NSubstitute;
 using SchoolAccount.Application.Features.Collect.GetCensusJourney;
 using SchoolAccount.IntegrationTests.Common;
@@ -16,7 +15,6 @@ using static SchoolAccount.TestCommon.Builders.Features.Collect.GetCensusJourney
 using static SchoolAccount.TestCommon.Builders.Features.Collect.GetCensusJourney.Responses.GetCensusJourneyResponseImportantDateBuilder;
 using static SchoolAccount.TestCommon.Builders.Features.Collect.GetCensusJourney.Responses.GetCensusJourneyResponseUnderstandStatusBuilder;
 using static SchoolAccount.TestCommon.Constants.UrlConstants;
-using static SchoolAccount.Web.Mvc.Authentication.ClaimConstants;
 
 namespace SchoolAccount.IntegrationTests.Features.Journey;
 
@@ -26,7 +24,6 @@ public class JourneyPageTests : IClassFixture<SchoolAccountWebApplicationFactory
     private readonly HttpClient _client;
     private readonly IDateTimeProvider _dateTimeProvider = Substitute.For<IDateTimeProvider>();
     private readonly CensusJourneyHandler _getCensusJourneyHandler = Stub.CensusJourneyHandler();
-    private readonly MockAuthClaimsOptions _signedInUser = new();
     private readonly Uri _testUri = new("https://www.gov.uk/");
 
     public JourneyPageTests(SchoolAccountWebApplicationFactory<Program> factory)
@@ -35,7 +32,6 @@ public class JourneyPageTests : IClassFixture<SchoolAccountWebApplicationFactory
         {
             services.StubQueryHandler(_getCensusJourneyHandler);
             services.AddSingleton(_dateTimeProvider);
-            services.AddSingleton(_signedInUser);
         });
     }
 
@@ -310,7 +306,7 @@ public class JourneyPageTests : IClassFixture<SchoolAccountWebApplicationFactory
     public async Task Call_to_action_button_is_hidden_for_MAT_users()
     {
         // Arrange
-        _signedInUser.Claims = TrustUserClaims();
+        _client.WithOrganisation(OrganisationConstants.TrustJson);
         _getCensusJourneyHandler
             .Handle(Arg.Any<GetCensusJourneyQuery>(), Arg.Any<CancellationToken>())
             .Returns(AGetCensusJourneyResponse().AsSuccess());
@@ -410,7 +406,7 @@ public class JourneyPageTests : IClassFixture<SchoolAccountWebApplicationFactory
         var octoberFourth2026 = new DateTime(2026, 10, 4, 9, 0, 0, DateTimeKind.Utc);
 
         _dateTimeProvider.UtcNow.Returns(octoberFourth2026);
-        _signedInUser.Claims = TrustUserClaims();
+        _client.WithOrganisation(OrganisationConstants.TrustJson);
         _getCensusJourneyHandler
             .Handle(Arg.Any<GetCensusJourneyQuery>(), Arg.Any<CancellationToken>())
             .Returns(
@@ -472,7 +468,7 @@ public class JourneyPageTests : IClassFixture<SchoolAccountWebApplicationFactory
     public async Task No_schools_message_is_displayed_when_trust_has_no_schools()
     {
         // Arrange
-        _signedInUser.Claims = TrustUserClaims();
+        _client.WithOrganisation(OrganisationConstants.TrustJson);
         _getCensusJourneyHandler
             .Handle(Arg.Any<GetCensusJourneyQuery>(), Arg.Any<CancellationToken>())
             .Returns(AGetCensusJourneyResponse().AsSuccess());
@@ -573,7 +569,7 @@ public class JourneyPageTests : IClassFixture<SchoolAccountWebApplicationFactory
     public async Task Status_explanations_are_shown_for_a_multi_academy_trust()
     {
         // Arrange
-        _signedInUser.Claims = TrustUserClaims();
+        _client.WithOrganisation(OrganisationConstants.TrustJson);
         _getCensusJourneyHandler
             .Handle(Arg.Any<GetCensusJourneyQuery>(), Arg.Any<CancellationToken>())
             .Returns(
@@ -601,17 +597,5 @@ public class JourneyPageTests : IClassFixture<SchoolAccountWebApplicationFactory
         journeyPage
             .GetElementContentByText("li", "Test Status")
             .ShouldBe("Test Status: Test status description.");
-    }
-
-    private static List<Claim> TrustUserClaims()
-    {
-        return
-        [
-            new Claim(GivenName, MockAuthHandler.FakeGivenName),
-            new Claim(FamilyName, MockAuthHandler.FakeFamilyName),
-            new Claim(Sub, "1159ee82-d515-4d34-b28d-ac138cb1506b"),
-            new Claim(Email, "test@example.com"),
-            new Claim(Organisation, OrganisationConstants.TrustJson),
-        ];
     }
 }
