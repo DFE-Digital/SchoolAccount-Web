@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.FeatureManagement;
 using NSubstitute;
 using SchoolAccount.Application.Abstractions.Messaging;
+using SchoolAccount.Application.Features.Collect.GetCensusJourney;
 using SchoolAccount.Application.Features.Feedback;
 using SchoolAccount.IntegrationTests.Common;
 using SchoolAccount.IntegrationTests.Common.Extensions;
@@ -10,6 +11,7 @@ using SchoolAccount.SharedKernel;
 using SchoolAccount.Web.Mvc.Infrastructure;
 using Shouldly;
 using static System.Net.HttpStatusCode;
+using static SchoolAccount.IntegrationTests.Common.Builders.Features.Collect.GetCensusJourney.Responses.GetCensusJourneyResponseBuilder;
 using static SchoolAccount.TestCommon.Constants.UrlConstants;
 
 namespace SchoolAccount.IntegrationTests.Features.Feedback;
@@ -22,6 +24,7 @@ public class FeedbackPageTests : IClassFixture<SchoolAccountWebApplicationFactor
     private readonly ICommandHandler<FeedbackCommand> _feedbackCommandHandler = Substitute.For<
         ICommandHandler<FeedbackCommand>
     >();
+    private readonly CensusJourneyHandler _getCensusJourneyHandler = Stub.CensusJourneyHandler();
 
     public FeedbackPageTests(SchoolAccountWebApplicationFactory<Program> factory)
     {
@@ -29,7 +32,7 @@ public class FeedbackPageTests : IClassFixture<SchoolAccountWebApplicationFactor
         _authenticatedClient = factory.CreateAuthorisedClient(services =>
         {
             services.AddScoped<ICommandHandler<FeedbackCommand>>(_ => _feedbackCommandHandler);
-            services.StubQueryHandler(StubCensusJourneyHandler.Succeeding());
+            services.StubQueryHandler(_getCensusJourneyHandler);
         });
     }
 
@@ -81,8 +84,14 @@ public class FeedbackPageTests : IClassFixture<SchoolAccountWebApplicationFactor
     )
     {
         // Arrange
+        _getCensusJourneyHandler
+            .Handle(Arg.Any<GetCensusJourneyQuery>(), Arg.Any<CancellationToken>())
+            .Returns(AGetCensusJourneyResponse().AsSuccess());
+
+        // Known exception to one client per class: redirects are a client option, and each
+        // client gets its own app host.
         var client = _factory.CreateAuthorisedClient(
-            services => services.StubQueryHandler(StubCensusJourneyHandler.Succeeding()),
+            services => services.StubQueryHandler(_getCensusJourneyHandler),
             ClientOptions.AllowRedirects
         );
 
@@ -125,7 +134,12 @@ public class FeedbackPageTests : IClassFixture<SchoolAccountWebApplicationFactor
     [Fact]
     public async Task The_feedback_section_is_shown_when_the_feature_flag_is_enabled()
     {
-        // Arrange & Act
+        // Arrange
+        _getCensusJourneyHandler
+            .Handle(Arg.Any<GetCensusJourneyQuery>(), Arg.Any<CancellationToken>())
+            .Returns(AGetCensusJourneyResponse().AsSuccess());
+
+        // Act
         var html = await _authenticatedClient.GetStringAsync(JourneyUrl, _cancellationToken);
 
         // Assert
@@ -136,9 +150,15 @@ public class FeedbackPageTests : IClassFixture<SchoolAccountWebApplicationFactor
     public async Task The_feedback_section_is_hidden_when_the_feature_flag_is_disabled()
     {
         // Arrange
+        _getCensusJourneyHandler
+            .Handle(Arg.Any<GetCensusJourneyQuery>(), Arg.Any<CancellationToken>())
+            .Returns(AGetCensusJourneyResponse().AsSuccess());
+
+        // Known exception to one client per class: switching the feature flag off replaces a
+        // service, so it needs its own app host.
         var client = _factory.CreateAuthorisedClient(services =>
         {
-            services.StubQueryHandler(StubCensusJourneyHandler.Succeeding());
+            services.StubQueryHandler(_getCensusJourneyHandler);
             services.DisableFeedbackFeature();
         });
 
@@ -153,6 +173,8 @@ public class FeedbackPageTests : IClassFixture<SchoolAccountWebApplicationFactor
     public async Task Submit_returns_not_found_when_the_feature_flag_is_disabled()
     {
         // Arrange
+        // Known exception to one client per class: switching the feature flag off replaces a
+        // service, so it needs its own app host.
         var client = _factory.CreateAuthorisedClient(services =>
         {
             services.AddScoped<ICommandHandler<FeedbackCommand>>(_ => _feedbackCommandHandler);
@@ -174,6 +196,8 @@ public class FeedbackPageTests : IClassFixture<SchoolAccountWebApplicationFactor
     public async Task Feedback_form_page_shows_the_not_found_page_when_the_feature_flag_is_disabled()
     {
         // Arrange
+        // Known exception to one client per class: switching the feature flag off replaces a
+        // service, so it needs its own app host.
         var client = _factory.CreateAuthorisedClient(services => services.DisableFeedbackFeature());
 
         // Act

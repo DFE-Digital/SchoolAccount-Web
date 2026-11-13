@@ -1,5 +1,4 @@
 using SchoolAccount.Application.Abstractions.Messaging;
-using SchoolAccount.IntegrationTests.Common.Stubs;
 
 namespace SchoolAccount.IntegrationTests.Common.Extensions;
 
@@ -11,7 +10,7 @@ public static class ServiceCollectionExtensions
     /// </summary>
     public static IServiceCollection StubQueryHandler<TQuery, TResponse>(
         this IServiceCollection services,
-        StubQueryHandler<TQuery, TResponse> handler
+        IQueryHandler<TQuery, TResponse> handler
     )
         where TQuery : IQuery<TResponse>
     {
