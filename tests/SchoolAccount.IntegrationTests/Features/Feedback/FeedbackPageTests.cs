@@ -1,10 +1,9 @@
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.FeatureManagement;
 using NSubstitute;
 using SchoolAccount.Application.Features.Collect.GetCensusJourney;
 using SchoolAccount.Application.Features.Feedback;
 using SchoolAccount.IntegrationTests.Common;
 using SchoolAccount.IntegrationTests.Common.Extensions;
+using SchoolAccount.IntegrationTests.Common.Fakes;
 using SchoolAccount.IntegrationTests.Common.Stubs;
 using SchoolAccount.SharedKernel;
 using SchoolAccount.Web.Mvc.Infrastructure;
@@ -18,18 +17,18 @@ namespace SchoolAccount.IntegrationTests.Features.Feedback;
 public class FeedbackPageTests : IClassFixture<SchoolAccountWebApplicationFactory<Program>>
 {
     private readonly CancellationToken _cancellationToken = TestContext.Current.CancellationToken;
-    private readonly SchoolAccountWebApplicationFactory<Program> _factory;
     private readonly HttpClient _authenticatedClient;
+    private readonly TestFeatureFlags _featureFlags = new();
     private readonly FeedbackCommandHandler _feedbackCommandHandler = Stub.FeedbackCommandHandler();
     private readonly CensusJourneyHandler _getCensusJourneyHandler = Stub.CensusJourneyHandler();
 
     public FeedbackPageTests(SchoolAccountWebApplicationFactory<Program> factory)
     {
-        _factory = factory;
         _authenticatedClient = factory.CreateAuthorisedClient(services =>
         {
             services.StubCommandHandler(_feedbackCommandHandler);
             services.StubQueryHandler(_getCensusJourneyHandler);
+            services.UseTestFeatureFlags(_featureFlags);
         });
     }
 
@@ -85,23 +84,21 @@ public class FeedbackPageTests : IClassFixture<SchoolAccountWebApplicationFactor
             .Handle(Arg.Any<GetCensusJourneyQuery>(), Arg.Any<CancellationToken>())
             .Returns(AGetCensusJourneyResponse().AsSuccess());
 
-        // Known exception to one client per class: redirects are a client option, and each
-        // client gets its own app host.
-        var client = _factory.CreateAuthorisedClient(
-            services => services.StubQueryHandler(_getCensusJourneyHandler),
-            ClientOptions.AllowRedirects
-        );
-
         // Act
         using var formContent = FeedbackForm(string.Empty, returnUrl);
-        var response = await client.PostAsync(
+        var submitResponse = await _authenticatedClient.PostAsync(
             FeedbackSubmissionUrl,
             formContent,
+            _cancellationToken
+        );
+        var response = await _authenticatedClient.GetAsync(
+            submitResponse.Headers.Location,
             _cancellationToken
         );
         var content = await response.Content.ReadAsStringAsync(_cancellationToken);
 
         // Assert
+        submitResponse.StatusCode.ShouldBe(Redirect);
         response.StatusCode.ShouldBe(OK);
 
         content.ShouldSatisfyAllConditions(
@@ -147,20 +144,13 @@ public class FeedbackPageTests : IClassFixture<SchoolAccountWebApplicationFactor
     public async Task The_feedback_section_is_hidden_when_the_feature_flag_is_disabled()
     {
         // Arrange
+        _featureFlags.Disable(FeatureFlags.FeedbackFooter);
         _getCensusJourneyHandler
             .Handle(Arg.Any<GetCensusJourneyQuery>(), Arg.Any<CancellationToken>())
             .Returns(AGetCensusJourneyResponse().AsSuccess());
 
-        // Known exception to one client per class: switching the feature flag off replaces a
-        // service, so it needs its own app host.
-        var client = _factory.CreateAuthorisedClient(services =>
-        {
-            services.StubQueryHandler(_getCensusJourneyHandler);
-            services.DisableFeedbackFeature();
-        });
-
         // Act
-        var html = await client.GetStringAsync(JourneyUrl, _cancellationToken);
+        var html = await _authenticatedClient.GetStringAsync(JourneyUrl, _cancellationToken);
 
         // Assert
         html.ShouldNotContain("id=\"page-feedback\"");
@@ -170,17 +160,15 @@ public class FeedbackPageTests : IClassFixture<SchoolAccountWebApplicationFactor
     public async Task Submit_returns_not_found_when_the_feature_flag_is_disabled()
     {
         // Arrange
-        // Known exception to one client per class: switching the feature flag off replaces a
-        // service, so it needs its own app host.
-        var client = _factory.CreateAuthorisedClient(services =>
-        {
-            services.StubCommandHandler(_feedbackCommandHandler);
-            services.DisableFeedbackFeature();
-        });
+        _featureFlags.Disable(FeatureFlags.FeedbackFooter);
 
         // Act
         using var content = FeedbackForm("test-feedback");
-        var response = await client.PostAsync(FeedbackSubmissionUrl, content, _cancellationToken);
+        var response = await _authenticatedClient.PostAsync(
+            FeedbackSubmissionUrl,
+            content,
+            _cancellationToken
+        );
 
         // Assert
         response.StatusCode.ShouldBe(NotFound);
@@ -193,12 +181,10 @@ public class FeedbackPageTests : IClassFixture<SchoolAccountWebApplicationFactor
     public async Task Feedback_form_page_shows_the_not_found_page_when_the_feature_flag_is_disabled()
     {
         // Arrange
-        // Known exception to one client per class: switching the feature flag off replaces a
-        // service, so it needs its own app host.
-        var client = _factory.CreateAuthorisedClient(services => services.DisableFeedbackFeature());
+        _featureFlags.Disable(FeatureFlags.FeedbackFooter);
 
         // Act
-        var response = await client.GetAsync(FeedbackUrl, _cancellationToken);
+        var response = await _authenticatedClient.GetAsync(FeedbackUrl, _cancellationToken);
 
         // Assert
         response.StatusCode.ShouldBe(NotFound);
@@ -262,27 +248,5 @@ public class FeedbackPageTests : IClassFixture<SchoolAccountWebApplicationFactor
         }
 
         return new FormUrlEncodedContent(fields);
-    }
-}
-
-file static class FeedbackFeatureServiceCollectionExtensions
-{
-    public static void DisableFeedbackFeature(this IServiceCollection services)
-    {
-        var disabledFooter = new Dictionary<string, string?>
-        {
-            ["feature_management:feature_flags:0:id"] = FeatureFlags.FeedbackFooter,
-            ["feature_management:feature_flags:0:enabled"] = "false",
-        };
-
-        var configurationRoot = new ConfigurationBuilder()
-            .AddInMemoryCollection(disabledFooter)
-            .Build();
-
-        services.Replace(
-            ServiceDescriptor.Singleton<IFeatureDefinitionProvider>(
-                _ => new ConfigurationFeatureDefinitionProvider(configurationRoot)
-            )
-        );
     }
 }

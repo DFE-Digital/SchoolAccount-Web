@@ -1,4 +1,7 @@
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.FeatureManagement;
 using SchoolAccount.Application.Abstractions.Messaging;
+using SchoolAccount.IntegrationTests.Common.Fakes;
 
 namespace SchoolAccount.IntegrationTests.Common.Extensions;
 
@@ -28,5 +31,19 @@ public static class ServiceCollectionExtensions
         where TCommand : ICommand
     {
         return services.AddScoped<ICommandHandler<TCommand>>(_ => handler);
+    }
+
+    /// <summary>
+    /// Replaces the app's feature flag lookup with <paramref name="featureFlags"/>, which reports
+    /// every flag as on unless the test has switched it off.
+    /// </summary>
+    public static IServiceCollection UseTestFeatureFlags(
+        this IServiceCollection services,
+        TestFeatureFlags featureFlags
+    )
+    {
+        return services.Replace(
+            ServiceDescriptor.Singleton<IFeatureDefinitionProvider>(featureFlags)
+        );
     }
 }
