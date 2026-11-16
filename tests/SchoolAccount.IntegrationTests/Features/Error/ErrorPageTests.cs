@@ -1,9 +1,10 @@
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
-using SchoolAccount.Application.Abstractions.Messaging;
-using SchoolAccount.Application.Features.Collect.CensusStatuses;
+using SchoolAccount.Application.Features.Collect.GetCensusJourney;
 using SchoolAccount.IntegrationTests.Common;
+using SchoolAccount.IntegrationTests.Common.Extensions;
 using SchoolAccount.IntegrationTests.Common.Pages;
+using SchoolAccount.IntegrationTests.Common.Stubs;
 using Shouldly;
 using static System.Net.HttpStatusCode;
 using static SchoolAccount.TestCommon.Constants.UrlConstants;
@@ -15,19 +16,12 @@ public class ErrorPageTests : IClassFixture<SchoolAccountWebApplicationFactory<P
 {
     private readonly CancellationToken _cancellationToken = TestContext.Current.CancellationToken;
     private readonly HttpClient _authenticatedClient;
-    private readonly IQueryHandler<
-        GetCensusStatusesQuery,
-        List<GetCensusStatusesResponse>
-    > _getCensusStatusesHandler = Substitute.For<
-        IQueryHandler<GetCensusStatusesQuery, List<GetCensusStatusesResponse>>
-    >();
+    private readonly CensusJourneyHandler _getCensusJourneyHandler = Stub.CensusJourneyHandler();
 
     public ErrorPageTests(SchoolAccountWebApplicationFactory<Program> factory)
     {
         _authenticatedClient = factory.CreateAuthorisedClient(services =>
-            services.AddScoped<
-                IQueryHandler<GetCensusStatusesQuery, List<GetCensusStatusesResponse>>
-            >(_ => _getCensusStatusesHandler)
+            services.StubQueryHandler(_getCensusJourneyHandler)
         );
     }
 
@@ -101,9 +95,9 @@ public class ErrorPageTests : IClassFixture<SchoolAccountWebApplicationFactory<P
     public async Task A_failure_while_loading_a_page_shows_the_service_error_page()
     {
         // Arrange
-        _getCensusStatusesHandler
-            .Handle(Arg.Any<GetCensusStatusesQuery>(), Arg.Any<CancellationToken>())
-            .Throws(new ApplicationException("Bang!"));
+        _getCensusJourneyHandler
+            .Handle(Arg.Any<GetCensusJourneyQuery>(), Arg.Any<CancellationToken>())
+            .ThrowsAsync(new ApplicationException("Bang!"));
 
         // Act
         var response = await _authenticatedClient.GetAsync(JourneyUrl, _cancellationToken);

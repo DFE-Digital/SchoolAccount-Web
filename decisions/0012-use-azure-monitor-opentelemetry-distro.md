@@ -1,6 +1,6 @@
 ---
 status: "accepted"
-date: 2026-10-15
+date: 2026-10-24
 decision-makers: Paul Custance
 ---
 
@@ -48,8 +48,8 @@ How it works:
   logging providers are cleared so the console isn't printed twice.
 * The role name and instance come from the distro's Container Apps detector (the container app name and the replica),
   not from our code.
-* Serilog's request logging is on, so each request is also written as one summary log event, alongside the request
-  Application Insights records.
+* Serilog's request logging is off. Application Insights already records each request, with its status and duration,
+  and the exceptions behind failed ones, so a summary log event per request would only repeat them.
 
 ### Consequences
 

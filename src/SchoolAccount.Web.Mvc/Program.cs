@@ -3,7 +3,6 @@ using SchoolAccount.Application;
 using SchoolAccount.Infrastructure;
 using SchoolAccount.Web.Mvc;
 using SchoolAccount.Web.Mvc.Hosting.Extensions;
-using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,7 +22,6 @@ app.UseForwardedHeadersDiagnostics(app.Environment);
 app.UseConfiguredForwardedHeaders(app.Configuration);
 app.UseStatusCodePagesWithReExecute("/error/{0}");
 app.UseExceptionHandler("/error/500");
-app.UseSerilogRequestLogging();
 app.UseConfiguredAzureAppConfiguration();
 
 if (!app.Environment.IsDevelopment())
