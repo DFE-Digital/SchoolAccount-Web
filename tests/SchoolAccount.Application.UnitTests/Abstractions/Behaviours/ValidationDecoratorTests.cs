@@ -14,22 +14,12 @@ public class ValidationDecoratorTests
         ICommandHandler<TestCommand, int>
     >();
     private readonly IValidator<TestCommand> _validator = Substitute.For<IValidator<TestCommand>>();
-    private readonly ServiceCollection _services = new();
 
     [Fact]
     public async Task Invalid_command_with_a_response_does_not_reach_its_handler()
     {
         // Arrange
-        _services.AddScoped(_ => _handler);
-        _services.AddScoped<IValidator<TestCommand>, TestCommandValidator>();
-        _services.AddLogging();
-        _services.AddApplication();
-        var provider = _services.BuildServiceProvider();
-        using var scope = provider.CreateScope();
-
-        var decorated = scope.ServiceProvider.GetRequiredService<
-            ICommandHandler<TestCommand, int>
-        >();
+        var decorated = CreateDecoratedHandler(new TestCommandValidator());
 
         // Act
         var result = await decorated.Handle(
@@ -50,16 +40,7 @@ public class ValidationDecoratorTests
         _handler
             .Handle(Arg.Any<TestCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success(42));
-        _services.AddScoped(_ => _handler);
-        _services.AddScoped<IValidator<TestCommand>, TestCommandValidator>();
-        _services.AddLogging();
-        _services.AddApplication();
-        var provider = _services.BuildServiceProvider();
-        using var scope = provider.CreateScope();
-
-        var decorated = scope.ServiceProvider.GetRequiredService<
-            ICommandHandler<TestCommand, int>
-        >();
+        var decorated = CreateDecoratedHandler(new TestCommandValidator());
 
         // Act
         var result = await decorated.Handle(
@@ -84,16 +65,7 @@ public class ValidationDecoratorTests
         _validator
             .ValidateAsync(Arg.Any<IValidationContext>(), Arg.Any<CancellationToken>())
             .Returns(new ValidationResult());
-        _services.AddScoped(_ => _handler);
-        _services.AddScoped(_ => _validator);
-        _services.AddLogging();
-        _services.AddApplication();
-        var provider = _services.BuildServiceProvider();
-        using var scope = provider.CreateScope();
-
-        var decorated = scope.ServiceProvider.GetRequiredService<
-            ICommandHandler<TestCommand, int>
-        >();
+        var decorated = CreateDecoratedHandler(_validator);
 
         // Act
         await decorated.Handle(new TestCommand { Name = "test-name" }, cancellation.Token);
@@ -115,5 +87,21 @@ public class ValidationDecoratorTests
         {
             RuleFor(x => x.Name).NotEmpty();
         }
+    }
+
+    private ICommandHandler<TestCommand, int> CreateDecoratedHandler(
+        IValidator<TestCommand> validator
+    )
+    {
+        var services = new ServiceCollection();
+
+        services.AddScoped(_ => _handler);
+        services.AddScoped(_ => validator);
+        services.AddLogging();
+        services.AddApplication();
+
+        return services
+            .BuildServiceProvider()
+            .GetRequiredService<ICommandHandler<TestCommand, int>>();
     }
 }

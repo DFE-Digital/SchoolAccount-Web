@@ -7,14 +7,7 @@ namespace SchoolAccount.Web.Mvc.UnitTests.Helpers;
 
 public class DateFormatterTests
 {
-    private readonly DateFormatter _dateFormatter;
-    private readonly IDateTimeProvider _dateTimeProvider;
-
-    public DateFormatterTests()
-    {
-        _dateTimeProvider = Substitute.For<IDateTimeProvider>();
-        _dateFormatter = new DateFormatter(_dateTimeProvider);
-    }
+    private readonly IDateTimeProvider _dateTimeProvider = Substitute.For<IDateTimeProvider>();
 
     [Fact]
     public void Today_is_returned_for_the_current_date()
@@ -22,10 +15,10 @@ public class DateFormatterTests
         // Arrange
         var twoAmSeptember14 = new DateTime(2026, 9, 14, 2, 0, 0, DateTimeKind.Utc);
         var nineAmSeptember14 = new DateTime(2026, 9, 14, 9, 0, 0, DateTimeKind.Utc);
-        SetCurrentDateTime(nineAmSeptember14);
+        var dateFormatter = CreateDateFormatterAt(nineAmSeptember14);
 
         // Act
-        var result = _dateFormatter.ToDaysAgo(twoAmSeptember14);
+        var result = dateFormatter.ToDaysAgo(twoAmSeptember14);
 
         // Assert
         result.ShouldBe("Today");
@@ -37,10 +30,10 @@ public class DateFormatterTests
         // Arrange
         var twoAmSeptember14 = new DateTime(2026, 9, 14, 2, 0, 0, DateTimeKind.Utc);
         var nineAmSeptember15 = new DateTime(2026, 9, 15, 9, 0, 0, DateTimeKind.Utc);
-        SetCurrentDateTime(nineAmSeptember15);
+        var dateFormatter = CreateDateFormatterAt(nineAmSeptember15);
 
         // Act
-        var result = _dateFormatter.ToDaysAgo(twoAmSeptember14);
+        var result = dateFormatter.ToDaysAgo(twoAmSeptember14);
 
         // Assert
         result.ShouldBe("1 day ago");
@@ -52,10 +45,10 @@ public class DateFormatterTests
         // Arrange
         var twoAmSeptember15 = new DateTime(2026, 9, 15, 02, 0, 0, DateTimeKind.Utc);
         var nineAmSeptember15 = new DateTime(2026, 9, 15, 9, 0, 0, DateTimeKind.Utc);
-        SetCurrentDateTime(nineAmSeptember15);
+        var dateFormatter = CreateDateFormatterAt(nineAmSeptember15);
 
         // Act
-        var result = _dateFormatter.ToDaysAgo(twoAmSeptember15, 1);
+        var result = dateFormatter.ToDaysAgo(twoAmSeptember15, 1);
 
         // Assert
         result.ShouldBe("1 day ago");
@@ -67,10 +60,10 @@ public class DateFormatterTests
         // Arrange
         var twoAmSeptember15 = new DateTime(2026, 9, 15, 02, 0, 0, DateTimeKind.Utc);
         var nineAmSeptember17 = new DateTime(2026, 9, 17, 9, 0, 0, DateTimeKind.Utc);
-        SetCurrentDateTime(nineAmSeptember17);
+        var dateFormatter = CreateDateFormatterAt(nineAmSeptember17);
 
         // Act
-        var result = _dateFormatter.ToDaysAgo(twoAmSeptember15);
+        var result = dateFormatter.ToDaysAgo(twoAmSeptember15);
 
         // Assert
         result.ShouldBe("2 days ago");
@@ -81,16 +74,18 @@ public class DateFormatterTests
     {
         // Arrange
         var halloween2026 = new DateOnly(2026, 10, 31);
+        var dateFormatter = new DateFormatter(_dateTimeProvider);
 
         // Act
-        var result = _dateFormatter.ToDayMonthNameAndYear(halloween2026);
+        var result = dateFormatter.ToDayMonthNameAndYear(halloween2026);
 
         // Assert
         result.ShouldBe("31 October 2026");
     }
 
-    private void SetCurrentDateTime(DateTime utcNow)
+    private DateFormatter CreateDateFormatterAt(DateTime utcNow)
     {
         _dateTimeProvider.UtcNow.Returns(utcNow);
+        return new DateFormatter(_dateTimeProvider);
     }
 }
