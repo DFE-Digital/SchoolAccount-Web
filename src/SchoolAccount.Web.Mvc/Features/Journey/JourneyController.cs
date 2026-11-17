@@ -33,7 +33,7 @@ public class JourneyController(
         );
 
         var builder = new JourneyViewModelBuilder(dateTimeProvider, featureManager);
-        var journeyViewModel = builder.Build(
+        var journeyViewModel = await builder.Build(
             userContext.Name,
             getCensusJourneyResponse.Value,
             userContext.Organisation!
