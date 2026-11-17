@@ -37,13 +37,15 @@
 
         @if (!Model.MatView)
         {
-            <govuk-button-link
-                href="@Model.CallToAction.Url"
-                rel="noreferrer noopener"
-                target="_blank">
-                @Model.CallToAction.Label
-                <span class="govuk-visually-hidden"> opens in new tab</span>
-            </govuk-button-link>
+            <feature name="@FeatureFlags.CensusClosure" negate="true">
+                <govuk-button-link
+                    href="@Model.CallToAction.Url"
+                    rel="noreferrer noopener"
+                    target="_blank">
+                    @Model.CallToAction.Label
+                    <span class="govuk-visually-hidden"> opens in new tab</span>
+                </govuk-button-link>
+            </feature>
         }
     </div>
 
