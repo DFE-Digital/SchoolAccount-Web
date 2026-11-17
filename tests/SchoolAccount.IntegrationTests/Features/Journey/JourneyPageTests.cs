@@ -2,10 +2,12 @@ using NSubstitute;
 using SchoolAccount.Application.Features.Collect.GetCensusJourney;
 using SchoolAccount.IntegrationTests.Common;
 using SchoolAccount.IntegrationTests.Common.Extensions;
+using SchoolAccount.IntegrationTests.Common.Fakes;
 using SchoolAccount.IntegrationTests.Common.Pages;
 using SchoolAccount.IntegrationTests.Common.Stubs;
 using SchoolAccount.SharedKernel;
 using SchoolAccount.TestCommon.Constants;
+using SchoolAccount.Web.Mvc.Infrastructure;
 using Shouldly;
 using static System.Net.HttpStatusCode;
 using static SchoolAccount.Application.Features.Collect.GetCensusJourney.Responses.GetCensusJourneyContentResponse;
@@ -24,6 +26,7 @@ public class JourneyPageTests : IClassFixture<SchoolAccountWebApplicationFactory
     private readonly HttpClient _client;
     private readonly IDateTimeProvider _dateTimeProvider = Substitute.For<IDateTimeProvider>();
     private readonly CensusJourneyHandler _getCensusJourneyHandler = Stub.CensusJourneyHandler();
+    private readonly TestFeatureFlags _featureFlags = new();
     private readonly Uri _testUri = new("https://www.gov.uk/");
 
     public JourneyPageTests(SchoolAccountWebApplicationFactory<Program> factory)
@@ -32,6 +35,7 @@ public class JourneyPageTests : IClassFixture<SchoolAccountWebApplicationFactory
         {
             services.StubQueryHandler(_getCensusJourneyHandler);
             services.AddSingleton(_dateTimeProvider);
+            services.UseTestFeatureFlags(_featureFlags);
         });
     }
 
@@ -39,6 +43,7 @@ public class JourneyPageTests : IClassFixture<SchoolAccountWebApplicationFactory
     public async Task The_journey_page_shows_the_census_content()
     {
         // Arrange
+        _featureFlags.Disable(FeatureFlags.CensusClosure);
         _getCensusJourneyHandler
             .Handle(Arg.Any<GetCensusJourneyQuery>(), Arg.Any<CancellationToken>())
             .Returns(
@@ -241,6 +246,7 @@ public class JourneyPageTests : IClassFixture<SchoolAccountWebApplicationFactory
     public async Task Call_to_action_button_is_visible_on_the_journey_page()
     {
         // Arrange
+        _featureFlags.Disable(FeatureFlags.CensusClosure);
         _getCensusJourneyHandler
             .Handle(Arg.Any<GetCensusJourneyQuery>(), Arg.Any<CancellationToken>())
             .Returns(
@@ -276,6 +282,7 @@ public class JourneyPageTests : IClassFixture<SchoolAccountWebApplicationFactory
     public async Task Call_to_action_button_has_hidden_opens_in_new_tab_text_for_screen_readers()
     {
         // Arrange
+        _featureFlags.Disable(FeatureFlags.CensusClosure);
         _getCensusJourneyHandler
             .Handle(Arg.Any<GetCensusJourneyQuery>(), Arg.Any<CancellationToken>())
             .Returns(AGetCensusJourneyResponse().AsSuccess());
@@ -402,6 +409,7 @@ public class JourneyPageTests : IClassFixture<SchoolAccountWebApplicationFactory
     public async Task School_statuses_are_displayed_for_multi_academy_trust()
     {
         // Arrange
+        _featureFlags.Disable(FeatureFlags.CensusClosure);
         var octoberFirst2026 = new DateTime(2026, 10, 1, 2, 0, 0, DateTimeKind.Utc);
         var octoberFourth2026 = new DateTime(2026, 10, 4, 9, 0, 0, DateTimeKind.Utc);
 
