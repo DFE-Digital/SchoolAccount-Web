@@ -1,6 +1,8 @@
 using Microsoft.Net.Http.Headers;
 using SchoolAccount.IntegrationTests.Common;
 using Shouldly;
+using static SchoolAccount.TestCommon.Constants.UrlConstants;
+using static Xunit.TestContext;
 using SameSiteMode = Microsoft.Net.Http.Headers.SameSiteMode;
 
 namespace SchoolAccount.IntegrationTests.Features.CrossCutting;
@@ -13,15 +15,13 @@ public class TrackingCookieTests(SchoolAccountWebApplicationFactory<Program> fac
     private const string _cookieName = "SchoolAccountSessionId";
     private const string _staticAssetPath = "/assets/images/card-1.jpg";
 
+    private readonly HttpClient _client = factory.CreateUnauthenticatedClient();
+
     [Fact]
     public async Task A_first_visit_to_a_page_is_given_a_tracking_cookie_holding_a_guid()
     {
-        // Arrange
-        var client = factory.CreateUnauthenticatedClient();
-        var pageUri = factory.GeneratePath("Start", "Start");
-
-        // Act
-        var response = await client.GetAsync(pageUri, TestContext.Current.CancellationToken);
+        // Arrange & Act
+        var response = await _client.GetAsync(StartUrl, Current.CancellationToken);
 
         // Assert
         var trackingCookie = GetTrackingCookie(response);
@@ -32,12 +32,8 @@ public class TrackingCookieTests(SchoolAccountWebApplicationFactory<Program> fac
     [Fact]
     public async Task The_tracking_cookie_is_http_only_secure_and_sent_cross_site()
     {
-        // Arrange
-        var client = factory.CreateUnauthenticatedClient();
-        var pageUri = factory.GeneratePath("Start", "Start");
-
-        // Act
-        var response = await client.GetAsync(pageUri, TestContext.Current.CancellationToken);
+        // Arrange & Act
+        var response = await _client.GetAsync(StartUrl, Current.CancellationToken);
 
         // Assert
         var trackingCookie = GetTrackingCookie(response);
@@ -50,12 +46,8 @@ public class TrackingCookieTests(SchoolAccountWebApplicationFactory<Program> fac
     [Fact]
     public async Task The_tracking_cookie_lasts_for_the_browser_session()
     {
-        // Arrange
-        var client = factory.CreateUnauthenticatedClient();
-        var pageUri = factory.GeneratePath("Start", "Start");
-
-        // Act
-        var response = await client.GetAsync(pageUri, TestContext.Current.CancellationToken);
+        // Arrange & Act
+        var response = await _client.GetAsync(StartUrl, Current.CancellationToken);
 
         // Assert
         var trackingCookie = GetTrackingCookie(response);
@@ -68,16 +60,10 @@ public class TrackingCookieTests(SchoolAccountWebApplicationFactory<Program> fac
     public async Task A_browser_that_already_has_a_tracking_cookie_keeps_it()
     {
         // Arrange
-        var client = factory.CreateUnauthenticatedClient();
-        var pageUri = factory.GeneratePath("Start", "Start");
         var existingIdentifier = Guid.NewGuid();
 
         // Act
-        var response = await GetWithTrackingCookieAsync(
-            client,
-            pageUri,
-            existingIdentifier.ToString()
-        );
+        var response = await GetWithTrackingCookieAsync(existingIdentifier.ToString());
 
         // Assert
         GetTrackingCookie(response).ShouldBeNull();
@@ -87,12 +73,10 @@ public class TrackingCookieTests(SchoolAccountWebApplicationFactory<Program> fac
     public async Task A_tracking_cookie_that_is_not_a_guid_is_replaced()
     {
         // Arrange
-        var client = factory.CreateUnauthenticatedClient();
-        var pageUri = factory.GeneratePath("Start", "Start");
         const string notAGuid = "not-a-guid";
 
         // Act
-        var response = await GetWithTrackingCookieAsync(client, pageUri, notAGuid);
+        var response = await GetWithTrackingCookieAsync(notAGuid);
 
         // Assert
         var trackingCookie = GetTrackingCookie(response);
@@ -103,30 +87,20 @@ public class TrackingCookieTests(SchoolAccountWebApplicationFactory<Program> fac
     [Fact]
     public async Task Static_assets_are_not_given_a_tracking_cookie()
     {
-        // Arrange
-        var client = factory.CreateUnauthenticatedClient();
-
-        // Act
-        var response = await client.GetAsync(
-            _staticAssetPath,
-            TestContext.Current.CancellationToken
-        );
+        // Arrange & Act
+        var response = await _client.GetAsync(_staticAssetPath, Current.CancellationToken);
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeTrue();
         GetTrackingCookie(response).ShouldBeNull();
     }
 
-    private static async Task<HttpResponseMessage> GetWithTrackingCookieAsync(
-        HttpClient client,
-        string uri,
-        string cookieValue
-    )
+    private async Task<HttpResponseMessage> GetWithTrackingCookieAsync(string cookieValue)
     {
-        using var request = new HttpRequestMessage(HttpMethod.Get, uri);
+        using var request = new HttpRequestMessage(HttpMethod.Get, StartUrl);
         request.Headers.Add(HeaderNames.Cookie, $"{_cookieName}={cookieValue}");
 
-        return await client.SendAsync(request, TestContext.Current.CancellationToken);
+        return await _client.SendAsync(request, Current.CancellationToken);
     }
 
     private static SetCookieHeaderValue? GetTrackingCookie(HttpResponseMessage response)
