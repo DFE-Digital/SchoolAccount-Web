@@ -1,10 +1,13 @@
-﻿@model SchoolAccount.Web.Mvc.Features.Journey.JourneyViewModel
+﻿@using SchoolAccount.Web.Mvc.Infrastructure
+@model SchoolAccount.Web.Mvc.Features.Journey.JourneyViewModel
 @{
     ViewData["Title"] = "Journey";
 }
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-        <partial name="ClosureBanner.cshtml"></partial>
+        <feature name="@FeatureFlags.CensusClosure">
+            <partial name="ClosureBanner.cshtml"/>
+        </feature>
         <span class="govuk-caption-xl census-title">@Model.Caption</span>
         <h1 class="govuk-heading-l">@Model.Title</h1>
 
