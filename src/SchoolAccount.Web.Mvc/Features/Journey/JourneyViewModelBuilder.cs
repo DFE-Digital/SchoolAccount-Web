@@ -1,24 +1,31 @@
+using Microsoft.FeatureManagement;
 using SchoolAccount.Application.Features.Collect.GetCensusJourney.Responses;
 using SchoolAccount.SharedKernel;
 using SchoolAccount.SharedKernel.Authentication;
 using SchoolAccount.Web.Mvc.Features.Shared.MultipleSchoolsStatusTable;
 using SchoolAccount.Web.Mvc.Features.Shared.StepByStep;
 using SchoolAccount.Web.Mvc.Helpers;
+using SchoolAccount.Web.Mvc.Infrastructure;
 using static SchoolAccount.Web.Mvc.Features.Shared.MultipleSchoolsStatusTable.MultipleSchoolsStatusTableViewModel;
 
 namespace SchoolAccount.Web.Mvc.Features.Journey;
 
-public class JourneyViewModelBuilder(IDateTimeProvider dateTimeProvider)
+public class JourneyViewModelBuilder(
+    IDateTimeProvider dateTimeProvider,
+    IFeatureManager featureManager
+)
 {
     private readonly DateFormatter _dateFormatter = new(dateTimeProvider);
     private const int _oneDayLag = 1;
 
-    public JourneyViewModel Build(
+    public async Task<JourneyViewModel> Build(
         string? user,
         GetCensusJourneyResponse getCensusJourneyResponse,
         Organisation organisation
     )
     {
+        var isCensusClosed = await featureManager.IsEnabledAsync(FeatureFlags.CensusClosure);
+
         return new JourneyViewModel
         {
             Organisation = organisation,
@@ -69,12 +76,20 @@ public class JourneyViewModelBuilder(IDateTimeProvider dateTimeProvider)
                                 Queries = x.Queries,
                                 UpdatedAt = x.UpdatedAt is null
                                     ? string.Empty
-                                    : _dateFormatter.ToDaysAgo(x.UpdatedAt.Value, _oneDayLag),
+                                    : CalculateLastUpdated(x.UpdatedAt.Value, isCensusClosed),
                             })
                         )
                         .ToList(),
                 }
                 : null,
         };
+    }
+
+    private string CalculateLastUpdated(DateTime updatedAt, bool isCensusClosed)
+    {
+        var updatedAtDateOnly = new DateOnly(updatedAt.Year, updatedAt.Month, updatedAt.Day);
+        return isCensusClosed
+            ? _dateFormatter.ToDayMonthNameAndYear(updatedAtDateOnly)
+            : _dateFormatter.ToDaysAgo(updatedAt, _oneDayLag);
     }
 }

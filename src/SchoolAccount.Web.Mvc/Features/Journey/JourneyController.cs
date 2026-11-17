@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.FeatureManagement;
 using SchoolAccount.Application.Abstractions.Messaging;
 using SchoolAccount.Application.Features.Collect.GetCensusJourney;
 using SchoolAccount.Application.Features.Collect.GetCensusJourney.Responses;
@@ -12,7 +13,8 @@ namespace SchoolAccount.Web.Mvc.Features.Journey;
 public class JourneyController(
     IUserContext userContext,
     IQueryHandler<GetCensusJourneyQuery, GetCensusJourneyResponse> getCensusJourneyHandler,
-    IDateTimeProvider dateTimeProvider
+    IDateTimeProvider dateTimeProvider,
+    IFeatureManager featureManager
 ) : Controller
 {
     [HttpGet]
@@ -30,7 +32,7 @@ public class JourneyController(
             cancellationToken
         );
 
-        var builder = new JourneyViewModelBuilder(dateTimeProvider);
+        var builder = new JourneyViewModelBuilder(dateTimeProvider, featureManager);
         var journeyViewModel = builder.Build(
             userContext.Name,
             getCensusJourneyResponse.Value,
