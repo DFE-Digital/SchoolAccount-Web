@@ -37,7 +37,7 @@
 
         @if (!Model.MatView)
         {
-            <feature name="@FeatureFlags.CensusClosure" negate="true">
+            <feature name="@FeatureFlags.CensusClosure" negate>
                 <govuk-button-link
                     href="@Model.CallToAction.Url"
                     rel="noreferrer noopener"
@@ -82,7 +82,7 @@
                 </govuk-details-text>
             </govuk-details>
         }
-        <feature name="@FeatureFlags.CensusClosure" negate="true">
+        <feature name="@FeatureFlags.CensusClosure" negate>
             <div class="feedback-banner govuk-!-margin-top-0 govuk-!-margin-bottom-6">
                 <h2 class="govuk-heading-m">@Model.SupportService.Title</h2>
                 <p class="govuk-body">
