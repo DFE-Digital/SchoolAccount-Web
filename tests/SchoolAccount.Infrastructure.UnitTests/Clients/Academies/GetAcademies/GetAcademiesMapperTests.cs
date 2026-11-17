@@ -2,6 +2,8 @@ using GovUK.Dfe.AcademiesApi.Client.Contracts;
 using SchoolAccount.Application.Features.Collect.GetCensusJourney.Responses;
 using Shouldly;
 using static SchoolAccount.Infrastructure.Clients.Academies.GetAcademies.GetAcademiesMapper;
+using static SchoolAccount.Infrastructure.UnitTests.Common.Builders.Clients.Academies.GetAcademies.EstablishmentDtoBuilder;
+using static SchoolAccount.Infrastructure.UnitTests.Common.Builders.Clients.Academies.GetAcademies.TrustDtoBuilder;
 
 namespace SchoolAccount.Infrastructure.UnitTests.Clients.Academies.GetAcademies;
 
@@ -11,13 +13,12 @@ public class GetAcademiesMapperTests
     public void A_trust_from_the_academies_api_is_mapped()
     {
         // Arrange
-        var trustDto = new TrustDto
-        {
-            Ukprn = "10012345",
-            Name = "Test Trust",
-            GroupUid = "TR00123",
-            Type = new NameAndCodeDto { Name = "Multi-academy trust", Code = "MAT" },
-        };
+        var trustDto = ATrustDto()
+            .WithUkprn("10012345")
+            .WithName("Test Trust")
+            .WithGroupUid("TR00123")
+            .WithType(new NameAndCodeDto { Name = "Multi-academy trust", Code = "MAT" })
+            .Build();
 
         // Act
         var trustResponse = ToTrustResponse(trustDto, []);
@@ -41,12 +42,7 @@ public class GetAcademiesMapperTests
     public void A_trust_without_a_type_is_mapped_with_a_null_type()
     {
         // Arrange
-        var trustDto = new TrustDto
-        {
-            Ukprn = "10012345",
-            Name = "Test Trust",
-            Type = null,
-        };
+        var trustDto = ATrustDto().WithType(null).Build();
 
         // Act
         var trustResponse = ToTrustResponse(trustDto, []);
@@ -59,7 +55,7 @@ public class GetAcademiesMapperTests
     public void A_trust_without_a_name_throws()
     {
         // Arrange
-        var trustDto = new TrustDto { Ukprn = "10012345", Name = null };
+        var trustDto = ATrustDto().WithName(null).Build();
 
         // Act & Assert
         Should.Throw<ArgumentException>(() => ToTrustResponse(trustDto, []));
@@ -69,7 +65,7 @@ public class GetAcademiesMapperTests
     public void A_trust_without_a_ukprn_throws()
     {
         // Arrange
-        var trustDto = new TrustDto { Ukprn = null, Name = "Test Trust" };
+        var trustDto = ATrustDto().WithUkprn(null).Build();
 
         // Act & Assert
         Should.Throw<ArgumentException>(() => ToTrustResponse(trustDto, []));
@@ -79,14 +75,14 @@ public class GetAcademiesMapperTests
     public void Every_establishment_is_mapped_onto_the_trust()
     {
         // Arrange
-        var trustDto = new TrustDto { Ukprn = "10012345", Name = "Test Trust" };
+        var trustDto = ATrustDto().Build();
         var establishments = new List<GetAcademyEstablishmentResponse>
         {
             ToEstablishmentResponse(
-                new EstablishmentDto { Ukprn = "10011111", Name = "First School" }
+                AnEstablishmentDto().WithUkprn("10011111").WithName("First School").Build()
             ),
             ToEstablishmentResponse(
-                new EstablishmentDto { Ukprn = "10022222", Name = "Second School" }
+                AnEstablishmentDto().WithUkprn("10022222").WithName("Second School").Build()
             ),
         };
 
@@ -107,7 +103,7 @@ public class GetAcademiesMapperTests
     public void A_trust_without_establishments_is_mapped_with_no_establishments()
     {
         // Arrange
-        var trustDto = new TrustDto { Ukprn = "10012345", Name = "Test Trust" };
+        var trustDto = ATrustDto().Build();
 
         // Act
         var trustResponse = ToTrustResponse(trustDto, []);
@@ -120,15 +116,14 @@ public class GetAcademiesMapperTests
     public void An_establishment_is_mapped_to_an_establishment_response()
     {
         // Arrange
-        var establishmentDto = new EstablishmentDto
-        {
-            Ukprn = "10011111",
-            Name = "Test School",
-            Urn = "100001",
-            EstablishmentNumber = "1234",
-            LocalAuthorityCode = "201",
-            LocalAuthorityName = "Camden",
-        };
+        var establishmentDto = AnEstablishmentDto()
+            .WithUkprn("10011111")
+            .WithName("Test School")
+            .WithUrn("100001")
+            .WithEstablishmentNumber("1234")
+            .WithLocalAuthorityCode("201")
+            .WithLocalAuthorityName("Camden")
+            .Build();
 
         // Act
         var establishmentResponse = ToEstablishmentResponse(establishmentDto);
@@ -148,7 +143,7 @@ public class GetAcademiesMapperTests
     public void An_establishment_without_a_ukprn_throws()
     {
         // Arrange
-        var establishmentDto = new EstablishmentDto { Ukprn = null, Name = "Test Trust" };
+        var establishmentDto = AnEstablishmentDto().WithUkprn(null).Build();
 
         // Act & Assert
         Should.Throw<ArgumentException>(() => ToEstablishmentResponse(establishmentDto));
@@ -158,7 +153,7 @@ public class GetAcademiesMapperTests
     public void An_establishment_without_a_name_throws()
     {
         // Arrange
-        var establishmentDto = new EstablishmentDto { Ukprn = "Test Trust", Name = null };
+        var establishmentDto = AnEstablishmentDto().WithName(null).Build();
 
         // Act & Assert
         Should.Throw<ArgumentException>(() => ToEstablishmentResponse(establishmentDto));
@@ -168,23 +163,18 @@ public class GetAcademiesMapperTests
     public void An_establishment_with_null_fields_is_mapped_with_nulls()
     {
         // Arrange
-        var establishmentDto = new EstablishmentDto
-        {
-            Ukprn = "10011111",
-            Name = "Test School",
-            Urn = null,
-            EstablishmentNumber = null,
-            LocalAuthorityCode = null,
-            LocalAuthorityName = null,
-        };
+        var establishmentDto = AnEstablishmentDto()
+            .WithUrn(null)
+            .WithEstablishmentNumber(null)
+            .WithLocalAuthorityCode(null)
+            .WithLocalAuthorityName(null)
+            .Build();
 
         // Act
         var establishmentResponse = ToEstablishmentResponse(establishmentDto);
 
         // Assert
         establishmentResponse.ShouldSatisfyAllConditions(
-            establishment => establishment.Ukprn.ShouldBe("10011111"),
-            establishment => establishment.EstablishmentName.ShouldBe("Test School"),
             establishment => establishment.Urn.ShouldBeNull(),
             establishment => establishment.EstablishmentNumber.ShouldBeNull(),
             establishment => establishment.LocalAuthorityCode.ShouldBeNull(),
@@ -196,18 +186,13 @@ public class GetAcademiesMapperTests
     public void The_establishment_name_and_code_types_are_mapped()
     {
         // Arrange
-        var establishmentDto = new EstablishmentDto
-        {
-            Ukprn = "10011111",
-            Name = "Test School",
-            EstablishmentType = new NameAndCodeDto { Name = "Academy", Code = "AC" },
-            EstablishmentGroupType = new NameAndCodeDto
-            {
-                Name = "Academy sponsor led",
-                Code = "ASL",
-            },
-            PhaseOfEducation = new NameAndCodeDto { Name = "Primary", Code = "PR" },
-        };
+        var establishmentDto = AnEstablishmentDto()
+            .WithEstablishmentType(new NameAndCodeDto { Name = "Academy", Code = "AC" })
+            .WithEstablishmentGroupType(
+                new NameAndCodeDto { Name = "Academy sponsor led", Code = "ASL" }
+            )
+            .WithPhaseOfEducation(new NameAndCodeDto { Name = "Primary", Code = "PR" })
+            .Build();
 
         // Act
         var establishmentResponse = ToEstablishmentResponse(establishmentDto);
@@ -237,14 +222,11 @@ public class GetAcademiesMapperTests
     public void An_establishment_without_name_and_code_types_is_mapped_with_nulls()
     {
         // Arrange
-        var establishmentDto = new EstablishmentDto
-        {
-            Ukprn = "10011111",
-            Name = "Test School",
-            EstablishmentType = null,
-            EstablishmentGroupType = null,
-            PhaseOfEducation = null,
-        };
+        var establishmentDto = AnEstablishmentDto()
+            .WithEstablishmentType(null)
+            .WithEstablishmentGroupType(null)
+            .WithPhaseOfEducation(null)
+            .Build();
 
         // Act
         var establishmentResponse = ToEstablishmentResponse(establishmentDto);
@@ -259,12 +241,9 @@ public class GetAcademiesMapperTests
     public void A_name_and_code_with_null_values_returns_null()
     {
         // Arrange
-        var trustDto = new TrustDto
-        {
-            Ukprn = "10012345",
-            Name = "Test Trust",
-            Type = new NameAndCodeDto { Name = null, Code = null },
-        };
+        var trustDto = ATrustDto()
+            .WithType(new NameAndCodeDto { Name = null, Code = null })
+            .Build();
 
         // Act
         var trustResponse = ToTrustResponse(trustDto, []);
@@ -277,12 +256,9 @@ public class GetAcademiesMapperTests
     public void A_null_name_for_a_name_and_code_returns_null()
     {
         // Arrange
-        var trustDto = new TrustDto
-        {
-            Ukprn = "10012345",
-            Name = "Test Trust",
-            Type = new NameAndCodeDto { Name = null, Code = "MAT" },
-        };
+        var trustDto = ATrustDto()
+            .WithType(new NameAndCodeDto { Name = null, Code = "MAT" })
+            .Build();
 
         // Act
         var trustResponse = ToTrustResponse(trustDto, []);
@@ -295,12 +271,9 @@ public class GetAcademiesMapperTests
     public void A_null_code_for_a_name_and_code_returns_null()
     {
         // Arrange
-        var trustDto = new TrustDto
-        {
-            Ukprn = "10012345",
-            Name = "Test Trust",
-            Type = new NameAndCodeDto { Name = "Primary School", Code = null },
-        };
+        var trustDto = ATrustDto()
+            .WithType(new NameAndCodeDto { Name = "Multi-academy trust", Code = null })
+            .Build();
 
         // Act
         var trustResponse = ToTrustResponse(trustDto, []);
