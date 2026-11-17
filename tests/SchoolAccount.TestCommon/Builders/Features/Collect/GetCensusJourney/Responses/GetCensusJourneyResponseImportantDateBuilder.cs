@@ -4,7 +4,7 @@ namespace SchoolAccount.TestCommon.Builders.Features.Collect.GetCensusJourney.Re
 
 public class GetCensusJourneyResponseImportantDateBuilder
 {
-    private DateOnly _date = DateOnly.FromDateTime(DateTime.Now);
+    private DateOnly _date = new(2026, 10, 1);
     private string _label = "Return due";
 
     public static GetCensusJourneyResponseImportantDateBuilder AnImportantDate()
