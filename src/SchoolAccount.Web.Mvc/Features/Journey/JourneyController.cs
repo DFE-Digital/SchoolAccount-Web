@@ -12,7 +12,7 @@ namespace SchoolAccount.Web.Mvc.Features.Journey;
 public class JourneyController(
     IUserContext userContext,
     IQueryHandler<GetCensusJourneyQuery, GetCensusJourneyResponse> getCensusJourneyHandler,
-    IDateTimeProvider dateTimeProvider
+    TimeProvider timeProvider
 ) : Controller
 {
     [HttpGet]
@@ -30,7 +30,7 @@ public class JourneyController(
             cancellationToken
         );
 
-        var builder = new JourneyViewModelBuilder(dateTimeProvider);
+        var builder = new JourneyViewModelBuilder(timeProvider);
         var journeyViewModel = builder.Build(
             userContext.Name,
             getCensusJourneyResponse.Value,
