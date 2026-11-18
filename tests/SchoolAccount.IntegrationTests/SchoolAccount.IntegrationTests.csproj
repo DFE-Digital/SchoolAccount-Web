@@ -12,6 +12,7 @@
     <PackageReference Include="AngleSharp" />
     <PackageReference Include="JetBrains.Annotations" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
+    <PackageReference Include="Microsoft.Extensions.TimeProvider.Testing" />
     <PackageReference Include="NSubstitute" />
     <PackageReference Include="Shouldly" />
     <PackageReference Include="xunit.v3.mtp-v2" />

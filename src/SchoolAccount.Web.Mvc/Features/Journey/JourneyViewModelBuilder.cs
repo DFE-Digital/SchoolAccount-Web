@@ -8,9 +8,9 @@ using static SchoolAccount.Web.Mvc.Features.Shared.MultipleSchoolsStatusTable.Mu
 
 namespace SchoolAccount.Web.Mvc.Features.Journey;
 
-public class JourneyViewModelBuilder(IDateTimeProvider dateTimeProvider)
+public class JourneyViewModelBuilder(TimeProvider timeProvider)
 {
-    private readonly DateFormatter _dateFormatter = new(dateTimeProvider);
+    private readonly DateFormatter _dateFormatter = new(timeProvider);
     private const int _oneDayLag = 1;
 
     public JourneyViewModel Build(
