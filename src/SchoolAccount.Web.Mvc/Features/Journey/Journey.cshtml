@@ -1,15 +1,15 @@
-﻿@using SchoolAccount.Web.Mvc.Infrastructure
-@model SchoolAccount.Web.Mvc.Features.Journey.JourneyViewModel
+﻿@model SchoolAccount.Web.Mvc.Features.Journey.JourneyViewModel
 @{
     ViewData["Title"] = "Journey";
 }
-<div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-        <feature name="@FeatureFlags.CensusClosure">
+@if (Model.IsCensusClosed)
+{
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
             <partial name="ClosureBanner.cshtml"/>
-        </feature>
+        </div>
     </div>
-</div>
+}
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
         <span class="govuk-caption-xl census-title">@Model.Caption</span>
@@ -39,17 +39,15 @@
             <partial name="~/Features/Shared/StepByStep/StepByStep.cshtml" model="@steps"/>
         }
 
-        @if (!Model.MatView)
+        @if (Model is { MatView: false, IsCensusClosed: false })
         {
-            <feature name="@FeatureFlags.CensusClosure" negate>
-                <govuk-button-link
-                    href="@Model.CallToAction.Url"
-                    rel="noreferrer noopener"
-                    target="_blank">
-                    @Model.CallToAction.Label
-                    <span class="govuk-visually-hidden"> opens in new tab</span>
-                </govuk-button-link>
-            </feature>
+            <govuk-button-link
+                href="@Model.CallToAction.Url"
+                rel="noreferrer noopener"
+                target="_blank">
+                @Model.CallToAction.Label
+                <span class="govuk-visually-hidden"> opens in new tab</span>
+            </govuk-button-link>
         }
     </div>
 
@@ -86,7 +84,8 @@
                 </govuk-details-text>
             </govuk-details>
         }
-        <feature name="@FeatureFlags.CensusClosure" negate>
+        @if (!Model.IsCensusClosed)
+        {
             <div class="feedback-banner govuk-!-margin-top-0 govuk-!-margin-bottom-6">
                 <h2 class="govuk-heading-m">@Model.SupportService.Title</h2>
                 <p class="govuk-body">
@@ -101,6 +100,6 @@
                     for queries and help.
                 </p>
             </div>
-        </feature>
+        }
     </div>
 </div>
