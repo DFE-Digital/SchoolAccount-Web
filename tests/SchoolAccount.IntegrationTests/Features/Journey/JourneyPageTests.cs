@@ -606,4 +606,100 @@ public class JourneyPageTests : IClassFixture<SchoolAccountWebApplicationFactory
             .GetElementContentByText("li", "Test Status")
             .ShouldBe("Test Status: Test status description.");
     }
+
+    [Fact]
+    public async Task Census_closure_banner_is_shown_when_the_closure_feature_flag_is_enabled()
+    {
+        // Arrange
+        _getCensusJourneyHandler
+            .Handle(Arg.Any<GetCensusJourneyQuery>(), Arg.Any<CancellationToken>())
+            .Returns(AGetCensusJourneyResponse().AsSuccess());
+
+        // Act
+        var response = await _client.GetAsync(JourneyUrl, _cancellationToken);
+        var journeyPage = await AngleSharpPage.FromResponseAsync<JourneyPage>(
+            response,
+            _cancellationToken
+        );
+
+        // Assert
+        response.StatusCode.ShouldBe(OK);
+
+        journeyPage
+            .GetElementContentByText("h2", "The Autumn school census 2026 has now closed")
+            .ShouldBe("The Autumn school census 2026 has now closed");
+    }
+
+    [Fact]
+    public async Task Help_banner_is_not_shown_when_the_closure_feature_flag_is_enabled()
+    {
+        // Arrange
+        _getCensusJourneyHandler
+            .Handle(Arg.Any<GetCensusJourneyQuery>(), Arg.Any<CancellationToken>())
+            .Returns(AGetCensusJourneyResponse().AsSuccess());
+
+        // Act
+        var html = await _client.GetStringAsync(JourneyUrl, _cancellationToken);
+
+        // Assert
+        html.ShouldNotContain("Get help with the Autumn school census");
+    }
+
+    [Fact]
+    public async Task Go_to_Collect_button_is_not_shown_when_the_closure_feature_flag_is_enabled()
+    {
+        // Arrange
+        _getCensusJourneyHandler
+            .Handle(Arg.Any<GetCensusJourneyQuery>(), Arg.Any<CancellationToken>())
+            .Returns(AGetCensusJourneyResponse().AsSuccess());
+
+        // Act
+        var html = await _client.GetStringAsync(JourneyUrl, _cancellationToken);
+
+        // Assert
+        html.ShouldNotContain("Go to COLLECT");
+    }
+
+    [Fact]
+    public async Task The_school_status_tables_last_updated_date_is_shown_as_a_full_date_when_the_closure_feature_flag_is_enabled()
+    {
+        // Arrange
+        var octoberFirst2026 = new DateTime(2026, 10, 1, 2, 0, 0, DateTimeKind.Utc);
+        var octoberFourth2026 = new DateTime(2026, 10, 4, 9, 0, 0, DateTimeKind.Utc);
+
+        _dateTimeProvider.UtcNow.Returns(octoberFourth2026);
+        _client.WithOrganisation(OrganisationConstants.TrustJson);
+        _getCensusJourneyHandler
+            .Handle(Arg.Any<GetCensusJourneyQuery>(), Arg.Any<CancellationToken>())
+            .Returns(
+                AGetCensusJourneyResponse()
+                    .WithSchoolStatuses(
+                        ACensusStatusResponse()
+                            .WithName("Test School 2")
+                            .WithAction("Autumn Census 2026", "Submitted", 1, 2, octoberFirst2026)
+                    )
+                    .AsSuccess()
+            );
+
+        // Act
+        var response = await _client.GetAsync(JourneyUrl, _cancellationToken);
+        var journeyPage = await AngleSharpPage.FromResponseAsync<JourneyPage>(
+            response,
+            _cancellationToken
+        );
+
+        // Assert
+        response.StatusCode.ShouldBe(OK);
+
+        var schoolStatus = journeyPage.GetTableCellByHeader();
+        schoolStatus.Count.ShouldBe(1);
+        schoolStatus[0]
+            .ShouldSatisfyAllConditions(
+                status => status["Name"].ShouldBe("Test School 2"),
+                status => status["Status"].ShouldBe("Submitted"),
+                status => status["Last Changed"].ShouldBe("1 October 2026"),
+                status => status["Errors"].ShouldBe("1"),
+                status => status["Queries"].ShouldBe("2")
+            );
+    }
 }
