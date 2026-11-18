@@ -38,6 +38,8 @@ public sealed class JourneyViewModel
     public bool DisplayUnderstandStatuses =>
         UnderstandStatuses.Any() && (Status != UnavailableStatus || MatView);
 
+    public bool IsCensusClosed { get; init; }
+
     public bool TryGetSteps(out StepByStepViewModelCollection steps)
     {
         steps = Steps!;

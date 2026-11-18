@@ -5,6 +5,7 @@ using SchoolAccount.Application.Abstractions.Messaging;
 using SchoolAccount.Application.Features.Collect.GetCensusJourney;
 using SchoolAccount.Application.Features.Collect.GetCensusJourney.Responses;
 using SchoolAccount.SharedKernel;
+using SchoolAccount.Web.Mvc.Infrastructure;
 
 namespace SchoolAccount.Web.Mvc.Features.Journey;
 
@@ -20,6 +21,8 @@ public class JourneyController(
     [HttpGet]
     public async Task<IActionResult> Journey(CancellationToken cancellationToken)
     {
+        var isCensusClosed = await featureManager.IsEnabledAsync(FeatureFlags.CensusClosure);
+
         var query = new GetCensusJourneyQuery
         {
             Id = userContext.Id!,
@@ -32,8 +35,8 @@ public class JourneyController(
             cancellationToken
         );
 
-        var builder = new JourneyViewModelBuilder(timeProvider, featureManager);
-        var journeyViewModel = await builder.Build(
+        var builder = new JourneyViewModelBuilder(timeProvider, isCensusClosed);
+        var journeyViewModel = builder.Build(
             userContext.Name,
             getCensusJourneyResponse.Value,
             userContext.Organisation!
