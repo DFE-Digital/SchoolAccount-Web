@@ -11,7 +11,6 @@ using SchoolAccount.Infrastructure.Clients.Academies;
 using SchoolAccount.Infrastructure.Clients.Azure;
 using SchoolAccount.Infrastructure.Clients.Collect;
 using SchoolAccount.Infrastructure.Config;
-using SchoolAccount.Infrastructure.Time;
 using SchoolAccount.SharedKernel;
 
 namespace SchoolAccount.Infrastructure;
@@ -33,7 +32,7 @@ public static class DependencyInjection
 
     private static IServiceCollection AddServices(this IServiceCollection services)
     {
-        services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
+        services.AddSingleton(TimeProvider.System);
 
         return services;
     }

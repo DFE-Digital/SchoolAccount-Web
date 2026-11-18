@@ -13,8 +13,8 @@ namespace SchoolAccount.Web.Mvc.Features.Journey;
 public class JourneyController(
     IUserContext userContext,
     IQueryHandler<GetCensusJourneyQuery, GetCensusJourneyResponse> getCensusJourneyHandler,
-    IDateTimeProvider dateTimeProvider,
-    IFeatureManager featureManager
+    IFeatureManager featureManager,
+    TimeProvider timeProvider
 ) : Controller
 {
     [HttpGet]
@@ -32,7 +32,7 @@ public class JourneyController(
             cancellationToken
         );
 
-        var builder = new JourneyViewModelBuilder(dateTimeProvider, featureManager);
+        var builder = new JourneyViewModelBuilder(timeProvider, featureManager);
         var journeyViewModel = await builder.Build(
             userContext.Name,
             getCensusJourneyResponse.Value,

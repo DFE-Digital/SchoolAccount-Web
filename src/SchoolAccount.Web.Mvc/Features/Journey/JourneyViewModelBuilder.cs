@@ -1,6 +1,5 @@
 using Microsoft.FeatureManagement;
 using SchoolAccount.Application.Features.Collect.GetCensusJourney.Responses;
-using SchoolAccount.SharedKernel;
 using SchoolAccount.SharedKernel.Authentication;
 using SchoolAccount.Web.Mvc.Features.Shared.MultipleSchoolsStatusTable;
 using SchoolAccount.Web.Mvc.Features.Shared.StepByStep;
@@ -10,12 +9,9 @@ using static SchoolAccount.Web.Mvc.Features.Shared.MultipleSchoolsStatusTable.Mu
 
 namespace SchoolAccount.Web.Mvc.Features.Journey;
 
-public class JourneyViewModelBuilder(
-    IDateTimeProvider dateTimeProvider,
-    IFeatureManager featureManager
-)
+public class JourneyViewModelBuilder(TimeProvider timeProvider, IFeatureManager featureManager)
 {
-    private readonly DateFormatter _dateFormatter = new(dateTimeProvider);
+    private readonly DateFormatter _dateFormatter = new(timeProvider);
     private const int _oneDayLag = 1;
 
     public async Task<JourneyViewModel> Build(
