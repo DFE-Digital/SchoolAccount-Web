@@ -120,7 +120,7 @@ These rules are enforced by the tests in `tests/SchoolAccount.ArchitectureTests`
 | Presentation   | `SchoolAccount.Web.Mvc`        |
 | Shared kernel  | `SchoolAccount.SharedKernel`   |
 
-`SchoolAccount.SharedKernel` contains primitives used across all layers (`Result<T>`, `Error`, `ValidationError`, `IDateTimeProvider`)
+`SchoolAccount.SharedKernel` contains primitives used across all layers (`Result<T>`, `Error`, `ValidationError`)
 and sits outside the ring model - it has no dependencies itself and can be referenced by any layer.
 
 The Application layer organises features using **package by feature** under `src/SchoolAccount.Application/`, with each use case in

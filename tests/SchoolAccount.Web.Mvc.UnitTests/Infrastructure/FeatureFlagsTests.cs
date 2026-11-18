@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Time.Testing;
 using Microsoft.FeatureManagement;
 using SchoolAccount.Web.Mvc.Infrastructure;
 using Shouldly;
@@ -39,7 +40,8 @@ public class FeatureFlagsTests
     )
     {
         // Arrange
-        var start = DateTimeOffset.UtcNow.AddDays(startOffsetInDays).ToString("R");
+        var now = new DateTimeOffset(2026, 10, 1, 9, 0, 0, TimeSpan.Zero);
+        var start = now.AddDays(startOffsetInDays).ToString("R");
 
         var configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(
@@ -59,6 +61,7 @@ public class FeatureFlagsTests
 
         await using var serviceProvider = new ServiceCollection()
             .AddLogging()
+            .AddSingleton<TimeProvider>(new FakeTimeProvider(now))
             .AddFeatureManagement(configuration)
             .Services.BuildServiceProvider();
 
