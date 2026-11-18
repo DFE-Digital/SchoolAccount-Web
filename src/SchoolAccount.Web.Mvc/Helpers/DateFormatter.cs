@@ -11,7 +11,8 @@ public class DateFormatter(TimeProvider timeProvider)
 
     public string ToDaysAgo(DateTime date, int offsetDays = 0)
     {
-        var daysAgo = (int)Math.Floor((timeProvider.GetUtcNow().UtcDateTime - date).TotalDays) + offsetDays;
+        var daysAgo =
+            (int)Math.Floor((timeProvider.GetUtcNow().UtcDateTime - date).TotalDays) + offsetDays;
         var dayText = daysAgo == 1 ? "day" : "days";
         return daysAgo == 0 ? "Today" : $"{daysAgo} {dayText} ago";
     }
