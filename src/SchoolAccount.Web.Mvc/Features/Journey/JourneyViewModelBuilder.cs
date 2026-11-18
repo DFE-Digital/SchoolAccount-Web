@@ -68,7 +68,7 @@ public class JourneyViewModelBuilder(TimeProvider timeProvider, bool isCensusClo
                                 Queries = x.Queries,
                                 UpdatedAt = x.UpdatedAt is null
                                     ? string.Empty
-                                    : CalculateLastUpdated(x.UpdatedAt.Value, isCensusClosed),
+                                    : CalculateLastUpdated(x.UpdatedAt.Value),
                             })
                         )
                         .ToList(),
@@ -78,9 +78,9 @@ public class JourneyViewModelBuilder(TimeProvider timeProvider, bool isCensusClo
         };
     }
 
-    private string CalculateLastUpdated(DateTime updatedAt, bool isCensusClosed)
+    private string CalculateLastUpdated(DateTime updatedAt)
     {
-        var updatedAtDateOnly = new DateOnly(updatedAt.Year, updatedAt.Month, updatedAt.Day);
+        var updatedAtDateOnly = DateOnly.FromDateTime(updatedAt);
         return isCensusClosed
             ? _dateFormatter.ToDayMonthNameAndYear(updatedAtDateOnly)
             : _dateFormatter.ToDaysAgo(updatedAt, _oneDayLag);
