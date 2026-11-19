@@ -566,4 +566,133 @@ public class JourneyPageTests : IClassFixture<SchoolAccountWebApplicationFactory
             .GetElementContentByText("li", "Test Status")
             .ShouldBe("Test Status: Test status description.");
     }
+
+    [Fact]
+    public async Task Status_explanations_unavailable_overview_is_shown_when_all_schools_under_a_trust_have_unavailable_statuses()
+    {
+        // Arrange
+        _client.WithOrganisation(OrganisationConstants.TrustJson);
+        _getCensusJourneyHandler
+            .Handle(Arg.Any<GetCensusJourneyQuery>(), Arg.Any<CancellationToken>())
+            .Returns(
+                AGetCensusJourneyResponse()
+                    .WithSchoolStatuses(
+                        ACensusStatusResponse()
+                            .WithName("Test School 1")
+                            .WithAction("Autumn Census 2026", "Status unavailable")
+                    )
+                    .AsSuccess()
+            );
+
+        // Act
+        var response = await _client.GetAsync(JourneyUrl, _cancellationToken);
+        var journeyPage = await AngleSharpPage.FromResponseAsync<JourneyPage>(
+            response,
+            _cancellationToken
+        );
+
+        // Assert
+        response.StatusCode.ShouldBe(OK);
+        journeyPage
+            .GetElementContentByText(
+                "p",
+                "Statuses are currently unavailable. When we can display status information, you can see what they mean below."
+            )
+            .ShouldNotBeNull();
+    }
+
+    [Fact]
+    public async Task Status_explanations_unavailable_overview_is_not_shown_when_one_school_under_a_trust_does_not_have_an_unavailable_status()
+    {
+        // Arrange
+        _client.WithOrganisation(OrganisationConstants.TrustJson);
+        _getCensusJourneyHandler
+            .Handle(Arg.Any<GetCensusJourneyQuery>(), Arg.Any<CancellationToken>())
+            .Returns(
+                AGetCensusJourneyResponse()
+                    .WithSchoolStatuses(
+                        ACensusStatusResponse()
+                            .WithName("Test School 1")
+                            .WithAction("Autumn Census 2026", "Status unavailable"),
+                        ACensusStatusResponse()
+                            .WithName("Test School 2")
+                            .WithAction("Autumn Census 2026", "Approved")
+                    )
+                    .AsSuccess()
+            );
+
+        // Act
+        var response = await _client.GetAsync(JourneyUrl, _cancellationToken);
+        var journeyPage = await AngleSharpPage.FromResponseAsync<JourneyPage>(
+            response,
+            _cancellationToken
+        );
+
+        // Assert
+        response.StatusCode.ShouldBe(OK);
+        journeyPage
+            .GetElementContentByText(
+                "p",
+                "Statuses are currently unavailable. When we can display status information, you can see what they mean below."
+            )
+            .ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task Status_explanations_unavailable_overview_is_shown_when_a_single_school_has_an_unavailable_status()
+    {
+        // Arrange
+        _getCensusJourneyHandler
+            .Handle(Arg.Any<GetCensusJourneyQuery>(), Arg.Any<CancellationToken>())
+            .Returns(
+                AGetCensusJourneyResponse()
+                    .WithContent(ACensusJourneyContentResponse().WithStatus("Status unavailable"))
+                    .AsSuccess()
+            );
+
+        // Act
+        var response = await _client.GetAsync(JourneyUrl, _cancellationToken);
+        var journeyPage = await AngleSharpPage.FromResponseAsync<JourneyPage>(
+            response,
+            _cancellationToken
+        );
+
+        // Assert
+        response.StatusCode.ShouldBe(OK);
+        journeyPage
+            .GetElementContentByText(
+                "p",
+                "Statuses are currently unavailable. When we can display status information, you can see what they mean below."
+            )
+            .ShouldNotBeNull();
+    }
+
+    [Fact]
+    public async Task Status_explanations_unavailable_overview_is_not_shown_when_a_single_school_does_not_have_an_unavailable_status()
+    {
+        // Arrange
+        _getCensusJourneyHandler
+            .Handle(Arg.Any<GetCensusJourneyQuery>(), Arg.Any<CancellationToken>())
+            .Returns(
+                AGetCensusJourneyResponse()
+                    .WithContent(ACensusJourneyContentResponse().WithStatus("Approved"))
+                    .AsSuccess()
+            );
+
+        // Act
+        var response = await _client.GetAsync(JourneyUrl, _cancellationToken);
+        var journeyPage = await AngleSharpPage.FromResponseAsync<JourneyPage>(
+            response,
+            _cancellationToken
+        );
+
+        // Assert
+        response.StatusCode.ShouldBe(OK);
+        journeyPage
+            .GetElementContentByText(
+                "p",
+                "Statuses are currently unavailable. When we can display status information, you can see what they mean below."
+            )
+            .ShouldBeNull();
+    }
 }
