@@ -16,7 +16,7 @@ public class DateFormatter(TimeProvider timeProvider)
     public string ToDayMonthNameAndYear(DateTime date)
     {
         var ukDate = TimeZoneInfo.ConvertTimeFromUtc(date, _ukTimeZone);
-        return ukDate.ToString("d MMMM yyyy", CultureInfo.InvariantCulture);
+        return ToDayMonthNameAndYear(DateOnly.FromDateTime(ukDate));
     }
 
     public string ToDaysAgo(DateTime date, int offsetDays = 0)
