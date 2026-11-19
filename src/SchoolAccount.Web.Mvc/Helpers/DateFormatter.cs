@@ -4,9 +4,19 @@ namespace SchoolAccount.Web.Mvc.Helpers;
 
 public class DateFormatter(TimeProvider timeProvider)
 {
+    private static readonly TimeZoneInfo _ukTimeZone = TimeZoneInfo.FindSystemTimeZoneById(
+        "Europe/London"
+    );
+
     public string ToDayMonthNameAndYear(DateOnly date)
     {
         return date.ToString("d MMMM yyyy", CultureInfo.InvariantCulture);
+    }
+
+    public string ToDayMonthNameAndYear(DateTime date)
+    {
+        var ukDate = TimeZoneInfo.ConvertTimeFromUtc(date, _ukTimeZone);
+        return ukDate.ToString("d MMMM yyyy", CultureInfo.InvariantCulture);
     }
 
     public string ToDaysAgo(DateTime date, int offsetDays = 0)
