@@ -77,8 +77,10 @@ public class StepByStepViewModelCollection
         return $"sbs-{Identifier}-wrapper";
     }
 
-    public string DetermineStepIdentifier(StepByStepViewModel step) =>
-        step.Anchor ?? $"sbs-{Identifier}-step-{step.Index}";
+    public string DetermineStepIdentifier(StepByStepViewModel step)
+    {
+        return step.Anchor ?? $"sbs-{Identifier}-step-{step.Index}";
+    }
 
     public string DeterminePanelIdentifier(int index)
     {
