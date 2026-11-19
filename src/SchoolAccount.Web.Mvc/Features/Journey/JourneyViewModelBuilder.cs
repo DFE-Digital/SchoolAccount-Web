@@ -9,6 +9,9 @@ namespace SchoolAccount.Web.Mvc.Features.Journey;
 
 public class JourneyViewModelBuilder(TimeProvider timeProvider, bool isCensusClosed)
 {
+    private static readonly TimeZoneInfo _ukTimeZone = TimeZoneInfo.FindSystemTimeZoneById(
+        "Europe/London"
+    );
     private readonly DateFormatter _dateFormatter = new(timeProvider);
     private const int _oneDayLag = 1;
 
@@ -80,7 +83,8 @@ public class JourneyViewModelBuilder(TimeProvider timeProvider, bool isCensusClo
 
     private string CalculateLastUpdated(DateTime updatedAt)
     {
-        var updatedAtDateOnly = DateOnly.FromDateTime(updatedAt);
+        var ukDateTime = TimeZoneInfo.ConvertTimeFromUtc(updatedAt, _ukTimeZone);
+        var updatedAtDateOnly = DateOnly.FromDateTime(ukDateTime);
         return isCensusClosed
             ? _dateFormatter.ToDayMonthNameAndYear(updatedAtDateOnly)
             : _dateFormatter.ToDaysAgo(updatedAt, _oneDayLag);
