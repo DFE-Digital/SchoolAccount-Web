@@ -1,3 +1,4 @@
+@using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata
 @model SchoolAccount.Web.Mvc.Features.Journey.JourneyViewModel
 <govuk-notification-banner>
     <govuk-notification-banner-title heading-level="2">
@@ -11,7 +12,7 @@
         <p class="govuk-body">
             If the deadline has been missed or you have any questions,
             <a
-                href="https://form.education.gov.uk/en/AchieveForms/?form_uri=sandbox-publish://AF-Process-2b61dfcd-9296-4f6a-8a26-4671265cae67/AF-Stage-f3f5200e-e605-4a1b-ae6b-3536bc77305c/definition.json&redirectlink=%2Fen&cancelRedirectLink=%2Fen"
+                href="@Model.SupportService.Url"
                 class="govuk-link govuk-link--no-visited-state"
                 rel="noreferrer noopener"
                 target="_blank"
