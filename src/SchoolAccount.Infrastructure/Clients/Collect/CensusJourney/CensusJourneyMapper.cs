@@ -79,7 +79,7 @@ public static class CensusJourneyMapper
                     Body = """
                         <p>COLLECT runs a “familiarisation period”, usually beginning 4 weeks before the census opens. During this time you can upload your census return file in advance, see any errors or queries it raises. Your school’s census contact will be emailed when this is available.</p>
                         <p>Export the census return file from your MIS, upload it to COLLECT, and see what issues it identifies. Fix any problems in your MIS and generate a new return. You can do this as many times as you need until your return is error-free.</p>
-                        <p>See step 5, ‘Submit your return’, for guidance on resolving errors and queries.</p>
+                        <p>See <a href="#submit-your-return">step 5, ‘Submit your return’</a>, for guidance on resolving errors and queries.</p>
                         """,
                 },
                 new StepByStep
@@ -92,6 +92,7 @@ public static class CensusJourneyMapper
                 },
                 new StepByStep
                 {
+                    Anchor = "submit-your-return",
                     Status = new StepByStepStatus { Label = "Available 1 October 2026" },
                     Title = "Submit your return",
                     Body = """

@@ -37,6 +37,7 @@ public class StepByStepViewModelCollection
 
         var model = new StepByStepViewModel(Steps.Count + 1)
         {
+            Anchor = step.Anchor,
             Title = step.Title,
             Content = HtmlContentHelper.AddClassesToNodes(step.Body, requiredClasses),
             IsOpen = step.IsOpen,
@@ -76,9 +77,11 @@ public class StepByStepViewModelCollection
         return $"sbs-{Identifier}-wrapper";
     }
 
-    public string DetermineStepIdentifier(int index)
+    public string DetermineStepIdentifier(StepByStepViewModel step)
     {
-        return $"sbs-{Identifier}-step-{index}";
+        return string.IsNullOrWhiteSpace(step.Anchor)
+            ? $"sbs-{Identifier}-step-{step.Index}"
+            : step.Anchor;
     }
 
     public string DeterminePanelIdentifier(int index)

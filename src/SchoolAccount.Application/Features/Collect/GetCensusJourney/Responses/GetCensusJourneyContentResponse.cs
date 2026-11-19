@@ -45,6 +45,8 @@ public sealed class SupportService
 
 public record StepByStep
 {
+    public string? Anchor { get; init; }
+
     public string Title { get; init; }
 
     public string Body { get; init; }
