@@ -25,7 +25,9 @@ public class JourneyViewModelBuilder(TimeProvider timeProvider)
             Title = getCensusJourneyResponse.Content.Title,
             Caption = getCensusJourneyResponse.Content.Caption,
             Overview = getCensusJourneyResponse.Content.Overview,
-            Status = getCensusJourneyResponse.Content.Status,
+            Status = getCensusJourneyResponse.Content.Status is "Unavailable"
+                ? "Status unavailable"
+                : getCensusJourneyResponse.Content.Status,
             ImportantDates = getCensusJourneyResponse
                 .Content.ImportantDates.OrderBy(date => date.Date)
                 .Select(date => new ImportantDate
@@ -64,7 +66,9 @@ public class JourneyViewModelBuilder(TimeProvider timeProvider)
                             a.Actions.Select(x => new SchoolStatus
                             {
                                 Name = a.SchoolName,
-                                Status = x.Status.Name,
+                                Status = x.Status.Name is "Unavailable"
+                                    ? "Status unavailable"
+                                    : x.Status.Name,
                                 Errors = x.Errors,
                                 Queries = x.Queries,
                                 UpdatedAt = x.UpdatedAt is null
