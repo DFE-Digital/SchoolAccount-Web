@@ -61,7 +61,14 @@
         @if (Model.DisplayUnderstandStatuses)
         {
             <h2 class="govuk-heading-m">About your status</h2>
-            <p class="govuk-body">Statuses are updated overnight. You will be emailed when the status changes.</p>
+            @if (Model.DisplayUnderstandStatusesUnavailableOverview)
+            {
+                <p class="govuk-body">Statuses are currently unavailable. When we can display status information, you can see what they mean below.</p>
+            }
+            else
+            {
+                <p class="govuk-body">Statuses are updated overnight. You will be emailed when the status changes.</p>
+            }
             <govuk-details>
                 <govuk-details-summary>
                     What your status means

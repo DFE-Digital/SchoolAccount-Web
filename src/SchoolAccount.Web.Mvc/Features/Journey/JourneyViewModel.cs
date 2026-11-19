@@ -38,6 +38,11 @@ public sealed class JourneyViewModel
     public bool DisplayUnderstandStatuses =>
         UnderstandStatuses.Any() && (Status != UnavailableStatus || MatView);
 
+    public bool DisplayUnderstandStatusesUnavailableOverview =>
+        Status is "Status unavailable"
+        || MatSchoolsStatuses?.SchoolStatuses is { Count: > 0 } schoolStatuses
+            && schoolStatuses.All(x => x.Status is "Status unavailable");
+
     public bool TryGetSteps(out StepByStepViewModelCollection steps)
     {
         steps = Steps!;
