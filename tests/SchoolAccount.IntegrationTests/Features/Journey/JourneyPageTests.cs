@@ -636,7 +636,14 @@ public class JourneyPageTests : IClassFixture<SchoolAccountWebApplicationFactory
         // Arrange
         _getCensusJourneyHandler
             .Handle(Arg.Any<GetCensusJourneyQuery>(), Arg.Any<CancellationToken>())
-            .Returns(AGetCensusJourneyResponse().AsSuccess());
+            .Returns(
+                AGetCensusJourneyResponse()
+                    .WithContent(
+                        ACensusJourneyContentResponse()
+                            .WithSupportServiceTitle("Get help with the Autumn school census")
+                    )
+                    .AsSuccess()
+            );
 
         // Act
         var html = await _client.GetStringAsync(JourneyUrl, _cancellationToken);
@@ -651,7 +658,13 @@ public class JourneyPageTests : IClassFixture<SchoolAccountWebApplicationFactory
         // Arrange
         _getCensusJourneyHandler
             .Handle(Arg.Any<GetCensusJourneyQuery>(), Arg.Any<CancellationToken>())
-            .Returns(AGetCensusJourneyResponse().AsSuccess());
+            .Returns(
+                AGetCensusJourneyResponse()
+                    .WithContent(
+                        ACensusJourneyContentResponse().WithCallToActionLabel("Go to COLLECT")
+                    )
+                    .AsSuccess()
+            );
 
         // Act
         var html = await _client.GetStringAsync(JourneyUrl, _cancellationToken);
