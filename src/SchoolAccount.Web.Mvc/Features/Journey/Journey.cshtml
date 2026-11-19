@@ -58,31 +58,26 @@
             </govuk-summary-list>
         }
 
-        @if (Model.DisplayUnderstandStatuses)
+        <h2 class="govuk-heading-m">About your status</h2>
+        @if (Model.DisplayUnderstandStatusesUnavailableOverview)
         {
-            <h2 class="govuk-heading-m">About your status</h2>
-            @if (Model.DisplayUnderstandStatusesUnavailableOverview)
-            {
-                <p class="govuk-body">Statuses are currently unavailable. When we can display status information, you can see what they mean below.</p>
-            }
-            else
-            {
-                <p class="govuk-body">Statuses are updated overnight. You will be emailed when the status changes.</p>
-            }
-            <govuk-details>
-                <govuk-details-summary>
-                    What your status means
-                </govuk-details-summary>
-                <govuk-details-text>
-                    <ul class="govuk-list govuk-list--bullet govuk-list--spaced">
-                        @foreach (var status in Model.UnderstandStatuses)
-                        {
-                            <li><strong>@status.Name</strong>: @status.Description</li>
-                        }
-                    </ul>
-                </govuk-details-text>
-            </govuk-details>
+            <p class="govuk-body">Statuses are currently unavailable. When we can display status information, you can see what they mean below.</p>
         }
+        <p class="govuk-body">Statuses are updated overnight. You will be emailed when the status changes.</p>
+        <govuk-details>
+            <govuk-details-summary>
+                What your status means
+            </govuk-details-summary>
+            <govuk-details-text>
+                <ul class="govuk-list govuk-list--bullet govuk-list--spaced">
+                    @foreach (var status in Model.UnderstandStatuses)
+                    {
+                        <li><strong>@status.Name</strong>: @status.Description</li>
+                    }
+                </ul>
+            </govuk-details-text>
+        </govuk-details>
+        
         <div class="feedback-banner govuk-!-margin-top-0 govuk-!-margin-bottom-6">
             <h2 class="govuk-heading-m">@Model.SupportService.Title</h2>
             <p class="govuk-body">
