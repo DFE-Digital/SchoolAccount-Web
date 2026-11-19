@@ -613,7 +613,11 @@ public class JourneyPageTests : IClassFixture<SchoolAccountWebApplicationFactory
         // Arrange
         _getCensusJourneyHandler
             .Handle(Arg.Any<GetCensusJourneyQuery>(), Arg.Any<CancellationToken>())
-            .Returns(AGetCensusJourneyResponse().AsSuccess());
+            .Returns(
+                AGetCensusJourneyResponse()
+                    .WithContent(ACensusJourneyContentResponse().WithTitle("Autumn school census"))
+                    .AsSuccess()
+            );
 
         // Act
         var response = await _client.GetAsync(JourneyUrl, _cancellationToken);
@@ -626,8 +630,8 @@ public class JourneyPageTests : IClassFixture<SchoolAccountWebApplicationFactory
         response.StatusCode.ShouldBe(OK);
 
         journeyPage
-            .GetElementContentByText("h2", "The Autumn school census 2026 has now closed")
-            .ShouldBe("The Autumn school census 2026 has now closed");
+            .GetElementContentByText("h2", "The Autumn school census has now closed")
+            .ShouldBe("The Autumn school census has now closed");
     }
 
     [Fact]
