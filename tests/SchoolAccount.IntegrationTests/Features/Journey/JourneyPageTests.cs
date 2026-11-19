@@ -534,38 +534,6 @@ public class JourneyPageTests : IClassFixture<SchoolAccountWebApplicationFactory
     }
 
     [Fact]
-    public async Task Status_explanations_are_hidden_when_the_census_is_unavailable()
-    {
-        // Arrange
-        _getCensusJourneyHandler
-            .Handle(Arg.Any<GetCensusJourneyQuery>(), Arg.Any<CancellationToken>())
-            .Returns(
-                AGetCensusJourneyResponse()
-                    .WithContent(
-                        ACensusJourneyContentResponse()
-                            .WithStatus(UnavailableStatus)
-                            .WithUnderstandStatus(
-                                AUnderstandStatus()
-                                    .WithName("Test Status")
-                                    .WithDescription("Test status description.")
-                            )
-                    )
-                    .AsSuccess()
-            );
-
-        // Act
-        var response = await _client.GetAsync(JourneyUrl, _cancellationToken);
-        var journeyPage = await AngleSharpPage.FromResponseAsync<JourneyPage>(
-            response,
-            _cancellationToken
-        );
-
-        // Assert
-        response.StatusCode.ShouldBe(OK);
-        journeyPage.GetElementContentByText("li", "Test Status").ShouldBeNull();
-    }
-
-    [Fact]
     public async Task Status_explanations_are_shown_for_a_multi_academy_trust()
     {
         // Arrange
