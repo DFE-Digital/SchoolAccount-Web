@@ -2,6 +2,14 @@
 @{
     ViewData["Title"] = "Journey";
 }
+@if (Model.IsCensusClosed)
+{
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <partial name="ClosureBanner.cshtml"/>
+        </div>
+    </div>
+}
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
         <span class="govuk-caption-xl census-title">@Model.Caption</span>
@@ -24,14 +32,14 @@
             <partial name="~/Features/Shared/MultipleSchoolsStatusTable/MultipleSchoolsStatusTable.cshtml"
                      model="@Model.MatSchoolsStatuses"/>
         }
-        
+
         @if (Model.TryGetSteps(out var steps))
         {
             <h2 class="govuk-heading-m">Step by step</h2>
             <partial name="~/Features/Shared/StepByStep/StepByStep.cshtml" model="@steps"/>
         }
 
-        @if (!Model.MatView)
+        @if (Model is { MatView: false, IsCensusClosed: false })
         {
             <govuk-button-link
                 href="@Model.CallToAction.Url"
@@ -76,19 +84,22 @@
                 </govuk-details-text>
             </govuk-details>
         }
-        <div class="feedback-banner govuk-!-margin-top-0 govuk-!-margin-bottom-6">
-            <h2 class="govuk-heading-m">@Model.SupportService.Title</h2>
-            <p class="govuk-body">
-                <a
-                    href="@Model.SupportService.Url"
-                    class="govuk-link govuk-link--no-visited-state"
-                    rel="noreferrer noopener"
-                    target="_blank"
-                >
-                    @Model.SupportService.Description</a
-                >
-                for queries and help.
-            </p>
-        </div>
+        @if (!Model.IsCensusClosed)
+        {
+            <div class="feedback-banner govuk-!-margin-top-0 govuk-!-margin-bottom-6">
+                <h2 class="govuk-heading-m">@Model.SupportService.Title</h2>
+                <p class="govuk-body">
+                    <a
+                        href="@Model.SupportService.Url"
+                        class="govuk-link govuk-link--no-visited-state"
+                        rel="noreferrer noopener"
+                        target="_blank"
+                    >
+                        @Model.SupportService.Description</a
+                    >
+                    for queries and help.
+                </p>
+            </div>
+        }
     </div>
 </div>

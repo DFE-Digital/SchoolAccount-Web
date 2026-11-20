@@ -76,7 +76,7 @@ public static class DateFormatterTests
     public class ToDayMonthNameAndYear
     {
         [Fact]
-        public void Full_dates_are_returned_with_day_and_year_as_numbers_and_month_as_full_name()
+        public void Full_dates_are_returned_with_day_and_year_as_numbers_and_month_as_full_name_when_passing_a_date()
         {
             // Arrange
             var timeProvider = new FakeTimeProvider();
@@ -90,6 +90,44 @@ public static class DateFormatterTests
 
             // Assert
             result.ShouldBe("31 October 2026");
+        }
+
+        [Fact]
+        public void Full_dates_are_returned_with_day_and_year_as_numbers_and_month_as_full_name_when_passing_a_date_and_time()
+        {
+            // Arrange
+            var timeProvider = new FakeTimeProvider();
+            var halloween2026 = new DateTime(2026, 10, 31, 0, 0, 0, DateTimeKind.Utc);
+            var dateFormatter = new DateFormatter(timeProvider);
+
+            // Act
+            var result = dateFormatter.ToDayMonthNameAndYear(halloween2026);
+
+            // Assert
+            result.ShouldBe("31 October 2026");
+        }
+
+        [Fact]
+        public void Utc_times_late_in_the_evening_during_bst_show_the_next_uk_day()
+        {
+            // Arrange
+            var timeProvider = new FakeTimeProvider();
+            var halfPastElevenUtcOnThirtiethSeptember = new DateTime(
+                2026,
+                9,
+                30,
+                23,
+                30,
+                0,
+                DateTimeKind.Utc
+            );
+            var dateFormatter = new DateFormatter(timeProvider);
+
+            // Act
+            var result = dateFormatter.ToDayMonthNameAndYear(halfPastElevenUtcOnThirtiethSeptember);
+
+            // Assert
+            result.ShouldBe("1 October 2026");
         }
     }
 }
