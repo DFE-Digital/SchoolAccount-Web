@@ -8,13 +8,13 @@ using SchoolAccount.IntegrationTests.Common.Stubs;
 using SchoolAccount.TestCommon.Constants;
 using Shouldly;
 using static System.Net.HttpStatusCode;
-using static SchoolAccount.Application.Features.Collect.GetCensusJourney.Responses.GetCensusJourneyContentResponse;
 using static SchoolAccount.IntegrationTests.Common.Builders.Features.Collect.GetCensusJourney.Responses.GetCensusJourneyResponseBuilder;
 using static SchoolAccount.TestCommon.Builders.Features.Collect.CensusStatuses.CensusStatusesResponseBuilder;
 using static SchoolAccount.TestCommon.Builders.Features.Collect.GetCensusJourney.Responses.GetCensusJourneyContentResponseBuilder;
 using static SchoolAccount.TestCommon.Builders.Features.Collect.GetCensusJourney.Responses.GetCensusJourneyResponseImportantDateBuilder;
 using static SchoolAccount.TestCommon.Builders.Features.Collect.GetCensusJourney.Responses.GetCensusJourneyResponseUnderstandStatusBuilder;
 using static SchoolAccount.TestCommon.Constants.UrlConstants;
+using static SchoolAccount.Web.Mvc.Helpers.StatusFormatter;
 
 namespace SchoolAccount.IntegrationTests.Features.Journey;
 
@@ -579,7 +579,7 @@ public class JourneyPageTests : IClassFixture<SchoolAccountWebApplicationFactory
                     .WithSchoolStatuses(
                         ACensusStatusResponse()
                             .WithName("Test School 1")
-                            .WithAction("Autumn Census 2026", "Status unavailable")
+                            .WithAction("Autumn Census 2026", StatusUnavailable)
                     )
                     .AsSuccess()
             );
@@ -613,7 +613,7 @@ public class JourneyPageTests : IClassFixture<SchoolAccountWebApplicationFactory
                     .WithSchoolStatuses(
                         ACensusStatusResponse()
                             .WithName("Test School 1")
-                            .WithAction("Autumn Census 2026", "Status unavailable"),
+                            .WithAction("Autumn Census 2026", StatusUnavailable),
                         ACensusStatusResponse()
                             .WithName("Test School 2")
                             .WithAction("Autumn Census 2026", "Approved")
@@ -646,7 +646,7 @@ public class JourneyPageTests : IClassFixture<SchoolAccountWebApplicationFactory
             .Handle(Arg.Any<GetCensusJourneyQuery>(), Arg.Any<CancellationToken>())
             .Returns(
                 AGetCensusJourneyResponse()
-                    .WithContent(ACensusJourneyContentResponse().WithStatus("Status unavailable"))
+                    .WithContent(ACensusJourneyContentResponse().WithStatus(StatusUnavailable))
                     .AsSuccess()
             );
 
