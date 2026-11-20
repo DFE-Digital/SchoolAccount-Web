@@ -42,6 +42,8 @@ public sealed class JourneyViewModel
         || MatSchoolsStatuses?.SchoolStatuses is { Count: > 0 } schoolStatuses
             && schoolStatuses.All(x => x.Status is StatusUnavailable);
 
+    public bool IsCensusClosed { get; init; }
+
     public bool TryGetSteps(out StepByStepViewModelCollection steps)
     {
         steps = Steps!;

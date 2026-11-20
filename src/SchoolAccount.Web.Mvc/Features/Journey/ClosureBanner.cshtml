@@ -1,0 +1,22 @@
+@model SchoolAccount.Web.Mvc.Features.Journey.JourneyViewModel
+<govuk-notification-banner>
+    <govuk-notification-banner-title heading-level="2">
+        The @Model.Title has now closed
+    </govuk-notification-banner-title>
+        <p class="govuk-body">Census returns can no longer be submitted through COLLECT.</p>
+        <p class="govuk-body">
+            This page shows the status of the return when the census closed. Any changes since then will not
+            appear here.
+        </p>
+        <p class="govuk-body">
+            If the deadline has been missed or you have any questions,
+            <a
+                href="@Model.SupportService.Url"
+                class="govuk-link govuk-link--no-visited-state"
+                rel="noreferrer noopener"
+                target="_blank"
+            >
+                contact the team for help and support (opens in a new tab)</a
+            >.
+        </p>
+</govuk-notification-banner>

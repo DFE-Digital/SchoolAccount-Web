@@ -1,5 +1,4 @@
 using SchoolAccount.Application.Features.Collect.GetCensusJourney.Responses;
-using SchoolAccount.SharedKernel;
 using SchoolAccount.SharedKernel.Authentication;
 using SchoolAccount.Web.Mvc.Features.Shared.MultipleSchoolsStatusTable;
 using SchoolAccount.Web.Mvc.Features.Shared.StepByStep;
@@ -17,7 +16,8 @@ public class JourneyViewModelBuilder(TimeProvider timeProvider)
     public JourneyViewModel Build(
         string? user,
         GetCensusJourneyResponse getCensusJourneyResponse,
-        Organisation organisation
+        Organisation organisation,
+        bool isCensusClosed
     )
     {
         return new JourneyViewModel
@@ -70,12 +70,20 @@ public class JourneyViewModelBuilder(TimeProvider timeProvider)
                                 Queries = x.Queries,
                                 UpdatedAt = x.UpdatedAt is null
                                     ? string.Empty
-                                    : _dateFormatter.ToDaysAgo(x.UpdatedAt.Value, _oneDayLag),
+                                    : CalculateLastUpdated(x.UpdatedAt.Value, isCensusClosed),
                             })
                         )
                         .ToList(),
                 }
                 : null,
+            IsCensusClosed = isCensusClosed,
         };
+    }
+
+    private string CalculateLastUpdated(DateTime updatedAt, bool isCensusClosed)
+    {
+        return isCensusClosed
+            ? _dateFormatter.ToDayMonthNameAndYear(updatedAt)
+            : _dateFormatter.ToDaysAgo(updatedAt, _oneDayLag);
     }
 }

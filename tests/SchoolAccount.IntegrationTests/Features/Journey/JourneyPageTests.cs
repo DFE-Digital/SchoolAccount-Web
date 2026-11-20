@@ -3,9 +3,11 @@ using NSubstitute;
 using SchoolAccount.Application.Features.Collect.GetCensusJourney;
 using SchoolAccount.IntegrationTests.Common;
 using SchoolAccount.IntegrationTests.Common.Extensions;
+using SchoolAccount.IntegrationTests.Common.Fakes;
 using SchoolAccount.IntegrationTests.Common.Pages;
 using SchoolAccount.IntegrationTests.Common.Stubs;
 using SchoolAccount.TestCommon.Constants;
+using SchoolAccount.Web.Mvc.Infrastructure;
 using Shouldly;
 using static System.Net.HttpStatusCode;
 using static SchoolAccount.IntegrationTests.Common.Builders.Features.Collect.GetCensusJourney.Responses.GetCensusJourneyResponseBuilder;
@@ -24,6 +26,7 @@ public class JourneyPageTests : IClassFixture<SchoolAccountWebApplicationFactory
     private readonly HttpClient _client;
     private readonly FakeTimeProvider _timeProvider = new();
     private readonly CensusJourneyHandler _getCensusJourneyHandler = Stub.CensusJourneyHandler();
+    private readonly TestFeatureFlags _featureFlags = new();
     private readonly Uri _testUri = new("https://www.gov.uk/");
 
     public JourneyPageTests(SchoolAccountWebApplicationFactory<Program> factory)
@@ -32,6 +35,7 @@ public class JourneyPageTests : IClassFixture<SchoolAccountWebApplicationFactory
         {
             services.StubQueryHandler(_getCensusJourneyHandler);
             services.AddSingleton<TimeProvider>(_timeProvider);
+            services.UseTestFeatureFlags(_featureFlags);
         });
     }
 
@@ -39,6 +43,7 @@ public class JourneyPageTests : IClassFixture<SchoolAccountWebApplicationFactory
     public async Task The_journey_page_shows_the_census_content()
     {
         // Arrange
+        _featureFlags.Disable(FeatureFlags.CensusClosure);
         _getCensusJourneyHandler
             .Handle(Arg.Any<GetCensusJourneyQuery>(), Arg.Any<CancellationToken>())
             .Returns(
@@ -241,6 +246,7 @@ public class JourneyPageTests : IClassFixture<SchoolAccountWebApplicationFactory
     public async Task Call_to_action_button_is_visible_on_the_journey_page()
     {
         // Arrange
+        _featureFlags.Disable(FeatureFlags.CensusClosure);
         _getCensusJourneyHandler
             .Handle(Arg.Any<GetCensusJourneyQuery>(), Arg.Any<CancellationToken>())
             .Returns(
@@ -276,6 +282,7 @@ public class JourneyPageTests : IClassFixture<SchoolAccountWebApplicationFactory
     public async Task Call_to_action_button_has_hidden_opens_in_new_tab_text_for_screen_readers()
     {
         // Arrange
+        _featureFlags.Disable(FeatureFlags.CensusClosure);
         _getCensusJourneyHandler
             .Handle(Arg.Any<GetCensusJourneyQuery>(), Arg.Any<CancellationToken>())
             .Returns(AGetCensusJourneyResponse().AsSuccess());
@@ -402,6 +409,7 @@ public class JourneyPageTests : IClassFixture<SchoolAccountWebApplicationFactory
     public async Task School_statuses_are_displayed_for_multi_academy_trust()
     {
         // Arrange
+        _featureFlags.Disable(FeatureFlags.CensusClosure);
         var octoberFirst2026 = new DateTime(2026, 10, 1, 2, 0, 0, DateTimeKind.Utc);
         var octoberFourth2026 = new DateTime(2026, 10, 4, 9, 0, 0, DateTimeKind.Utc);
 
@@ -756,5 +764,118 @@ public class JourneyPageTests : IClassFixture<SchoolAccountWebApplicationFactory
                 "Statuses are currently unavailable. When we can display status information, you can see what they mean below."
             )
             .ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task Census_closure_banner_is_shown_when_the_closure_feature_flag_is_enabled()
+    {
+        // Arrange
+        _getCensusJourneyHandler
+            .Handle(Arg.Any<GetCensusJourneyQuery>(), Arg.Any<CancellationToken>())
+            .Returns(
+                AGetCensusJourneyResponse()
+                    .WithContent(ACensusJourneyContentResponse().WithTitle("Autumn school census"))
+                    .AsSuccess()
+            );
+
+        // Act
+        var response = await _client.GetAsync(JourneyUrl, _cancellationToken);
+        var journeyPage = await AngleSharpPage.FromResponseAsync<JourneyPage>(
+            response,
+            _cancellationToken
+        );
+
+        // Assert
+        response.StatusCode.ShouldBe(OK);
+
+        journeyPage
+            .GetElementContentByText("h2", "The Autumn school census has now closed")
+            .ShouldBe("The Autumn school census has now closed");
+    }
+
+    [Fact]
+    public async Task Help_banner_is_not_shown_when_the_closure_feature_flag_is_enabled()
+    {
+        // Arrange
+        _getCensusJourneyHandler
+            .Handle(Arg.Any<GetCensusJourneyQuery>(), Arg.Any<CancellationToken>())
+            .Returns(
+                AGetCensusJourneyResponse()
+                    .WithContent(
+                        ACensusJourneyContentResponse()
+                            .WithSupportServiceTitle("Get help with the Autumn school census")
+                    )
+                    .AsSuccess()
+            );
+
+        // Act
+        var html = await _client.GetStringAsync(JourneyUrl, _cancellationToken);
+
+        // Assert
+        html.ShouldNotContain("Get help with the Autumn school census");
+    }
+
+    [Fact]
+    public async Task Go_to_Collect_button_is_not_shown_when_the_closure_feature_flag_is_enabled()
+    {
+        // Arrange
+        _getCensusJourneyHandler
+            .Handle(Arg.Any<GetCensusJourneyQuery>(), Arg.Any<CancellationToken>())
+            .Returns(
+                AGetCensusJourneyResponse()
+                    .WithContent(
+                        ACensusJourneyContentResponse().WithCallToActionLabel("Go to COLLECT")
+                    )
+                    .AsSuccess()
+            );
+
+        // Act
+        var html = await _client.GetStringAsync(JourneyUrl, _cancellationToken);
+
+        // Assert
+        html.ShouldNotContain("Go to COLLECT");
+    }
+
+    [Fact]
+    public async Task The_school_status_tables_last_updated_date_is_shown_as_a_full_date_when_the_closure_feature_flag_is_enabled()
+    {
+        // Arrange
+        var octoberFirst2026 = new DateTime(2026, 10, 1, 2, 0, 0, DateTimeKind.Utc);
+        var octoberFourth2026 = new DateTime(2026, 10, 4, 9, 0, 0, DateTimeKind.Utc);
+
+        _timeProvider.SetUtcNow(octoberFourth2026);
+        _client.WithOrganisation(OrganisationConstants.TrustJson);
+        _getCensusJourneyHandler
+            .Handle(Arg.Any<GetCensusJourneyQuery>(), Arg.Any<CancellationToken>())
+            .Returns(
+                AGetCensusJourneyResponse()
+                    .WithSchoolStatuses(
+                        ACensusStatusResponse()
+                            .WithName("Test School 2")
+                            .WithAction("Autumn Census 2026", "Submitted", 1, 2, octoberFirst2026)
+                    )
+                    .AsSuccess()
+            );
+
+        // Act
+        var response = await _client.GetAsync(JourneyUrl, _cancellationToken);
+        var journeyPage = await AngleSharpPage.FromResponseAsync<JourneyPage>(
+            response,
+            _cancellationToken
+        );
+
+        // Assert
+        response.StatusCode.ShouldBe(OK);
+
+        var schoolStatus = journeyPage.GetTableCellByHeader();
+        schoolStatus.Count.ShouldBe(1);
+        schoolStatus[0]
+            .ShouldSatisfyAllConditions(
+                status => status["Name"].ShouldBe("Test School 2"),
+                status => status["Status"].ShouldBe("Submitted"),
+                status => status["Last Changed"].ShouldBe("1 October 2026"),
+                status => status["Errors"].ShouldBe("1"),
+                status => status["Queries"].ShouldBe("2")
+            );
     }
 }
