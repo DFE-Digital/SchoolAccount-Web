@@ -76,11 +76,6 @@ public class StepByStepViewModelCollection
         return $"sbs-{Identifier}-wrapper";
     }
 
-    public string DetermineStepIdentifier(int index)
-    {
-        return $"sbs-{Identifier}-step-{index}";
-    }
-
     public string DeterminePanelIdentifier(int index)
     {
         return $"sbs-{Identifier}-panel-{index}";
