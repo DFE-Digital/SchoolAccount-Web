@@ -261,13 +261,14 @@ Only commits on `main` can be deployed.
 ### Reading a revision name
 
 ```
-schoolaccount-web-app--v2026-11-18-1-r19283746512-1
-\___________________/  \___________/ \__________/ |
-       app name           version       run ID    attempt
+schoolaccount-web-app--v2026-11-18-1-r283-1
+\___________________/  \___________/ \__/ |
+       app name           version    run   attempt
 ```
 
-The version's dots become dashes. The run ID is the Web Deploy run that created the revision, and the attempt goes up
-when a run is re-run.
+The version's dots become dashes. The run is the Web Deploy run number (its `#283` in Actions), and the attempt goes up
+when a run is re-run. Azure limits the whole name to 54 characters, which is why it's the run number and not the longer
+run ID.
 
 ## Dependency Updates
 
