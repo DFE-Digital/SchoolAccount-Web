@@ -35,11 +35,12 @@ public class JourneyController(
             cancellationToken
         );
 
-        var builder = new JourneyViewModelBuilder(timeProvider, isCensusClosed);
+        var builder = new JourneyViewModelBuilder(timeProvider);
         var journeyViewModel = builder.Build(
             userContext.Name,
             getCensusJourneyResponse.Value,
-            userContext.Organisation!
+            userContext.Organisation!,
+            isCensusClosed
         );
 
         return View(journeyViewModel);

@@ -7,7 +7,7 @@ using static SchoolAccount.Web.Mvc.Features.Shared.MultipleSchoolsStatusTable.Mu
 
 namespace SchoolAccount.Web.Mvc.Features.Journey;
 
-public class JourneyViewModelBuilder(TimeProvider timeProvider, bool isCensusClosed)
+public class JourneyViewModelBuilder(TimeProvider timeProvider)
 {
     private readonly DateFormatter _dateFormatter = new(timeProvider);
     private const int _oneDayLag = 1;
@@ -15,7 +15,8 @@ public class JourneyViewModelBuilder(TimeProvider timeProvider, bool isCensusClo
     public JourneyViewModel Build(
         string? user,
         GetCensusJourneyResponse getCensusJourneyResponse,
-        Organisation organisation
+        Organisation organisation,
+        bool isCensusClosed
     )
     {
         return new JourneyViewModel
@@ -68,7 +69,7 @@ public class JourneyViewModelBuilder(TimeProvider timeProvider, bool isCensusClo
                                 Queries = x.Queries,
                                 UpdatedAt = x.UpdatedAt is null
                                     ? string.Empty
-                                    : CalculateLastUpdated(x.UpdatedAt.Value),
+                                    : CalculateLastUpdated(x.UpdatedAt.Value, isCensusClosed),
                             })
                         )
                         .ToList(),
@@ -78,7 +79,7 @@ public class JourneyViewModelBuilder(TimeProvider timeProvider, bool isCensusClo
         };
     }
 
-    private string CalculateLastUpdated(DateTime updatedAt)
+    private string CalculateLastUpdated(DateTime updatedAt, bool isCensusClosed)
     {
         return isCensusClosed
             ? _dateFormatter.ToDayMonthNameAndYear(updatedAt)
