@@ -79,7 +79,7 @@ public static class CensusJourneyMapper
                     Body = """
                         <p>COLLECT runs a “familiarisation period”, usually beginning 4 weeks before the census opens. During this time you can upload your census return file in advance, see any errors or queries it raises. Your school’s census contact will be emailed when this is available.</p>
                         <p>Export the census return file from your MIS, upload it to COLLECT, and see what issues it identifies. Fix any problems in your MIS and generate a new return. You can do this as many times as you need until your return is error-free.</p>
-                        <p><a href="https://schools-account-prototype-44fad52ea0e1.herokuapp.com/v7/compliance/census-details#autumn-school-census-step-5">See step 5 for guidance on resolving errors and queries</a>.</p>
+                        <p><a href="#step-5">See step 5 for guidance on resolving errors and queries</a>.</p>
                         """,
                 },
                 new StepByStep
