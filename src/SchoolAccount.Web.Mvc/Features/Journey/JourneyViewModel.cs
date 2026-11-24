@@ -35,7 +35,7 @@ public sealed class JourneyViewModel
 
     public bool DisplayOverview => !string.IsNullOrWhiteSpace(Overview);
 
-    public bool DisplayUnderstandStatuses => UnderstandStatuses.Any() || MatView;
+    public bool DisplayUnderstandStatuses => UnderstandStatuses.Any();
 
     public bool DisplayUnderstandStatusesUnavailableOverview =>
         Status is StatusUnavailable
