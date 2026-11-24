@@ -1,24 +1,20 @@
 name: Web Deploy
+run-name: Deploy ${{ github.ref_name }} to ${{ inputs.environment }}
 
+# Run from a version tag (e.g. v2026.11.18.1) to deploy that version. Running from main
+# deploys main's latest commit. The Environments page shows the tag or commit deployed.
+# A version's GitHub Release is published when it first reaches prod.
 on:
-  workflow_call:
-    inputs:
-      environment:
-        type: string
-        required: true
-      image:
-        type: string
-        required: true
   workflow_dispatch:
     inputs:
       environment:
         description: Environment to deploy to
         type: environment
         required: true
-      image_tag:
-        description: Image tag to deploy (e.g. sha-7b6dc2d). Leave blank to deploy the commit this run is started from
-        type: string
-        required: false
+      promote:
+        description: When the deploy succeeds, start the deploy to the next environment (dev → preprod → prod)
+        type: boolean
+        default: false
 
 env:
   IMAGE_NAME: ghcr.io/dfe-digital/schoolaccount-web
@@ -29,26 +25,50 @@ jobs:
 
     environment: ${{ inputs.environment }}
 
+    permissions:
+      contents: read
+
     concurrency:
       group: deploy-${{ inputs.environment }}
       cancel-in-progress: false
 
     steps:
+      # Anyone with write access can push a tag, so only deploy commits that are on main
+      - name: Check commit is on main
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          STATUS=$(gh api "repos/$GITHUB_REPOSITORY/compare/main...$GITHUB_SHA" --jq .status)
+          if [ "$STATUS" != "identical" ] && [ "$STATUS" != "behind" ]; then
+            echo "::error::$GITHUB_REF_NAME ($GITHUB_SHA) is not on main"
+            exit 1
+          fi
+
       - name: Resolve image
         id: image
         env:
-          INPUT_IMAGE: ${{ inputs.image }}
-          INPUT_IMAGE_TAG: ${{ inputs.image_tag }}
+          APP_NAME: ${{ vars.CONTAINERAPP_NAME }}
         run: |
-          if [ -n "$INPUT_IMAGE" ]; then
-            IMAGE="$INPUT_IMAGE"
-          elif [ -n "$INPUT_IMAGE_TAG" ]; then
-            IMAGE="$IMAGE_NAME:$INPUT_IMAGE_TAG"
+          if [ "$GITHUB_REF_TYPE" = "tag" ]; then
+            IMAGE="$IMAGE_NAME:$GITHUB_REF_NAME"
           else
             IMAGE="$IMAGE_NAME:sha-${GITHUB_SHA::7}"
           fi
-          echo "Deploying $IMAGE"
+          # A unique revision suffix forces a new revision on every run, so redeploying the
+          # same image (e.g. after an App Configuration fix) actually restarts the app.
+          # Suffixes allow only lower case letters, numbers and single dashes.
+          TAG=$(echo "${IMAGE##*:}" | tr '[:upper:]' '[:lower:]' | tr -c 'a-z0-9\n' '-' | tr -s '-')
+          # The run number, not the much longer run ID, because Azure limits the whole
+          # revision name (app name, "--" and suffix) to 54 characters.
+          SUFFIX="${TAG}-r${GITHUB_RUN_NUMBER}-${GITHUB_RUN_ATTEMPT}"
+          REVISION="${APP_NAME}--${SUFFIX}"
+          if [ "${#REVISION}" -gt 54 ]; then
+            echo "::error::Revision name $REVISION is ${#REVISION} characters, more than Azure's limit of 54"
+            exit 1
+          fi
+          echo "Deploying $IMAGE as revision suffix $SUFFIX"
           echo "image=$IMAGE" >> "$GITHUB_OUTPUT"
+          echo "suffix=$SUFFIX" >> "$GITHUB_OUTPUT"
 
       - name: Azure Login
         uses: azure/login@v3
@@ -61,4 +81,95 @@ jobs:
             --subscription ${{ vars.AZURE_SUBSCRIPTION_ID }} \
             --name ${{ vars.CONTAINERAPP_NAME }} \
             --resource-group ${{ vars.CONTAINERAPP_RESOURCE_GROUP }} \
-            --image ${{ steps.image.outputs.image }}
+            --image ${{ steps.image.outputs.image }} \
+            --revision-suffix ${{ steps.image.outputs.suffix }}
+
+      - name: Summary
+        env:
+          ENVIRONMENT: ${{ inputs.environment }}
+          IMAGE: ${{ steps.image.outputs.image }}
+          REVISION: ${{ vars.CONTAINERAPP_NAME }}--${{ steps.image.outputs.suffix }}
+        run: |
+          echo "Deployed \`$IMAGE\` to **$ENVIRONMENT** as revision \`$REVISION\`" >> "$GITHUB_STEP_SUMMARY"
+
+  # Each environment is its own run, so a failed deploy can be re-run on its own
+  promote:
+    name: Start next deploy
+    needs: deploy
+    if: ${{ inputs.promote && inputs.environment != 'prod' }}
+    runs-on: ubuntu-latest
+
+    permissions:
+      actions: write
+
+    steps:
+      - name: Start deploy to next environment
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CURRENT: ${{ inputs.environment }}
+        run: |
+          case "$CURRENT" in
+            dev) NEXT=preprod ;;
+            preprod) NEXT=prod ;;
+            *) echo "::error::No environment after $CURRENT"; exit 1 ;;
+          esac
+          gh workflow run deploy.yml --repo "$GITHUB_REPOSITORY" --ref "$GITHUB_REF_NAME" -f environment="$NEXT" -f promote=true
+          echo "Started deploy of $GITHUB_REF_NAME to **$NEXT**" >> "$GITHUB_STEP_SUMMARY"
+
+  # The Releases page lists what has gone to prod. Notes cover every change since the
+  # previous release. Redeploys and rollbacks to an older version don't publish anything.
+  publish:
+    name: Publish release
+    needs: deploy
+    if: ${{ inputs.environment == 'prod' && github.ref_type == 'tag' }}
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      # The release action below updates an existing release instead of skipping it, and it
+      # can't find the previous release for us, so this step decides whether to publish
+      - name: Check release
+        id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Already released (e.g. this version is being redeployed to prod): nothing to do
+          if gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            echo "Release $GITHUB_REF_NAME already exists" | tee -a "$GITHUB_STEP_SUMMARY"
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # The latest release, i.e. the last version that went to prod. Empty if there isn't one yet.
+          PREVIOUS=$(gh release view --repo "$GITHUB_REPOSITORY" --json tagName --jq .tagName 2> /dev/null || true)
+
+          # Sort the two versions and take the newer one. If it isn't this version, this
+          # is a rollback to an older version, which shouldn't become a new release.
+          NEWEST=$(printf '%s\n%s\n' "$PREVIOUS" "$GITHUB_REF_NAME" | sort -V | tail -n 1)
+          if [ -n "$PREVIOUS" ] && [ "$NEWEST" != "$GITHUB_REF_NAME" ]; then
+            echo "$GITHUB_REF_NAME is older than the latest release $PREVIOUS, so no release published" | tee -a "$GITHUB_STEP_SUMMARY"
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "previous=$PREVIOUS" >> "$GITHUB_OUTPUT"
+          echo "publish=true" >> "$GITHUB_OUTPUT"
+
+      # Creates the release for this tag, named after it. The notes list every change since the
+      # previous release. For the first ever release there's no previous one, so GitHub picks
+      # where the notes start.
+      - name: Create GitHub release
+        id: release
+        if: ${{ steps.check.outputs.publish == 'true' }}
+        uses: softprops/action-gh-release@8a0cd651e5b2365bd640854a3fa5dfc70e4875f3 # v3.0.4
+        with:
+          generate_release_notes: true
+          previous_tag: ${{ steps.check.outputs.previous }}
+
+      - name: Summary
+        if: ${{ steps.check.outputs.publish == 'true' }}
+        env:
+          URL: ${{ steps.release.outputs.url }}
+        run: echo "Published release [$GITHUB_REF_NAME]($URL)" >> "$GITHUB_STEP_SUMMARY"

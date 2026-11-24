@@ -1,18 +1,28 @@
 using System.Globalization;
-using SchoolAccount.SharedKernel;
 
 namespace SchoolAccount.Web.Mvc.Helpers;
 
-public class DateFormatter(IDateTimeProvider dateTimeProvider)
+public class DateFormatter(TimeProvider timeProvider)
 {
+    private static readonly TimeZoneInfo _ukTimeZone = TimeZoneInfo.FindSystemTimeZoneById(
+        "Europe/London"
+    );
+
     public string ToDayMonthNameAndYear(DateOnly date)
     {
         return date.ToString("d MMMM yyyy", CultureInfo.InvariantCulture);
     }
 
+    public string ToDayMonthNameAndYear(DateTime date)
+    {
+        var ukDate = TimeZoneInfo.ConvertTimeFromUtc(date, _ukTimeZone);
+        return ToDayMonthNameAndYear(DateOnly.FromDateTime(ukDate));
+    }
+
     public string ToDaysAgo(DateTime date, int offsetDays = 0)
     {
-        var daysAgo = (int)Math.Floor((dateTimeProvider.UtcNow - date).TotalDays) + offsetDays;
+        var daysAgo =
+            (int)Math.Floor((timeProvider.GetUtcNow().UtcDateTime - date).TotalDays) + offsetDays;
         var dayText = daysAgo == 1 ? "day" : "days";
         return daysAgo == 0 ? "Today" : $"{daysAgo} {dayText} ago";
     }

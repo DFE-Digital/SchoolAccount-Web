@@ -1,5 +1,4 @@
 using SchoolAccount.Application.Features.Collect.GetCensusJourney.Responses;
-using SchoolAccount.SharedKernel;
 using SchoolAccount.SharedKernel.Authentication;
 using SchoolAccount.Web.Mvc.Features.Shared.MultipleSchoolsStatusTable;
 using SchoolAccount.Web.Mvc.Features.Shared.StepByStep;
@@ -8,15 +7,16 @@ using static SchoolAccount.Web.Mvc.Features.Shared.MultipleSchoolsStatusTable.Mu
 
 namespace SchoolAccount.Web.Mvc.Features.Journey;
 
-public class JourneyViewModelBuilder(IDateTimeProvider dateTimeProvider)
+public class JourneyViewModelBuilder(TimeProvider timeProvider)
 {
-    private readonly DateFormatter _dateFormatter = new(dateTimeProvider);
+    private readonly DateFormatter _dateFormatter = new(timeProvider);
     private const int _oneDayLag = 1;
 
     public JourneyViewModel Build(
         string? user,
         GetCensusJourneyResponse getCensusJourneyResponse,
-        Organisation organisation
+        Organisation organisation,
+        bool isCensusClosed
     )
     {
         return new JourneyViewModel
@@ -69,12 +69,20 @@ public class JourneyViewModelBuilder(IDateTimeProvider dateTimeProvider)
                                 Queries = x.Queries,
                                 UpdatedAt = x.UpdatedAt is null
                                     ? string.Empty
-                                    : _dateFormatter.ToDaysAgo(x.UpdatedAt.Value, _oneDayLag),
+                                    : CalculateLastUpdated(x.UpdatedAt.Value, isCensusClosed),
                             })
                         )
                         .ToList(),
                 }
                 : null,
+            IsCensusClosed = isCensusClosed,
         };
+    }
+
+    private string CalculateLastUpdated(DateTime updatedAt, bool isCensusClosed)
+    {
+        return isCensusClosed
+            ? _dateFormatter.ToDayMonthNameAndYear(updatedAt)
+            : _dateFormatter.ToDaysAgo(updatedAt, _oneDayLag);
     }
 }

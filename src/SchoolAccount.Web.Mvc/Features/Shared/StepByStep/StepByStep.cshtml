@@ -9,7 +9,7 @@
     
     @foreach (var step in Model.Steps)
     {
-      <li class="app-step-nav__step js-step" id="@Model.DetermineStepIdentifier(step.Index)">
+      <li class="app-step-nav__step js-step" id="step-@step.Index">
         
         @* Title *@
         <div class="app-step-nav__header js-toggle-panel" data-position="@step.Index">

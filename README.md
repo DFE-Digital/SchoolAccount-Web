@@ -210,7 +210,8 @@ See [ADR 0012](decisions/0012-use-azure-monitor-opentelemetry-distro.md) for the
 
 The Web project is published to the [GitHub Container Registry](https://github.com/DFE-Digital/SchoolAccount-Web/pkgs/container/schoolaccount-web)
 as a Docker image that can be pulled down and run.
-The image is created on every push to the `main` branch and tagged with the current commit SHA and the latest tag.
+The image is created on every push to the `main` branch and tagged with the current commit SHA, the latest tag and
+its version (see [Deployments](#deployments)).
 
 To verify the image locally, you can run:
 ```
@@ -224,6 +225,50 @@ To stop and delete the container, you can run:
 docker stop web
 docker rm web
 ```
+
+## Deployments
+
+### Versions
+
+Every push to `main` gets a version, `vYYYY.MM.DD.N`, where `N` counts up through the day (UTC), for example
+`v2026.11.18.2`. The version is a git tag and an image tag, and it appears in the Container Apps revision name.
+
+### How a version is deployed
+
+The build starts the **Web Deploy** workflow for dev from the new version tag. Each successful deploy starts the next:
+dev, then preprod, then prod. Preprod and prod wait for approval from `school-account-maintainers`. Each environment is
+its own run, so a failed deploy can be re-run on its own.
+
+### What's deployed where
+
+- **GitHub:** the [Environments page](https://github.com/DFE-Digital/SchoolAccount-Web/deployments) shows the version
+  in each environment.
+- **Prod:** [Releases](https://github.com/DFE-Digital/SchoolAccount-Web/releases) lists every version that has reached
+  prod, with the PRs since the previous release. Redeploys and rollbacks don't create a release.
+- **Azure:** the active revision's name includes the version.
+
+### Redeploy or roll back
+
+1. Go to **Actions → Web Deploy → Run workflow**.
+2. In **Use workflow from**, pick the version tag under **Tags**.
+3. Pick the environment, leave **promote** unticked, and run it.
+
+To roll back, pick an older version. After fixing App Configuration or another setting, redeploy the same version:
+settings are read at startup, and every deploy creates a new revision, so the app restarts with the new values.
+
+Only commits on `main` can be deployed.
+
+### Reading a revision name
+
+```
+schoolaccount-web-app--v2026-11-18-1-r283-1
+\___________________/  \___________/ \__/ |
+       app name           version    run   attempt
+```
+
+The version's dots become dashes. The run is the Web Deploy run number (its `#283` in Actions), and the attempt goes up
+when a run is re-run. Azure limits the whole name to 54 characters, which is why it's the run number and not the longer
+run ID.
 
 ## Dependency Updates
 
