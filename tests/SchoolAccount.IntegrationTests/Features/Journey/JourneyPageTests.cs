@@ -669,6 +669,14 @@ public class JourneyPageTests : IClassFixture<SchoolAccountWebApplicationFactory
                             .WithName("Test School 2")
                             .WithAction("Autumn Census 2026", "Approved")
                     )
+                    .WithContent(
+                        ACensusJourneyContentResponse()
+                            .WithUnderstandStatus(
+                                AUnderstandStatus()
+                                    .WithName("Test Status")
+                                    .WithDescription("Test status description.")
+                            )
+                    )
                     .AsSuccess()
             );
 
