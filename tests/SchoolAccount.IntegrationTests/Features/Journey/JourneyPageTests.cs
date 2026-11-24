@@ -667,7 +667,7 @@ public class JourneyPageTests : IClassFixture<SchoolAccountWebApplicationFactory
                     .WithSchoolStatuses(
                         ACensusStatusResponse()
                             .WithName("Test School 1")
-                            .WithAction("Autumn Census 2026", StatusUnavailableLabel),
+                            .WithAction("Autumn Census 2026", CollectUnavailableStatus),
                         ACensusStatusResponse()
                             .WithName("Test School 2")
                             .WithAction("Autumn Census 2026", "Approved")
@@ -715,7 +715,7 @@ public class JourneyPageTests : IClassFixture<SchoolAccountWebApplicationFactory
                                     .WithName("Test Status")
                                     .WithDescription("Test status description.")
                             )
-                            .WithStatus(StatusUnavailableLabel)
+                            .WithStatus(CollectUnavailableStatus)
                     )
                     .AsSuccess()
             );
@@ -809,7 +809,9 @@ public class JourneyPageTests : IClassFixture<SchoolAccountWebApplicationFactory
             .Handle(Arg.Any<GetCensusJourneyQuery>(), Arg.Any<CancellationToken>())
             .Returns(
                 AGetCensusJourneyResponse()
-                    .WithContent(ACensusJourneyContentResponse().WithStatus(StatusUnavailableLabel))
+                    .WithContent(
+                        ACensusJourneyContentResponse().WithStatus(CollectUnavailableStatus)
+                    )
                     .AsSuccess()
             );
 
