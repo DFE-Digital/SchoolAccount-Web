@@ -46,6 +46,8 @@ jobs:
 
       - name: Resolve image
         id: image
+        env:
+          APP_NAME: ${{ vars.CONTAINERAPP_NAME }}
         run: |
           if [ "$GITHUB_REF_TYPE" = "tag" ]; then
             IMAGE="$IMAGE_NAME:$GITHUB_REF_NAME"
@@ -56,7 +58,14 @@ jobs:
           # same image (e.g. after an App Configuration fix) actually restarts the app.
           # Suffixes allow only lower case letters, numbers and single dashes.
           TAG=$(echo "${IMAGE##*:}" | tr '[:upper:]' '[:lower:]' | tr -c 'a-z0-9\n' '-' | tr -s '-')
-          SUFFIX="${TAG}-r${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          # The run number, not the much longer run ID, because Azure limits the whole
+          # revision name (app name, "--" and suffix) to 54 characters.
+          SUFFIX="${TAG}-r${GITHUB_RUN_NUMBER}-${GITHUB_RUN_ATTEMPT}"
+          REVISION="${APP_NAME}--${SUFFIX}"
+          if [ "${#REVISION}" -gt 54 ]; then
+            echo "::error::Revision name $REVISION is ${#REVISION} characters, more than Azure's limit of 54"
+            exit 1
+          fi
           echo "Deploying $IMAGE as revision suffix $SUFFIX"
           echo "image=$IMAGE" >> "$GITHUB_OUTPUT"
           echo "suffix=$SUFFIX" >> "$GITHUB_OUTPUT"
