@@ -17,7 +17,7 @@ public class GetAcademiesMapperTests
             .WithUkprn("10012345")
             .WithName("Test Trust")
             .WithGroupUid("TR00123")
-            .WithType(new NameAndCodeDto { Name = "Multi-academy trust", Code = "MAT" })
+            .WithType(new NameAndCodeDto { Name = "Multi-academy trust", Code = "010" })
             .Build();
 
         // Act
@@ -34,7 +34,7 @@ public class GetAcademiesMapperTests
 
         trustType.ShouldSatisfyAllConditions(
             type => type.Name.ShouldBe("Multi-academy trust"),
-            type => type.Code.ShouldBe("MAT")
+            type => type.Code.ShouldBe("010")
         );
     }
 
@@ -164,6 +164,8 @@ public class GetAcademiesMapperTests
     {
         // Arrange
         var establishmentDto = AnEstablishmentDto()
+            .WithUkprn("10011111")
+            .WithName("Test School")
             .WithUrn(null)
             .WithEstablishmentNumber(null)
             .WithLocalAuthorityCode(null)
@@ -175,6 +177,8 @@ public class GetAcademiesMapperTests
 
         // Assert
         establishmentResponse.ShouldSatisfyAllConditions(
+            establishment => establishment.Ukprn.ShouldBe("10011111"),
+            establishment => establishment.EstablishmentName.ShouldBe("Test School"),
             establishment => establishment.Urn.ShouldBeNull(),
             establishment => establishment.EstablishmentNumber.ShouldBeNull(),
             establishment => establishment.LocalAuthorityCode.ShouldBeNull(),
@@ -257,7 +261,7 @@ public class GetAcademiesMapperTests
     {
         // Arrange
         var trustDto = ATrustDto()
-            .WithType(new NameAndCodeDto { Name = null, Code = "MAT" })
+            .WithType(new NameAndCodeDto { Name = null, Code = "010" })
             .Build();
 
         // Act
