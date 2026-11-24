@@ -748,7 +748,15 @@ public class JourneyPageTests : IClassFixture<SchoolAccountWebApplicationFactory
             .Handle(Arg.Any<GetCensusJourneyQuery>(), Arg.Any<CancellationToken>())
             .Returns(
                 AGetCensusJourneyResponse()
-                    .WithContent(ACensusJourneyContentResponse().WithStatus("Approved"))
+                    .WithContent(
+                        ACensusJourneyContentResponse()
+                            .WithUnderstandStatus(
+                                AUnderstandStatus()
+                                    .WithName("Test Status")
+                                    .WithDescription("Test status description.")
+                            )
+                            .WithStatus("Approved")
+                    )
                     .AsSuccess()
             );
 
