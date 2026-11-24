@@ -37,10 +37,11 @@ public sealed class JourneyViewModel
 
     public bool DisplayUnderstandStatuses => UnderstandStatuses.Any();
 
-    public bool DisplayUnderstandStatusesUnavailableOverview =>
-        Status is StatusUnavailable
-        || MatSchoolsStatuses?.SchoolStatuses is { Count: > 0 } schoolStatuses
-            && schoolStatuses.All(x => x.Status is StatusUnavailable);
+    public bool AreAllSchoolStatusesUnavailable =>
+        MatSchoolsStatuses?.AllStatusesUnavailable == true;
+
+    public bool StatusesUnavailable =>
+        MatView ? AreAllSchoolStatusesUnavailable : Status is StatusUnavailable;
 
     public bool IsCensusClosed { get; init; }
 
