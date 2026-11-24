@@ -1,3 +1,5 @@
+using static SchoolAccount.Web.Mvc.Helpers.StatusFormatter;
+
 namespace SchoolAccount.Web.Mvc.Features.Shared.MultipleSchoolsStatusTable;
 
 public class MultipleSchoolsStatusTableViewModel
@@ -7,6 +9,9 @@ public class MultipleSchoolsStatusTableViewModel
     public IReadOnlyList<SchoolStatus> SchoolStatuses { get; init; } = [];
 
     public string Title => "Schools in your trust";
+
+    public bool AllStatusesUnavailable =>
+        SchoolStatuses.Any() && SchoolStatuses.All(x => x.Status is StatusUnavailableLabel);
 
     public class SchoolStatus
     {
