@@ -41,7 +41,7 @@ public sealed class JourneyViewModel
         MatSchoolsStatuses?.AllStatusesUnavailable == true;
 
     public bool StatusesUnavailable =>
-        MatView ? AreAllSchoolStatusesUnavailable : Status is StatusUnavailable;
+        MatView ? AreAllSchoolStatusesUnavailable : Status is StatusUnavailableLabel;
 
     public bool IsCensusClosed { get; init; }
 

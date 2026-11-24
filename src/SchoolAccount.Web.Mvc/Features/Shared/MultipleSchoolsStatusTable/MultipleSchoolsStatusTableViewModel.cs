@@ -11,7 +11,7 @@ public class MultipleSchoolsStatusTableViewModel
     public string Title => "Schools in your trust";
 
     public bool AllStatusesUnavailable =>
-        SchoolStatuses.Any() && SchoolStatuses.All(x => x.Status is StatusUnavailable);
+        SchoolStatuses.Any() && SchoolStatuses.All(x => x.Status is StatusUnavailableLabel);
 
     public class SchoolStatus
     {

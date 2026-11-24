@@ -12,13 +12,13 @@ public class StatusFormatterTests
     public void An_unavailable_status_is_formatted_as_status_unavailable()
     {
         // Arrange
-        var status = UnavailableStatus;
+        var status = CollectUnavailableStatus;
 
         // Act
         var result = _statusFormatter.FormatStatus(status);
 
         // Assert
-        result.ShouldBe(StatusUnavailable);
+        result.ShouldBe(StatusUnavailableLabel);
     }
 
     [Fact]
