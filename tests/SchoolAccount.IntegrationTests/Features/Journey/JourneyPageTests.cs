@@ -587,7 +587,15 @@ public class JourneyPageTests : IClassFixture<SchoolAccountWebApplicationFactory
                     .WithSchoolStatuses(
                         ACensusStatusResponse()
                             .WithName("Test School 1")
-                            .WithAction("Autumn Census 2026", StatusUnavailable)
+                            .WithAction("Autumn Census 2026", UnavailableStatus)
+                    )
+                    .WithContent(
+                        ACensusJourneyContentResponse()
+                            .WithUnderstandStatus(
+                                AUnderstandStatus()
+                                    .WithName("Test Status")
+                                    .WithDescription("Test status description.")
+                            )
                     )
                     .AsSuccess()
             );
@@ -607,6 +615,41 @@ public class JourneyPageTests : IClassFixture<SchoolAccountWebApplicationFactory
                 "Statuses are currently unavailable. When we can display status information, you can see what they mean below."
             )
             .ShouldNotBeNull();
+    }
+
+    [Fact]
+    public async Task Status_explanations_are_not_shown_for_a_trust_when_no_explanations_have_been_retrieved()
+    {
+        // Arrange
+        _client.WithOrganisation(OrganisationConstants.TrustJson);
+        _getCensusJourneyHandler
+            .Handle(Arg.Any<GetCensusJourneyQuery>(), Arg.Any<CancellationToken>())
+            .Returns(
+                AGetCensusJourneyResponse()
+                    .WithSchoolStatuses(
+                        ACensusStatusResponse()
+                            .WithName("Test School 1")
+                            .WithAction("Autumn Census 2026", UnavailableStatus)
+                    )
+                    .AsSuccess()
+            );
+
+        // Act
+        var response = await _client.GetAsync(JourneyUrl, _cancellationToken);
+        var journeyPage = await AngleSharpPage.FromResponseAsync<JourneyPage>(
+            response,
+            _cancellationToken
+        );
+
+        // Assert
+        response.StatusCode.ShouldBe(OK);
+        journeyPage.GetElementContentByText(".govuk-heading-m", "About your status").ShouldBeNull();
+        journeyPage
+            .GetElementContentByText(
+                "p",
+                "Statuses are currently unavailable. When we can display status information, you can see what they mean below."
+            )
+            .ShouldBeNull();
     }
 
     [Fact]
@@ -713,7 +756,7 @@ public class JourneyPageTests : IClassFixture<SchoolAccountWebApplicationFactory
     }
 
     [Fact]
-    public async Task Status_explanations_are_not_shown_when_no_explanations_have_been_retrieved()
+    public async Task Status_explanations_are_not_shown_for_a_single_school_when_no_explanations_have_been_retrieved()
     {
         // Arrange
         _getCensusJourneyHandler
@@ -737,7 +780,7 @@ public class JourneyPageTests : IClassFixture<SchoolAccountWebApplicationFactory
     }
 
     [Fact]
-    public async Task Status_explanations_are_not_shown_when_no_explanations_have_been_retrieved_and_there_is_an_unavailable_status()
+    public async Task Status_explanations_are_not_shown_for_a_single_school_when_no_explanations_have_been_retrieved_and_there_is_an_unavailable_status()
     {
         // Arrange
         _getCensusJourneyHandler
