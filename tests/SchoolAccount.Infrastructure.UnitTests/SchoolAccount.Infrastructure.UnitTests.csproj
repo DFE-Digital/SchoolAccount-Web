@@ -25,9 +25,4 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\SchoolAccount.Infrastructure\SchoolAccount.Infrastructure.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Clients\" />
-    <Folder Include="Common\Builders\" />
-  </ItemGroup>
 </Project>
