@@ -615,6 +615,9 @@ public class JourneyPageTests : IClassFixture<SchoolAccountWebApplicationFactory
                 "Statuses are currently unavailable. When we can display status information, you can see what they mean below."
             )
             .ShouldNotBeNull();
+        journeyPage
+            .GetElementContentByText("li", "Test Status")
+            .ShouldBe("Test Status: Test status description.");
     }
 
     [Fact]
@@ -732,6 +735,9 @@ public class JourneyPageTests : IClassFixture<SchoolAccountWebApplicationFactory
                 "Statuses are currently unavailable. When we can display status information, you can see what they mean below."
             )
             .ShouldNotBeNull();
+        journeyPage
+            .GetElementContentByText("li", "Test Status")
+            .ShouldBe("Test Status: Test status description.");
     }
 
     [Fact]
