@@ -19,7 +19,10 @@ public class ValidationDecoratorTests
     public async Task Invalid_command_with_a_response_does_not_reach_its_handler()
     {
         // Arrange
-        var decorated = CreateDecoratedHandler(new TestCommandValidator());
+        using var scope = CreateScope(new TestCommandValidator());
+        var decorated = scope.ServiceProvider.GetRequiredService<
+            ICommandHandler<TestCommand, int>
+        >();
 
         // Act
         var result = await decorated.Handle(
@@ -40,7 +43,10 @@ public class ValidationDecoratorTests
         _handler
             .Handle(Arg.Any<TestCommand>(), Arg.Any<CancellationToken>())
             .Returns(Result.Success(42));
-        var decorated = CreateDecoratedHandler(new TestCommandValidator());
+        using var scope = CreateScope(new TestCommandValidator());
+        var decorated = scope.ServiceProvider.GetRequiredService<
+            ICommandHandler<TestCommand, int>
+        >();
 
         // Act
         var result = await decorated.Handle(
@@ -65,7 +71,10 @@ public class ValidationDecoratorTests
         _validator
             .ValidateAsync(Arg.Any<IValidationContext>(), Arg.Any<CancellationToken>())
             .Returns(new ValidationResult());
-        var decorated = CreateDecoratedHandler(_validator);
+        using var scope = CreateScope(_validator);
+        var decorated = scope.ServiceProvider.GetRequiredService<
+            ICommandHandler<TestCommand, int>
+        >();
 
         // Act
         await decorated.Handle(new TestCommand { Name = "test-name" }, cancellation.Token);
@@ -89,9 +98,7 @@ public class ValidationDecoratorTests
         }
     }
 
-    private ICommandHandler<TestCommand, int> CreateDecoratedHandler(
-        IValidator<TestCommand> validator
-    )
+    private IServiceScope CreateScope(IValidator<TestCommand> validator)
     {
         var services = new ServiceCollection();
 
@@ -100,8 +107,6 @@ public class ValidationDecoratorTests
         services.AddLogging();
         services.AddApplication();
 
-        return services
-            .BuildServiceProvider()
-            .GetRequiredService<ICommandHandler<TestCommand, int>>();
+        return services.BuildServiceProvider(validateScopes: true).CreateScope();
     }
 }
