@@ -12,26 +12,36 @@ namespace SchoolAccount.E2ETests.Common.Database;
     "CA2100:Review SQL queries for security vulnerabilities",
     Justification = "Test-only helper: SQL text is only built from constants and record property names in this project, and every value is passed as a SQL parameter."
 )]
-public sealed class TestDatabase
+/// <summary>
+/// Runs SQL against one database on a local SQL Server. Refuses any server that isn't on this
+/// machine, because the tests that use it change data.
+/// </summary>
+public sealed class LocalDatabase
 {
     // In a data source, a port follows a comma ("localhost,1433") and an instance name a backslash.
     private static readonly char[] PortOrInstanceSeparators = [',', '\\'];
 
     private readonly string _connectionString;
 
-    public TestDatabase(DatabaseSettings settings, string? databaseName = null)
+    private LocalDatabase(DatabaseSettings settings, string databaseName)
     {
         EnsureServerIsLocal(settings.Server);
 
         _connectionString = new SqlConnectionStringBuilder
         {
             DataSource = settings.Server,
-            InitialCatalog = databaseName ?? settings.DatabaseName,
+            InitialCatalog = databaseName,
             UserID = settings.UserId,
             Password = settings.Password,
             TrustServerCertificate = true,
         }.ConnectionString;
     }
+
+    public static LocalDatabase CollectPortal(DatabaseSettings settings) =>
+        new(settings, "COLLECTPortal");
+
+    public static LocalDatabase CollectStateLedger(DatabaseSettings settings) =>
+        new(settings, "CollectStateLedger");
 
     public async Task<int> ExecuteNonQueryAsync(string sql, object? parameters = null)
     {

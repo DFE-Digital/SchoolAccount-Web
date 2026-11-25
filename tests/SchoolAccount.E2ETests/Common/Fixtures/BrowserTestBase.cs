@@ -1,5 +1,5 @@
 using Microsoft.Playwright;
-using SchoolAccount.E2ETests.Common;
+using SchoolAccount.E2ETests.Common.Artifacts;
 using SchoolAccount.E2ETests.Common.Configuration;
 
 namespace SchoolAccount.E2ETests.Common.Fixtures;

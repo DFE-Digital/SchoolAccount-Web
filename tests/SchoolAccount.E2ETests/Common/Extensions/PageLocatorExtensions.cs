@@ -12,13 +12,4 @@ public static class PageLocatorExtensions
 
     public static ILocator ButtonLocatorById(this IPage page, string id) =>
         page.Locator($"button[id='{id}']");
-
-    public static ILocator ButtonLocatorByText(this IPage page, string text) =>
-        page.Locator("button").Filter(new() { HasText = text });
-
-    public static ILocator AnchorLocatorByText(this IPage page, string linkText) =>
-        page.Locator("a").Filter(new() { HasText = linkText.Trim() });
-
-    public static ILocator SpanLocatorByClass(this IPage page, string className) =>
-        page.Locator($"span.{className}");
 }

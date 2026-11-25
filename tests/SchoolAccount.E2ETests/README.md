@@ -93,18 +93,23 @@ To set a value with an environment variable, replace `:` with `__`, for example
   reason for each attempt. If DfE Sign-in shows an error, such as a wrong password, it isn't retried, so the test
   account can't get locked.
 - **The database tests change data**, so they refuse to run against anything other than `localhost` or a
-  `127.x.x.x` address. Running them elsewhere means changing `TestDatabase` deliberately.
+  `127.x.x.x` address. Running them elsewhere means changing `LocalDatabase` deliberately.
 - **Tab-order snapshot.** `Features/Journey/Journey.tab-order.json` records the expected keyboard tab order on the
   Journey page. If the order changes, the test fails and writes `Journey.tab-order.received.json` next to it. If
   the new order is correct, rename that file over the snapshot. The step titles come from the Collect API, so a
   wording change there also fails this test.
-- **Screenshots and videos** are saved under `bin/Debug/net10.0/screenshots/` and `bin/Debug/net10.0/videos/`,
-  in a folder for each test class.
+- **Screenshots and videos** of each browser test are kept so you can see what the browser was showing when a
+  test failed, without rerunning it. They're saved under `bin/Debug/net10.0/screenshots/` and
+  `bin/Debug/net10.0/videos/`, in a folder for each test class, named after the test and the time it ran.
+  `BrowserTestBase` takes them when each test finishes, and the `Screenshot:*` and `Video:*` settings control
+  whether they're kept for passing tests, failing tests or neither. The code that names and places the files is
+  in `Common/Artifacts/`.
 
 ## Layout
 
 ```
-Common/         Configuration, fixtures, page objects and database helpers
+Common/         Configuration, fixtures, page objects, database helpers, and screenshot and video
+                naming (Artifacts/)
 Features/       Browser tests, one folder per page of the site
 CollectData/    Tests that read and write the Collect databases
 ```

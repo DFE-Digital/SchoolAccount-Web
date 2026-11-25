@@ -1,6 +1,6 @@
 namespace SchoolAccount.E2ETests.Common.Database;
 
-public sealed class CollectReturnStatusTable(TestDatabase database)
+public sealed class CollectReturnStatusTable(LocalDatabase database)
 {
     private const string TableName = "CollectReturnStatus";
 

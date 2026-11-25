@@ -28,13 +28,13 @@ public class JourneyPageTests : BrowserTestBase
     [Fact]
     public async Task Heading_names_the_census()
     {
-        await Expect(_journeyPage.CensusReturnHeading).ToContainTextAsync("census");
+        await Expect(_journeyPage.Journey.Heading).ToContainTextAsync("census");
     }
 
     [Fact]
     public async Task Census_return_status_is_shown()
     {
-        var status = await _journeyPage.GetCensusReturnStatusAsync();
+        var status = await _journeyPage.Journey.GetStatusAsync();
         Assert.NotEmpty(status);
     }
 
@@ -58,6 +58,6 @@ public class JourneyPageTests : BrowserTestBase
     [Fact]
     public async Task Go_to_COLLECT_button_is_shown()
     {
-        await Expect(_journeyPage.GoToCollectPortalButton).ToBeVisibleAsync();
+        await Expect(_journeyPage.Journey.GoToCollectButton).ToBeVisibleAsync();
     }
 }

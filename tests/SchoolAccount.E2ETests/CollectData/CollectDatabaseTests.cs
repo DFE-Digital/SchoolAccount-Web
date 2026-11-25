@@ -5,15 +5,15 @@ namespace SchoolAccount.E2ETests.CollectData;
 
 public class CollectDatabaseTests
 {
-    private readonly TestDatabase _collectPortal;
-    private readonly TestDatabase _stateLedger;
+    private readonly LocalDatabase _collectPortal;
+    private readonly LocalDatabase _stateLedger;
     private readonly CollectReturnStatusTable _table;
 
     public CollectDatabaseTests()
     {
         var settings = ConfigurationLoader.LoadSettings();
-        _collectPortal = TestDatabases.CollectPortal(settings.Database!);
-        _stateLedger = TestDatabases.CollectStateLedger(settings.Database!);
+        _collectPortal = LocalDatabase.CollectPortal(settings.Database);
+        _stateLedger = LocalDatabase.CollectStateLedger(settings.Database);
         _table = new CollectReturnStatusTable(_stateLedger);
     }
 
@@ -74,8 +74,8 @@ public class CollectDatabaseTests
     {
         var parameters = new
         {
-            LAEStab = CollectPortalScripts.KnownLAEStab,
-            CensusName = CollectPortalScripts.KnownCensusName,
+            LAEStab = ReturnStatusSyncScripts.KnownLAEStab,
+            CensusName = ReturnStatusSyncScripts.KnownCensusName,
             Status = 3,
             HighErrors = 1,
             LowErrors = 2,
@@ -83,13 +83,16 @@ public class CollectDatabaseTests
         };
 
         await _collectPortal.ExecuteNonQueryAsync(
-            CollectPortalScripts.UpdateDataReturnStatus,
+            ReturnStatusSyncScripts.UpdateDataReturnStatus,
             parameters
         );
-        await _stateLedger.ExecuteNonQueryAsync(CollectPortalScripts.SyncReturnStatus, parameters);
+        await _stateLedger.ExecuteNonQueryAsync(
+            ReturnStatusSyncScripts.SyncReturnStatus,
+            parameters
+        );
 
         var history = await _stateLedger.SelectAsync(
-            CollectPortalScripts.ReturnStatusHistory,
+            ReturnStatusSyncScripts.ReturnStatusHistory,
             parameters
         );
 

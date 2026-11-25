@@ -1,23 +1,20 @@
 using Microsoft.Playwright;
-using SchoolAccount.E2ETests.Common.Pages;
 
 namespace SchoolAccount.E2ETests.Common.Pages.Components;
 
-/// <summary>The "Important dates" summary list in the Journey page sidebar (Census day, Return due).</summary>
-public class ImportantDatesComponent(IPage page) : BasePage(page)
+/// <summary>The "Important dates" summary list in the Journey page sidebar (Census day, Return due). From <c>Journey.cshtml</c>.</summary>
+public class ImportantDatesComponent(IPage page)
+    : BaseComponent(page.Locator(".govuk-grid-column-one-third .govuk-summary-list"))
 {
-    public ILocator CensusDayValue => GetDateRowValue("Census day");
-    public ILocator ReturnDueValue => GetDateRowValue("Return due");
+    public ILocator CensusDayValue => GetDateValue("Census day");
+    public ILocator ReturnDueValue => GetDateValue("Return due");
 
-    public async Task<string> GetCensusDayAsync() =>
-        (await CensusDayValue.TextContentAsync())?.Trim() ?? string.Empty;
+    public Task<string> GetCensusDayAsync() => GetTrimmedTextAsync(CensusDayValue);
 
-    public async Task<string> GetReturnDueDateAsync() =>
-        (await ReturnDueValue.TextContentAsync())?.Trim() ?? string.Empty;
+    public Task<string> GetReturnDueDateAsync() => GetTrimmedTextAsync(ReturnDueValue);
 
-    private ILocator GetDateRowValue(string label) =>
-        PageContext
-            .Locator("div.govuk-summary-list__row")
+    private ILocator GetDateValue(string label) =>
+        Root.Locator("div.govuk-summary-list__row")
             .Filter(new() { HasText = label })
             .Locator("dd.govuk-summary-list__value");
 }
