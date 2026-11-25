@@ -10,6 +10,7 @@ namespace SchoolAccount.Web.Mvc.Features.Journey;
 public class JourneyViewModelBuilder(TimeProvider timeProvider)
 {
     private readonly DateFormatter _dateFormatter = new(timeProvider);
+    private readonly StatusFormatter _statusFormatter = new();
     private const int _oneDayLag = 1;
 
     public JourneyViewModel Build(
@@ -25,7 +26,7 @@ public class JourneyViewModelBuilder(TimeProvider timeProvider)
             Title = getCensusJourneyResponse.Content.Title,
             Caption = getCensusJourneyResponse.Content.Caption,
             Overview = getCensusJourneyResponse.Content.Overview,
-            Status = getCensusJourneyResponse.Content.Status,
+            Status = _statusFormatter.FormatStatus(getCensusJourneyResponse.Content.Status),
             ImportantDates = getCensusJourneyResponse
                 .Content.ImportantDates.OrderBy(date => date.Date)
                 .Select(date => new ImportantDate
@@ -64,7 +65,7 @@ public class JourneyViewModelBuilder(TimeProvider timeProvider)
                             a.Actions.Select(x => new SchoolStatus
                             {
                                 Name = a.SchoolName,
-                                Status = x.Status.Name,
+                                Status = _statusFormatter.FormatStatus(x.Status.Name),
                                 Errors = x.Errors,
                                 Queries = x.Queries,
                                 UpdatedAt = x.UpdatedAt is null

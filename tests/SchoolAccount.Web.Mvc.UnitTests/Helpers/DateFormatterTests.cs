@@ -9,7 +9,7 @@ public static class DateFormatterTests
     public class ToDaysAgo
     {
         [Fact]
-        public void Day_is_returned_as_today_for_the_same_day()
+        public void Today_is_returned_for_the_current_date()
         {
             // Arrange
             var twoAmSeptember14 = new DateTime(2026, 9, 14, 2, 0, 0, DateTimeKind.Utc);

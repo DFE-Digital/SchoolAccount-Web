@@ -72,6 +72,10 @@
         @if (true) // SAB-527: Temporary spike testing
         {
             <h2 class="govuk-heading-m">About your status</h2>
+            @if (Model.StatusesUnavailable)
+            {
+                <p class="govuk-body">Statuses are currently unavailable. When we can display status information, you can see what they mean below.</p>
+            }
             <p class="govuk-body">Statuses are updated overnight. You will be emailed when the status changes.</p>
             <govuk-details>
                 <govuk-details-summary>

@@ -13,26 +13,19 @@ namespace SchoolAccount.Web.Mvc.UnitTests.Authentication;
 
 public class UserContextTests
 {
+    private const string _id = "EEEEEEEE-EEEE-EEEE-EEEE-EEEEEEEEEEEE";
+    private const string _givenName = "John";
+    private const string _familyName = "Jones";
+    private const string _email = "john.jones@testing.world";
     private readonly FakeLogger<UserContext> _logger = new();
 
     [Fact]
     public void A_signed_in_academy_users_details_are_read_from_their_claims()
     {
         // Arrange
-        var id = "EEEEEEEE-EEEE-EEEE-EEEE-EEEEEEEEEEEE";
-        var givenName = "John";
-        var familyName = "Jones";
-        var email = "john.jones@testing.world";
         var organisationJson = OrganisationConstants.SingleSchoolJson;
 
-        var claimsDictionary = new Dictionary<string, string>
-        {
-            [Sub] = id,
-            [GivenName] = givenName,
-            [FamilyName] = familyName,
-            [Email] = email,
-            [Organisation] = organisationJson,
-        };
+        var claimsDictionary = CreateClaimsDictionary(organisationJson);
 
         var accessor = CreateHttpContextAccessor(true, claimsDictionary);
 
@@ -45,11 +38,11 @@ public class UserContextTests
 
         context.ShouldSatisfyAllConditions(
             user => user.IsAuthenticated.ShouldBeTrue(),
-            user => user.GivenName.ShouldBe(givenName),
-            user => user.Surname.ShouldBe(familyName),
-            user => user.Id.ShouldBe(id),
-            user => user.EmailAddress.ShouldBe(email),
-            user => user.Name.ShouldBe(givenName + " " + familyName)
+            user => user.GivenName.ShouldBe(_givenName),
+            user => user.Surname.ShouldBe(_familyName),
+            user => user.Id.ShouldBe(_id),
+            user => user.EmailAddress.ShouldBe(_email),
+            user => user.Name.ShouldBe(_givenName + " " + _familyName)
         );
 
         organisation.ShouldSatisfyAllConditions(
@@ -75,20 +68,9 @@ public class UserContextTests
     public void A_signed_in_trust_users_details_are_read_from_their_claims()
     {
         // Arrange
-        var id = "EEEEEEEE-EEEE-EEEE-EEEE-EEEEEEEEEEEE";
-        var givenName = "John";
-        var familyName = "Jones";
-        var email = "john.jones@testing.world";
         var organisationJson = OrganisationConstants.TrustJson;
 
-        var claimsDictionary = new Dictionary<string, string>
-        {
-            [Sub] = id,
-            [GivenName] = givenName,
-            [FamilyName] = familyName,
-            [Email] = email,
-            [Organisation] = organisationJson,
-        };
+        var claimsDictionary = CreateClaimsDictionary(organisationJson);
 
         var accessor = CreateHttpContextAccessor(true, claimsDictionary);
 
@@ -100,11 +82,11 @@ public class UserContextTests
 
         context.ShouldSatisfyAllConditions(
             user => user.IsAuthenticated.ShouldBeTrue(),
-            user => user.GivenName.ShouldBe(givenName),
-            user => user.Surname.ShouldBe(familyName),
-            user => user.Id.ShouldBe(id),
-            user => user.EmailAddress.ShouldBe(email),
-            user => user.Name.ShouldBe(givenName + " " + familyName)
+            user => user.GivenName.ShouldBe(_givenName),
+            user => user.Surname.ShouldBe(_familyName),
+            user => user.Id.ShouldBe(_id),
+            user => user.EmailAddress.ShouldBe(_email),
+            user => user.Name.ShouldBe(_givenName + " " + _familyName)
         );
 
         organisation.ShouldSatisfyAllConditions(
@@ -142,20 +124,9 @@ public class UserContextTests
     public void An_unreadable_organisation_claim_is_ignored_and_logged()
     {
         // Arrange
-        var id = "EEEEEEEE-EEEE-EEEE-EEEE-EEEEEEEEEEEE";
-        var givenName = "John";
-        var familyName = "Jones";
-        var email = "john.jones@testing.world";
         var organisationJson = "organisation is not valid json";
 
-        var claimsDictionary = new Dictionary<string, string>
-        {
-            [Sub] = id,
-            [GivenName] = givenName,
-            [FamilyName] = familyName,
-            [Email] = email,
-            [Organisation] = organisationJson,
-        };
+        var claimsDictionary = CreateClaimsDictionary(organisationJson);
 
         var accessor = CreateHttpContextAccessor(true, claimsDictionary);
 
@@ -195,5 +166,17 @@ public class UserContextTests
         accessor.HttpContext.Returns(httpContext);
 
         return accessor;
+    }
+
+    private static Dictionary<string, string> CreateClaimsDictionary(string organisationJson)
+    {
+        return new Dictionary<string, string>
+        {
+            [Sub] = _id,
+            [GivenName] = _givenName,
+            [FamilyName] = _familyName,
+            [Email] = _email,
+            [Organisation] = organisationJson,
+        };
     }
 }
