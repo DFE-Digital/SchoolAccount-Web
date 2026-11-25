@@ -27,6 +27,7 @@ jobs:
 
     permissions:
       contents: read
+      actions: read
 
     concurrency:
       group: deploy-${{ inputs.environment }}
@@ -84,13 +85,21 @@ jobs:
             --image ${{ steps.image.outputs.image }} \
             --revision-suffix ${{ steps.image.outputs.suffix }}
 
+      # Links to the Web Build and Deploy run that built this commit, if it can be found
       - name: Summary
         env:
+          GH_TOKEN: ${{ github.token }}
           ENVIRONMENT: ${{ inputs.environment }}
           IMAGE: ${{ steps.image.outputs.image }}
           REVISION: ${{ vars.CONTAINERAPP_NAME }}--${{ steps.image.outputs.suffix }}
         run: |
           echo "Deployed \`$IMAGE\` to **$ENVIRONMENT** as revision \`$REVISION\`" >> "$GITHUB_STEP_SUMMARY"
+          BUILD=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow build.yml --commit "$GITHUB_SHA" --event push --limit 1 \
+            --json number,url --jq '.[0] | select(.) | "[Web Build and Deploy #\(.number)](\(.url))"' || true)
+          if [ -n "$BUILD" ]; then
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            echo "Built by $BUILD" >> "$GITHUB_STEP_SUMMARY"
+          fi
 
   # Each environment is its own run, so a failed deploy can be re-run on its own
   promote:

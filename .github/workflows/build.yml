@@ -187,10 +187,16 @@ jobs:
           git tag "$VERSION"
           git push origin "refs/tags/$VERSION"
 
+      - name: Summary
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: echo "Versioned as **$VERSION**" >> "$GITHUB_STEP_SUMMARY"
+
   # Each environment deploys in its own Web Deploy run from the version tag, so any
   # deploy can be re-run on its own and the Environments page shows the version.
+  # The version is in the job name so the run's graph shows which version this build made.
   deploy:
-    name: Start Deploy To Dev
+    name: Start Deploy ${{ needs.version.outputs.version }} To Dev
     needs: version
     runs-on: ubuntu-latest
 
