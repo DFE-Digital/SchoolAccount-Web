@@ -19,6 +19,11 @@
     row-gap: govuk-spacing(3);
   }
 
+  &__row--submitted {
+    display: block;
+    padding: govuk-spacing(1) govuk-spacing(2);
+  }
+
   &__button {
     margin-bottom: 0;
     background: #003a69;
