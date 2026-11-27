@@ -4,7 +4,7 @@ namespace SchoolAccount.E2ETests.Common.Database;
 
 public static class CollectReturnStatusFaker
 {
-    private static readonly Faker<CollectReturnStatus> Faker =
+    private static readonly Faker<CollectReturnStatus> _faker =
         new Faker<CollectReturnStatus>().CustomInstantiator(f => new CollectReturnStatus
         {
             SchoolName = $"[TEST] {f.Company.CompanyName()} School",
@@ -21,6 +21,6 @@ public static class CollectReturnStatusFaker
 
     public static CollectReturnStatus Generate()
     {
-        return Faker.Generate();
+        return _faker.Generate();
     }
 }

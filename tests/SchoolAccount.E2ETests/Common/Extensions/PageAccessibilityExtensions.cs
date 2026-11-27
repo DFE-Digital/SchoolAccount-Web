@@ -7,7 +7,7 @@ namespace SchoolAccount.E2ETests.Common.Extensions;
 public static class PageAccessibilityExtensions
 {
     // The axe-core rules that check an element has a name a screen reader can announce.
-    private static readonly List<string> AccessibleNameRules =
+    private static readonly List<string> _accessibleNameRules =
     [
         "aria-command-name",
         "aria-input-field-name",
@@ -31,7 +31,7 @@ public static class PageAccessibilityExtensions
     {
         var options = new AxeRunOptions
         {
-            RunOnly = new RunOnlyOptions { Type = "rule", Values = AccessibleNameRules },
+            RunOnly = new RunOnlyOptions { Type = "rule", Values = _accessibleNameRules },
         };
 
         var result = await page.RunAxe(options);

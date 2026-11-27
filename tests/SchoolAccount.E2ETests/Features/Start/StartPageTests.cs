@@ -16,9 +16,6 @@ public class StartPageTests : BrowserTestBase
 
         await homePage.NavigateAsync(Settings.SiteUrl);
 
-        var title = await homePage.GetTitleAsync();
-        Assert.Contains("Home Page", title);
-
         await homePage.AssertTitle("Sign in to School Account");
     }
 }

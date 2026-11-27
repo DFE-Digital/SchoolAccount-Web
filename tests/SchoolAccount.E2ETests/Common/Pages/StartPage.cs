@@ -8,9 +8,4 @@ public class StartPage(IPage page) : BasePage(page)
     {
         await PageContext.GotoAsync(baseUrl);
     }
-
-    public async Task<string> GetTitleAsync()
-    {
-        return await PageContext.TitleAsync();
-    }
 }

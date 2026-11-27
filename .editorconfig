@@ -377,3 +377,7 @@ dotnet_diagnostic.S6605.severity = none
 
 # S6781: JWT secret keys should not be disclosed
 dotnet_diagnostic.S6781.severity = none
+
+[tests/SchoolAccount.E2ETests/**.cs]
+# CA2100: test-only SQL helper, SQL text comes from constants and every value is a parameter
+dotnet_diagnostic.CA2100.severity = none

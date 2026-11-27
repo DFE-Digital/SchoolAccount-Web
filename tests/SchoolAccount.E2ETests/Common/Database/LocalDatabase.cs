@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Net;
 using System.Net.Sockets;
@@ -7,11 +6,6 @@ using SchoolAccount.E2ETests.Common.Configuration;
 
 namespace SchoolAccount.E2ETests.Common.Database;
 
-[SuppressMessage(
-    "Security",
-    "CA2100:Review SQL queries for security vulnerabilities",
-    Justification = "Test-only helper: SQL text is only built from constants and record property names in this project, and every value is passed as a SQL parameter."
-)]
 /// <summary>
 /// Runs SQL against one database on a local SQL Server. Refuses any server that isn't on this
 /// machine, because the tests that use it change data.
@@ -19,7 +13,7 @@ namespace SchoolAccount.E2ETests.Common.Database;
 public sealed class LocalDatabase
 {
     // In a data source, a port follows a comma ("localhost,1433") and an instance name a backslash.
-    private static readonly char[] PortOrInstanceSeparators = [',', '\\'];
+    private static readonly char[] _portOrInstanceSeparators = [',', '\\'];
 
     private readonly string _connectionString;
 
@@ -162,7 +156,7 @@ public sealed class LocalDatabase
             ? server[(server.IndexOf(':', StringComparison.Ordinal) + 1)..]
             : server;
 
-        return withoutProtocol.Split(PortOrInstanceSeparators)[0].Trim();
+        return withoutProtocol.Split(_portOrInstanceSeparators)[0].Trim();
     }
 
     private async Task<SqlConnection> OpenConnectionAsync()

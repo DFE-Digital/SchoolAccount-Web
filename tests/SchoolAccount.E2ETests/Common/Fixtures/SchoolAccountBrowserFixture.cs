@@ -8,7 +8,7 @@ namespace SchoolAccount.E2ETests.Common.Fixtures;
 public class SchoolAccountBrowserFixture : AuthenticatedBrowserFixture
 {
     // How long DfE Sign-in has to send the user back to the site after they sign in.
-    private const float ReturnToSiteTimeoutMilliseconds = 30_000;
+    private const float _returnToSiteTimeoutMilliseconds = 30_000;
 
     protected override async Task LoginAsync(IPage page)
     {
@@ -34,7 +34,7 @@ public class SchoolAccountBrowserFixture : AuthenticatedBrowserFixture
             // Sign-in has worked once DfE Sign-in sends the user back to the site's Journey page.
             await page.WaitForURLAsync(
                 url => url.StartsWith(journeyUrl, StringComparison.OrdinalIgnoreCase),
-                new PageWaitForURLOptions { Timeout = ReturnToSiteTimeoutMilliseconds }
+                new PageWaitForURLOptions { Timeout = _returnToSiteTimeoutMilliseconds }
             );
         }
         catch (PlaywrightException)

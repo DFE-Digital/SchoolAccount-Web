@@ -4,7 +4,7 @@ namespace SchoolAccount.E2ETests.Common.Fixtures;
 
 public abstract class AuthenticatedBrowserFixture : BrowserFixture
 {
-    private const int MaximumSignInAttempts = 3;
+    private const int _maximumSignInAttempts = 3;
 
     public string? StorageState { get; private set; }
 
@@ -25,7 +25,7 @@ public abstract class AuthenticatedBrowserFixture : BrowserFixture
     {
         var failures = new List<PlaywrightException>();
 
-        for (var attempt = 1; attempt <= MaximumSignInAttempts; attempt++)
+        for (var attempt = 1; attempt <= _maximumSignInAttempts; attempt++)
         {
             var context = await Browser.NewContextAsync();
             try
@@ -45,7 +45,7 @@ public abstract class AuthenticatedBrowserFixture : BrowserFixture
         }
 
         throw new AggregateException(
-            $"Sign-in failed after {MaximumSignInAttempts} attempts.",
+            $"Sign-in failed after {_maximumSignInAttempts} attempts.",
             failures
         );
     }

@@ -11,7 +11,7 @@ namespace SchoolAccount.E2ETests.Features.Journey;
 [Collection(SchoolAccountCollection.Name)]
 public class JourneyUsabilityTests : BrowserTestBase
 {
-    private const string FocusedElementDescriptorScript = """
+    private const string _focusedElementDescriptorScript = """
         el => {
             const role = el.getAttribute('role') || el.tagName.toLowerCase();
             let name = (el.getAttribute('aria-label') || el.textContent || el.value || '').trim();
@@ -25,11 +25,11 @@ public class JourneyUsabilityTests : BrowserTestBase
         }
         """;
 
-    private const string SnapshotFileName = "Journey.tab-order.json";
-    private const string ReceivedFileName = "Journey.tab-order.received.json";
-    private const int MaximumTabPresses = 60;
+    private const string _snapshotFileName = "Journey.tab-order.json";
+    private const string _receivedFileName = "Journey.tab-order.received.json";
+    private const int _maximumTabPresses = 60;
 
-    private static readonly JsonSerializerOptions SnapshotJsonOptions = new()
+    private static readonly JsonSerializerOptions _snapshotJsonOptions = new()
     {
         WriteIndented = true,
     };
@@ -71,7 +71,7 @@ public class JourneyUsabilityTests : BrowserTestBase
         var tabOrder = new List<string>();
         string? first = null;
 
-        for (var i = 0; i < MaximumTabPresses; i++)
+        for (var i = 0; i < _maximumTabPresses; i++)
         {
             await Page.Keyboard.PressAsync("Tab");
 
@@ -80,7 +80,7 @@ public class JourneyUsabilityTests : BrowserTestBase
             {
                 current = await Page.Locator(":focus")
                     .EvaluateAsync<string>(
-                        FocusedElementDescriptorScript,
+                        _focusedElementDescriptorScript,
                         arg: null,
                         new LocatorEvaluateOptions { Timeout = 1000 }
                     );
@@ -109,8 +109,8 @@ public class JourneyUsabilityTests : BrowserTestBase
     private static async Task ShouldMatchSavedTabOrderAsync(List<string> tabOrder)
     {
         var cancellationToken = TestContext.Current.CancellationToken;
-        var snapshotPath = SnapshotPath(SnapshotFileName);
-        var receivedPath = SnapshotPath(ReceivedFileName);
+        var snapshotPath = SnapshotPath(_snapshotFileName);
+        var receivedPath = SnapshotPath(_receivedFileName);
 
         var savedTabOrder = File.Exists(snapshotPath)
             ? JsonSerializer.Deserialize<List<string>>(
@@ -126,18 +126,18 @@ public class JourneyUsabilityTests : BrowserTestBase
 
         await File.WriteAllTextAsync(
             receivedPath,
-            JsonSerializer.Serialize(tabOrder, SnapshotJsonOptions),
+            JsonSerializer.Serialize(tabOrder, _snapshotJsonOptions),
             cancellationToken
         );
 
         savedTabOrder.ShouldNotBeNull(
-            $"There is no saved tab order ({SnapshotFileName}). The order found has been written to "
-                + $"{ReceivedFileName}: review it, then rename it to {SnapshotFileName} to accept it."
+            $"There is no saved tab order ({_snapshotFileName}). The order found has been written to "
+                + $"{_receivedFileName}: review it, then rename it to {_snapshotFileName} to accept it."
         );
         tabOrder.ShouldBe(
             savedTabOrder,
-            $"The tab order has changed. The new order has been written to {ReceivedFileName}: "
-                + $"if the change is intended, review it and rename it to {SnapshotFileName}."
+            $"The tab order has changed. The new order has been written to {_receivedFileName}: "
+                + $"if the change is intended, review it and rename it to {_snapshotFileName}."
         );
     }
 

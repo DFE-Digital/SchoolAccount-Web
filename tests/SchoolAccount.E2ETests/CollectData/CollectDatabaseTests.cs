@@ -5,27 +5,13 @@ namespace SchoolAccount.E2ETests.CollectData;
 
 public class CollectDatabaseTests
 {
-    private readonly LocalDatabase _collectPortal;
-    private readonly LocalDatabase _stateLedger;
-    private readonly CollectReturnStatusTable _table;
-
-    public CollectDatabaseTests()
-    {
-        var settings = ConfigurationLoader.LoadSettings();
-        _collectPortal = LocalDatabase.CollectPortal(settings.Database);
-        _stateLedger = LocalDatabase.CollectStateLedger(settings.Database);
-        _table = new CollectReturnStatusTable(_stateLedger);
-    }
-
     [Fact]
     public async Task Collect_portal_and_state_ledger_databases_both_return_rows()
     {
-        var portalRows = await _collectPortal.SelectAsync(
-            "SELECT TOP (1) * FROM [dbo].[DataCollection]"
-        );
-        var ledgerRows = await _stateLedger.SelectAsync(
-            "SELECT TOP (1) * FROM [dbo].[CollectReturnStatus]"
-        );
+        var portalRows = await CollectPortal()
+            .SelectAsync("SELECT TOP (1) * FROM [dbo].[DataCollection]");
+        var ledgerRows = await StateLedger()
+            .SelectAsync("SELECT TOP (1) * FROM [dbo].[CollectReturnStatus]");
 
         Assert.NotEmpty(portalRows);
         Assert.NotEmpty(ledgerRows);
@@ -34,12 +20,14 @@ public class CollectDatabaseTests
     [Fact]
     public async Task Added_status_row_can_be_read_back()
     {
+        var stateLedger = StateLedger();
+        var table = new CollectReturnStatusTable(stateLedger);
         var row = CollectReturnStatusFaker.Generate();
-        var id = await _table.AddAsync(row);
+        var id = await table.AddAsync(row);
 
         try
         {
-            var result = await _stateLedger.SelectAsync(
+            var result = await stateLedger.SelectAsync(
                 "SELECT * FROM [dbo].[CollectReturnStatus] WHERE [Id] = @Id",
                 new { Id = id }
             );
@@ -49,19 +37,21 @@ public class CollectDatabaseTests
         }
         finally
         {
-            await _table.RemoveAsync(id);
+            await table.RemoveAsync(id);
         }
     }
 
     [Fact]
     public async Task Removed_status_row_no_longer_exists()
     {
+        var stateLedger = StateLedger();
+        var table = new CollectReturnStatusTable(stateLedger);
         var row = CollectReturnStatusFaker.Generate();
-        var id = await _table.AddAsync(row);
+        var id = await table.AddAsync(row);
 
-        await _table.RemoveAsync(id);
+        await table.RemoveAsync(id);
 
-        var result = await _stateLedger.SelectAsync(
+        var result = await stateLedger.SelectAsync(
             "SELECT * FROM [dbo].[CollectReturnStatus] WHERE [Id] = @Id",
             new { Id = id }
         );
@@ -72,6 +62,8 @@ public class CollectDatabaseTests
     [Fact]
     public async Task Sync_copies_a_portal_status_change_into_the_state_ledger()
     {
+        var collectPortal = CollectPortal();
+        var stateLedger = StateLedger();
         var parameters = new
         {
             LAEStab = ReturnStatusSyncScripts.KnownLAEStab,
@@ -82,21 +74,31 @@ public class CollectDatabaseTests
             OKErrors = 3,
         };
 
-        await _collectPortal.ExecuteNonQueryAsync(
+        await collectPortal.ExecuteNonQueryAsync(
             ReturnStatusSyncScripts.UpdateDataReturnStatus,
             parameters
         );
-        await _stateLedger.ExecuteNonQueryAsync(
+        await stateLedger.ExecuteNonQueryAsync(
             ReturnStatusSyncScripts.SyncReturnStatus,
             parameters
         );
 
-        var history = await _stateLedger.SelectAsync(
+        var history = await stateLedger.SelectAsync(
             ReturnStatusSyncScripts.ReturnStatusHistory,
             parameters
         );
 
         Assert.NotEmpty(history);
         Assert.Equal(parameters.Status, history[0]["ReturnStatusCode"]);
+    }
+
+    private static LocalDatabase CollectPortal()
+    {
+        return LocalDatabase.CollectPortal(ConfigurationLoader.LoadSettings().Database);
+    }
+
+    private static LocalDatabase StateLedger()
+    {
+        return LocalDatabase.CollectStateLedger(ConfigurationLoader.LoadSettings().Database);
     }
 }

@@ -16,7 +16,7 @@ public sealed record CollectReturnStatus
 
     public required string Hash { get; init; }
 
-    public DateTime UpdatedAt { get; init; } = DateTime.UtcNow;
+    public DateTime UpdatedAt { get; init; } = new(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
     public required int DCID { get; init; }
 
