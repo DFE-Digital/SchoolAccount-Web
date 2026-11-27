@@ -6,11 +6,12 @@
 @{
     var connectionString =
         Configuration["APPLICATION_INSIGHTS_CONNECTION_STRING"];
-    
+
     var analyticsUserId = UserContext.Id;
 
     var organisationId =
         ViewData["AnalyticsOrganisationId"]?.ToString();
+
     var organisationType =
         ViewData["AnalyticsOrganisationType"]?.ToString();
 
@@ -36,7 +37,8 @@
                     [clickPlugin.identifier]: {
                         autoCapture: true,
                         dataTags: {
-                            useDefaultContentNameOrId: true
+                            customDataPrefix: "data-ai-",
+                            useDefaultContentNameOrId: false
                         }
                     }
                 }
@@ -48,7 +50,6 @@
                 });
 
             appInsights.loadAppInsights();
-
 
             const organisationType =
                 @Html.Raw(JsonSerializer.Serialize(organisationType));
@@ -71,8 +72,11 @@
                 });
             });
 
-            const userId = @Html.Raw(JsonSerializer.Serialize(analyticsUserId));
-            const organisationId = @Html.Raw(JsonSerializer.Serialize(organisationId));
+            const userId =
+                @Html.Raw(JsonSerializer.Serialize(analyticsUserId));
+
+            const organisationId =
+                @Html.Raw(JsonSerializer.Serialize(organisationId));
 
             if (userId && organisationId) {
                 appInsights.setAuthenticatedUserContext(
@@ -86,7 +90,7 @@
                 name: document.title,
                 uri: window.location.href
             });
-            
+
             const statusDetails = document.querySelector(
                 ".govuk-details"
             );
@@ -111,7 +115,8 @@
                 );
 
                 const viewportHeight = window.innerHeight;
-                const scrollableHeight = documentHeight - viewportHeight;
+                const scrollableHeight =
+                    documentHeight - viewportHeight;
 
                 if (scrollableHeight <= 0) {
                     return;
@@ -119,11 +124,16 @@
 
                 const scrollDepth = Math.min(
                     100,
-                    Math.floor((window.scrollY / scrollableHeight) * 100)
+                    Math.floor(
+                        (window.scrollY / scrollableHeight) * 100
+                    )
                 );
 
                 for (const milestone of scrollMilestones) {
-                    if (scrollDepth >= milestone && !trackedMilestones.has(milestone)) {
+                    if (
+                        scrollDepth >= milestone &&
+                        !trackedMilestones.has(milestone)
+                    ) {
                         trackedMilestones.add(milestone);
 
                         appInsights.trackEvent({
@@ -145,4 +155,3 @@
         })();
     </script>
 }
-

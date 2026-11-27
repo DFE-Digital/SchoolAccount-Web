@@ -2,6 +2,7 @@
 @{
     ViewData["Title"] = "Journey";
     ViewData["EnableApplicationInsights"] = true;
+    ViewData["AnalyticsJourney"] = "census";
 
     var organisation = Model.Organisation;
 
@@ -11,6 +12,15 @@
     ViewData["AnalyticsOrganisationType"] = "UKPRN";
     ViewData["AnalyticsOrganisationCategory"] =
         organisation.Category.Id;
+}
+
+@if (Model.IsCensusClosed)
+{
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <partial name="ClosureBanner.cshtml"/>
+        </div>
+    </div>
 }
 
 <div class="govuk-grid-row">
@@ -35,11 +45,12 @@
             <partial name="~/Features/Shared/MultipleSchoolsStatusTable/MultipleSchoolsStatusTable.cshtml"
                      model="@Model.MatSchoolsStatuses"/>
         }
-        
+
         @if (Model.TryGetSteps(out var steps))
         {
             <h2 class="govuk-heading-m">Step by step</h2>
-            <partial name="~/Features/Shared/StepByStep/StepByStep.cshtml" model="@steps"/>
+            <partial name="~/Features/Shared/StepByStep/StepByStep.cshtml"
+                     model="@steps"/>
         }
 
         @if (!Model.MatView)
@@ -47,7 +58,8 @@
             <govuk-button-link
                 href="@Model.CallToAction.Url"
                 rel="noreferrer noopener"
-                target="_blank">
+                target="_blank"
+                data-ai-id="census.overview.button.go-to-collect">
                 @Model.CallToAction.Label
                 <span class="govuk-visually-hidden"> opens in new tab</span>
             </govuk-button-link>
@@ -72,13 +84,17 @@
         @if (true) // SAB-527: Temporary spike testing
         {
             <h2 class="govuk-heading-m">About your status</h2>
+
             @if (Model.StatusesUnavailable)
             {
                 <p class="govuk-body">Statuses are currently unavailable. When we can display status information, you can see what they mean below.</p>
             }
+
             <p class="govuk-body">Statuses are updated overnight. You will be emailed when the status changes.</p>
+
             <govuk-details>
-                <govuk-details-summary>
+                <govuk-details-summary
+                    data-ai-id="census.about-your-status.details.understand-statuses">
                     What your status means
                 </govuk-details-summary>
                 <govuk-details-text>
@@ -91,6 +107,7 @@
                 </govuk-details-text>
             </govuk-details>
         }
+
         <div class="feedback-banner govuk-!-margin-top-0 govuk-!-margin-bottom-6">
             <h2 class="govuk-heading-m">@Model.SupportService.Title</h2>
             <p class="govuk-body">
@@ -99,9 +116,8 @@
                     class="govuk-link govuk-link--no-visited-state"
                     rel="noreferrer noopener"
                     target="_blank"
-                >
-                    @Model.SupportService.Description</a
-                >
+                    data-ai-id="census.support.link.contact-support">
+                    @Model.SupportService.Description</a>
                 for queries and help.
             </p>
         </div>
