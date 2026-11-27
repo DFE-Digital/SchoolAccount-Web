@@ -8,18 +8,14 @@
     <div class="govuk-width-container">
         @if (TempData["FeedbackSubmitted"] is null)
         {
-            <div id="feedback-initial" class="govuk-grid-row footer-feedback__row">
-                <div class="govuk-grid-column-two-thirds">
-                    <h2 class="govuk-heading-s govuk-!-margin-bottom-0">
-                        Give feedback on this page or report a problem
-                    </h2>
-                </div>
-                <div class="govuk-grid-column-one-third">
-                    <button type="button" id="open-feedback" class="govuk-button footer-feedback__button govuk-!-margin-bottom-0 govuk-!-display-none"
-                            aria-controls="tell-us-form">
-                        Give feedback
-                    </button>
-                </div>
+            <div id="feedback-initial" class="footer-feedback__row">
+                <h2 class="govuk-heading-s govuk-!-margin-bottom-0">
+                    Give feedback on this page or report a problem
+                </h2>
+                <button type="button" id="open-feedback" class="govuk-button footer-feedback__button govuk-!-margin-bottom-0 govuk-!-display-none"
+                        aria-controls="tell-us-form">
+                    Give feedback
+                </button>
             </div>
             <p class="govuk-body govuk-!-margin-bottom-0 govuk-!-padding-top-4" id="non-js-feedback">
                 <a href="@Url.Action("Feedback", "Feedback")" id="open-feedback-page" class="govuk-link" rel="noreferrer noopener" target="_blank">
@@ -65,9 +61,11 @@
         }
         else
         {
-            <h2 id="feedback-thanks" class="govuk-heading-s govuk-!-margin-bottom-0">
-                Thank you for your feedback
-            </h2>
+            <div class="footer-feedback__row footer-feedback__row--submitted">
+                <h2 id="feedback-thanks" class="govuk-heading-s govuk-!-margin-bottom-0">
+                    Thank you for your feedback
+                </h2>
+            </div>
         }
     </div>
 </section>

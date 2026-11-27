@@ -14,16 +14,31 @@
   &__row {
     display: flex;
     flex-wrap: wrap;
+    justify-content: space-between;
     align-items: center;
     row-gap: govuk-spacing(3);
   }
 
+  &__row--submitted {
+    display: block;
+    padding: govuk-spacing(1) govuk-spacing(2);
+  }
+
   &__button {
-    background-color: #003a69;
+    margin-bottom: 0;
+    background: #003a69;
+    color: govuk-colour("white");
+    border: 2px solid transparent;
     box-shadow: 0 2px 0 #002d18;
+    @include govuk-font($size: 19);
 
     &:hover {
-      background-color: #00294a;
+      background: #00294a;
+    }
+
+    &:focus {
+      background: govuk-colour("yellow");
+      color: govuk-colour("black");
     }
   }
 }
