@@ -12,10 +12,13 @@ public class StartPageTests : BrowserTestBase
     [Fact]
     public async Task Start_page_loads_with_the_sign_in_heading()
     {
+        // Arrange
         var homePage = new StartPage(Page);
 
+        // Act
         await homePage.NavigateAsync(Settings.SiteUrl);
 
+        // Assert
         await homePage.AssertTitle("Sign in to School Account");
     }
 }

@@ -8,11 +8,13 @@ public class CollectDatabaseTests
     [Fact]
     public async Task Collect_portal_and_state_ledger_databases_both_return_rows()
     {
+        // Act
         var portalRows = await CollectPortal()
             .SelectAsync("SELECT TOP (1) * FROM [dbo].[DataCollection]");
         var ledgerRows = await StateLedger()
             .SelectAsync("SELECT TOP (1) * FROM [dbo].[CollectReturnStatus]");
 
+        // Assert
         Assert.NotEmpty(portalRows);
         Assert.NotEmpty(ledgerRows);
     }
@@ -20,9 +22,12 @@ public class CollectDatabaseTests
     [Fact]
     public async Task Added_status_row_can_be_read_back()
     {
+        // Arrange
         var stateLedger = StateLedger();
         var table = new CollectReturnStatusTable(stateLedger);
         var row = CollectReturnStatusFaker.Generate();
+
+        // Act
         var id = await table.AddAsync(row);
 
         try
@@ -32,6 +37,7 @@ public class CollectDatabaseTests
                 new { Id = id }
             );
 
+            // Assert
             Assert.Single(result);
             Assert.Equal(row.SchoolName, result[0]["SchoolName"]);
         }
@@ -44,11 +50,13 @@ public class CollectDatabaseTests
     [Fact]
     public async Task Removed_status_row_no_longer_exists()
     {
+        // Arrange
         var stateLedger = StateLedger();
         var table = new CollectReturnStatusTable(stateLedger);
         var row = CollectReturnStatusFaker.Generate();
         var id = await table.AddAsync(row);
 
+        // Act
         await table.RemoveAsync(id);
 
         var result = await stateLedger.SelectAsync(
@@ -56,12 +64,14 @@ public class CollectDatabaseTests
             new { Id = id }
         );
 
+        // Assert
         Assert.Empty(result);
     }
 
     [Fact]
     public async Task Sync_copies_a_portal_status_change_into_the_state_ledger()
     {
+        // Arrange
         var collectPortal = CollectPortal();
         var stateLedger = StateLedger();
         var parameters = new
@@ -78,6 +88,8 @@ public class CollectDatabaseTests
             ReturnStatusSyncScripts.UpdateDataReturnStatus,
             parameters
         );
+
+        // Act
         await stateLedger.ExecuteNonQueryAsync(
             ReturnStatusSyncScripts.SyncReturnStatus,
             parameters
@@ -88,6 +100,7 @@ public class CollectDatabaseTests
             parameters
         );
 
+        // Assert
         Assert.NotEmpty(history);
         Assert.Equal(parameters.Status, history[0]["ReturnStatusCode"]);
     }

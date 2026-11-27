@@ -8,7 +8,7 @@ public class BrowserFixture : IAsyncLifetime
     private IPlaywright? _playwright;
     private IBrowser? _browser;
 
-    public TestSettings Settings { get; private set; } = null!;
+    public TestSettings Settings { get; } = ConfigurationLoader.LoadSettings();
 
     public IBrowser Browser =>
         _browser
@@ -18,8 +18,6 @@ public class BrowserFixture : IAsyncLifetime
 
     public virtual async ValueTask InitializeAsync()
     {
-        Settings = ConfigurationLoader.LoadSettings();
-
         _playwright = await Playwright.CreateAsync();
         _browser = await _playwright.Chromium.LaunchAsync(
             new BrowserTypeLaunchOptions { Headless = Settings.Headless }
