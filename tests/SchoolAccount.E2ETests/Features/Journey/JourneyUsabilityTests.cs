@@ -3,6 +3,7 @@ using System.Text.Json;
 using Microsoft.Playwright;
 using SchoolAccount.E2ETests.Common.Extensions;
 using SchoolAccount.E2ETests.Common.Fixtures;
+using SchoolAccount.TestCommon.Constants;
 using Shouldly;
 
 namespace SchoolAccount.E2ETests.Features.Journey;
@@ -38,7 +39,7 @@ public class JourneyUsabilityTests : BrowserTestBase
 
     protected override async Task OnInitializedAsync()
     {
-        await Page.GotoAsync($"{Settings.SiteUrl}/Journey");
+        await Page.GotoAsync($"{Settings.SiteUrl}{UrlConstants.JourneyUrl}");
     }
 
     [Fact]

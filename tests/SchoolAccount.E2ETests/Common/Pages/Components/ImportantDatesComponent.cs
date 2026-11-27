@@ -9,12 +9,20 @@ public class ImportantDatesComponent(IPage page)
     public ILocator CensusDayValue => GetDateValue("Census day");
     public ILocator ReturnDueValue => GetDateValue("Return due");
 
-    public Task<string> GetCensusDayAsync() => GetTrimmedTextAsync(CensusDayValue);
+    public Task<string> GetCensusDayAsync()
+    {
+        return GetTrimmedTextAsync(CensusDayValue);
+    }
 
-    public Task<string> GetReturnDueDateAsync() => GetTrimmedTextAsync(ReturnDueValue);
+    public Task<string> GetReturnDueDateAsync()
+    {
+        return GetTrimmedTextAsync(ReturnDueValue);
+    }
 
-    private ILocator GetDateValue(string label) =>
-        Root.Locator("div.govuk-summary-list__row")
+    private ILocator GetDateValue(string label)
+    {
+        return Root.Locator("div.govuk-summary-list__row")
             .Filter(new() { HasText = label })
             .Locator("dd.govuk-summary-list__value");
+    }
 }

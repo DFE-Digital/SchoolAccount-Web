@@ -10,6 +10,8 @@ public abstract class BaseComponent(ILocator root)
 {
     protected ILocator Root { get; } = root;
 
-    protected static async Task<string> GetTrimmedTextAsync(ILocator locator) =>
-        (await locator.TextContentAsync())?.Trim() ?? string.Empty;
+    protected static async Task<string> GetTrimmedTextAsync(ILocator locator)
+    {
+        return (await locator.TextContentAsync())?.Trim() ?? string.Empty;
+    }
 }

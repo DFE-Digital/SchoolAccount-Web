@@ -1,5 +1,6 @@
 using SchoolAccount.E2ETests.Common.Fixtures;
 using SchoolAccount.E2ETests.Common.Pages;
+using SchoolAccount.TestCommon.Constants;
 using static Microsoft.Playwright.Assertions;
 
 namespace SchoolAccount.E2ETests.Features.Journey;
@@ -14,7 +15,7 @@ public class JourneyPageTests : BrowserTestBase
 
     protected override async Task OnInitializedAsync()
     {
-        await Page.GotoAsync($"{Settings.SiteUrl}/Journey");
+        await Page.GotoAsync($"{Settings.SiteUrl}{UrlConstants.JourneyUrl}");
         _journeyPage = new JourneyPage(Page);
     }
 

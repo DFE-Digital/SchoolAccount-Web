@@ -36,6 +36,10 @@ public class SchoolAccountLoginPage(IPage page) : BasePage(page)
     }
 
     /// <summary>The text of the error DfE Sign-in is showing, or null if there isn't one.</summary>
-    public async Task<string?> GetErrorMessageAsync() =>
-        await ErrorSummary.IsVisibleAsync() ? (await ErrorSummary.InnerTextAsync()).Trim() : null;
+    public async Task<string?> GetErrorMessageAsync()
+    {
+        return await ErrorSummary.IsVisibleAsync()
+            ? (await ErrorSummary.InnerTextAsync()).Trim()
+            : null;
+    }
 }

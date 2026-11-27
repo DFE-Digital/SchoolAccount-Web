@@ -43,7 +43,10 @@ public abstract class BrowserTestBase : IAsyncLifetime
     }
 
     /// <summary>Extension point for derived test classes that need to do something (e.g. navigate, build page objects) once Page is available.</summary>
-    protected virtual Task OnInitializedAsync() => Task.CompletedTask;
+    protected virtual Task OnInitializedAsync()
+    {
+        return Task.CompletedTask;
+    }
 
     public async ValueTask DisposeAsync()
     {

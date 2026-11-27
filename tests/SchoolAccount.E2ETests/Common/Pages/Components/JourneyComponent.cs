@@ -18,5 +18,8 @@ public class JourneyComponent(IPage page)
     public ILocator OverviewText => Root.Locator(":scope > p.govuk-body");
     public ILocator GoToCollectButton => Root.Locator("a[href*='collectdata.education.gov.uk']");
 
-    public Task<string> GetStatusAsync() => GetTrimmedTextAsync(StatusTag);
+    public Task<string> GetStatusAsync()
+    {
+        return GetTrimmedTextAsync(StatusTag);
+    }
 }

@@ -19,5 +19,8 @@ public static class CollectReturnStatusFaker
             DataReturnID = f.Random.Number(1, 999999),
         });
 
-    public static CollectReturnStatus Generate() => Faker.Generate();
+    public static CollectReturnStatus Generate()
+    {
+        return Faker.Generate();
+    }
 }

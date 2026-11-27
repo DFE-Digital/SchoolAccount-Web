@@ -1,5 +1,6 @@
 using Microsoft.Playwright;
 using SchoolAccount.E2ETests.Common.Pages;
+using SchoolAccount.TestCommon.Constants;
 
 namespace SchoolAccount.E2ETests.Common.Fixtures;
 
@@ -19,11 +20,11 @@ public class SchoolAccountBrowserFixture : AuthenticatedBrowserFixture
             );
         }
 
-        var journeyUrl = $"{Settings.SiteUrl}/Journey";
+        var journeyUrl = $"{Settings.SiteUrl}{UrlConstants.JourneyUrl}";
 
-        // The site's own home page just links out to /Account/Login, which redirects straight
+        // The site's own home page just links out to the login URL, which redirects straight
         // into the DfE Sign-in form - go there directly rather than clicking through.
-        await page.GotoAsync($"{Settings.SiteUrl}/Account/Login");
+        await page.GotoAsync($"{Settings.SiteUrl}{UrlConstants.LoginUrl}");
 
         var loginPage = new SchoolAccountLoginPage(page);
         try

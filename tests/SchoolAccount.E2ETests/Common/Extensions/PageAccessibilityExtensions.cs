@@ -43,12 +43,14 @@ public static class PageAccessibilityExtensions
             .ToList();
     }
 
-    private static string Describe(AxeResultItem violation, AxeResultNode element) =>
-        $"""
+    private static string Describe(AxeResultItem violation, AxeResultNode element)
+    {
+        return $"""
 
             {violation.Help} ({violation.Id})
               Element:  {element.Html}
               Selector: {element.Target}
               Guidance: {violation.HelpUrl}
             """;
+    }
 }

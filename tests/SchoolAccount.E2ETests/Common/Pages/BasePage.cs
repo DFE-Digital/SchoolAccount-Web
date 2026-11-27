@@ -15,6 +15,8 @@ public abstract class BasePage
 
     protected IPage PageContext { get; }
 
-    public async Task AssertTitle(string expectedTitle) =>
+    public async Task AssertTitle(string expectedTitle)
+    {
         await Expect(Title).ToContainTextAsync(expectedTitle);
+    }
 }

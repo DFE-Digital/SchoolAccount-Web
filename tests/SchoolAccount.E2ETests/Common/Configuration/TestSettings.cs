@@ -49,6 +49,8 @@ public sealed class CaptureSettings
 
     public bool CaptureOnFailure { get; init; } = true;
 
-    public bool ShouldCapture(bool testFailed) =>
-        Enabled && (testFailed ? CaptureOnFailure : CaptureOnSuccess);
+    public bool ShouldCapture(bool testFailed)
+    {
+        return Enabled && (testFailed ? CaptureOnFailure : CaptureOnSuccess);
+    }
 }

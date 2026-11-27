@@ -37,11 +37,15 @@ public sealed class LocalDatabase
         }.ConnectionString;
     }
 
-    public static LocalDatabase CollectPortal(DatabaseSettings settings) =>
-        new(settings, "COLLECTPortal");
+    public static LocalDatabase CollectPortal(DatabaseSettings settings)
+    {
+        return new(settings, "COLLECTPortal");
+    }
 
-    public static LocalDatabase CollectStateLedger(DatabaseSettings settings) =>
-        new(settings, "CollectStateLedger");
+    public static LocalDatabase CollectStateLedger(DatabaseSettings settings)
+    {
+        return new(settings, "CollectStateLedger");
+    }
 
     public async Task<int> ExecuteNonQueryAsync(string sql, object? parameters = null)
     {
@@ -141,10 +145,12 @@ public sealed class LocalDatabase
         }
     }
 
-    private static bool IsLoopbackIPv4Address(string host) =>
-        IPAddress.TryParse(host, out var address)
-        && address.AddressFamily == AddressFamily.InterNetwork
-        && address.GetAddressBytes()[0] == 127;
+    private static bool IsLoopbackIPv4Address(string host)
+    {
+        return IPAddress.TryParse(host, out var address)
+            && address.AddressFamily == AddressFamily.InterNetwork
+            && address.GetAddressBytes()[0] == 127;
+    }
 
     /// <summary>
     /// The host part of a SQL Server data source, e.g. "localhost" from "tcp:localhost,1433"

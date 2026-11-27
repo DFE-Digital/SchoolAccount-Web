@@ -8,7 +8,13 @@ public class SignedInHeaderComponent(IPage page) : BaseComponent(page.Locator("h
     public ILocator SchoolName => Root.Locator("span.header-navigation__school");
     public ILocator SignOutButton => Root.GetByRole(AriaRole.Button, new() { Name = "Sign out" });
 
-    public Task<string> GetSchoolNameAsync() => GetTrimmedTextAsync(SchoolName);
+    public Task<string> GetSchoolNameAsync()
+    {
+        return GetTrimmedTextAsync(SchoolName);
+    }
 
-    public Task SignOutAsync() => SignOutButton.ClickAsync();
+    public Task SignOutAsync()
+    {
+        return SignOutButton.ClickAsync();
+    }
 }

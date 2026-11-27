@@ -4,8 +4,13 @@ public sealed class CollectReturnStatusTable(LocalDatabase database)
 {
     private const string TableName = "CollectReturnStatus";
 
-    public async Task<int> AddAsync(CollectReturnStatus row) =>
-        (int)await database.InsertAndReturnIdAsync(row, TableName);
+    public async Task<int> AddAsync(CollectReturnStatus row)
+    {
+        return (int)await database.InsertAndReturnIdAsync(row, TableName);
+    }
 
-    public Task RemoveAsync(params int[] ids) => database.DeleteByIdsAsync(TableName, ids);
+    public Task RemoveAsync(params int[] ids)
+    {
+        return database.DeleteByIdsAsync(TableName, ids);
+    }
 }
