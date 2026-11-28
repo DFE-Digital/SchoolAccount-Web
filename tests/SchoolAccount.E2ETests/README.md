@@ -6,14 +6,36 @@ In theory this can be pointed at any website, but due to the difficulties with t
 
 ## What needs to be running
 
-The suite doesn't start anything itself. Before running it, you need:
+By default the run starts everything it needs itself, through the Aspire AppHost in
+`src/SchoolAccount.AppHost`, and stops it all when it ends:
 
-| Service       | Where                                                   | Needed by                     |
-|---------------|---------------------------------------------------------|-------------------------------|
-| School Account web app | `https://127.0.0.1:7041`                       | Every browser test            |
-| Collect API   | Wherever the web app is configured to call it            | Journey tests                 |
-| SQL Server    | `localhost,1433`, with `COLLECTPortal` and `CollectStateLedger` | Database tests and Journey tests |
+| Service                | Where                                                        | Needed by                        |
+|------------------------|--------------------------------------------------------------|----------------------------------|
+| School Account web app | `https://127.0.0.1:7041`                                     | Every browser test               |
+| Collect API            | A free port, given to the web app                            | Journey tests                    |
+| SQL Server             | A free port, with `COLLECTPortal` and `CollectStateLedger` seeded by Flyway | Database tests and Journey tests |
+| Azurite                | Free ports, with the `SchoolAccountFeedback` table created, given to the web app | The feedback form |
 
+For that you need Docker running, and
+[SchoolAccount-CollectAPI](https://github.com/DFE-Digital/SchoolAccount-CollectAPI) cloned next to
+this repository. Start-up takes about a minute, and the run fails with the resource at fault if any
+of them doesn't come up. Nothing else may be using port 7041, so stop the web app if you have it
+running.
+
+To run against a site and databases you've started yourself instead, set `Aspire:Enabled` to
+`false`. The suite then uses `SchoolAccount:Url` and `Database:*` as they are.
+
+When you run the AppHost yourself (`dotnet run --project src/SchoolAccount.AppHost`), SQL Server and
+Azurite keep running after you stop it, and the next start reuses them, data and all. They're grouped
+as `schoolaccount` in Docker Desktop. Remove them for a clean start with:
+
+```bash
+docker rm -f $(docker ps -aq --filter label=com.docker.compose.project=schoolaccount)
+```
+
+A test run doesn't use those. It starts its own containers, grouped as `schoolaccount-tests`, and
+removes them when it ends, so every run starts from clean data. Set `PersistentContainers=false` on
+the AppHost to get that behaviour when you run it yourself.
 
 Two things the set-up needs:
 
@@ -88,20 +110,90 @@ Headless=false dotnet test --project tests/SchoolAccount.E2ETests
 CI builds this project but doesn't run it, because there's no site, sign-in or database there. The csproj turns
 the test run off when `CI=true`, which GitHub Actions sets.
 
+## Databases
+
+The AppHost runs one SQL Server with `COLLECTPortal` and `CollectStateLedger` on it, both built and
+filled with test data by Flyway from the folders under `Databases/`, laid out in the same way as
+SchoolAccount-Database. They share a server because the ledger's sync procedure reads
+`COLLECTPortal` by its three-part name. Both use `Latin1_General_CI_AS`, as in iStore.
+
+To see what Flyway applied, open the `portal-migrations` and `ledger-migrations` logs in the Aspire
+dashboard. To start again from clean data when running the AppHost yourself, remove the persistent
+containers as shown above.
+
+### COLLECTPortal
+
+`Databases/CollectPortal/flyway/` only has the four tables `AddChangedCollectReturnStatus` reads:
+`DataCollection`, `Organisation`, `OrganisationRole` and `DataReturn`. Their columns and keys match
+iStore.
+
+The seed is copied from a restored COLLECTPortal backup for the same schools as the ledger seed, with
+telephone, fax, email and web left out. Each return's status and counts match the school's latest
+ledger row, so running the sync adds nothing until a test changes a return. The made-up
+`SchoolCensus2026_Autumn` (DCID 1205) is cloned from Autumn 2025 a year on, with its own roles
+(school roles numbered DataReturnID + 1500000) and returns.
+
+### CollectStateLedger
+
+What's in `Databases/CollectStateLedger/flyway/`:
+
+| Folder        | Contents                                                                                     |
+|---------------|----------------------------------------------------------------------------------------------|
+| `migrations/` | The tables, from `sql/tables.sql` in SchoolAccount-CollectStateLedgerDatabase                |
+| `repeatable/` | `AddChangedCollectReturnStatus`, from `sql/stored-procedures.sql` in the same repo           |
+| `seed/`       | Test data, re-run after every migrate. A school that already has rows for a census is skipped |
+
+The seed data is taken from real ledger rows (school names and LAEStabs are public data), with
+`UpdatedAt` set relative to when the seed runs:
+
+- **SchoolCensus2025_Spring**: about 200 schools at their final status, plus 13 schools with a full
+  status history. Goldenhill Primary Academy (`8612009`) ends on its real status, so its hash matches.
+- **SchoolCensus2026_Autumn**: 74 schools at earlier stages, as the Collect API treats this census
+  as open. Its DCID (1205) and DataReturnIDs are made up.
+- **RegisteredUsers** for the schools with a history, using made-up `example.com` addresses, and a
+  `JobStatus` row for `collect-notifications-local` from a day ago.
+- **DfE Sign-in test schools**: the 15 establishments developers' accounts are linked to in the DfE
+  Sign-in test environment, so whichever one you sign in as has data. Each has its real Spring 2025
+  row and is at a different Autumn 2026 status, so you can see the journey page at every stage by
+  switching organisation:
+
+  | School                                         | URN    | LAEStab   | Autumn 2026 status          |
+  |------------------------------------------------|--------|-----------|-----------------------------|
+  | Abbey Manor College                            | 130856 | `2091103` | No data                     |
+  | Bede Academy                                   | 135619 | `9296905` | Awaiting file upload        |
+  | Beulah Junior School                           | 101712 | `3062003` | File uploaded               |
+  | Bourne Abbey Church of England Primary Academy | 136354 | `9253510` | File upload failed          |
+  | Brookland Infant and Nursery School            | 101263 | `3022008` | Waiting for validation      |
+  | Colsterworth Church of England Primary School  | 146279 | `9252049` | Validation in progress      |
+  | East Herrington Primary Academy                | 138331 | `3942091` | Loaded and validated        |
+  | Goldington Green Academy                       | 139523 | `8222008` | Uploaded, validation failed |
+  | Hazelwick School                               | 137263 | `9384029` | Awaiting submission         |
+  | E-ACT Heartlands Academy                       | 135907 | `3306905` | Submitted                   |
+  | Heath Lane Nursery School                      | 117070 | `9191009` | Awaiting approval           |
+  | Manor Park Primary School                      | 103691 | `3312141` | Approved                    |
+  | Muriel Green Nursery School                    | 133975 | `9191028` | Rejected                    |
+  | Oakridge Junior School                         | 115974 | `8502227` | Awaiting authorisation      |
+  | Park Spring Primary School                     | 107964 | `3832488` | Authorised                  |
+
+  East Herrington is the school the E2E tests sign in as, so it also has a full history in both
+  censuses. The trusts on those accounts have no census return, so they have no data.
+
 ## Configuration
 
 Settings come from `appsettings.json`, then environment variables, then user secrets. Later sources win, so user
-secrets take priority.
+secrets take priority. When `Aspire:Enabled` is on, the run then sets `SchoolAccount:Url` and `Database:*` to what
+the AppHost started, on top of all of those, so the `Database:*` user secrets are only needed when it's off.
 
 | Setting                  | Default                     | Notes                                                    |
 |--------------------------|-----------------------------|----------------------------------------------------------|
+| `Aspire:Enabled`         | `true`                      | Start the dependencies through the AppHost (see above)   |
 | `SchoolAccount:Url`      | `https://127.0.0.1:7041`    | The site under test                                      |
 | `SchoolAccount:Email`    | none                        | User secrets. Required for the signed-in tests           |
 | `SchoolAccount:Password` | none                        | User secrets. Required for the signed-in tests           |
 | `SchoolAccount:OrganisationUrn` | none                 | User secrets. Needed if the account has more than one organisation |
-| `Database:Server`        | `localhost,1433`            | Must be `localhost` or a `127.x.x.x` address (see below) |
-| `Database:UserId`        | none                        | User secrets                                             |
-| `Database:Password`      | none                        | User secrets                                             |
+| `Database:Server`        | `localhost,1433`            | Set by the run when Aspire is on. Must be `localhost` or a `127.x.x.x` address (see below) |
+| `Database:UserId`        | none                        | User secrets. Only needed when Aspire is off             |
+| `Database:Password`      | none                        | User secrets. Only needed when Aspire is off             |
 | `Headless`               | `true`                      | `false` opens a visible browser                          |
 | `Screenshot:*`, `Video:*` | on, for passes and failures | `Enabled`, `CaptureOnSuccess`, `CaptureOnFailure`        |
 
@@ -135,4 +227,7 @@ Common/         Configuration, fixtures, page objects, database helpers, and scr
                 naming (Artifacts/)
 Features/       Browser tests, one folder per page of the site
 CollectData/    Tests that read and write the Collect databases
+Databases/      Flyway migrations and seed data for the Collect databases, run by the AppHost
 ```
+
+`Common/Fixtures/AspireFixture.cs` starts the AppHost once for the run, before any other fixture.
