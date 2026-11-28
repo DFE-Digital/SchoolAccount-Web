@@ -33,7 +33,6 @@ public abstract class AuthenticatedBrowserFixture : BrowserFixture
                 await LoginAsync(page);
                 return await context.StorageStateAsync();
             }
-            // Playwright reports timeouts as System.TimeoutException, not a PlaywrightException.
             catch (Exception failure) when (failure is PlaywrightException or TimeoutException)
             {
                 failures.Add(failure);

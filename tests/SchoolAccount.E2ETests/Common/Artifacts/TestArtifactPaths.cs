@@ -10,8 +10,6 @@ public static class TestArtifactPaths
 {
     private const string _screenshotsFolder = "screenshots";
     private const string _videosFolder = "videos";
-
-    // Playwright records into this folder, and the video is then moved or deleted once the test ends.
     private const string _recordingFolder = "recording";
 
     public static string ScreenshotFilePath()

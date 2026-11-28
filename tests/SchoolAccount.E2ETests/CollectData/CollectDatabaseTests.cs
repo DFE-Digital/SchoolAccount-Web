@@ -22,7 +22,6 @@ public class CollectDatabaseTests
     public async Task State_ledger_database_returns_rows()
     {
         // Arrange
-        // The ledger is empty after a fresh restore, so the test adds the row it reads.
         var stateLedger = StateLedger();
         var table = new CollectReturnStatusTable(stateLedger);
         var id = await table.AddAsync(CollectReturnStatusFaker.Generate());
@@ -108,7 +107,6 @@ public class CollectDatabaseTests
         ).Single();
         var lastId = await LatestStatusIdAsync(stateLedger);
 
-        // Pick a status the school doesn't already have, so the sync always has a change to copy.
         var newStatus =
             Convert.ToInt32(original["Status"], CultureInfo.InvariantCulture) == 3 ? 2 : 3;
         var changed = new
@@ -150,8 +148,6 @@ public class CollectDatabaseTests
         }
         finally
         {
-            // Put the school's status back, and remove what the sync added, so the next run
-            // and the Journey tests see the restored data.
             await collectPortal.ExecuteNonQueryAsync(
                 ReturnStatusSyncScripts.UpdateDataReturnStatus,
                 new

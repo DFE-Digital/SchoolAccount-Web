@@ -6,7 +6,6 @@
     <IsPackable>false</IsPackable>
     <OutputType>Exe</OutputType>
     <UserSecretsId>0f6cd60b-7b0c-4d65-bc7d-648139399095</UserSecretsId>
-    <!-- CI builds this project but can't run it: there's no site, sign-in or database there. -->
     <IsTestingPlatformApplication Condition="'$(CI)' == 'true'">false</IsTestingPlatformApplication>
   </PropertyGroup>
 
