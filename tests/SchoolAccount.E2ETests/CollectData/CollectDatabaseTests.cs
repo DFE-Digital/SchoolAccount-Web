@@ -1,3 +1,4 @@
+using System.Globalization;
 using SchoolAccount.E2ETests.Common.Configuration;
 using SchoolAccount.E2ETests.Common.Database;
 using Shouldly;
@@ -82,35 +83,78 @@ public class CollectDatabaseTests
         // Arrange
         var collectPortal = CollectPortal();
         var stateLedger = StateLedger();
-        var parameters = new
+        var school = new
         {
             LAEStab = ReturnStatusSyncScripts.KnownLAEStab,
             CensusName = ReturnStatusSyncScripts.KnownCensusName,
-            Status = 3,
+        };
+
+        var original = (
+            await collectPortal.SelectAsync(ReturnStatusSyncScripts.DataReturnStatus, school)
+        ).Single();
+        var lastId = await LatestStatusIdAsync(stateLedger);
+
+        // Pick a status the school doesn't already have, so the sync always has a change to copy.
+        var newStatus =
+            Convert.ToInt32(original["Status"], CultureInfo.InvariantCulture) == 3 ? 2 : 3;
+        var changed = new
+        {
+            school.LAEStab,
+            school.CensusName,
+            Status = newStatus,
             HighErrors = 1,
             LowErrors = 2,
             OKErrors = 3,
         };
+        var addedSince = new
+        {
+            school.LAEStab,
+            school.CensusName,
+            LastId = lastId,
+        };
 
-        await collectPortal.ExecuteNonQueryAsync(
-            ReturnStatusSyncScripts.UpdateDataReturnStatus,
-            parameters
-        );
+        try
+        {
+            await collectPortal.ExecuteNonQueryAsync(
+                ReturnStatusSyncScripts.UpdateDataReturnStatus,
+                changed
+            );
 
-        // Act
-        await stateLedger.ExecuteNonQueryAsync(
-            ReturnStatusSyncScripts.SyncReturnStatus,
-            parameters
-        );
+            // Act
+            await stateLedger.ExecuteNonQueryAsync(
+                ReturnStatusSyncScripts.SyncReturnStatus,
+                school
+            );
 
-        var history = await stateLedger.SelectAsync(
-            ReturnStatusSyncScripts.ReturnStatusHistory,
-            parameters
-        );
+            var addedRows = await stateLedger.SelectAsync(
+                ReturnStatusSyncScripts.StatusRowsAddedSince,
+                addedSince
+            );
 
-        // Assert
-        history.ShouldNotBeEmpty();
-        history[0]["ReturnStatusCode"].ShouldBe(parameters.Status);
+            // Assert
+            addedRows.ShouldHaveSingleItem()["ReturnStatusCode"].ShouldBe(newStatus);
+        }
+        finally
+        {
+            // Put the school's status back, and remove what the sync added, so the next run
+            // and the Journey tests see the restored data.
+            await collectPortal.ExecuteNonQueryAsync(
+                ReturnStatusSyncScripts.UpdateDataReturnStatus,
+                new
+                {
+                    school.LAEStab,
+                    school.CensusName,
+                    Status = original["Status"],
+                    HighErrors = original["HighErrors"],
+                    LowErrors = original["LowErrors"],
+                    OKErrors = original["OKErrors"],
+                }
+            );
+            await stateLedger.ExecuteNonQueryAsync(
+                ReturnStatusSyncScripts.RemoveStatusRowsAddedSince,
+                addedSince
+            );
+        }
     }
 
     private static LocalDatabase CollectPortal()
@@ -121,5 +165,11 @@ public class CollectDatabaseTests
     private static LocalDatabase StateLedger()
     {
         return LocalDatabase.CollectStateLedger(ConfigurationLoader.LoadSettings().Database);
+    }
+
+    private static async Task<long> LatestStatusIdAsync(LocalDatabase stateLedger)
+    {
+        var rows = await stateLedger.SelectAsync(ReturnStatusSyncScripts.LatestStatusId);
+        return Convert.ToInt64(rows.Single()["Id"], CultureInfo.InvariantCulture);
     }
 }
