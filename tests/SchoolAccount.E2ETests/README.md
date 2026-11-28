@@ -67,6 +67,9 @@ dotnet test --project tests/SchoolAccount.E2ETests --filter-method "*Tab_order_m
 Headless=false dotnet test --project tests/SchoolAccount.E2ETests
 ```
 
+CI builds this project but doesn't run it, because there's no site, sign-in or database there. The csproj turns
+the test run off when `CI=true`, which GitHub Actions sets.
+
 ## Configuration
 
 Settings come from `appsettings.json`, then environment variables, then user secrets. Later sources win, so user

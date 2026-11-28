@@ -42,5 +42,6 @@
     <Project Path="tests\SchoolAccount.ArchitectureTests\SchoolAccount.ArchitectureTests.csproj" />
     <Project Path="tests\SchoolAccount.IntegrationTests\SchoolAccount.IntegrationTests.csproj" />
     <Project Path="tests\SchoolAccount.TestCommon\SchoolAccount.TestCommon.csproj" />
+    <Project Path="tests\SchoolAccount.E2ETests\SchoolAccount.E2ETests.csproj" />
   </Folder>
 </Solution>
