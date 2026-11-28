@@ -8,6 +8,8 @@
 //   (../SchoolAccount-CollectAPI). The AppHost builds it, gives it the SQL
 //   Server above once both databases are seeded, and the web app waits for it
 //   and is given its address.
+// - Azurite, for the feedback form's Table Storage. The AppHost creates the
+//   SchoolAccountFeedback table and gives the web app the connection string.
 //
 // Both use their own launch profiles and settings, as if they were run directly,
 // so the web app's address matches the one registered with DfE Sign-in. The
@@ -16,8 +18,9 @@
 // Every resource reports healthy only once it answers requests on /health.
 //
 // Where things live
-// - WebApp.cs, CollectApi.cs, CollectDatabases.cs: one file per resource, each
-//   with an Add method, and a With method where another resource depends on it.
+// - WebApp.cs, CollectApi.cs, CollectDatabases.cs, FeedbackStorage.cs: one file
+//   per resource, each with an Add method, and a With method where another
+//   resource depends on it.
 // - ResourceNames.cs: resource names.
 using SchoolAccount.AppHost;
 
@@ -27,6 +30,8 @@ var databases = builder.AddCollectDatabases();
 
 var collectApi = builder.AddCollectApi().WithCollectDatabases(databases);
 
-builder.AddWebApp().WithCollectApi(collectApi);
+var feedbackStorage = builder.AddFeedbackStorage();
+
+builder.AddWebApp().WithCollectApi(collectApi).WithFeedbackStorage(feedbackStorage);
 
 await builder.Build().RunAsync();
