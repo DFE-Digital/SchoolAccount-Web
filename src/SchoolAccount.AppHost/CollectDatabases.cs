@@ -30,7 +30,10 @@ internal static class CollectDatabases
             )
         );
 
-        var sql = builder.AddSqlServer(ResourceNames.Sql);
+        var sql = builder
+            .AddSqlServer(ResourceNames.Sql)
+            .WithLifetime(builder.GetDependencyLifetime())
+            .WithDependencyGroup();
 
         var portal = AddDatabase(sql, ResourceNames.CollectPortal, "COLLECTPortal");
         var ledger = AddDatabase(sql, ResourceNames.CollectStateLedger, "CollectStateLedger");
@@ -99,6 +102,7 @@ internal static class CollectDatabases
 
         var migrations = builder
             .AddContainer(resourceName, FlywayImage, FlywayTag)
+            .WithDependencyGroup()
             .WithArgs("migrate")
             // conf/flyway.toml leaves the connection to these settings.
             .WithEnvironment(

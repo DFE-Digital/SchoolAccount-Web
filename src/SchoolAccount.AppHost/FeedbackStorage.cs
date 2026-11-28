@@ -20,7 +20,9 @@ internal static class FeedbackStorage
     {
         return builder
             .AddAzureStorage(ResourceNames.Storage)
-            .RunAsEmulator()
+            .RunAsEmulator(emulator =>
+                emulator.WithLifetime(builder.GetDependencyLifetime()).WithDependencyGroup()
+            )
             .AddTables(ResourceNames.Tables)
             .OnResourceReady(
                 static async (tables, _, cancellationToken) =>
