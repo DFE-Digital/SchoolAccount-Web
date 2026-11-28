@@ -21,12 +21,26 @@ public class CollectDatabaseTests
     [Fact]
     public async Task State_ledger_database_returns_rows()
     {
-        // Act
-        var rows = await StateLedger()
-            .SelectAsync("SELECT TOP (1) * FROM [dbo].[CollectReturnStatus]");
+        // Arrange
+        // The ledger is empty after a fresh restore, so the test adds the row it reads.
+        var stateLedger = StateLedger();
+        var table = new CollectReturnStatusTable(stateLedger);
+        var id = await table.AddAsync(CollectReturnStatusFaker.Generate());
 
-        // Assert
-        rows.ShouldNotBeEmpty();
+        try
+        {
+            // Act
+            var rows = await stateLedger.SelectAsync(
+                "SELECT TOP (1) * FROM [dbo].[CollectReturnStatus]"
+            );
+
+            // Assert
+            rows.ShouldNotBeEmpty();
+        }
+        finally
+        {
+            await table.RemoveAsync(id);
+        }
     }
 
     [Fact]
