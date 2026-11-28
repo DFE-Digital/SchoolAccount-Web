@@ -53,15 +53,14 @@ Follow these steps to start the MVC locally.
 
    | Method         | Command                                          | Outcome                                                              |
    |----------------|--------------------------------------------------|----------------------------------------------------------------------|
-   | Docker Compose | `docker compose up --build`                      | Starts the MVC and its dependencies (Seq) in containers              |
+   | Docker Compose | `docker compose up --build`                      | Starts the MVC in a container                                         |
    | .NET CLI       | `dotnet run --project src/SchoolAccount.Web.Mvc` | Runs the MVC directly using the `http` launch profile, no containers |
 
    In Rider or Visual Studio you can use the equivalent `docker-compose` or `http` run configurations from the toolbar.
 
 4. Launch Collect API. 
 
-5. Once running, the presentation is available at `http://localhost:5016`:
-    - Logs (if started with compose) at `http://localhost:8081`
+5. Once running, the presentation is available at `http://localhost:5016`.
    
 6. Debugging guidance:
    - Set breakpoints in your C# files under `src/` and start either run configuration with debugging enabled.
@@ -200,9 +199,6 @@ string is missing. In development, running without an OTLP endpoint, for example
 just leaves telemetry off.
 
 Serilog's request logging is off, because Application Insights already records each request.
-
-In development, logs are also written to [Seq](https://datalust.co/seq). When running via Docker
-Compose, the Seq UI is available at http://localhost:8081.
 
 See [ADR 0012](decisions/0012-use-azure-monitor-opentelemetry-distro.md) for the reasoning.
 
