@@ -2,11 +2,11 @@
 //
 // What it starts
 // - The web app.
-// - SQL Server with COLLECTPortal and CollectStateLedger, built by the Flyway
-//   folders under tests/SchoolAccount.E2ETests/Databases.
+// - SQL Server with COLLECTPortal and CollectStateLedger, built and seeded by the
+//   Flyway folders under tests/SchoolAccount.E2ETests/Databases.
 // - The Collect API, from its own repository cloned next to this one
 //   (../SchoolAccount-CollectAPI). The AppHost builds it, gives it the SQL
-//   Server above once both databases are migrated, and the web app waits for it
+//   Server above once both databases are seeded, and the web app waits for it
 //   and is given its address.
 //
 // Both use their own launch profiles and settings, as if they were run directly,

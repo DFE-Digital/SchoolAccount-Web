@@ -41,7 +41,7 @@ internal static class CollectDatabases
             sql,
             portal,
             Path.Combine(flywayRoot, "CollectPortal", "flyway"),
-            ["conf", "migrations"]
+            ["conf", "migrations", "seed"]
         );
 
         var ledgerMigrations = AddMigrations(
