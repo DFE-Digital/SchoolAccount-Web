@@ -1,0 +1,12 @@
+[flyway]
+locations = ["filesystem:/flyway/migrations", "filesystem:/flyway/repeatable"]
+table = "FlywaySchemaMigrations"
+failOnMissingLocations = true
+validateMigrationNaming = true
+defaultSchema = "dbo"
+callbackLocations = ["filesystem:/flyway/seed"]
+
+[environments.default]
+# The AppHost passes the URL, user and password in as FLYWAY_URL, FLYWAY_USER and FLYWAY_PASSWORD.
+connectRetries = 10
+schemas = ["dbo"]

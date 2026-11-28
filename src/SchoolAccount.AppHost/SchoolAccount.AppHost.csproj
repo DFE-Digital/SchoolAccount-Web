@@ -2,13 +2,18 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <IsPackable>false</IsPackable>
+    <!-- Where Aspire keeps the SQL Server password it generates, so it stays the same between runs. -->
+    <UserSecretsId>56ae41fe-cd73-433a-a00b-6f7ffcc7d770</UserSecretsId>
     <!-- The Collect API lives in its own repository, cloned next to this one. -->
     <CollectApiProjectPath>$(MSBuildThisFileDirectory)..\..\..\SchoolAccount-CollectAPI\src\SchoolAccount.Collect.Api\SchoolAccount.Collect.Api.csproj</CollectApiProjectPath>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Aspire.Hosting.AppHost" />
+    <PackageReference Include="Aspire.Hosting.Azure.Storage" />
     <PackageReference Include="Aspire.Hosting.Dotnet" />
+    <PackageReference Include="Aspire.Hosting.SqlServer" />
+    <PackageReference Include="Azure.Data.Tables" />
   </ItemGroup>
 
   <ItemGroup>
