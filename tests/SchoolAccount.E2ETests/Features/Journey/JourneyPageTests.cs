@@ -27,7 +27,7 @@ public class JourneyPageTests : BrowserTestBase
         var schoolName = await JourneyPage.Header.GetSchoolNameAsync();
 
         // Assert
-        Assert.NotEmpty(schoolName);
+        schoolName.ShouldNotBeEmpty();
     }
 
     [Fact]
@@ -44,7 +44,7 @@ public class JourneyPageTests : BrowserTestBase
         var status = await JourneyPage.Journey.GetStatusAsync();
 
         // Assert
-        Assert.NotEmpty(status);
+        status.ShouldNotBeEmpty();
     }
 
     [Fact]
@@ -65,8 +65,10 @@ public class JourneyPageTests : BrowserTestBase
         var returnDue = await JourneyPage.ImportantDates.GetReturnDueDateAsync();
 
         // Assert
-        Assert.NotEmpty(censusDay);
-        Assert.NotEmpty(returnDue);
+        JourneyPage.ImportantDates.ShouldSatisfyAllConditions(
+            () => censusDay.ShouldNotBeEmpty(),
+            () => returnDue.ShouldNotBeEmpty()
+        );
     }
 
     [Fact]

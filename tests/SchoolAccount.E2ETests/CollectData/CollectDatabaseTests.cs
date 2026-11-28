@@ -1,22 +1,31 @@
 using SchoolAccount.E2ETests.Common.Configuration;
 using SchoolAccount.E2ETests.Common.Database;
+using Shouldly;
 
 namespace SchoolAccount.E2ETests.CollectData;
 
 public class CollectDatabaseTests
 {
     [Fact]
-    public async Task Collect_portal_and_state_ledger_databases_both_return_rows()
+    public async Task Collect_portal_database_returns_rows()
     {
         // Act
-        var portalRows = await CollectPortal()
+        var rows = await CollectPortal()
             .SelectAsync("SELECT TOP (1) * FROM [dbo].[DataCollection]");
-        var ledgerRows = await StateLedger()
+
+        // Assert
+        rows.ShouldNotBeEmpty();
+    }
+
+    [Fact]
+    public async Task State_ledger_database_returns_rows()
+    {
+        // Act
+        var rows = await StateLedger()
             .SelectAsync("SELECT TOP (1) * FROM [dbo].[CollectReturnStatus]");
 
         // Assert
-        Assert.NotEmpty(portalRows);
-        Assert.NotEmpty(ledgerRows);
+        rows.ShouldNotBeEmpty();
     }
 
     [Fact]
@@ -38,8 +47,7 @@ public class CollectDatabaseTests
             );
 
             // Assert
-            Assert.Single(result);
-            Assert.Equal(row.SchoolName, result[0]["SchoolName"]);
+            result.ShouldHaveSingleItem()["SchoolName"].ShouldBe(row.SchoolName);
         }
         finally
         {
@@ -65,7 +73,7 @@ public class CollectDatabaseTests
         );
 
         // Assert
-        Assert.Empty(result);
+        result.ShouldBeEmpty();
     }
 
     [Fact]
@@ -101,8 +109,8 @@ public class CollectDatabaseTests
         );
 
         // Assert
-        Assert.NotEmpty(history);
-        Assert.Equal(parameters.Status, history[0]["ReturnStatusCode"]);
+        history.ShouldNotBeEmpty();
+        history[0]["ReturnStatusCode"].ShouldBe(parameters.Status);
     }
 
     private static LocalDatabase CollectPortal()

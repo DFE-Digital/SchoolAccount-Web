@@ -141,6 +141,8 @@ public class JourneyUsabilityTests : BrowserTestBase
         );
     }
 
-    private static string SnapshotPath(string fileName, [CallerFilePath] string sourceFile = "") =>
-        Path.Combine(Path.GetDirectoryName(sourceFile)!, fileName);
+    private static string SnapshotPath(string fileName, [CallerFilePath] string sourceFile = "")
+    {
+        return Path.Combine(Path.GetDirectoryName(sourceFile)!, fileName);
+    }
 }
