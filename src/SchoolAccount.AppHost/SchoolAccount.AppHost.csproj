@@ -17,6 +17,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- The E2E tests start the AppHost and look its resources up by name. -->
+    <InternalsVisibleTo Include="SchoolAccount.E2ETests" />
+  </ItemGroup>
+
+  <ItemGroup>
     <AssemblyMetadata Include="CollectApiProjectPath" Value="$(CollectApiProjectPath)" />
   </ItemGroup>
 </Project>

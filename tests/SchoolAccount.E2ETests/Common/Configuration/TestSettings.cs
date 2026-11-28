@@ -3,6 +3,8 @@ namespace SchoolAccount.E2ETests.Common.Configuration;
 /// <summary>Every setting the suite reads. Each property below matches a section in appsettings.json.</summary>
 public sealed class TestSettings
 {
+    public AspireSettings Aspire { get; init; } = new();
+
     public bool Headless { get; init; } = true;
 
     public CaptureSettings Screenshot { get; init; } = new();
@@ -34,6 +36,16 @@ public sealed class SchoolAccountSettings
     /// organisation and DfE Sign-in asks which one to use.
     /// </summary>
     public string OrganisationUrn { get; init; } = string.Empty;
+}
+
+/// <summary>Whether the suite starts its own dependencies through the Aspire AppHost.</summary>
+public sealed class AspireSettings
+{
+    /// <summary>
+    /// When true, the run starts the AppHost and points the suite at it. Set it to false to run
+    /// against a site and databases that are already running.
+    /// </summary>
+    public bool Enabled { get; init; } = true;
 }
 
 /// <summary>The SQL Server the database tests connect to.</summary>
