@@ -41,6 +41,10 @@ app.UseAuthorization();
 
 app.MapStaticAssets().AllowAnonymous();
 
+// Reports whether the app is up, for Aspire and other hosts. It runs no checks on
+// Collect or Academies, so it stays healthy when they are down.
+app.MapHealthChecks("/health").AllowAnonymous();
+
 app.MapControllerRoute("default", "/{controller}/{action}").WithStaticAssets();
 
 await app.RunAsync();

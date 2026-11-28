@@ -35,6 +35,7 @@ public class AnonymousEndpointGuardrailTests(SchoolAccountWebApplicationFactory<
         StartUrl,
         LoginUrl,
         LogoutUrl,
+        HealthUrl,
     ];
 
     [Fact]

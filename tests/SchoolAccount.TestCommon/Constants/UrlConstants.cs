@@ -7,6 +7,7 @@ public static class UrlConstants
     public const string ErrorNotFoundUrl = "/Error/404";
     public const string Error500Url = "/Error/500";
     public const string FeedbackUrl = "/Feedback";
+    public const string HealthUrl = "/health";
     public const string FeedbackFooterThanksUrl = "#feedback-thanks";
     public const string FeedbackPageThanksUrl = "/Feedback#feedback-thanks";
     public const string FeedbackSubmissionUrl = "/Feedback/Submit";
