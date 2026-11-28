@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+    <!-- The Collect API lives in its own repository, cloned next to this one. -->
+    <CollectApiProjectPath>$(MSBuildThisFileDirectory)..\..\..\SchoolAccount-CollectAPI\src\SchoolAccount.Collect.Api\SchoolAccount.Collect.Api.csproj</CollectApiProjectPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.AppHost" />
+    <PackageReference Include="Aspire.Hosting.Dotnet" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AssemblyMetadata Include="CollectApiProjectPath" Value="$(CollectApiProjectPath)" />
+  </ItemGroup>
+</Project>

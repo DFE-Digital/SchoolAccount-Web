@@ -29,6 +29,7 @@
     <File Path="README.md" />
   </Folder>
   <Folder Name="/src/">
+    <Project Path="src/SchoolAccount.AppHost/SchoolAccount.AppHost.csproj" />
     <Project Path="src\SchoolAccount.Web.Mvc\SchoolAccount.Web.Mvc.csproj" />
     <Project Path="src\SchoolAccount.Application\SchoolAccount.Application.csproj" />
     <Project Path="src\SchoolAccount.Domain\SchoolAccount.Domain.csproj" />
