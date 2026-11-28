@@ -1,0 +1,58 @@
+using Microsoft.Playwright;
+
+namespace SchoolAccount.E2ETests.Common.Fixtures;
+
+public abstract class AuthenticatedBrowserFixture : BrowserFixture
+{
+    private const int _maximumSignInAttempts = 3;
+
+    public string? StorageState { get; private set; }
+
+    public override async ValueTask InitializeAsync()
+    {
+        await base.InitializeAsync();
+
+        StorageState = await SignInAsync();
+    }
+
+    /// <summary>
+    /// Signs in and returns the signed-in browser state. Each attempt starts from scratch in a new
+    /// browser context. Only Playwright failures and timeouts are retried; anything else, such as
+    /// credentials being rejected, fails straight away so repeated attempts can't lock the account.
+    /// </summary>
+    private async Task<string> SignInAsync()
+    {
+        var failures = new List<Exception>();
+
+        for (var attempt = 1; attempt <= _maximumSignInAttempts; attempt++)
+        {
+            var context = await Browser.NewContextAsync();
+            try
+            {
+                var page = await context.NewPageAsync();
+                await LoginAsync(page);
+                return await context.StorageStateAsync();
+            }
+            catch (Exception failure) when (failure is PlaywrightException or TimeoutException)
+            {
+                failures.Add(failure);
+            }
+            finally
+            {
+                await context.CloseAsync();
+            }
+        }
+
+        throw new AggregateException(
+            $"Sign-in failed after {_maximumSignInAttempts} attempts.",
+            failures
+        );
+    }
+
+    /// <summary>
+    /// Signs in on <paramref name="page"/>, returning only once sign-in has visibly succeeded.
+    /// Throw a <see cref="PlaywrightException"/> or <see cref="TimeoutException"/> for a failure
+    /// worth retrying.
+    /// </summary>
+    protected abstract Task LoginAsync(IPage page);
+}

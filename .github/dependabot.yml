@@ -21,6 +21,7 @@ updates:
       dotnet:
         patterns:
           - "Microsoft.AspNetCore.*"
+          - "Microsoft.Extensions.Configuration*"
           - "Microsoft.Extensions.Diagnostics.HealthChecks"
           - "Microsoft.Extensions.Logging.Abstractions"
           - "System.Security.Cryptography.*"
