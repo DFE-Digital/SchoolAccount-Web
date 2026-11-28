@@ -21,7 +21,9 @@ public class JourneyUsabilityTests : BrowserTestBase
                     name = img.getAttribute('alt').trim();
                 }
             }
-            return role + ':' + name.replace(/\s+/g, ' ');
+            // The census season changes during the year, so it's swapped for a placeholder.
+            name = name.replace(/\s+/g, ' ').replace(/\b(Autumn|Spring|Summer)\b/g, '[season]');
+            return role + ':' + name;
         }
         """;
 

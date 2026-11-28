@@ -100,7 +100,8 @@ To set a value with an environment variable, replace `:` with `__`, for example
 - **Tab-order snapshot.** `Features/Journey/Journey.tab-order.json` records the expected keyboard tab order on the
   Journey page. If the order changes, the test fails and writes `Journey.tab-order.received.json` next to it. If
   the new order is correct, rename that file over the snapshot. The step titles come from the Collect API, so a
-  wording change there also fails this test.
+  wording change there also fails this test. The census season (Autumn, Spring or Summer) is recorded as
+  `[season]`, so the snapshot doesn't need changing when the census moves on.
 - **Screenshots and videos** of each browser test are kept so you can see what the browser was showing when a
   test failed, without rerunning it. They're saved under `bin/Debug/net10.0/screenshots/` and
   `bin/Debug/net10.0/videos/`, in a folder for each test class, named after the test and the time it ran.
