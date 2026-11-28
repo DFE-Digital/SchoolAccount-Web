@@ -17,13 +17,12 @@ public abstract class AuthenticatedBrowserFixture : BrowserFixture
 
     /// <summary>
     /// Signs in and returns the signed-in browser state. Each attempt starts from scratch in a new
-    /// browser context. Only Playwright failures (timeouts, pages that didn't load) are retried;
-    /// anything else, such as credentials being rejected, fails straight away so repeated attempts
-    /// can't lock the account.
+    /// browser context. Only Playwright failures and timeouts are retried; anything else, such as
+    /// credentials being rejected, fails straight away so repeated attempts can't lock the account.
     /// </summary>
     private async Task<string> SignInAsync()
     {
-        var failures = new List<PlaywrightException>();
+        var failures = new List<Exception>();
 
         for (var attempt = 1; attempt <= _maximumSignInAttempts; attempt++)
         {
@@ -34,7 +33,8 @@ public abstract class AuthenticatedBrowserFixture : BrowserFixture
                 await LoginAsync(page);
                 return await context.StorageStateAsync();
             }
-            catch (PlaywrightException failure)
+            // Playwright reports timeouts as System.TimeoutException, not a PlaywrightException.
+            catch (Exception failure) when (failure is PlaywrightException or TimeoutException)
             {
                 failures.Add(failure);
             }
@@ -52,7 +52,8 @@ public abstract class AuthenticatedBrowserFixture : BrowserFixture
 
     /// <summary>
     /// Signs in on <paramref name="page"/>, returning only once sign-in has visibly succeeded.
-    /// Throw a <see cref="PlaywrightException"/> for a failure worth retrying.
+    /// Throw a <see cref="PlaywrightException"/> or <see cref="TimeoutException"/> for a failure
+    /// worth retrying.
     /// </summary>
     protected abstract Task LoginAsync(IPage page);
 }

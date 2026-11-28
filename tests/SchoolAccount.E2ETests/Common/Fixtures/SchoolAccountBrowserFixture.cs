@@ -38,7 +38,7 @@ public class SchoolAccountBrowserFixture : AuthenticatedBrowserFixture
                 new PageWaitForURLOptions { Timeout = _returnToSiteTimeoutMilliseconds }
             );
         }
-        catch (PlaywrightException)
+        catch (Exception failure) when (failure is PlaywrightException or TimeoutException)
         {
             var signInError = await loginPage.GetErrorMessageAsync();
             if (signInError is not null)
