@@ -39,12 +39,20 @@ Go to COLLECT button, so those tests fail.
 
 ### Playwright browser
 
-Build once, then install Chromium. This needs [PowerShell](https://learn.microsoft.com/powershell/scripting/install/installing-powershell)
-(`brew install powershell` on macOS).
+Build once, then install Chromium:
 
 ```bash
 dotnet build tests/SchoolAccount.E2ETests
 pwsh tests/SchoolAccount.E2ETests/bin/Debug/net10.0/playwright.ps1 install chromium
+```
+
+That needs [PowerShell](https://learn.microsoft.com/powershell/scripting/install/installing-powershell). If you don't
+have it, the build also copies in Playwright's own copy of Node, which can install Chromium straight from bash. Swap
+`darwin-arm64` for your machine's folder under `.playwright/node/` (for example `darwin-x64` or `linux-x64`).
+
+```bash
+cd tests/SchoolAccount.E2ETests/bin/Debug/net10.0
+.playwright/node/darwin-arm64/node .playwright/package/cli.js install chromium
 ```
 
 Run this again whenever the `Microsoft.Playwright` package version changes.
