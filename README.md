@@ -12,6 +12,7 @@ architecture tests.
 - [Testing Standards](docs/testing-standards.md) - conventions and practices for writing tests
 - [Integration Testing](docs/integration-testing.md) - guidance on integration testing of the controller endpoints
 - [Feature Flags](docs/feature-flags.md) - adding, gating, testing, switching and removing feature flags
+- [E2E Tests](tests/SchoolAccount.E2ETests/README.md) - running the Playwright tests, and the test data the databases are seeded with
 
 Architecture decisions are recorded as ADRs in the [decisions](decisions) folder:
 
@@ -28,6 +29,7 @@ Architecture decisions are recorded as ADRs in the [decisions](decisions) folder
 - [Integrate with the Academies API](decisions/0011-use-academies-api.md) - why we have used the Academies API
 - [Use the Azure Monitor OpenTelemetry distro for telemetry](decisions/0012-use-azure-monitor-opentelemetry-distro.md) - how logs, traces and metrics reach Azure Monitor and Rider
 - [Use feature flags from Azure App Configuration](decisions/0013-use-feature-flags-from-azure-app-configuration.md) - how features are switched on and off per environment without a release
+- [Use Aspire to run the app and its dependencies](decisions/0014-use-aspire-to-run-the-app-and-its-dependencies.md) - how the app, the Collect API, the databases and Azurite start together locally and in the E2E tests
 
 New decisions should follow the [ADR template](decisions/0000-adr-template.md).
 
@@ -41,7 +43,8 @@ Follow these steps to start the MVC locally.
     - [.NET 10 SDK](https://dotnet.microsoft.com/download)
     - [Docker Desktop](https://www.docker.com/products/docker-desktop/)
     - Rider, Visual Studio, or Visual Studio Code
-    - Pull [Collect API repository](https://github.com/DFE-Digital/SchoolAccount-CollectAPI)
+    - Clone the [Collect API repository](https://github.com/DFE-Digital/SchoolAccount-CollectAPI) next to this one,
+      as `SchoolAccount-CollectAPI`
 
 2. Run the setup script from the repository root to restore the dotnet tools and enable the git hooks:
 
@@ -51,24 +54,35 @@ Follow these steps to start the MVC locally.
 
 3. Run the MVC using one of the following:
 
-   | Method         | Command                                          | Outcome                                                              |
-   |----------------|--------------------------------------------------|----------------------------------------------------------------------|
-   | Docker Compose | `docker compose up --build`                      | Starts the MVC and its dependencies (Seq) in containers              |
-   | .NET CLI       | `dotnet run --project src/SchoolAccount.Web.Mvc` | Runs the MVC directly using the `http` launch profile, no containers |
+   | Method         | Command                                            | Outcome                                                                                      |
+   |----------------|----------------------------------------------------|----------------------------------------------------------------------------------------------|
+   | Aspire         | `dotnet run --project src/SchoolAccount.AppHost`   | Starts the MVC, the Collect API, SQL Server with seeded test data, and Azurite, with the Aspire dashboard |
+   | .NET CLI       | `dotnet run --project src/SchoolAccount.Web.Mvc`   | Runs the MVC on its own using the `https` launch profile                                      |
+   | Docker Compose | `docker compose up --build`                        | Starts the MVC in a container                                                                |
 
-   In Rider or Visual Studio you can use the equivalent `docker-compose` or `http` run configurations from the toolbar.
+   Aspire is the simplest way to run everything. It prints a link to its dashboard, which shows each resource, its
+   logs, and the traces and metrics both apps send. SQL Server and Azurite keep running after you stop it and are
+   reused next time. See [ADR 0014](decisions/0014-use-aspire-to-run-the-app-and-its-dependencies.md) for how it fits
+   together. Only one AppHost can run at a time, and starting a second stops the first.
 
-4. Launch Collect API. 
+   In Rider or Visual Studio you can use the equivalent `SchoolAccount.AppHost`, `https` or `docker-compose` run
+   configurations from the toolbar.
 
-5. Once running, the presentation is available at `http://localhost:5016`:
-    - Logs (if started with compose) at `http://localhost:8081`
-   
+4. If you're not using Aspire, launch the Collect API yourself.
+
+5. Once running, the presentation is available at `https://127.0.0.1:7041`. Use that address rather than
+   `localhost`, as it's the only local address DfE Sign-in sends users back to.
+
 6. Debugging guidance:
-   - Set breakpoints in your C# files under `src/` and start either run configuration with debugging enabled.
+   - Set breakpoints in your C# files under `src/` and start any of the run configurations with debugging enabled.
 
 ### Feedback Component
 
 To ensure the feedback component is functional locally, there are tools that can be used to see this journey.
+
+When you run the app through Aspire, Azurite is started for you with the `SchoolAccountFeedback` table already created,
+and the app is given its connection string. Find Azurite's table port on the `storage` resource in the Aspire
+dashboard, and skip to step 3. Otherwise:
 
 1. Install prerequisites:
     - [Azure Storage Explorer](https://azure.microsoft.com/en-us/products/storage/storage-explorer)
@@ -116,6 +130,10 @@ Use the .NET CLI to build or test the solution.
   ```bash
   dotnet test
   ```
+
+  This includes the Playwright E2E tests, which start the Aspire AppHost themselves and stop it when they finish. They
+  need Docker running, the Collect API cloned next to this repository, port 7041 free, and a DfE Sign-in test account in
+  user secrets. CI builds them but doesn't run them. See the [E2E tests README](tests/SchoolAccount.E2ETests/README.md).
 
 Architecture tests under `tests/SchoolAccount.ArchitectureTests` enforce the clean architecture dependency rules between layers.
 
@@ -191,18 +209,15 @@ set by `Telemetry:Destination`:
 | Environment       | Destination    | Where it goes                     |
 |-------------------|----------------|-----------------------------------|
 | Deployed          | `AzureMonitor` | Application Insights              |
-| Development       | `Otlp`         | Rider's OpenTelemetry tool window |
+| Development       | `Otlp`         | The Aspire dashboard, or Rider's OpenTelemetry tool window |
 | Integration tests | `None`         | Nowhere                           |
 
 Application Insights is reached using `APPLICATIONINSIGHTS_CONNECTION_STRING`, and OTLP using
-`OTEL_EXPORTER_OTLP_ENDPOINT`, which Rider sets. A deployed app fails at startup if its connection
-string is missing. In development, running without an OTLP endpoint, for example outside Rider,
-just leaves telemetry off.
+`OTEL_EXPORTER_OTLP_ENDPOINT`, which Aspire and Rider set. A deployed app fails at startup if its
+connection string is missing. In development, running without an OTLP endpoint, for example
+outside Aspire or Rider, just leaves telemetry off.
 
 Serilog's request logging is off, because Application Insights already records each request.
-
-In development, logs are also written to [Seq](https://datalust.co/seq). When running via Docker
-Compose, the Seq UI is available at http://localhost:8081.
 
 See [ADR 0012](decisions/0012-use-azure-monitor-opentelemetry-distro.md) for the reasoning.
 

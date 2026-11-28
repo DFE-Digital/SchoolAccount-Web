@@ -7,11 +7,3 @@ services:
       dockerfile: src/SchoolAccount.Web.Mvc/Dockerfile
     ports:
       - "5100:8080"
-
-  seq:
-    image: datalust/seq:2024.3
-    container_name: seq
-    environment:
-      - ACCEPT_EULA=Y
-    ports:
-      - "8081:80"
