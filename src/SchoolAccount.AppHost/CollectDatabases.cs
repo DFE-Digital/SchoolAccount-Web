@@ -50,7 +50,7 @@ internal static class CollectDatabases
             sql,
             ledger,
             Path.Combine(flywayRoot, "CollectStateLedger", "flyway"),
-            ["conf", "migrations", "repeatable"]
+            ["conf", "migrations", "repeatable", "seed"]
         );
 
         return new CollectDatabaseResources(sql, portalMigrations, ledgerMigrations);
