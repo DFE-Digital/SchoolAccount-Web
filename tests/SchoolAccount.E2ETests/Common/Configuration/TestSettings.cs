@@ -28,6 +28,12 @@ public sealed class SchoolAccountSettings
     public string Email { get; init; } = string.Empty;
 
     public string Password { get; init; } = string.Empty;
+
+    /// <summary>
+    /// The URN of the school to sign in as, when the account is linked to more than one
+    /// organisation and DfE Sign-in asks which one to use.
+    /// </summary>
+    public string OrganisationUrn { get; init; } = string.Empty;
 }
 
 /// <summary>The SQL Server the database tests connect to.</summary>

@@ -37,6 +37,16 @@ dotnet user-secrets set "Database:Password" "<SQL Server password>"
 The signed-in tests expect an **establishment** account. A trust account doesn't see the census status or the
 Go to COLLECT button, so those tests fail.
 
+If the test account is linked to more than one organisation, DfE Sign-in asks which one to use after the password.
+Set the URN of the school to sign in as, and the tests pick it from that list:
+
+```bash
+dotnet user-secrets set "SchoolAccount:OrganisationUrn" "<school URN>"
+```
+
+The URN is shown under each school's name on the "Select your organisation" page. It's matched instead of the name
+because some trusts and schools share a name, and only schools have a URN.
+
 ### Playwright browser
 
 Build once, then install Chromium:
@@ -88,6 +98,7 @@ secrets take priority.
 | `SchoolAccount:Url`      | `https://127.0.0.1:7041`    | The site under test                                      |
 | `SchoolAccount:Email`    | none                        | User secrets. Required for the signed-in tests           |
 | `SchoolAccount:Password` | none                        | User secrets. Required for the signed-in tests           |
+| `SchoolAccount:OrganisationUrn` | none                 | User secrets. Needed if the account has more than one organisation |
 | `Database:Server`        | `localhost,1433`            | Must be `localhost` or a `127.x.x.x` address (see below) |
 | `Database:UserId`        | none                        | User secrets                                             |
 | `Database:Password`      | none                        | User secrets                                             |

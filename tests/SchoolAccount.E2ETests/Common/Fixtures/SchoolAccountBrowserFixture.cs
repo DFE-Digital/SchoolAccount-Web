@@ -30,6 +30,7 @@ public class SchoolAccountBrowserFixture : AuthenticatedBrowserFixture
         try
         {
             await loginPage.LoginAsync(account.Email, account.Password);
+            await SelectOrganisationIfAskedAsync(page, journeyUrl);
 
             // Sign-in has worked once DfE Sign-in sends the user back to the site's Journey page.
             await page.WaitForURLAsync(
@@ -49,5 +50,36 @@ public class SchoolAccountBrowserFixture : AuthenticatedBrowserFixture
 
             throw;
         }
+    }
+
+    /// <summary>
+    /// An account linked to more than one organisation is asked to pick one before DfE Sign-in
+    /// sends it back to the site. Picks the school set in SchoolAccount:OrganisationUrn.
+    /// </summary>
+    private async Task SelectOrganisationIfAskedAsync(IPage page, string journeyUrl)
+    {
+        await page.WaitForURLAsync(
+            url =>
+                url.StartsWith(journeyUrl, StringComparison.OrdinalIgnoreCase)
+                || SelectOrganisationPage.IsShownAt(url),
+            new PageWaitForURLOptions { Timeout = _returnToSiteTimeoutMilliseconds }
+        );
+
+        if (!SelectOrganisationPage.IsShownAt(page.Url))
+        {
+            return;
+        }
+
+        var urn = Settings.SchoolAccount.OrganisationUrn;
+        if (string.IsNullOrWhiteSpace(urn))
+        {
+            throw new InvalidOperationException(
+                "The test account is linked to more than one organisation, so DfE Sign-in asks which "
+                    + "one to use. Set SchoolAccount:OrganisationUrn in user secrets to the URN of the "
+                    + "school to sign in as."
+            );
+        }
+
+        await new SelectOrganisationPage(page).SelectAsync(urn);
     }
 }
